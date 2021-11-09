@@ -10,7 +10,8 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=mesads
+      POSTGRES_PASSWORD: mesads
+      POSTGRES_DB: mesads
     ports:
       - 9432:5432
 
