@@ -1,0 +1,25 @@
+version: '3'
+
+volumes:
+  db: {}
+  app-poetry: {}
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=mesads
+    ports:
+      - 9432:5432
+
+  app:
+    build: .
+    volumes:
+      - .:/app
+      - app-poetry:/home/mesads/.cache/pypoetry
+    depends_on:
+      - db
+    ports:
+      - '9400:8000'
