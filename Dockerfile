@@ -14,8 +14,10 @@ RUN poetry install
 
 COPY . /app
 
+ENTRYPOINT ["poetry", "run"]
+
 # We can't use the syntax CMD [...] because we need subshells to provide variables.
 # -M: start worker process
 # -p: number of workers
 # -R: restart worker after N requests
-CMD uwsgi -H $(poetry env info -p) --http :8000 --module mesads.wsgi -M -p $(nproc) -R 100
+CMD uwsgi -H \$\(VIRTUAL_ENV\) --http :8000 --module mesads.wsgi -M -p $(nproc) -R 100
