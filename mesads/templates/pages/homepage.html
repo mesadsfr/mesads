@@ -3,4 +3,22 @@
 {% block title %}Mes ADS{% endblock %}
 
 {% block body %}
+
+{% if user.is_authenticated %}
+Auth
+
+<ul>
+    <li><a href="{% url 'logout' %}">Logout</a></li>
+    <li><a href="{% url 'password_change' %}">Change password</a></li>
+</ul>
+
+{% else %}
+Not auth
+
+<ul>
+    <li><a href="{% url 'login' %}">Login</a></li>
+</ul>
+
+{% endif %}
+
 {% endblock %}

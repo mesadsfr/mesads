@@ -135,7 +135,7 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = '/admin/login/'
+LOGIN_URL = '/login/'
 
 # Static configuration
 STATIC_ROOT = BASE_DIR / 'static'
@@ -143,6 +143,10 @@ STATIC_ROOT = BASE_DIR / 'static'
 STATICFILES_DIRS = [
     ('@gouvfr', BASE_DIR / 'node_modules/@gouvfr/dsfr/dist'),
 ]
+
+# Redirect to / after login/logout
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 # Setup INTERNAL_IPS for django-debug-toolbar.
 if DEBUG:
