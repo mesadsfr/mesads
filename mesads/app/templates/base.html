@@ -1,0 +1,15 @@
+{% load static %}
+<!doctype html>
+<html lang="fr" data-fr-theme="default">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="{% static '@gouvfr/css/dsfr.min.css' %}">
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+  <body>
+    {% block body %}{% endblock %}
+    <script type="module" src="{% static '@gouvfr/js/dsfr.module.min.js' %}"></script>
+    <script type="text/javascript" nomodule src="{% static '@gouvfr/js/dsfr.nomodule.min.js' %}"></script>
+  </body>
+</html>

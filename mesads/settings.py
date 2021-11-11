@@ -130,3 +130,10 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/admin/login/'
+
+# Static configuration
+STATIC_ROOT = BASE_DIR / 'static'
+
+STATICFILES_DIRS = [
+    ('@gouvfr', BASE_DIR / 'node_modules/@gouvfr/dsfr/dist'),
+]
