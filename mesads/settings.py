@@ -144,6 +144,8 @@ STATICFILES_DIRS = [
     ('@gouvfr', BASE_DIR / 'node_modules/@gouvfr/dsfr/dist'),
 ]
 
+MEDIA_ROOT = BASE_DIR / 'uploads'
+
 # Redirect to / after login/logout
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
