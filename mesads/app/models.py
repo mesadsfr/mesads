@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.conf import settings
 from django.db import models
 
 
@@ -36,6 +37,26 @@ class Authority(models.Model):
     departement = models.CharField(max_length=16, null=False, blank=True)
 
     address = models.CharField(max_length=1024, null=False, blank=True)
+
+
+class AuthoritiesUsers(models.Model):
+    """M2M between Authority and User. The administrator of an Authority can
+    grant privileges to users requesting access.
+    """
+    class Meta:
+        verbose_name = "Utilisateur d'une autorité"
+        verbose_name_plural = "Utilisateurs des autorités"
+
+    def __str__(self):
+        return 'Utilisateur %s "%s" de %s' % (
+            'administrateur' if self.is_admin else 'non privilégié',
+            self.user.username,
+            self.authority
+        )
+
+    authority = models.ForeignKey(Authority, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    is_admin = models.BooleanField(default=False)
 
 
 class ADS(models.Model):

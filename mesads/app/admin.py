@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ADS, Authority
+from .models import ADS, Authority, AuthoritiesUsers
 
 
 class AuthorityAdmin(admin.ModelAdmin):
@@ -27,3 +27,14 @@ class ADSAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ADS, ADSAdmin)
+
+
+class AuthoritiesUsersAdmin(admin.ModelAdmin):
+    list_display = (
+        'authority',
+        'user',
+        'is_admin',
+    )
+
+
+admin.site.register(AuthoritiesUsers, AuthoritiesUsersAdmin)
