@@ -28,3 +28,6 @@ Feature request:
 
   https://www.collectivites-locales.gouv.fr/institutions/liste-et-composition-des-epci-fiscalite-propre pour les EPCI
   https://www.insee.fr/fr/information/2028028 pour les communes
+
+  départements/préfectures : https://www.insee.fr/fr/information/5057840
+                             https://www.insee.fr/fr/statistiques/fichier/5057840/departement2021-csv.zip
