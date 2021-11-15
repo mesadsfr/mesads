@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="{% static '@gouvfr/css/dsfr.min.css' %}">
+    <link rel="stylesheet" href="{% static 'mesads/style.css' %}">
     <title>{% block title %}{% endblock %}</title>
   </head>
   <body>
@@ -64,7 +65,9 @@
       </div>
     </header>
 
-    {% block body %}{% endblock %}
+    <main class="fr-container">
+      {% block body %}{% endblock %}
+    </main>
 
     <footer class="fr-footer" role="contentinfo" id="footer">
       <div class="fr-container">
