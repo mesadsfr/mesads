@@ -4,9 +4,10 @@ Je vais sur la page de création d'un compte et je remplis mon email et mon mot 
 
 Deux choix :
 
-L'autorité existe déjà : je choisis une autorité à laquelle rattacher mon compte, par exemple : Préfecture de Police de Paris. Ma demande est en attente de validation, un compte gérant l'autorité doit la valider.
+Je choisis une autorité à laquelle rattacher mon compte, par exemple : Préfecture de Police de Paris. Ma demande est en attente de validation, un compte gérant l'autorité doit la valider.
 
-L'autorité n'existe pas : je créé l'autorité en précisant différentes données (nom, SIRET, ...). Un administrateur de MesADS doit maintenant valider que l'autorité est conforme.
+* Si il s'agit du premier compte enregistré pour l'autorité, un administrateur MesADS valide la demande et met le compte en tant qu'administrateur.
+* Sinon, le compte administrateur de l'autorité peut valider la demande.
 
 
 Une fois que mon compte est validé par l'autorité, j'ai deux menus :
