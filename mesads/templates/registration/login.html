@@ -2,10 +2,14 @@
 
 {% block body %}
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Log In</button>
-</form>
+<div class="fr-container">
+  <div class="fr-grid-row">
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Log In</button>
+    </form>
+  </div>
+</div>
 
 {% endblock %}
