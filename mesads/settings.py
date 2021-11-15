@@ -18,14 +18,22 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#tx=c!1uiqr9*e^cz%u2_!7$rl$c4$sg!=m!n$5llbhnxebj@$'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEYFILENAME = os.getenv('SECRET_KEYFILE')
+
+if SECRET_KEYFILENAME:
+    SECRET_KEY = Path(SECRET_KEYFILENAME).read_bytes().strip()
+elif DEBUG:
+    SECRET_KEY = 'django-insecure-#tx=c!1uiqr9*e^cz%u2_!7$rl$c4$sg!=m!n$5llbhnxebj@$'
+else:
+    raise RuntimeError('Provide a valid SECRET_KEYFILE for production deployment')
+
 
 ALLOWED_HOSTS = []
 
