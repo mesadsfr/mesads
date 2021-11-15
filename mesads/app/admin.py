@@ -1,23 +1,23 @@
 from django.contrib import admin
 
-from .models import ADS, Registrar
+from .models import ADS, Authority
 
 
-class RegistrarAdmin(admin.ModelAdmin):
+class AuthorityAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'raison_sociale',
-        'authority',
+        'type',
         'departement',
     )
 
 
-admin.site.register(Registrar, RegistrarAdmin)
+admin.site.register(Authority, AuthorityAdmin)
 
 
 class ADSAdmin(admin.ModelAdmin):
     list_display = (
-        'registrar',
+        'authority',
         'number',
         'immatriculation_plate',
         'owner_firstname',

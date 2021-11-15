@@ -3,13 +3,13 @@ from datetime import datetime
 from django.db import models
 
 
-class Registrar(models.Model):
+class Authority(models.Model):
     """Authority who can register a new ADS.
 
     :param raison_sociale: Raison sociale of the authority, eg. Commune de
         Rennes, Commune de Val-Couesnon, ...
 
-    :param authority: Type of authority: Mairie, Prefecture, ...
+    :param type: Type of authority: Mairie, Prefecture, ...
 
     :param siret: SIRET of the authority
 
@@ -18,6 +18,10 @@ class Registrar(models.Model):
 
     :param address: Postal address of the authority.
     """
+    class Meta:
+        verbose_name = 'Autorité'
+        verbose_name_plural = 'Autorités'
+
     def __str__(self):
         if self.departement:
             return f'{self.departement} - {self.raison_sociale}'
@@ -25,7 +29,7 @@ class Registrar(models.Model):
 
     raison_sociale = models.CharField(max_length=1024, null=False, blank=True)
 
-    authority = models.CharField(max_length=255, null=False, blank=True)
+    type = models.CharField(max_length=255, null=False, blank=True)
 
     siret = models.CharField(max_length=128, blank=True, null=False)
 
@@ -35,13 +39,13 @@ class Registrar(models.Model):
 
 
 class ADS(models.Model):
-    """Autorisation De Stationnement created by a Registrar.
+    """Autorisation De Stationnement created by an Authority.
 
     :param creation_date: Creation date of the object in database.
 
     :param last_update: Last modification date of the object in database.
 
-    :param number: ADS number. It is specified by the registrar. It is usually
+    :param number: ADS number. It is specified by the authority. It is usually
         a number, but it doesn't have to be.
 
     :param ads_creation_date: Initial creation date of the ADS.
@@ -94,7 +98,7 @@ class ADS(models.Model):
 
 
     number = models.CharField(max_length=255, null=False, blank=False)
-    registrar = models.ForeignKey(Registrar, on_delete=models.CASCADE)
+    authority = models.ForeignKey(Authority, on_delete=models.CASCADE)
 
     creation_date = models.DateField(auto_now_add=True, null=False)
     last_update = models.DateField(auto_now=True, null=False)
@@ -151,7 +155,7 @@ class ADS(models.Model):
 
     def get_legal_filename(self, filename):
         return '%s/%s_ADS-%s_%s' % (
-            '%s-%s' % (self.registrar.id, self.registrar.raison_sociale),
+            '%s-%s' % (self.authority.id, self.authority.raison_sociale),
             datetime.now().isoformat(),
             self.id,
             filename
