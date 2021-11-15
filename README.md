@@ -20,3 +20,11 @@ En tant qu'administrateur de l'autorité, je peux aussi modifier les détails de
 
 
 La création d'une ADS se base sur démarches simplifiées : https://www.demarches-simplifiees.fr/admin/procedures/35579/apercu
+
+
+Feature request:
+
+* on pourrait intégrer des référentiels de communes, d'EPCI et de préfectures pour identifier les gestionnaires. Le SIRET un peu déjà cette fonction mais c'est un nombre. Je voudrais que ça soit basé un nom. par ex. "Mairie d'Aubervilliers" ou "Métropole Nice Côte d'Azur", ou encore "Préfecture de Police de Paris", avec un remplissage semi-automatique
+
+  https://www.collectivites-locales.gouv.fr/institutions/liste-et-composition-des-epci-fiscalite-propre pour les EPCI
+  https://www.insee.fr/fr/information/2028028 pour les communes
