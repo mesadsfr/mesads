@@ -153,6 +153,7 @@ STATICFILES_DIRS = [
 ]
 
 MEDIA_ROOT = BASE_DIR / 'uploads'
+MEDIA_URL = '/uploads/'
 
 # Redirect to / after login/logout
 LOGIN_REDIRECT_URL = '/'
