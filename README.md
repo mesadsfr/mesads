@@ -33,3 +33,12 @@ Liste des départements, préfectures, communes :
 
   * https://www.insee.fr/fr/information/5057840
   * https://www.insee.fr/fr/statistiques/fichier/5057840/departement2021-csv.zip
+
+
+# TODO
+
+* Authentification avec email au lieu de username
+* Finir l'enregistrement des utilisateurs, mot de passe oublié, ...
+* Squash les models
+* Vérifier que les models correspondent à demarches-simplifiees
+* Voir comment importer la liste des departements/communes/epci
