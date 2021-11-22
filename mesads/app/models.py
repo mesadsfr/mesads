@@ -4,10 +4,12 @@ from django.conf import settings
 from django.db import models
 
 
-class Authority(models.Model):
+class ADSManager(models.Model):
     """Authority who can register a new ADS.
 
-    :param raison_sociale: Raison sociale of the authority, eg. Commune de
+    :param users: Users who can register ADS for this manager.
+
+    :param raison_sociale: Raison sociale of the manager, eg. Commune de
         Rennes, Commune de Val-Couesnon, ...
 
     :param type: Type of authority: Mairie, Prefecture, ...
@@ -20,13 +22,15 @@ class Authority(models.Model):
     :param address: Postal address of the authority.
     """
     class Meta:
-        verbose_name = 'Autorité'
-        verbose_name_plural = 'Autorités'
+        verbose_name = 'Gestionnaire ADS'
+        verbose_name_plural = 'Gestionnaires ADS'
 
     def __str__(self):
         if self.departement:
             return f'{self.departement} - {self.raison_sociale}'
         return self.raison_sociale
+
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
     raison_sociale = models.CharField(max_length=1024, null=False, blank=True)
 
@@ -39,34 +43,29 @@ class Authority(models.Model):
     address = models.CharField(max_length=1024, null=False, blank=True)
 
 
-class AuthoritiesUsers(models.Model):
-    """M2M between Authority and User. The administrator of an Authority can
-    grant privileges to users requesting access.
+class ADSManagerAdministrator(models.Model):
+    """Administrator with the ability to manage users of ADSManager.
+
+    :param users: Users who can manage the list of ads_managers.
+
+    :param ads_managers: ADSManager managed by this administrator.
     """
     class Meta:
-        verbose_name = "Utilisateur d'une autorité"
-        verbose_name_plural = "Utilisateurs des autorités"
+        verbose_name = 'Administrateur des gestionnaires ADS'
+        verbose_name_plural = 'Administrateurs des gestionnaires ADS'
 
-    def __str__(self):
-        return 'Utilisateur %s "%s" de %s' % (
-            'administrateur' if self.is_admin else 'non privilégié',
-            self.user.username,
-            self.authority
-        )
-
-    authority = models.ForeignKey(Authority, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    is_admin = models.BooleanField(default=False)
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL)
+    ads_managers = models.ManyToManyField(ADSManager)
 
 
 class ADS(models.Model):
-    """Autorisation De Stationnement created by an Authority.
+    """Autorisation De Stationnement created by ADSManager.
 
     :param creation_date: Creation date of the object in database.
 
     :param last_update: Last modification date of the object in database.
 
-    :param number: ADS number. It is specified by the authority. It is usually
+    :param number: ADS number. It is specified by the ADSManager. It is usually
         a number, but it doesn't have to be.
 
     :param ads_creation_date: Initial creation date of the ADS.
@@ -119,7 +118,7 @@ class ADS(models.Model):
 
 
     number = models.CharField(max_length=255, null=False, blank=False)
-    authority = models.ForeignKey(Authority, on_delete=models.CASCADE)
+    ads_manager = models.ForeignKey(ADSManager, on_delete=models.CASCADE)
 
     creation_date = models.DateField(auto_now_add=True, null=False)
     last_update = models.DateField(auto_now=True, null=False)
@@ -176,7 +175,7 @@ class ADS(models.Model):
 
     def get_legal_filename(self, filename):
         return '%s/%s_ADS-%s_%s' % (
-            '%s-%s' % (self.authority.id, self.authority.raison_sociale),
+            '%s-%s' % (self.ads_manager.id, self.ads_manager.raison_sociale),
             datetime.now().isoformat(),
             self.id,
             filename

@@ -1,9 +1,10 @@
 from django.contrib import admin
 
-from .models import ADS, Authority, AuthoritiesUsers
+from .models import ADS, ADSManager, ADSManagerAdministrator
 
 
-class AuthorityAdmin(admin.ModelAdmin):
+@admin.register(ADSManager)
+class ADSManagerAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'raison_sociale',
@@ -12,29 +13,17 @@ class AuthorityAdmin(admin.ModelAdmin):
     )
 
 
-admin.site.register(Authority, AuthorityAdmin)
+@admin.register(ADSManagerAdministrator)
+class ADSManagerAdministratorAdmin(admin.ModelAdmin):
+    pass
 
-
+@admin.register(ADS)
 class ADSAdmin(admin.ModelAdmin):
     list_display = (
-        'authority',
+        'ads_manager',
         'number',
         'immatriculation_plate',
         'owner_firstname',
         'owner_lastname',
         'user_name',
     )
-
-
-admin.site.register(ADS, ADSAdmin)
-
-
-class AuthoritiesUsersAdmin(admin.ModelAdmin):
-    list_display = (
-        'authority',
-        'user',
-        'is_admin',
-    )
-
-
-admin.site.register(AuthoritiesUsers, AuthoritiesUsersAdmin)
