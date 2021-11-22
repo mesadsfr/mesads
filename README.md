@@ -37,8 +37,5 @@ Liste des départements, préfectures, communes :
 
 # TODO
 
-* Authentification avec email au lieu de username
-* Finir l'enregistrement des utilisateurs, mot de passe oublié, ...
-* Squash les models
 * Vérifier que les models correspondent à demarches-simplifiees
 * Voir comment importer la liste des departements/communes/epci
