@@ -37,12 +37,23 @@
             <div class="fr-header__tools">
               <div class="fr-header__tools-links">
                 <ul class="fr-links-group">
-                  <li>
-                    <a class="fr-link fr-fi-lock-line" href="{% url 'login' %}">Se connecter</a>
-                  </li>
-                  <li>
+                  {% if not user.is_authenticated %}
+                    <li>
+                      <a class="fr-link fr-fi-lock-line" href="{% url 'login' %}">Se connecter</a>
+                    </li>
+
+                    <li>
                       <a class="fr-link fr-fi-account-line" href="{% url 'register' %}">S’enregistrer</a>
-                  </li>
+                    </li>
+                  {% else %}
+                    <li>
+                      <a class="fr-link fr-fi-user-line" href="{% url 'password_change' %}">Changer de mot de passe</a>
+                    </li>
+
+                    <li>
+                      <a class="fr-link fr-fi-close-circle-line" href="{% url 'logout' %}">Déconnexion</a>
+                    </li>
+                  {% endif %}
                 </ul>
               </div>
             </div>
