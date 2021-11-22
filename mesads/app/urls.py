@@ -5,5 +5,5 @@ from .views import HomepageView
 
 
 urlpatterns = [
-    path('', login_required(HomepageView.as_view())),
+    path('', login_required(HomepageView.as_view()), name='homepage'),
 ]
