@@ -5,21 +5,12 @@ from django.db import models
 
 
 class ADSManager(models.Model):
-    """Authority who can register a new ADS.
+    """Authority who can register a new ADS. Either a Prefecture, a Commune or
+    a EPCI.
 
     :param users: Users who can register ADS for this manager.
 
-    :param raison_sociale: Raison sociale of the manager, eg. Commune de
-        Rennes, Commune de Val-Couesnon, ...
-
-    :param type: Type of authority: Mairie, Prefecture, ...
-
-    :param siret: SIRET of the authority
-
-    :param departement: Departement of the authority. Saved as a string for
-        special cases (Corsica: 2A and 2B).
-
-    :param address: Postal address of the authority.
+    :param entity: ForeignKey to fradm mdoels.
     """
     class Meta:
         verbose_name = 'Gestionnaire ADS'
