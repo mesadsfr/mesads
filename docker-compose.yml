@@ -27,5 +27,6 @@ services:
       - app-poetry:/home/mesads/.cache/pypoetry
     depends_on:
       - db
+      - maildev
     ports:
       - '9400:8000'
