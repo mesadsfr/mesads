@@ -17,6 +17,7 @@ class ADSManagerAdmin(admin.ModelAdmin):
 class ADSManagerAdministratorAdmin(admin.ModelAdmin):
     pass
 
+
 @admin.register(ADS)
 class ADSAdmin(admin.ModelAdmin):
     list_display = (

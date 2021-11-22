@@ -47,10 +47,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mesads.app',
-    'mesads.users',
+
     'oauth2_provider',
     'debug_toolbar',
+
+    'mesads.app',
+    'mesads.users',
+    'mesads.fradm',
 ]
 
 AUTH_USER_MODEL = 'users.User'

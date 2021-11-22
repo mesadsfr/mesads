@@ -39,3 +39,38 @@ Liste des départements, préfectures, communes :
 
 * Vérifier que les models correspondent à demarches-simplifiees
 * Voir comment importer la liste des departements/communes/epci
+
+
+Notes:
+
+    Liste des administrateur gestionnaires d'ADS : Liste des prefectures, mais changer Paris en Prefecture de Police de Paris
+
+
+    Liste des gestionnaires d'ADS :
+
+    * toutes les prefectures (pour les aéroports, gare)
+    * toutes les EPCI
+    * toutes les communes
+
+    Sur 36000 communes en france, on a seulement 12k gestionnaires ads masi on ne sait pas qui
+
+
+
+    Lorsqu'un gestionnaire d'ADS s'enregistre, il spécifie sa prefecture, epci ou commune et sa prefecture de rattachement
+    Lorsqu'un gestionaire s'enregistre et est lui même une prefecture, pas besoin de spécifier une prefecture
+
+
+    Definition prefecture
+
+    * juste le nom
+
+
+    CA communauté agglo
+    CC communauté commune
+    CU communauté urbaine
+
+
+    Déifnition commune
+
+    NCCCENR
+    COM = code insee
