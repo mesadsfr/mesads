@@ -5,6 +5,11 @@ volumes:
   app-poetry: {}
 
 services:
+  maildev:
+    image: djfarrelly/maildev
+    ports:
+      - 1025:80
+
   db:
     image: postgres
     volumes:

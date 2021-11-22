@@ -167,3 +167,9 @@ if DEBUG:
 
 # Upload files to S3: https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
 # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+EMAIL_HOST = 'maildev'
+# EMAIL_PORT =
+# EMAIL_HOST_USER =
+# EMAIL_HOST_PASSWORD =
+# EMAIL_USE_TLS =
