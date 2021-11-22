@@ -16,17 +16,18 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         reader = csv.DictReader(options['communes_file'])
-
+        created = 0
         with transaction.atomic():
             for row in reader:
-                self.insert_row(row)
+                created += self.insert_row(row)
+        print(self.style.SUCCESS(f'\nCreated: {created} new entries'))
 
     def insert_row(self, row):
         if row['TYPECOM'] != 'COM':
             print(self.style.SUCCESS(
                 '\nSkip insert of row of type %s: %s' % (row['TYPECOM'], row['NCC'])
             ))
-            return
+            return 0
 
         # The get_or_create below might fail in future updates.
         # If we upload a Commune with COM=1234 and LIBELLE=xxx, then later
@@ -36,3 +37,4 @@ class Command(BaseCommand):
         commune, created = Commune.objects.get_or_create(insee=row['COM'], libelle=row['LIBELLE'])
         sys.stdout.write(self.style.SUCCESS('.'))
         sys.stdout.flush()
+        return int(created)
