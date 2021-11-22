@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Commune, Prefecture
+from .models import Commune, EPCI, Prefecture
 
 
 @admin.register(Commune)
@@ -16,4 +16,12 @@ class PrefectureAdmin(admin.ModelAdmin):
     list_display = (
         'numero',
         'libelle',
+    )
+
+@admin.register(EPCI)
+class EPCIAdmin(admin.ModelAdmin):
+    list_display = (
+        'siren',
+        'departement',
+        'name',
     )
