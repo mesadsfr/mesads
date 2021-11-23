@@ -26,10 +26,10 @@ class Command(BaseCommand):
         # Remove leading 0 from departement
         departement = row['dep_epci'].lstrip('0')
 
-        # The get_or_create below might fail in future updates.  If we upload a
-        # EPCI with siren=1234, then later reimport the same SIREN with
-        # different values: we will get an IntegrityError. We need to find out
-        # why the data changed, and update this loader accordingly.
+        # The get_or_create below might fail in future updates if we attempt to
+        # reimport communes with different values for a row.
+        # If IntegrityError is raised, we need to find out why data has changed
+        # and change this loader accordingly.
         epci, created = EPCI.objects.get_or_create(
             siren=row['siren_epci'],
             departement = departement,

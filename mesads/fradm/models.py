@@ -8,10 +8,19 @@ class Commune(models.Model):
     :param insee: INSEE code of the commune. Field "COM" of the CSV file
         provided by INSEE.
 
+    :param departement: Departement code of the commune. Field "DEP" of the CSV
+        file provided by INSEE.
+
     :param libelle: Human readable name for the commune. Field "LIBELLE" of the
         CSV file provided by insee.
     """
-    insee = models.CharField(max_length=16, null=False, blank=False, primary_key=True)
+    class Meta:
+        unique_together = (
+            ('departement', 'libelle'),
+        )
+
+    insee = models.CharField(max_length=16, null=False, blank=False, unique=True)
+    departement = models.CharField(max_length=16, blank=False, null=False)
     libelle = models.CharField(max_length=255, null=False, blank=False)
 
 
@@ -25,8 +34,11 @@ class Prefecture(models.Model):
     :param libelle: Human readable name for the commune. Field "LIBELLE" of the
         CSV file provided by insee.
     """
-    numero = models.CharField(max_length=16, null=False, blank=False, primary_key=True)
-    libelle = models.CharField(max_length=255, null=False, blank=False)
+    numero = models.CharField(max_length=16, null=False, blank=False, unique=True)
+    libelle = models.CharField(max_length=255, null=False, blank=False, unique=True)
+
+    def __str__(self):
+        return f'{self.numero} - {self.libelle}'
 
 
 class EPCI(models.Model):
@@ -44,8 +56,11 @@ class EPCI(models.Model):
     """
     class Meta:
         verbose_name = 'EPCI'
-        verbose_name_plural = 'EPCIs'
+        verbose_name_plural = 'EPCI'
+        unique_together = (
+            ('departement', 'name'),
+        )
 
-    siren = models.CharField(max_length=64, blank=False, null=False, primary_key=True)
+    siren = models.CharField(max_length=64, blank=False, null=False, unique=True)
     departement = models.CharField(max_length=16, blank=False, null=False)
     name = models.CharField(max_length=255, blank=False, null=False)

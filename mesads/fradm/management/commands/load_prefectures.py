@@ -23,16 +23,16 @@ class Command(BaseCommand):
         print(self.style.SUCCESS(f'\nCreated: {created} new entries'))
 
     def insert_row(self, row):
-        # The get_or_create below might fail in future updates.
-        # If we upload a Prefecture with DEP=1234 and LIBELLE=xxx, then later
-        # reimport with DEP=1234 and LIBELLE=xxy: we will get an
-        # IntegrityError. We need to find out why the data changed, and update
-        # this loader accordingly.
         libelle = row['LIBELLE']
 
+        # The name of the prefecture of Paris is Préfecture de Police de Paris.
         if row['DEP'] == '75':
             libelle = 'Préfecture de Police de Paris'
 
+        # The get_or_create below might fail in future updates if we attempt to
+        # reimport communes with different values for a row.
+        # If IntegrityError is raised, we need to find out why data has changed
+        # and change this loader accordingly.
         commune, created = Prefecture.objects.get_or_create(
             numero=row['DEP'], libelle=libelle
         )

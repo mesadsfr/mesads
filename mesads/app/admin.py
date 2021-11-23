@@ -7,9 +7,6 @@ from .models import ADS, ADSManager, ADSManagerAdministrator
 class ADSManagerAdmin(admin.ModelAdmin):
     list_display = (
         'id',
-        'raison_sociale',
-        'type',
-        'departement',
     )
 
 

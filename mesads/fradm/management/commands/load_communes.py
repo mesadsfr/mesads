@@ -29,12 +29,13 @@ class Command(BaseCommand):
             ))
             return 0
 
-        # The get_or_create below might fail in future updates.
-        # If we upload a Commune with COM=1234 and LIBELLE=xxx, then later
-        # reimport with COM=1234 and LIBELLE=xxy: we will get an
-        # IntegrityError. We need to find out why the data changed, and update
-        # this loader accordingly.
-        commune, created = Commune.objects.get_or_create(insee=row['COM'], libelle=row['LIBELLE'])
+        # The get_or_create below might fail in future updates if we attempt to
+        # reimport communes with different values for a row.
+        # If IntegrityError is raised, we need to find out why data has changed
+        # and change this loader accordingly.
+        commune, created = Commune.objects.get_or_create(
+            insee=row['COM'], departement=row['DEP'], libelle=row['LIBELLE']
+        )
         sys.stdout.write(self.style.SUCCESS('.'))
         sys.stdout.flush()
         return int(created)

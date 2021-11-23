@@ -1,7 +1,11 @@
 from datetime import datetime
 
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
+
+from mesads.fradm.models import Commune, EPCI, Prefecture
 
 
 class ADSManager(models.Model):
@@ -21,17 +25,21 @@ class ADSManager(models.Model):
             return f'{self.departement} - {self.raison_sociale}'
         return self.raison_sociale
 
+    entity_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        limit_choices_to=models.Q(
+            app_label='fradm', model='commune'
+        ) | models.Q(
+            app_label='fradm', model='epci',
+        ) | models.Q(
+            app_label='fradm', model='prefecture',
+        )
+    )
+    entity_id = models.PositiveIntegerField()
+    entity_object = GenericForeignKey('entity_type', 'entity_id')
+
     users = models.ManyToManyField(settings.AUTH_USER_MODEL)
-
-    raison_sociale = models.CharField(max_length=1024, null=False, blank=True)
-
-    type = models.CharField(max_length=255, null=False, blank=True)
-
-    siret = models.CharField(max_length=128, blank=True, null=False)
-
-    departement = models.CharField(max_length=16, null=False, blank=True)
-
-    address = models.CharField(max_length=1024, null=False, blank=True)
 
 
 class ADSManagerAdministrator(models.Model):
@@ -45,8 +53,12 @@ class ADSManagerAdministrator(models.Model):
         verbose_name = 'Administrateur des gestionnaires ADS'
         verbose_name_plural = 'Administrateurs des gestionnaires ADS'
 
-    users = models.ManyToManyField(settings.AUTH_USER_MODEL)
-    ads_managers = models.ManyToManyField(ADSManager)
+    def __str__(self):
+        return f'Administrateur des gestionnaires de la préfecture {self.prefecture}'
+
+    prefecture = models.ForeignKey(Prefecture, on_delete=models.CASCADE, null=False, blank=False)
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
+    ads_managers = models.ManyToManyField(ADSManager, blank=True)
 
 
 class ADS(models.Model):
