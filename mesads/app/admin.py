@@ -6,13 +6,23 @@ from .models import ADS, ADSManager, ADSManagerAdministrator
 @admin.register(ADSManager)
 class ADSManagerAdmin(admin.ModelAdmin):
     list_display = (
-        'id',
+        'entity_type',
+        'entity_object',
     )
 
 
 @admin.register(ADSManagerAdministrator)
 class ADSManagerAdministratorAdmin(admin.ModelAdmin):
-    pass
+
+    def get_queryset(self, request):
+        # XXX: find how to lazyload ads_managers to remove raw_id_fields
+        req = super().get_queryset(request)
+        return req
+
+    raw_id_fields = (
+        'ads_managers',
+    )
+    #readonly_fields = ('ads_managers',)
 
 
 @admin.register(ADS)

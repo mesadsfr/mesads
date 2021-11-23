@@ -19,11 +19,12 @@ class ADSManager(models.Model):
     class Meta:
         verbose_name = 'Gestionnaire ADS'
         verbose_name_plural = 'Gestionnaires ADS'
+        unique_together = (
+            ('entity_type', 'entity_id'),
+        )
 
     def __str__(self):
-        if self.departement:
-            return f'{self.departement} - {self.raison_sociale}'
-        return self.raison_sociale
+        return f'{self.entity_type} - {self.entity_object.id}'
 
     entity_type = models.ForeignKey(
         ContentType,
@@ -56,7 +57,7 @@ class ADSManagerAdministrator(models.Model):
     def __str__(self):
         return f'Administrateur des gestionnaires de la préfecture {self.prefecture}'
 
-    prefecture = models.ForeignKey(Prefecture, on_delete=models.CASCADE, null=False, blank=False)
+    prefecture = models.OneToOneField(Prefecture, on_delete=models.CASCADE, null=False, blank=False)
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
     ads_managers = models.ManyToManyField(ADSManager, blank=True)
 

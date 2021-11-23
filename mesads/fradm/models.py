@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
 
@@ -19,9 +20,19 @@ class Commune(models.Model):
             ('departement', 'libelle'),
         )
 
+    def __str__(self):
+        return f'{self.departement} - {self.libelle} (INSEE: {self.insee})'
+
     insee = models.CharField(max_length=16, null=False, blank=False, unique=True)
     departement = models.CharField(max_length=16, blank=False, null=False)
     libelle = models.CharField(max_length=255, null=False, blank=False)
+
+    ads_managers = GenericRelation(
+        'app.ADSManager',
+        content_type_field='entity_type',
+        object_id_field='entity_id',
+        related_query_name='commune'
+    )
 
 
 class Prefecture(models.Model):
@@ -36,6 +47,13 @@ class Prefecture(models.Model):
     """
     numero = models.CharField(max_length=16, null=False, blank=False, unique=True)
     libelle = models.CharField(max_length=255, null=False, blank=False, unique=True)
+
+    ads_managers = GenericRelation(
+        'app.ADSManager',
+        content_type_field='entity_type',
+        object_id_field='entity_id',
+        related_query_name='prefecture'
+    )
 
     def __str__(self):
         return f'{self.numero} - {self.libelle}'
@@ -61,6 +79,16 @@ class EPCI(models.Model):
             ('departement', 'name'),
         )
 
+    def __str__(self):
+        return self.name
+
     siren = models.CharField(max_length=64, blank=False, null=False, unique=True)
     departement = models.CharField(max_length=16, blank=False, null=False)
     name = models.CharField(max_length=255, blank=False, null=False)
+
+    ads_managers = GenericRelation(
+        'app.ADSManager',
+        content_type_field='entity_type',
+        object_id_field='entity_id',
+        related_query_name='epci'
+    )
