@@ -3,6 +3,35 @@ from django.contrib import admin
 from .models import ADS, ADSManager, ADSManagerAdministrator
 
 
+class ReadOnlyInline(admin.TabularInline):
+    """Inline table which doesn't allow to add, update or delete rows."""
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_readonly_fields(self, request, obj=None):
+        return list(super().get_fields(request, obj))
+
+
+class ADSInline(ReadOnlyInline):
+    """ADS can be created, deleted or changed from ADSAdmin. This inline is
+    read only."""
+    model = ADS
+
+    fields = (
+        'number',
+        'owner_firstname',
+        'owner_lastname',
+        'immatriculation_plate',
+        'user_name',
+    )
+
+
 @admin.register(ADSManager)
 class ADSManagerAdmin(admin.ModelAdmin):
     list_display = (
@@ -11,12 +40,23 @@ class ADSManagerAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
-        'content_type',
-        'content_object',
+        'commune__libelle',
+        'prefecture__libelle',
+        'epci__name',
     )
 
+    inlines = (
+        ADSInline,
+    )
 
-class ADSManagerInline(admin.TabularInline):
+    def get_queryset(self, request):
+        req = super().get_queryset(request)
+        req = req.prefetch_related('content_type')
+        req = req.prefetch_related('content_object')
+        return req
+
+
+class ADSManagerInline(ReadOnlyInline):
     model = ADSManagerAdministrator.ads_managers.through
 
     readonly_fields = (
@@ -28,18 +68,6 @@ class ADSManagerInline(admin.TabularInline):
         req = req.prefetch_related('adsmanager__content_type')
         req = req.prefetch_related('adsmanager__content_object')
         return req
-
-    def has_add_permission(self, request, obj=None):
-        """Do not allow to add a new ADSManager from the admin interface: this
-        should be done with the admin command `load_ads_managers`.
-        """
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        """Do not allow to remove ADSManager from the admin interface: this
-        should be done with the admin command `load_ads_managers`.
-        """
-        return False
 
 
 @admin.register(ADSManagerAdministrator)
@@ -67,3 +95,13 @@ class ADSAdmin(admin.ModelAdmin):
         'owner_lastname',
         'user_name',
     )
+
+    autocomplete_fields = (
+        'ads_manager',
+    )
+
+    def get_queryset(self, request):
+        req = super().get_queryset(request)
+        req = req.prefetch_related('ads_manager__content_type')
+        req = req.prefetch_related('ads_manager__content_object')
+        return req
