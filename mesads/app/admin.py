@@ -30,9 +30,15 @@ class ADSManagerInline(admin.TabularInline):
         return req
 
     def has_add_permission(self, request, obj=None):
+        """Do not allow to add a new ADSManager from the admin interface: this
+        should be done with the admin command `load_ads_managers`.
+        """
         return False
 
     def has_delete_permission(self, request, obj=None):
+        """Do not allow to remove ADSManager from the admin interface: this
+        should be done with the admin command `load_ads_managers`.
+        """
         return False
 
 
@@ -47,6 +53,7 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
         ADSManagerInline,
     )
 
+    # ads_managers is rendered by ADSManagerInline.
     exclude = ('ads_managers',)
 
 
