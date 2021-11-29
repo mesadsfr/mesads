@@ -21,17 +21,17 @@ class Command(BaseCommand):
 
     def create_ads_managers_for_prefectures(self):
         for prefecture in Prefecture.objects.all():
-            obj = ADSManager(entity_object=prefecture)
+            obj = ADSManager(content_object=prefecture)
             obj.save()
 
     def create_ads_managers_for_epci(self):
         for epci in EPCI.objects.all():
-            obj = ADSManager(entity_object=epci)
+            obj = ADSManager(content_object=epci)
             obj.save()
 
     def create_ads_managers_for_communes(self):
         for commune in Commune.objects.all():
-            obj = ADSManager(entity_object=commune)
+            obj = ADSManager(content_object=commune)
             obj.save()
 
     def create_administrators(self):

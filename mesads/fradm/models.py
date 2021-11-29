@@ -29,8 +29,6 @@ class Commune(models.Model):
 
     ads_managers = GenericRelation(
         'app.ADSManager',
-        content_type_field='entity_type',
-        object_id_field='entity_id',
         related_query_name='commune'
     )
 
@@ -50,8 +48,6 @@ class Prefecture(models.Model):
 
     ads_managers = GenericRelation(
         'app.ADSManager',
-        content_type_field='entity_type',
-        object_id_field='entity_id',
         related_query_name='prefecture'
     )
 
@@ -88,7 +84,5 @@ class EPCI(models.Model):
 
     ads_managers = GenericRelation(
         'app.ADSManager',
-        content_type_field='entity_type',
-        object_id_field='entity_id',
         related_query_name='epci'
     )

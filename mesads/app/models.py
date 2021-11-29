@@ -14,19 +14,19 @@ class ADSManager(models.Model):
 
     :param users: Users who can register ADS for this manager.
 
-    :param entity: ForeignKey to fradm mdoels.
+    :param content_object: ForeignKey to fradm mdoels.
     """
     class Meta:
         verbose_name = 'Gestionnaire ADS'
         verbose_name_plural = 'Gestionnaires ADS'
         unique_together = (
-            ('entity_type', 'entity_id'),
+            ('content_type', 'object_id'),
         )
 
     def __str__(self):
-        return f'{self.entity_type} - {self.entity_object.id}'
+        return f'{self.content_type} - {self.content_object}'
 
-    entity_type = models.ForeignKey(
+    content_type = models.ForeignKey(
         ContentType,
         on_delete=models.CASCADE,
         limit_choices_to=models.Q(
@@ -37,8 +37,8 @@ class ADSManager(models.Model):
             app_label='fradm', model='prefecture',
         )
     )
-    entity_id = models.PositiveIntegerField()
-    entity_object = GenericForeignKey('entity_type', 'entity_id')
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
 
     users = models.ManyToManyField(settings.AUTH_USER_MODEL)
 

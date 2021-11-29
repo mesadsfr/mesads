@@ -6,23 +6,48 @@ from .models import ADS, ADSManager, ADSManagerAdministrator
 @admin.register(ADSManager)
 class ADSManagerAdmin(admin.ModelAdmin):
     list_display = (
-        'entity_type',
-        'entity_object',
+        'content_type',
+        'content_object',
     )
+
+    search_fields = (
+        'content_type',
+        'content_object',
+    )
+
+
+class ADSManagerInline(admin.TabularInline):
+    model = ADSManagerAdministrator.ads_managers.through
+
+    readonly_fields = (
+        'adsmanager',
+    )
+
+    def get_queryset(self, request):
+        req = super().get_queryset(request)
+        req = req.prefetch_related('adsmanager__content_type')
+        req = req.prefetch_related('adsmanager__content_object')
+        return req
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(ADSManagerAdministrator)
 class ADSManagerAdministratorAdmin(admin.ModelAdmin):
-
     def get_queryset(self, request):
-        # XXX: find how to lazyload ads_managers to remove raw_id_fields
         req = super().get_queryset(request)
+        req = req.prefetch_related('prefecture')
         return req
 
-    raw_id_fields = (
-        'ads_managers',
+    inlines = (
+        ADSManagerInline,
     )
-    #readonly_fields = ('ads_managers',)
+
+    exclude = ('ads_managers',)
 
 
 @admin.register(ADS)
