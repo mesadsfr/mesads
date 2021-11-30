@@ -24,6 +24,10 @@ h1 {
   }
 }
 
+.two-sides > div {
+  padding-top: 20px;
+}
+
 .two-sides > div:last-child {
   border-top: 5px solid #000074;
 }
@@ -39,7 +43,7 @@ h1 {
   }
 }
 
-.two-sides h5 {
+.two-sides h3 {
   text-align: center;
 }
 
