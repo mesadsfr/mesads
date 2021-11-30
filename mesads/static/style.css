@@ -23,3 +23,55 @@ h1 {
     border-top: none;
   }
 }
+
+.two-sides > div:last-child {
+  border-top: 5px solid #000074;
+}
+
+@media only screen and (min-width: 768px) {
+  .two-sides > div {
+    padding: 20px;
+  }
+
+  .two-sides > div:last-child {
+    border-top: none;
+    border-left: 5px solid #000074;
+  }
+}
+
+.two-sides h5 {
+  text-align: center;
+}
+
+.two-sides .subtitle {
+  display: block;
+  font-size: small;
+}
+
+.two-sides ul li {
+  list-style-type: none;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.two-sides ul li:nth-child(1):before { content: "1"; }
+.two-sides ul li:nth-child(2):before { content: "2"; }
+.two-sides ul li:nth-child(3):before { content: "3"; }
+.two-sides ul li:nth-child(4):before { content: "4"; }
+.two-sides ul li:nth-child(5):before { content: "5"; }
+.two-sides ul li:nth-child(6):before { content: "6"; }
+.two-sides ul li:nth-child(7):before { content: "7"; }
+.two-sides ul li:nth-child(8):before { content: "8"; }
+.two-sides ul li:nth-child(9):before { content: "9"; }
+
+.two-sides ul li:before {
+  display: block;
+  width: 32px;
+  height: 32px;
+  margin: 0 auto;
+  background-color: #000074;
+  border-radius: 50%;
+  color: #fff;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
