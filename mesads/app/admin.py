@@ -35,8 +35,19 @@ class ADSInline(ReadOnlyInline):
 @admin.register(ADSManager)
 class ADSManagerAdmin(admin.ModelAdmin):
     list_display = (
-        'content_type',
+        lambda ads_manager: ads_manager.content_type.name,
         'content_object',
+    )
+
+    fields = (
+        'content_type',
+        'object_id',
+        'users',
+    )
+
+    readonly_fields = (
+        'content_type',
+        'object_id',
     )
 
     search_fields = (
@@ -59,7 +70,7 @@ class ADSManagerAdmin(admin.ModelAdmin):
 class ADSManagerInline(ReadOnlyInline):
     model = ADSManagerAdministrator.ads_managers.through
 
-    readonly_fields = (
+    fields = (
         'adsmanager',
     )
 
@@ -81,6 +92,19 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
         ADSManagerInline,
     )
 
+    fields = (
+        'prefecture',
+        'users',
+    )
+
+    readonly_fields = (
+        'prefecture',
+    )
+
+    search_fields = (
+        'prefecture__libelle',
+    )
+
     # ads_managers is rendered by ADSManagerInline.
     exclude = ('ads_managers',)
 
@@ -94,6 +118,11 @@ class ADSAdmin(admin.ModelAdmin):
         'owner_firstname',
         'owner_lastname',
         'user_name',
+    )
+
+    search_fields = (
+        'immatriculation_plate__iexact',
+        'number__istartswith',
     )
 
     autocomplete_fields = (
