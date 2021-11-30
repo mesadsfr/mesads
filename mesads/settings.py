@@ -152,7 +152,7 @@ LOGIN_URL = '/auth/login/'
 STATIC_ROOT = BASE_DIR / 'static'
 
 STATICFILES_DIRS = [
-    ('mesads', BASE_DIR / 'mesads/static/'),
+    ('', BASE_DIR / 'mesads/static'),
     ('@gouvfr', BASE_DIR / 'node_modules/@gouvfr/dsfr/dist'),
 ]
 
