@@ -84,6 +84,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'mesads.app.context_processors.mesads_settings'
             ],
         },
     },
@@ -170,6 +171,8 @@ if DEBUG:
 
 # Upload files to S3: https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
 # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+MESADS_CONTACT_EMAIL = 'equipe@mesads.fr'
 
 EMAIL_HOST = 'maildev'
 # EMAIL_PORT =

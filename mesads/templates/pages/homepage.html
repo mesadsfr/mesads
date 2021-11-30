@@ -13,24 +13,23 @@
 
 <h2>Comment ça marche ?</h2>
 
-<div class="fr-grid-row two-sides">
-    <div class="fr-col-12 fr-col-md-6">
+<div class="fr-grid-row fr-grid-row--center two-sides">
+    <div class="fr-col-10 fr-col-md-5">
         <h3>
             Vous représentez un gestionnaire d'ADS
             <span class="subtitle">commune, EPCI ou préfecture</span>
         </h3>
 
         <ul>
-            <li><a href="{% url 'register' %}">Créez votre nouveau compte sur la plateforme</a>.</li>
+            <li><a href="{% url 'signup' %}">Créez votre nouveau compte sur la plateforme</a>.</li>
             <li>Renseignez les informations du gestionnaire et attendez la validation de votre compte par la préfecture.</li>
             <li>Vous pouvez gérer les ADS du gestionniare.</li>
         </ul>
     </div>
 
-    <div class="fr-col-12 fr-col-md-6">
+    <div class="fr-col-10 fr-mt-2w fr-col-md-5 fr-mt-md-0 fr-col-offset-md-1">
         <h3>
             Vous représentez une préfecture
-            <span class="subtitle">&nbsp;</span>
         </h3>
 
         <ul>
@@ -40,5 +39,11 @@
         </ul>
     </div>
 </div>
+
+<h2>Une question ?</h2>
+
+<p>
+Si vous avez la moindre question, contactez nous sur <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
+</p>
 
 {% endblock %}

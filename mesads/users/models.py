@@ -64,8 +64,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = _('users')
 
     def clean(self):
-        super().clean()
+        ret = super().clean()
         self.email = self.__class__.objects.normalize_email(self.email)
+        return ret
 
     def get_full_name(self):
         """
