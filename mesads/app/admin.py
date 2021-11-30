@@ -66,6 +66,14 @@ class ADSManagerAdmin(admin.ModelAdmin):
         req = req.prefetch_related('content_object')
         return req
 
+    def has_add_permission(self, request, obj=None):
+        """Added by command load_ads_managers."""
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        """Added by command load_ads_managers."""
+        return False
+
 
 class ADSManagerInline(ReadOnlyInline):
     model = ADSManagerAdministrator.ads_managers.through
@@ -107,6 +115,14 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
 
     # ads_managers is rendered by ADSManagerInline.
     exclude = ('ads_managers',)
+
+    def has_add_permission(self, request, obj=None):
+        """Added by command load_ads_managers."""
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        """Added by command load_ads_managers."""
+        return False
 
 
 @admin.register(ADS)
