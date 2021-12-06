@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Création d'un compte MesADS{% endblock %}
+
+{% block body %}
+
+<div class="fr-grid-row fr-grid-row--center">
+  <div class="fr-col-12 fr-col-sm-8 fr-col-md-6">
+    <h1>Création de votre compte Mes ADS terminée</h1>
+
+    <p>
+      Votre compte Mes ADS est désormais actif. Rendez-vous sur la page de <a href="{% url 'login' %}">connexion</a> pour accéder à votre compte.
+    </p>
+  </div>
+</div>
+{% endblock %}

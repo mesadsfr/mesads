@@ -1,9 +1,16 @@
-from django.urls import path
+from django.urls import include, path
 
-from .views import SignUpView, SignUpDoneView
+from django_registration.backends.activation.views import RegistrationView
+
+from .forms import CustomUserForm
 
 
 urlpatterns = [
-    path('signup', SignUpView.as_view(), name='signup'),
-    path('signup_done', SignUpDoneView.as_view(), name='signup_done'),
+    path('register/',
+        RegistrationView.as_view(
+            form_class=CustomUserForm
+        ),
+        name='django_registration_register',
+    ),
+    path('', include('django_registration.backends.activation.urls')),
 ]

@@ -1,0 +1,11 @@
+{% load abs_activation_uri %}
+
+Nous avons reçu votre demande d'inscription Mes ADS. Cliquez sur le lien ci-dessous pour valider votre compte.
+
+
+    {% abs_activation_uri activation_key %}
+
+
+Si vous n'êtes pas à l'origine de la demande, vous pouvez ignorer cet email.
+
+Un problème ? Une question ? Contactez notre équipe par email sur {{ MESADS_CONTACT_EMAIL }}.

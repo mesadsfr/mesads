@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Création d'un compte MesADS{% endblock %}
+{% block title %}Création d'un compte Mes ADS{% endblock %}
 
 {% block body %}
 <div class="fr-grid-row fr-grid-row--center">
@@ -11,7 +11,7 @@
       Renseignez vos informations afin de créer un compte. Il sera nécessaire de cliquer sur le lien reçu sur votre adresse email afin de la valider.
     </p>
 
-    <form method="post" action="{% url 'signup' %}">
+    <form method="post" action="{% url 'django_registration_register' %}">
       {% csrf_token %}
 
       <!-- Username -->

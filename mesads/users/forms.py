@@ -1,15 +1,8 @@
-from django.contrib.auth.forms import UserCreationForm
+from django_registration.forms import RegistrationForm
 
 from .models import User
 
 
-class SignUpUserForm(UserCreationForm):
-    class Meta(UserCreationForm.Meta):
+class CustomUserForm(RegistrationForm):
+    class Meta(RegistrationForm.Meta):
         model = User
-        fields = ('email',)
-
-    def save(self):
-        user = super().save(commit=False)
-        user.is_active = False
-        user.save()
-        return user

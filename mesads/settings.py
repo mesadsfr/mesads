@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 
     'oauth2_provider',
     'debug_toolbar',
+    'django_registration',
 
     'mesads.app',
     'mesads.users',
@@ -202,3 +203,6 @@ EMAIL_HOST = 'maildev'
 #         }
 #     }
 # }
+
+# django-registration: maximum number of days to activate the account
+ACCOUNT_ACTIVATION_DAYS = 14

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Création d'un compte MesADS{% endblock %}
+
+{% block body %}
+
+<div class="fr-grid-row fr-grid-row--center">
+  <div class="fr-col-12 fr-col-sm-8 fr-col-md-6">
+    <h1>Validation de votre compte Mes ADS</h1>
+
+    <p>
+      Vous allez recevoir un email dans les prochaines minutes. Cliquez sur le lien reçu afin de valider votre compte.
+      Vous pouvez fermer cette page.
+    </p>
+
+    <p>
+      Si vous ne recevez pas l'email de confirmation ou si vous rencontrez le moindre problème,
+      vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
+    </p>
+  </div>
+</div>
+{% endblock %}
