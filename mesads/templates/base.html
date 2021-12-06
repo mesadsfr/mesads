@@ -55,6 +55,11 @@
                       <a class="fr-link fr-fi-close-circle-line" href="{% url 'logout' %}">Déconnexion</a>
                     </li>
                   {% endif %}
+                  {% if user.is_superuser %}
+                    <li>
+                      <a class="fr-link fr-fi-alert-line" href="{% url 'admin:index' %}">Admin</a>
+                    </li>
+                  {% endif %}
                 </ul>
               </div>
             </div>
