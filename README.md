@@ -1,4 +1,4 @@
-# Fonctionnement de MesADS
+# Fonctionnement de Mes ADS
 
 
 # Contexte
@@ -10,11 +10,11 @@ Les ADS — Autorisation De Stationnement — sont obtenues auprès de mairies 
 
 # Fonctionnement
 
-Afin d'utiliser MesADS, vous êtes dans une des situations suivantes :
+Afin d'utiliser Mes ADS, vous êtes dans une des situations suivantes :
 
 * Vous représentez un gestionnaire d'ADS, c'est à dire une commune délivrant des ADS : vous créez un compte et choisissez votre commune dans la liste déroulante. Un administrateur des gestionnaires d'ADS recevra votre demande. Après validation, vous pourrez lister et créer les ADS de votre commune.
 
-* Vous représentez un administrateur des gestionnaires d'ADS, c'est à dire une préfecture : un compte vous a été fourni par l'équipe MesADS. Après connexion, vous pouvez lister les demandes des gestionnaires, lister l'intégralité des ADS au niveau national, et créer de nouvelles ADS dans les zones dépendant de votre préfecture (communes, gares, aéroports).
+* Vous représentez un administrateur des gestionnaires d'ADS, c'est à dire une préfecture : un compte vous a été fourni par l'équipe Mes ADS. Après connexion, vous pouvez lister les demandes des gestionnaires, lister l'intégralité des ADS au niveau national, et créer de nouvelles ADS dans les zones dépendant de votre préfecture (communes, gares, aéroports).
 
 
 # Ressources
