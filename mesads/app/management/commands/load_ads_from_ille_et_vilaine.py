@@ -20,6 +20,7 @@ class CSV_COLNAMES:
     attribution_reason = "Si Autre, précisez le mode d'obtention"
     accepted_cpam = "Indiquer si l'autorisation de stationnement exploitée est conventionnée par l'Assurance Maladie"
     licence_plate = "Indiquer le numéro d'immatriculation du véhicule de taxi"
+    pmr = "Indiquer si le véhicule est équipé pour le transport de personnes à mobilité réduite (PMR)"
 
 
 class Command(BaseCommand):
@@ -84,6 +85,16 @@ class Command(BaseCommand):
             return None
         raise ValueError(f"Invalid CPAM value {value}")
 
+    def _parse_pmr(self, row):
+        value = row[CSV_COLNAMES.pmr].strip()
+        if value.lower() == "oui":
+            return True
+        elif value.lower() == "non":
+            return False
+        elif value.lower() == "je ne sais pas":
+            return None
+        raise ValueError(f"Invalid PMR col {value}")
+
     def create_ads_for(self, row, manager):
         """Create or update ADS entry."""
         ads_number = row[CSV_COLNAMES.ads_number].strip()
@@ -119,5 +130,6 @@ class Command(BaseCommand):
         ads.attribution_reason = row[CSV_COLNAMES.attribution_reason]
         ads.accepted_cpam = self._parse_accepted_cpam(row)
         ads.immatriculation_plate = row[CSV_COLNAMES.licence_plate]
+        ads.vehicle_compatible_pmr = self._parse_pmr(row)
 
         ads.save()
