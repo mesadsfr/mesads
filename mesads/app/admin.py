@@ -1,6 +1,12 @@
 from django.contrib import admin
+from django.contrib.auth.models import Group
 
 from .models import ADS, ADSManager, ADSManagerAdministrator
+
+
+# Remove "Group" administration from admin. We do not use groups in the
+# application.
+admin.site.unregister(Group)
 
 
 class ReadOnlyInline(admin.TabularInline):
