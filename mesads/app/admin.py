@@ -136,6 +136,8 @@ class ADSAdmin(admin.ModelAdmin):
     list_display = (
         'ads_manager',
         'number',
+        'ads_creation_date',
+        'attribution_date',
         'immatriculation_plate',
         'owner_firstname',
         'owner_lastname',
