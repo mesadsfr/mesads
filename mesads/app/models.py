@@ -140,7 +140,7 @@ class ADS(models.Model):
 
     ATTRIBUTION_TYPES = [
         ('free', "Gratuitement (delivrée par l'autorité compétente)"),
-        ('paid', "Cession àt itre onéreux"),
+        ('paid', "Cession à titre onéreux"),
         ('other', "Autre"),
     ]
 
