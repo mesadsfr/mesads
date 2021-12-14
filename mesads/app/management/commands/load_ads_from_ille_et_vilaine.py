@@ -75,25 +75,14 @@ class Command(BaseCommand):
             return "other"
         raise ValueError(f"Invalid attribution type {value}")
 
-    def _parse_accepted_cpam(self, row):
-        value = row[CSV_COLNAMES.accepted_cpam].strip()
+    def _parse_bool(self, value):
         if value.lower() == "oui":
             return True
         elif value.lower() == "non":
             return False
         elif value.lower() == "je ne sais pas":
             return None
-        raise ValueError(f"Invalid CPAM value {value}")
-
-    def _parse_pmr(self, row):
-        value = row[CSV_COLNAMES.pmr].strip()
-        if value.lower() == "oui":
-            return True
-        elif value.lower() == "non":
-            return False
-        elif value.lower() == "je ne sais pas":
-            return None
-        raise ValueError(f"Invalid PMR col {value}")
+        raise ValueError(f"Invalid bool value {value}")
 
     def create_ads_for(self, row, manager):
         """Create or update ADS entry."""
@@ -128,8 +117,9 @@ class Command(BaseCommand):
         ads.attribution_date = attribution_date
         ads.attribution_type = self._parse_attribution_type(row)
         ads.attribution_reason = row[CSV_COLNAMES.attribution_reason]
-        ads.accepted_cpam = self._parse_accepted_cpam(row)
+        ads.accepted_cpam = self._parse_bool(row[CSV_COLNAMES.accepted_cpam])
         ads.immatriculation_plate = row[CSV_COLNAMES.licence_plate]
-        ads.vehicle_compatible_pmr = self._parse_pmr(row)
+        ads.vehicle_compatible_pmr = self._parse_bool(row[CSV_COLNAMES.pmr])
+
 
         ads.save()
