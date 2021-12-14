@@ -5,7 +5,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
-from mesads.fradm.models import Commune, EPCI, Prefecture
+from mesads.fradm.models import Prefecture
 
 
 class ADSManager(models.Model):
@@ -57,7 +57,8 @@ class ADSManagerAdministrator(models.Model):
     def __str__(self):
         return f'Administrateur des gestionnaires de la préfecture {self.prefecture}'
 
-    prefecture = models.OneToOneField(Prefecture, on_delete=models.CASCADE, null=False, blank=False)
+    prefecture = models.OneToOneField(
+        Prefecture, on_delete=models.CASCADE, null=False, blank=False)
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
     ads_managers = models.ManyToManyField(ADSManager, blank=True)
 
@@ -120,7 +121,6 @@ class ADS(models.Model):
         verbose_name = 'ADS'
         verbose_name_plural = 'ADS'
 
-
     number = models.CharField(max_length=255, null=False, blank=False)
     ads_manager = models.ForeignKey(ADSManager, on_delete=models.CASCADE)
 
@@ -134,7 +134,8 @@ class ADS(models.Model):
         ('new', "L'ADS a été créée après la loi du 1er Octobre 2014 : \"nouvelle ADS \""),
     ]
 
-    ads_type = models.CharField(max_length=16, choices=ADS_TYPES, blank=True, null=False)
+    ads_type = models.CharField(
+        max_length=16, choices=ADS_TYPES, blank=True, null=False)
 
     attribution_date = models.DateField(blank=True, null=True)
 
@@ -144,13 +145,16 @@ class ADS(models.Model):
         ('other', "Autre"),
     ]
 
-    attribution_type = models.CharField(max_length=16, choices=ATTRIBUTION_TYPES, blank=True, null=False)
+    attribution_type = models.CharField(
+        max_length=16, choices=ATTRIBUTION_TYPES, blank=True, null=False)
 
-    attribution_reason = models.CharField(max_length=4096, blank=True, null=False)
+    attribution_reason = models.CharField(
+        max_length=4096, blank=True, null=False)
 
     accepted_cpam = models.BooleanField(blank=True, null=True)
 
-    immatriculation_plate = models.CharField(max_length=128, null=False, blank=True)
+    immatriculation_plate = models.CharField(
+        max_length=128, null=False, blank=True)
 
     vehicle_compatible_pmr = models.BooleanField(blank=True, null=True)
 
@@ -171,7 +175,7 @@ class ADS(models.Model):
     ]
 
     user_status = models.CharField(max_length=255, choices=ADS_USER_STATUS,
-            blank=True, null=False)
+                                   blank=True, null=False)
 
     user_name = models.CharField(max_length=1024, blank=True, null=False)
 
