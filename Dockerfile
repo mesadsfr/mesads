@@ -9,7 +9,7 @@ USER mesads
 
 # Improve docker cache and install dependencies before copying code.
 WORKDIR /app
-COPY pyproject.toml poetry.lock /app
+COPY pyproject.toml poetry.lock /app/
 RUN poetry install
 
 COPY . /app
