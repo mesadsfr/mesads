@@ -140,7 +140,7 @@ class ADS(models.Model):
     attribution_date = models.DateField(blank=True, null=True)
 
     ATTRIBUTION_TYPES = [
-        ('free', "Gratuitement (delivrée par l'autorité compétente)"),
+        ('free', "Gratuitement (délivrée par l'autorité compétente)"),
         ('paid', "Cession à titre onéreux"),
         ('other', "Autre"),
     ]
