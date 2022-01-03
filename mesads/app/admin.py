@@ -38,6 +38,10 @@ class ADSInline(ReadOnlyInline):
     )
 
 
+class ADSManagerUsersInline(admin.TabularInline):
+    model = ADSManager.users.through
+
+
 @admin.register(ADSManager)
 class ADSManagerAdmin(admin.ModelAdmin):
     list_display = (
@@ -48,7 +52,6 @@ class ADSManagerAdmin(admin.ModelAdmin):
     fields = (
         'content_type',
         'object_id',
-        'users',
     )
 
     readonly_fields = (
@@ -64,6 +67,7 @@ class ADSManagerAdmin(admin.ModelAdmin):
 
     inlines = (
         ADSInline,
+        ADSManagerUsersInline,
     )
 
     def get_queryset(self, request):
@@ -95,6 +99,10 @@ class ADSManagerInline(ReadOnlyInline):
         return req
 
 
+class ADSManagerAdministratorUsersInline(admin.TabularInline):
+    model = ADSManagerAdministrator.users.through
+
+
 @admin.register(ADSManagerAdministrator)
 class ADSManagerAdministratorAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
@@ -104,11 +112,11 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
 
     inlines = (
         ADSManagerInline,
+        ADSManagerAdministratorUsersInline,
     )
 
     fields = (
         'prefecture',
-        'users',
     )
 
     readonly_fields = (
