@@ -2,7 +2,7 @@ build:
 	docker-compose build
 
 shell: build
-	docker-compose run --no-deps --rm app bash
+	docker-compose run --no-deps --rm --service-ports app bash
 
 debug: build
 	docker-compose run --service-ports --rm app python manage.py runserver 0.0.0.0:8000
