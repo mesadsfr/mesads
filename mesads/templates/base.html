@@ -74,8 +74,13 @@
           <nav class="fr-nav" id="navigation-832" role="navigation" aria-label="Menu principal">
             <ul class="fr-nav__list">
               <li class="fr-nav__item">
-                <a class="fr-nav__link" href="#">Mes ADS</a>
+                <a class="fr-nav__link" href="{% url 'ads-manager' %}">Gestion des ADS</a>
               </li>
+              {% if user.adsmanageradministrator_set.all|length > 0 %}
+              <li class="fr-nav__item">
+                <a class="fr-nav__link" href="{% url 'ads-manager-admin' %}">Administration des gestionnaires</a>
+              </li>
+              {% endif %}
             </ul>
           </nav>
         </div>
@@ -135,5 +140,6 @@
 
     <script type="module" src="{% static '@gouvfr/js/dsfr.module.min.js' %}"></script>
     <script type="text/javascript" nomodule src="{% static '@gouvfr/js/dsfr.nomodule.min.js' %}"></script>
+    {% block endbody %}{% endblock %}
   </body>
 </html>

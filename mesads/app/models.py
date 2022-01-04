@@ -43,6 +43,36 @@ class ADSManager(models.Model):
     users = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
 
+class ADSManagerRequest(models.Model):
+    """User request to become ADSManager. Has to be accepted by the
+    administrator (ie. the prefecture) of the ADSManager.
+    """
+    def __str__(self):
+        return f'Requete de {self.user} pour être administrateur de {self.ads_manager}'
+
+    class Meta:
+        unique_together = (
+            ('user', 'ads_manager'),
+        )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        null=False, blank=False
+    )
+    ads_manager = models.ForeignKey(
+        ADSManager, on_delete=models.CASCADE,
+        null=False, blank=False,
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        null=False
+    )
+    accepted = models.BooleanField(
+        null=True,
+        default=None
+    )
+
+
 class ADSManagerAdministrator(models.Model):
     """Administrator with the ability to manage users of ADSManager.
 

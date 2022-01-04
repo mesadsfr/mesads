@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Gestionnaire ADS{% endblock %}
+
+{% block body %}
+{% if user.adsmanager_set.all|length == 0 %}
+<div class="fr-grid-row fr-grid-row--center">
+  <div class="fr-col-12 fr-col-sm-8 fr-col-md-8">
+    <h1>Configuration de l'accès gestionnaire</h1>
+
+    <p>
+      Afin de configurer votre compte, sélectionnez votre commune <strong>ou</strong> votre EPCI <strong>ou</strong> votre préfecture.
+      <br />
+      Votre préfecture recevra la demande. Une fois celle-ci acceptée, vous pourrez gérer les ADS.
+    </p>
+
+    <form class="fr-grid-row fr-grid-row--middle" method="post" action="{% url 'ads-manager' %}">
+      {% csrf_token %}
+
+      <!-- Commune -->
+      <div class="fr-col-12 fr-input-group{% if form.errors.commune %} fr-input-group--error{% endif %}">
+        <label
+          class="fr-label"
+          for="{{ form.commune.name }}"
+        >
+          {{ form.commune.label }} :
+        </label>
+
+        {{ form.commune }}
+
+        {% for error in form.errors.commune %}
+        <p class="fr-error-text">
+          {{ error }}
+        </p>
+        {% endfor %}
+      </div>
+
+      <!-- EPCI -->
+      <div class="fr-col-12 fr-input-group{% if form.errors.epci %} fr-input-group--error{% endif %}">
+        <label
+          class="fr-label"
+          for="{{ form.epci.name }}"
+        >
+          {{ form.epci.label }} :
+        </label>
+
+        {{ form.epci }}
+
+        {% for error in form.errors.epci %}
+        <p class="fr-error-text">
+          {{ error }}
+        </p>
+        {% endfor %}
+      </div>
+
+      <!-- Prefecture -->
+      <div class="fr-col-12 fr-input-group{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
+        <label
+          class="fr-label"
+          for="{{ form.prefecture.name }}"
+        >
+          {{ form.prefecture.label }} :
+        </label>
+
+        {{ form.prefecture }}
+
+        {% for error in form.errors.prefecture %}
+        <p class="fr-error-text">
+          {{ error }}
+        </p>
+        {% endfor %}
+      </div>
+
+      <!-- Non-fields errors -->
+      {% if form.non_field_errors %}
+        <div class="fr-col-12 fr-input-group fr-input-group--error">
+          {% for error in form.non_field_errors %}
+          <!-- Non-field error -->
+          <p class="fr-error-text">
+            {{ error }}
+          </p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="fr-col-12 fr-input-group">
+        <button type="submit" class="fr-btn">Créer un compte</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+
+{% block endbody %}
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+{{ form.media }}
+{% endblock %}

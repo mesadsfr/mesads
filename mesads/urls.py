@@ -8,6 +8,7 @@ import debug_toolbar
 
 urlpatterns = [
     path('auth/', include('mesads.users.urls')),
+    path('fradm/', include('mesads.fradm.urls')),
     path('admin/', admin.site.urls),
     path('', include('mesads.app.urls')),
 

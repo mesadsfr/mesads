@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 
-from .models import ADS, ADSManager, ADSManagerAdministrator
+from .models import ADS, ADSManager, ADSManagerAdministrator, ADSManagerRequest
 
 
 # Remove "Group" administration from admin. We do not use groups in the
@@ -137,6 +137,22 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         """Added by command load_ads_managers."""
         return False
+
+
+@admin.register(ADSManagerRequest)
+class ADSManagerRequestAdmin(admin.ModelAdmin):
+    autocomplete_fields = ('ads_manager',)
+
+    list_display = ('created_at', 'user', 'ads_manager', 'accepted')
+    ordering = ('-created_at',)
+    list_filter = ('accepted',)
+
+    def get_queryset(self, request):
+        req = super().get_queryset(request)
+        req = req.prefetch_related('user')
+        req = req.prefetch_related('ads_manager__content_type')
+        req = req.prefetch_related('ads_manager__content_object')
+        return req
 
 
 @admin.register(ADS)

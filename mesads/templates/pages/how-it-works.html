@@ -20,8 +20,8 @@
         </h3>
 
         <ul>
-            <li><a href="{% url 'django_registration_register' %}">Créez votre compte gestionnaire sur Mes ADS</a>.</li>
-            <li>Renseignez les informations de votre administration, et attendez la validation de votre compte par votre préfecture de rattachement.</li>
+            <li><a href="{% url 'django_registration_register' %}">Créez votre compte gestionnaire sur Mes ADS</a> puis <a href="{% url 'login' %}">connectez-vous</a>.</li>
+            <li>Rendez-vous sur la page <a href="#">Gestion des ADS</a>, renseignez les informations de votre administration, et attendez la validation de votre compte par votre préfecture de rattachement.</li>
             <li>Vous pouvez gérer vos ADS.</li>
         </ul>
     </div>
@@ -32,6 +32,12 @@
         </h3>
 
         <ul>
+            <li>
+                <a href="{% url 'login' %}">Connectez-vous</a> sur votre compte et cliquez sur le menu <a href="{% url 'ads-manager-admin' %}">Administration des gestionnaires</a>.
+                <br />
+                <br />
+                <small>Si le menu n'apparait pas, cela signifie que votre compte n'est pas correctement configuré. Contactez notre équipe par email sur <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a></small>
+            </li>
             <li>Gérez les demandes d'accès des gestionnaires d'ADS.</li>
             <li>Vous pouvez gérer vos ADS.</li>
         </ul>

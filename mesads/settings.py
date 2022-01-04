@@ -41,6 +41,13 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # According to django-autocomplete-light documentation, DAL moduels must be
+    # installed before django.contrib.admin.
+    # See: https://django-autocomplete-light.readthedocs.io/en/master/install.html
+    'dal',
+    'dal_select2',
+    'dal_queryset_sequence',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
