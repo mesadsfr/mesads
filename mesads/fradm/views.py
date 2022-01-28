@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from dal import autocomplete
 
 from .models import Commune, EPCI, Prefecture
@@ -11,7 +13,9 @@ class CommuneAutocompleteView(autocomplete.Select2QuerySetView):
         qs = Commune.objects.all()
 
         if self.q:
-            qs = qs.filter(libelle__icontains=self.q)
+            qs = qs.filter(
+                Q(libelle__icontains=self.q) | Q(departement__icontains=self.q)
+            )
 
         return qs.order_by('id')
 
@@ -37,6 +41,8 @@ class PrefectureAutocompleteView(autocomplete.Select2QuerySetView):
         qs = Prefecture.objects.all()
 
         if self.q:
-            qs = qs.filter(libelle__icontains=self.q)
+            qs = qs.filter(
+                Q(libelle__icontains=self.q) | Q(numero__icontains=self.q)
+            )
 
         return qs.order_by('id')
