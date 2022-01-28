@@ -7,11 +7,10 @@ from .forms import CustomUserForm
 
 urlpatterns = [
     path('register/',
-        RegistrationView.as_view(
-            form_class=CustomUserForm
-        ),
-        name='django_registration_register',
-    ),
+         RegistrationView.as_view(
+             form_class=CustomUserForm
+         ),
+         name='django_registration_register'),
     path('', include('django_registration.backends.activation.urls')),
     path('', include('django.contrib.auth.urls')),
 ]

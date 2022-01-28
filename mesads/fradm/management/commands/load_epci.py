@@ -2,7 +2,7 @@ import argparse
 import csv
 import sys
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from mesads.fradm.models import EPCI
@@ -32,7 +32,7 @@ class Command(BaseCommand):
         # and change this loader accordingly.
         epci, created = EPCI.objects.get_or_create(
             siren=row['siren_epci'],
-            departement = departement,
+            departement=departement,
             name=row['nom_complet']
         )
         sys.stdout.write(self.style.SUCCESS('.'))

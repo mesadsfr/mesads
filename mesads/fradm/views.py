@@ -1,5 +1,3 @@
-from django.shortcuts import render
-
 from dal import autocomplete
 
 from .models import Commune, EPCI, Prefecture

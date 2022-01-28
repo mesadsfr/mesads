@@ -1,9 +1,7 @@
-from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 from django.views.generic.edit import FormView
 
-from mesads.fradm.models import Commune, EPCI, Prefecture
 from mesads.fradm.forms import FrenchAdministrationForm
 
 

@@ -6,11 +6,9 @@ from mesads.fradm.models import Commune, EPCI, Prefecture
 
 
 class Command(BaseCommand):
-    help = (
-       'Create ADSManager entries for Communes, EPCIs and Prefectures, '
-       'create ADSManagerAdministrator entries and grand them permissions to '
-       'ADSManager.'
-    )
+    help = ('Create ADSManager entries for Communes, EPCIs and Prefectures, '
+            'create ADSManagerAdministrator entries and grand them permissions to '
+            'ADSManager.')
 
     def handle(self, *args, **options):
         with transaction.atomic():
