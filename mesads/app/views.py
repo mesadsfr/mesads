@@ -2,7 +2,8 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 from django.views.generic.edit import FormView
 
-from mesads.fradm.forms import FrenchAdministrationForm
+from .forms import ADSManagerForm
+from .models import ADSManagerRequest
 
 
 class HomepageView(RedirectView):
@@ -29,8 +30,12 @@ class ADSManagerAdminView(TemplateView):
 
 class ADSManagerView(FormView):
     template_name = 'pages/ads_manager.html'
-    form_class = FrenchAdministrationForm
+    form_class = ADSManagerForm
     success_url = reverse_lazy('ads-manager')
 
     def form_valid(self, form):
+        ADSManagerRequest.objects.get_or_create(
+            user=self.request.user,
+            ads_manager=form.cleaned_data['ads_manager'],
+        )
         return super().form_valid(form)
