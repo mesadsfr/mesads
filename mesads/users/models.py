@@ -11,11 +11,21 @@ class EmailUserManager(UserManager):
     """Custom manager for users, similar to UserManager, but using email only
     for authentication."""
     def _create_user(self, username, email, password, **extra_fields):
+        """This method is a *copy* of django.contrib.auth.model:UserManager,
+        except we only use email for authentication.
+
+        I don't know why
+
+            GlobalUserModel = apps.get_model(self.model._meta.app_label, self.model._meta.object_name)
+
+        has to be called, but I do not want to override more than what is just
+        necessary.
+        """
         email = self.normalize_email(email)
         # Lookup the real model class from the global app registry so this
         # manager method can be used in migrations. This is fine because
         # managers are by definition working on the real model.
-        GlobalUserModel = apps.get_model(self.model._meta.app_label, self.model._meta.object_name)
+        GlobalUserModel = apps.get_model(self.model._meta.app_label, self.model._meta.object_name)  # noqa
         user = self.model(email=email, **extra_fields)
         user.password = make_password(password)
         user.save(using=self._db)
