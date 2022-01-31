@@ -3,4 +3,53 @@
 {% block title %}Administration des gestionnaires{% endblock %}
 
 {% block body %}
+<div class="fr-grid-row fr-grid-row--center">
+  <div class="fr-col-12 fr-col-sm-8 fr-col-md-8">
+    <h1>Demandes d'accès</h1>
+
+    <p>
+      Vous trouverez ci-dessous les demandes d'accès des administrations souhaitant gérer leurs ADS. Avant d'accepter une demande, assurez-vous que la demande provient bien d'un agent travaillant pour une administration dépendant de votre préfecture.
+    </p>
+
+    {% for ads_manager_admin, ads_manager_requests in ads_manager_requests.items|dictsort:"0.id" %}
+    <div class="fr-table fr-table--layout-fixed">
+      <table>
+        <caption>Demandes pour la préfecture : {{ ads_manager_admin.prefecture.display_value }}</caption>
+        <thead>
+          <tr>
+            <th>Utilisateur</th>
+            <th>Date de la demande</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ads_manager_request in ads_manager_requests %}
+          <tr>
+            <td>{{ ads_manager_request.user.email }}</td>
+            <td>{{ ads_manager_request.created_at }}</td>
+            <td>
+              <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-p-1w">
+                  <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="fr-btn fr-btn--sm">Accepter</button>
+                  </form>
+                </div>
+                <div class="fr-p-1w">
+                  <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="fr-btn fr-btn--sm">Refuser</button>
+                  </form>
+                </div>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endfor %}
+
+  </div>
+</div>
 {% endblock %}

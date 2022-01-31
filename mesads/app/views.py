@@ -3,7 +3,7 @@ from django.views.generic import RedirectView, TemplateView
 from django.views.generic.edit import FormView
 
 from .forms import ADSManagerForm
-from .models import ADSManagerRequest
+from .models import ADSManagerAdministrator, ADSManagerRequest
 
 
 class HomepageView(RedirectView):
@@ -26,6 +26,24 @@ class HowItWorksView(TemplateView):
 
 class ADSManagerAdminView(TemplateView):
     template_name = 'pages/ads_manager_admin.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        ctx['ads_manager_requests'] = {}
+
+        # Get all ADSManagerAdministrator objects related to the current user
+        ads_manager_admins = ADSManagerAdministrator.objects.filter(users__in=[self.request.user])
+
+        # For each admin, get the list of requests
+        for ads_manager_admin in ads_manager_admins:
+            ads_manager_requests = ADSManagerRequest.objects.filter(
+                ads_manager__in=[obj.id for obj in ads_manager_admin.ads_managers.all()]
+            ).order_by('-id')
+            if ads_manager_requests:
+                ctx['ads_manager_requests'][ads_manager_admin] = ads_manager_requests
+
+        return ctx
 
 
 class ADSManagerRequestView(FormView):
