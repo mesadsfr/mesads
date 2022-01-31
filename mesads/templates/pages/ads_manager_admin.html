@@ -11,6 +11,10 @@
       Vous trouverez ci-dessous les demandes d'accès des administrations souhaitant gérer leurs ADS. Avant d'accepter une demande, assurez-vous que la demande provient bien d'un agent travaillant pour une administration dépendant de votre préfecture.
     </p>
 
+    <p>
+      Si vous avez la moindre question, contactez notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+    </p>
+
     {% for ads_manager_admin, ads_manager_requests in ads_manager_requests.items|dictsort:"0.id" %}
     <div class="fr-table fr-table--layout-fixed">
       <table>
