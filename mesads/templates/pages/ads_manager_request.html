@@ -10,31 +10,31 @@
 
     <div class="fr-table fr-table--layout-fixed">
       <table>
-          <caption>Administrations en gestion</caption>
-          <thead>
-              <tr>
-                  <th>Type d'administration</th>
-                  <th>Nom</th>
-                  <th>Statut</th>
-              </tr>
-          </thead>
-          <tbody>
-              {% for request in user.adsmanagerrequest_set.all %}
-              <tr>
-                  <td>{{ request.ads_manager.content_object.display_type }}</td>
-                  <td>{{ request.ads_manager.content_object.display_value }}</td>
-                  <td>
-                      {% if request.accepted is None %}
-                      ⏱ En attente de validation par la préfecture
-                      {% elif request.accepted is False %}
-                      🚫 Demande refusée
-                      {% elif request.accepted is True %}
-                      ✅ <a href="#">Gérez les ADS</a>
-                      {% endif %}
-                  </td>
-              </tr>
-              {% endfor %}
-          </tbody>
+        <caption>Administrations en gestion</caption>
+        <thead>
+          <tr>
+            <th>Type d'administration</th>
+            <th>Nom</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for request in user.adsmanagerrequest_set.all %}
+          <tr>
+            <td>{{ request.ads_manager.content_object.display_type }}</td>
+            <td>{{ request.ads_manager.content_object.display_value }}</td>
+            <td>
+              {% if request.accepted is None %}
+              ⏱ En attente de validation par la préfecture
+              {% elif request.accepted is False %}
+              🚫 Demande refusée
+              {% elif request.accepted is True %}
+              ✅ <a href="#">Gérez les ADS</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
       </table>
     </div>
 
@@ -132,11 +132,11 @@
 {% endblock %}
 
 {% block endbody %}
-    {% comment %}
-    Extra javascript to display form for new requests.
-    {% endcomment %}
-    {% if form %}
-        <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
-        {{ form.media }}
-    {% endif %}
+  {% comment %}
+  Extra javascript to display form for new requests.
+  {% endcomment %}
+  {% if form %}
+    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+    {{ form.media }}
+  {% endif %}
 {% endblock %}
