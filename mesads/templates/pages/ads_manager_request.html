@@ -4,18 +4,57 @@
 {% block title %}Gestionnaire ADS{% endblock %}
 
 {% block body %}
-{% if user.adsmanager_set.all|length == 0 %}
 <div class="fr-grid-row fr-grid-row--center">
   <div class="fr-col-12 fr-col-sm-8 fr-col-md-8">
-    <h1>Configuration de l'accès gestionnaire</h1>
+    {% if user.adsmanagerrequest_set.all|length > 0 %}
+
+    <div class="fr-table fr-table--layout-fixed">
+      <table>
+          <caption>Administrations en gestion</caption>
+          <thead>
+              <tr>
+                  <th>Type d'administration</th>
+                  <th>Nom</th>
+                  <th>Statut</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for request in user.adsmanagerrequest_set.all %}
+              <tr>
+                  <td>{{ request.ads_manager.content_object.display_type }}</td>
+                  <td>{{ request.ads_manager.content_object.display_value }}</td>
+                  <td>
+                      {% if request.accepted is None %}
+                      ⏱ En attente de validation par la préfecture
+                      {% elif request.accepted is False %}
+                      🚫 Demande refusée
+                      {% elif request.accepted is True %}
+                      ✅ <a href="#">Gérez les ADS</a>
+                      {% endif %}
+                  </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+    </div>
 
     <p>
-      Afin de configurer votre compte, sélectionnez votre commune <strong>ou</strong> votre EPCI <strong>ou</strong> votre préfecture.
-      <br />
-      Votre préfecture recevra la demande. Une fois celle-ci acceptée, vous pourrez gérer les ADS.
+      Si vous avez le moindre problème, par exemple si votre demande est refusée ou met trop de temps avant d'être acceptée, vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
     </p>
 
-    <form class="fr-grid-row fr-grid-row--middle" method="post" action="{% url 'ads-manager' %}">
+    {% endif %}
+
+    <h4>Configuration de l'accès gestionnaire</h4>
+
+    <p>
+      Si vous souhaitez gérer les ADS d'une administration, renseignez ci-dessous la commune <strong>ou</strong> l'EPCI <strong>ou</strong> la préfecture.
+    </p>
+
+    <p>
+      La préfecture recevra la demande. Une fois celle-ci acceptée, vous pourrez gérer les ADS.
+    </p>
+
+    <form class="fr-grid-row fr-grid-row--middle" method="post" action="{% url 'ads-manager-request' %}">
       {% csrf_token %}
 
       <!-- Commune -->
@@ -87,15 +126,17 @@
       <div class="fr-col-12 fr-input-group">
         <button type="submit" class="fr-btn">Créer un compte</button>
       </div>
-
     </form>
   </div>
 </div>
-{% endif %}
 {% endblock %}
 
-
 {% block endbody %}
-<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
-{{ form.media }}
+    {% comment %}
+    Extra javascript to display form for new requests.
+    {% endcomment %}
+    {% if form %}
+        <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+        {{ form.media }}
+    {% endif %}
 {% endblock %}

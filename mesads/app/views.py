@@ -28,10 +28,10 @@ class ADSManagerAdminView(TemplateView):
     template_name = 'pages/ads_manager_admin.html'
 
 
-class ADSManagerView(FormView):
-    template_name = 'pages/ads_manager.html'
+class ADSManagerRequestView(FormView):
+    template_name = 'pages/ads_manager_request.html'
     form_class = ADSManagerForm
-    success_url = reverse_lazy('ads-manager')
+    success_url = reverse_lazy('ads-manager-request')
 
     def form_valid(self, form):
         ADSManagerRequest.objects.get_or_create(

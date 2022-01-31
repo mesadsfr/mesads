@@ -74,7 +74,7 @@
           <nav class="fr-nav" id="navigation-832" role="navigation" aria-label="Menu principal">
             <ul class="fr-nav__list">
               <li class="fr-nav__item">
-                <a class="fr-nav__link" href="{% url 'ads-manager' %}">Gestion des ADS</a>
+                <a class="fr-nav__link" href="{% url 'ads-manager-request' %}">Gestion des ADS</a>
               </li>
               {% if user.adsmanageradministrator_set.all|length > 0 %}
               <li class="fr-nav__item">

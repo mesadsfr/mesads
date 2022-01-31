@@ -2,7 +2,22 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
 
-class Commune(models.Model):
+class AdministrationModel(models.Model):
+    """Implemented by Commune, Prefecture and EPCI."""
+
+    class Meta:
+        abstract = True
+
+    def display_type(self):
+        """Administration type (Prefecture, EPCI or Commune)."""
+        raise NotImplementedError
+
+    def display_value(self):
+        """Value displayed to users."""
+        raise NotImplementedError
+
+
+class Commune(AdministrationModel):
     """Communes of France. Inserted by the django admin command
     "load_communes".
 
@@ -20,6 +35,12 @@ class Commune(models.Model):
             ('departement', 'libelle'),
         )
 
+    def display_type(self):
+        return 'Commune'
+
+    def display_value(self):
+        return self.libelle
+
     def __str__(self):
         return f'{self.departement} - {self.libelle} (INSEE: {self.insee})'
 
@@ -33,7 +54,7 @@ class Commune(models.Model):
     )
 
 
-class Prefecture(models.Model):
+class Prefecture(AdministrationModel):
     """Departement of France, Inserted by the django admin command
     "load_prefectures".
 
@@ -51,11 +72,17 @@ class Prefecture(models.Model):
         related_query_name='prefecture'
     )
 
+    def display_type(self):
+        return 'Préfecture'
+
+    def display_value(self):
+        return self.libelle
+
     def __str__(self):
         return f'{self.numero} - {self.libelle}'
 
 
-class EPCI(models.Model):
+class EPCI(AdministrationModel):
     """EPCI stands for Établissement Public de Coopération Intercommunale.
     Inserted by the django admin command "load_epci".
 
@@ -74,6 +101,12 @@ class EPCI(models.Model):
         unique_together = (
             ('departement', 'name'),
         )
+
+    def display_type(self):
+        return 'EPCI'
+
+    def display_value(self):
+        return self.name
 
     def __str__(self):
         return self.name
