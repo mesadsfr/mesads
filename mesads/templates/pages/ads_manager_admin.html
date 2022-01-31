@@ -22,7 +22,8 @@
         <thead>
           <tr>
             <th>Utilisateur</th>
-            <th>Administration</th>
+            <th>Type d'administration</th>
+            <th>Nom</th>
             <th>Date de la demande</th>
             <th>Action</th>
           </tr>
@@ -31,7 +32,8 @@
           {% for ads_manager_request in ads_manager_requests %}
           <tr class="table-row-{% if ads_manager_request.accepted is True %}success{% elif ads_manager_request.accepted is False %}failure{% else %}unknown{% endif %}">
             <td>{{ ads_manager_request.user.email }}</td>
-            <td>{{ ads_manager_request.ads_manager.content_object.display_type }} : {{ ads_manager_request.ads_manager.content_object.display_value }}</td>
+            <td>{{ ads_manager_request.ads_manager.content_object.display_type }}</td>
+            <td>{{ ads_manager_request.ads_manager.content_object.display_value }}</td>
             <td>{{ ads_manager_request.created_at }}</td>
             <td>
               <div class="fr-grid-row fr-grid-row--gutters">
@@ -60,7 +62,7 @@
           </tr>
           {% empty %}
           <tr>
-            <td colspan="4">Aucune demande en cours</td>
+            <td colspan="5">Aucune demande en cours</td>
           </tr>
           {% endfor %}
         </tbody>
