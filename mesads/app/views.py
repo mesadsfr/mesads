@@ -42,8 +42,7 @@ class ADSManagerAdminView(TemplateView):
             ads_manager_requests = ADSManagerRequest.objects.filter(
                 ads_manager__in=[obj.id for obj in ads_manager_admin.ads_managers.all()]
             ).order_by('-id')
-            if ads_manager_requests:
-                ctx['ads_manager_requests'][ads_manager_admin] = ads_manager_requests
+            ctx['ads_manager_requests'][ads_manager_admin] = ads_manager_requests
         return ctx
 
     def post(self, request):

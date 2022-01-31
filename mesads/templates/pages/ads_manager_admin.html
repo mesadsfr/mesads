@@ -58,6 +58,10 @@
               </div>
             </td>
           </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4">Aucune demande en cours</td>
+          </tr>
           {% endfor %}
         </tbody>
       </table>
