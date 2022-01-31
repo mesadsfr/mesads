@@ -40,8 +40,6 @@ class ADSManager(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
-    users = models.ManyToManyField(settings.AUTH_USER_MODEL)
-
 
 class ADSManagerRequest(models.Model):
     """User request to become ADSManager. Has to be accepted by the

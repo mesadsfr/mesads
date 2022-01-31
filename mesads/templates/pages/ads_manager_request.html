@@ -29,7 +29,7 @@
               {% elif request.accepted is False %}
               🚫 Demande refusée
               {% elif request.accepted is True %}
-              ✅ <a href="#">Gérez les ADS</a>
+              ✅ <a href="{% url 'ads-manager' manager_id=request.ads_manager.id %}">Gérez les ADS</a>
               {% endif %}
             </td>
           </tr>

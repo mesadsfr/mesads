@@ -38,10 +38,6 @@ class ADSInline(ReadOnlyInline):
     )
 
 
-class ADSManagerUsersInline(admin.TabularInline):
-    model = ADSManager.users.through
-
-
 @admin.register(ADSManager)
 class ADSManagerAdmin(admin.ModelAdmin):
     list_display = (
@@ -67,7 +63,6 @@ class ADSManagerAdmin(admin.ModelAdmin):
 
     inlines = (
         ADSInline,
-        ADSManagerUsersInline,
     )
 
     def get_queryset(self, request):

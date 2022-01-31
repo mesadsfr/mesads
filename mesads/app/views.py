@@ -84,3 +84,7 @@ class ADSManagerRequestView(FormView):
             ads_manager=form.cleaned_data['ads_manager'],
         )
         return super().form_valid(form)
+
+
+class ADSManagerView(TemplateView):
+    template_name = 'pages/ads_manager.html'
