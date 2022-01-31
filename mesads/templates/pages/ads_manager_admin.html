@@ -24,23 +24,31 @@
         </thead>
         <tbody>
           {% for ads_manager_request in ads_manager_requests %}
-          <tr>
+          <tr class="table-row-{% if ads_manager_request.accepted is True %}success{% elif ads_manager_request.accepted is False %}failure{% else %}unknown{% endif %}">
             <td>{{ ads_manager_request.user.email }}</td>
             <td>{{ ads_manager_request.created_at }}</td>
             <td>
               <div class="fr-grid-row fr-grid-row--gutters">
+                {% if ads_manager_request.accepted is not True %}
                 <div class="fr-p-1w">
                   <form method="post">
                     {% csrf_token %}
+                    <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
+                    <input type="hidden" name="action" value="accept" />
                     <button type="submit" class="fr-btn fr-btn--sm">Accepter</button>
                   </form>
                 </div>
+                {% endif %}
+                {% if ads_manager_request.accepted is not False %}
                 <div class="fr-p-1w">
                   <form method="post">
                     {% csrf_token %}
+                    <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
+                    <input type="hidden" name="action" value="deny" />
                     <button type="submit" class="fr-btn fr-btn--sm">Refuser</button>
                   </form>
                 </div>
+                {% endif %}
               </div>
             </td>
           </tr>

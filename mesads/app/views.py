@@ -1,3 +1,5 @@
+from django.core.exceptions import SuspiciousOperation
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 from django.views.generic.edit import FormView
@@ -42,8 +44,34 @@ class ADSManagerAdminView(TemplateView):
             ).order_by('-id')
             if ads_manager_requests:
                 ctx['ads_manager_requests'][ads_manager_admin] = ads_manager_requests
-
         return ctx
+
+    def post(self, request):
+        request_id = request.POST.get('request_id')
+        action = request.POST.get('action')
+
+        if action not in ('accept', 'deny'):
+            raise SuspiciousOperation('Invalid action')
+
+        ads_manager_request = get_object_or_404(
+            ADSManagerRequest,
+            id=request_id
+        )
+
+        # Make sure current user can accept this request
+        get_object_or_404(
+            ADSManagerAdministrator,
+            users__in=[request.user],
+            ads_managers__in=[ads_manager_request.ads_manager]
+        )
+
+        if action == 'accept':
+            ads_manager_request.accepted = True
+        else:
+            ads_manager_request.accepted = False
+        ads_manager_request.save()
+
+        return redirect(reverse('ads-manager-admin'))
 
 
 class ADSManagerRequestView(FormView):
