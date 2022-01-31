@@ -16,7 +16,7 @@ class HomepageView(RedirectView):
             if len(self.request.user.adsmanageradministrator_set.all()):
                 return reverse('ads-manager-admin')
             if len(self.request.user.adsmanager_set.all()):
-                return reverse('ads-manager')
+                return reverse('ads-manager-request')
         return reverse('how-it-works')
 
 
