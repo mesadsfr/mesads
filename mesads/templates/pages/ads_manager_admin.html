@@ -16,7 +16,7 @@
     </p>
 
     {% for ads_manager_admin, ads_manager_requests in ads_manager_requests.items|dictsort:"0.id" %}
-    <div class="fr-table fr-table--layout-fixed">
+    <div class="fr-table">
       <table>
         <caption>Demandes pour la préfecture : {{ ads_manager_admin.prefecture.display_value }}</caption>
         <thead>
