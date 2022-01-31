@@ -21,7 +21,7 @@
 
         <ul>
             <li><a href="{% url 'django_registration_register' %}">Créez votre compte gestionnaire sur Mes ADS</a> puis <a href="{% url 'login' %}">connectez-vous</a>.</li>
-            <li>Rendez-vous sur la page <a href="#">Gestion des ADS</a>, renseignez les informations de votre administration, et attendez la validation de votre compte par votre préfecture de rattachement.</li>
+            <li>Rendez-vous sur la page <a href="{% url 'ads-manager-request' %}">Gestion des ADS</a>, renseignez les informations de votre administration, et attendez la validation de votre compte par votre préfecture de rattachement.</li>
             <li>Vous pouvez gérer vos ADS.</li>
         </ul>
     </div>
