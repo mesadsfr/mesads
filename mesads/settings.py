@@ -212,3 +212,10 @@ EMAIL_HOST = 'maildev'
 
 # django-registration: maximum number of days to activate the account
 ACCOUNT_ACTIVATION_DAYS = 14
+
+# By default an exception is raised if you try to add an administrator from the
+# admin page at
+# http://localhost:9400/admin/app/adsmanageradministrator/<id>/change/ because
+# too many form values are provided.
+# We set a large value to avoid the issue.
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 2 ** 16
