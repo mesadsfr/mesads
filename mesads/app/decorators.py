@@ -17,5 +17,5 @@ def ads_manager_required(func):
             ads_manager__id=manager_id,
             accepted=True,
         )
-        return func(request, manager_id, *args, **kwargs)
+        return func(request, manager_id=manager_id, *args, **kwargs)
     return login_required(wrapped)

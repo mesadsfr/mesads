@@ -3,9 +3,10 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 from django.views.generic.edit import FormView
+from django.views.generic.list import ListView
 
 from .forms import ADSManagerForm
-from .models import ADSManagerAdministrator, ADSManagerRequest
+from .models import ADS, ADSManager, ADSManagerAdministrator, ADSManagerRequest
 
 
 class HomepageView(RedirectView):
@@ -86,5 +87,18 @@ class ADSManagerRequestView(FormView):
         return super().form_valid(form)
 
 
-class ADSManagerView(TemplateView):
+class ADSManagerView(ListView):
     template_name = 'pages/ads_manager.html'
+    model = ADS
+    paginate_by = 20
+    ordering = ['id']
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(ads_manager__id=self.kwargs['manager_id'])
+        return qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['ads_manager'] = ADSManager.objects.get(id=self.kwargs['manager_id'])
+        return ctx
