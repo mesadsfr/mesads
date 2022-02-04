@@ -18,7 +18,7 @@
     {% for ads_manager_admin, ads_manager_requests in ads_manager_requests.items|dictsort:"0.id" %}
     <div class="fr-table">
       <table>
-        <caption>Demandes pour la préfecture : {{ ads_manager_admin.prefecture.display_value }}</caption>
+        <caption>Demandes pour la préfecture de {{ ads_manager_admin.prefecture.display_value }}</caption>
         <thead>
           <tr>
             <th>Utilisateur</th>
@@ -37,7 +37,8 @@
             <td>{{ ads_manager_request.created_at }}</td>
             <td>
               <div class="fr-grid-row fr-grid-row--gutters">
-                {% if ads_manager_request.accepted is not True %}
+                {% comment %}Request is pending{% endcomment %}
+                {% if ads_manager_request.accepted is None %}
                 <div class="fr-p-1w">
                   <form method="post">
                     {% csrf_token %}
@@ -46,14 +47,32 @@
                     <button type="submit" class="fr-btn fr-btn--sm">Accepter</button>
                   </form>
                 </div>
-                {% endif %}
-                {% if ads_manager_request.accepted is not False %}
                 <div class="fr-p-1w">
                   <form method="post">
                     {% csrf_token %}
                     <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
                     <input type="hidden" name="action" value="deny" />
                     <button type="submit" class="fr-btn fr-btn--sm">Refuser</button>
+                  </form>
+                </div>
+                {% comment %}Request has been accepted: allow to revoke access{% endcomment %}
+                {% elif ads_manager_request.accepted is True %}
+                <div class="fr-p-1w">
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
+                    <input type="hidden" name="action" value="deny" />
+                    <button type="submit" class="fr-btn fr-btn--sm">Supprimer l'accès</button>
+                  </form>
+                </div>
+                {% comment %}Request has been denied: allow to accept it{% endcomment %}
+                {% elif ads_manager_request.accepted is False %}
+                <div class="fr-p-1w">
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
+                    <input type="hidden" name="action" value="accept" />
+                    <button type="submit" class="fr-btn fr-btn--sm">Donner l'accès</button>
                   </form>
                 </div>
                 {% endif %}
