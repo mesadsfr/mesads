@@ -3,92 +3,87 @@
 {% block title %}Administration des gestionnaires{% endblock %}
 
 {% block body %}
-<div class="fr-grid-row fr-grid-row--center">
-  <div class="fr-col-12 fr-col-sm-8 fr-col-md-8">
-    <h1>Demandes d'accès</h1>
+<h1>Demandes d'accès</h1>
 
-    <p>
-      Vous trouverez ci-dessous les demandes d'accès des administrations souhaitant gérer leurs ADS. Avant d'accepter une demande, assurez-vous que la demande provient bien d'un agent travaillant pour une administration dépendant de votre préfecture.
-    </p>
+<p>
+  Vous trouverez ci-dessous les demandes d'accès des administrations souhaitant gérer leurs ADS. Avant d'accepter une demande, assurez-vous que la demande provient bien d'un agent travaillant pour une administration dépendant de votre préfecture.
+</p>
 
-    <p>
-      Si vous avez la moindre question, contactez notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
-    </p>
+<p>
+  Si vous avez la moindre question, contactez notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+</p>
 
-    {% for ads_manager_admin, ads_manager_requests in ads_manager_requests.items|dictsort:"0.id" %}
-    <div class="fr-table">
-      <table>
-        <caption>Demandes pour la préfecture de {{ ads_manager_admin.prefecture.display_value }}</caption>
-        <thead>
-          <tr>
-            <th>Utilisateur</th>
-            <th>Type d'administration</th>
-            <th>Nom</th>
-            <th>Date de la demande</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for ads_manager_request in ads_manager_requests %}
-          <tr class="table-row-{% if ads_manager_request.accepted is True %}success{% elif ads_manager_request.accepted is False %}failure{% else %}unknown{% endif %}">
-            <td>{{ ads_manager_request.user.email }}</td>
-            <td>{{ ads_manager_request.ads_manager.content_object.display_type }}</td>
-            <td>{{ ads_manager_request.ads_manager.content_object.display_value }}</td>
-            <td>{{ ads_manager_request.created_at }}</td>
-            <td>
-              <div class="fr-grid-row fr-grid-row--gutters">
-                {% comment %}Request is pending{% endcomment %}
-                {% if ads_manager_request.accepted is None %}
-                <div class="fr-p-1w">
-                  <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
-                    <input type="hidden" name="action" value="accept" />
-                    <button type="submit" class="fr-btn fr-btn--sm">Accepter</button>
-                  </form>
-                </div>
-                <div class="fr-p-1w">
-                  <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
-                    <input type="hidden" name="action" value="deny" />
-                    <button type="submit" class="fr-btn fr-btn--sm">Refuser</button>
-                  </form>
-                </div>
-                {% comment %}Request has been accepted: allow to revoke access{% endcomment %}
-                {% elif ads_manager_request.accepted is True %}
-                <div class="fr-p-1w">
-                  <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
-                    <input type="hidden" name="action" value="deny" />
-                    <button type="submit" class="fr-btn fr-btn--sm">Supprimer l'accès</button>
-                  </form>
-                </div>
-                {% comment %}Request has been denied: allow to accept it{% endcomment %}
-                {% elif ads_manager_request.accepted is False %}
-                <div class="fr-p-1w">
-                  <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
-                    <input type="hidden" name="action" value="accept" />
-                    <button type="submit" class="fr-btn fr-btn--sm">Donner l'accès</button>
-                  </form>
-                </div>
-                {% endif %}
-              </div>
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="5">Aucune demande en cours</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% endfor %}
-
-  </div>
+{% for ads_manager_admin, ads_manager_requests in ads_manager_requests.items|dictsort:"0.id" %}
+<div class="fr-table">
+  <table>
+    <caption>Demandes pour la préfecture de {{ ads_manager_admin.prefecture.display_value }}</caption>
+    <thead>
+      <tr>
+        <th>Utilisateur</th>
+        <th>Type d'administration</th>
+        <th>Nom</th>
+        <th>Date de la demande</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ads_manager_request in ads_manager_requests %}
+      <tr class="table-row-{% if ads_manager_request.accepted is True %}success{% elif ads_manager_request.accepted is False %}failure{% else %}unknown{% endif %}">
+        <td>{{ ads_manager_request.user.email }}</td>
+        <td>{{ ads_manager_request.ads_manager.content_object.display_type }}</td>
+        <td>{{ ads_manager_request.ads_manager.content_object.display_value }}</td>
+        <td>{{ ads_manager_request.created_at }}</td>
+        <td>
+          <div class="fr-grid-row fr-grid-row--gutters">
+            {% comment %}Request is pending{% endcomment %}
+            {% if ads_manager_request.accepted is None %}
+            <div class="fr-p-1w">
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
+                <input type="hidden" name="action" value="accept" />
+                <button type="submit" class="fr-btn fr-btn--sm">Accepter</button>
+              </form>
+            </div>
+            <div class="fr-p-1w">
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
+                <input type="hidden" name="action" value="deny" />
+                <button type="submit" class="fr-btn fr-btn--sm">Refuser</button>
+              </form>
+            </div>
+            {% comment %}Request has been accepted: allow to revoke access{% endcomment %}
+            {% elif ads_manager_request.accepted is True %}
+            <div class="fr-p-1w">
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
+                <input type="hidden" name="action" value="deny" />
+                <button type="submit" class="fr-btn fr-btn--sm">Supprimer l'accès</button>
+              </form>
+            </div>
+            {% comment %}Request has been denied: allow to accept it{% endcomment %}
+            {% elif ads_manager_request.accepted is False %}
+            <div class="fr-p-1w">
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
+                <input type="hidden" name="action" value="accept" />
+                <button type="submit" class="fr-btn fr-btn--sm">Donner l'accès</button>
+              </form>
+            </div>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5">Aucune demande en cours</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
+{% endfor %}
 {% endblock %}

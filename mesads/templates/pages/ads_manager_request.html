@@ -4,131 +4,126 @@
 {% block title %}Gestionnaire ADS{% endblock %}
 
 {% block body %}
-<div class="fr-grid-row fr-grid-row--center">
-  <div class="fr-col-12 fr-col-sm-8 fr-col-md-8">
-    {% if user.adsmanagerrequest_set.all|length > 0 %}
-
-    <div class="fr-table">
-      <table>
-        <caption>Administrations en gestion</caption>
-        <thead>
-          <tr>
-            <th>Type d'administration</th>
-            <th>Nom</th>
-            <th>Statut</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for request in user.adsmanagerrequest_set.all %}
-          <tr>
-            <td>{{ request.ads_manager.content_object.display_type }}</td>
-            <td>{{ request.ads_manager.content_object.display_value }}</td>
-            <td>
-              {% if request.accepted is None %}
-              ⏱ En attente de validation par la préfecture
-              {% elif request.accepted is False %}
-              🚫 Demande refusée
-              {% elif request.accepted is True %}
-              ✅ <a href="{% url 'ads-manager' manager_id=request.ads_manager.id %}">Gérez les ADS</a>
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-
-    <p>
-      Si vous avez le moindre problème, par exemple si votre demande est refusée ou met trop de temps avant d'être acceptée, vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
-    </p>
-
-    {% endif %}
-
-    <h4>Configuration de l'accès gestionnaire</h4>
-
-    <p>
-      Si vous souhaitez gérer les ADS d'une administration, renseignez ci-dessous la commune <strong>ou</strong> l'EPCI <strong>ou</strong> la préfecture.
-    </p>
-
-    <p>
-      La préfecture recevra la demande. Une fois celle-ci acceptée, vous pourrez gérer les ADS.
-    </p>
-
-    <form class="fr-grid-row fr-grid-row--middle" method="post" action="{% url 'ads-manager-request' %}">
-      {% csrf_token %}
-
-      <!-- Commune -->
-      <div class="fr-col-12 fr-input-group{% if form.errors.commune %} fr-input-group--error{% endif %}">
-        <label
-          class="fr-label"
-          for="{{ form.commune.name }}"
-        >
-          {{ form.commune.label }} :
-        </label>
-
-        {{ form.commune }}
-
-        {% for error in form.errors.commune %}
-        <p class="fr-error-text">
-          {{ error }}
-        </p>
-        {% endfor %}
-      </div>
-
-      <!-- EPCI -->
-      <div class="fr-col-12 fr-input-group{% if form.errors.epci %} fr-input-group--error{% endif %}">
-        <label
-          class="fr-label"
-          for="{{ form.epci.name }}"
-        >
-          {{ form.epci.label }} :
-        </label>
-
-        {{ form.epci }}
-
-        {% for error in form.errors.epci %}
-        <p class="fr-error-text">
-          {{ error }}
-        </p>
-        {% endfor %}
-      </div>
-
-      <!-- Prefecture -->
-      <div class="fr-col-12 fr-input-group{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
-        <label
-          class="fr-label"
-          for="{{ form.prefecture.name }}"
-        >
-          {{ form.prefecture.label }} :
-        </label>
-
-        {{ form.prefecture }}
-
-        {% for error in form.errors.prefecture %}
-        <p class="fr-error-text">
-          {{ error }}
-        </p>
-        {% endfor %}
-      </div>
-
-      <!-- Non-fields errors -->
-      {% if form.non_field_errors %}
-        <div class="fr-col-12 fr-input-group fr-input-group--error">
-          {% for error in form.non_field_errors %}
-          <!-- Non-field error -->
-          <p class="fr-error-text">
-            {{ error }}
-          </p>
-          {% endfor %}
-        </div>
-      {% endif %}
-
-      <div class="fr-col-12 fr-input-group">
-        <button type="submit" class="fr-btn">Envoyer la demande à la préfecture</button>
-      </div>
-    </form>
-  </div>
+{% if user.adsmanagerrequest_set.all|length > 0 %}
+<div class="fr-table">
+  <table>
+    <caption>Administrations en gestion</caption>
+    <thead>
+      <tr>
+        <th>Type d'administration</th>
+        <th>Nom</th>
+        <th>Statut</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for request in user.adsmanagerrequest_set.all %}
+      <tr>
+        <td>{{ request.ads_manager.content_object.display_type }}</td>
+        <td>{{ request.ads_manager.content_object.display_value }}</td>
+        <td>
+          {% if request.accepted is None %}
+          ⏱ En attente de validation par la préfecture
+          {% elif request.accepted is False %}
+          🚫 Demande refusée
+          {% elif request.accepted is True %}
+          ✅ <a href="{% url 'ads-manager' manager_id=request.ads_manager.id %}">Gérez les ADS</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
+
+<p>
+  Si vous avez le moindre problème, par exemple si votre demande est refusée ou met trop de temps avant d'être acceptée, vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+</p>
+
+{% endif %}
+
+<h4>Configuration de l'accès gestionnaire</h4>
+
+<p>
+  Si vous souhaitez gérer les ADS d'une administration, renseignez ci-dessous la commune <strong>ou</strong> l'EPCI <strong>ou</strong> la préfecture.
+</p>
+
+<p>
+  La préfecture recevra la demande. Une fois celle-ci acceptée, vous pourrez gérer les ADS.
+</p>
+
+<form class="fr-grid-row fr-grid-row--middle" method="post" action="{% url 'ads-manager-request' %}">
+  {% csrf_token %}
+
+  <!-- Commune -->
+  <div class="fr-col-12 fr-input-group{% if form.errors.commune %} fr-input-group--error{% endif %}">
+    <label
+      class="fr-label"
+      for="{{ form.commune.name }}"
+    >
+      {{ form.commune.label }} :
+    </label>
+
+    {{ form.commune }}
+
+    {% for error in form.errors.commune %}
+    <p class="fr-error-text">
+      {{ error }}
+    </p>
+    {% endfor %}
+  </div>
+
+  <!-- EPCI -->
+  <div class="fr-col-12 fr-input-group{% if form.errors.epci %} fr-input-group--error{% endif %}">
+    <label
+      class="fr-label"
+      for="{{ form.epci.name }}"
+    >
+      {{ form.epci.label }} :
+    </label>
+
+    {{ form.epci }}
+
+    {% for error in form.errors.epci %}
+    <p class="fr-error-text">
+      {{ error }}
+    </p>
+    {% endfor %}
+  </div>
+
+  <!-- Prefecture -->
+  <div class="fr-col-12 fr-input-group{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
+    <label
+      class="fr-label"
+      for="{{ form.prefecture.name }}"
+    >
+      {{ form.prefecture.label }} :
+    </label>
+
+    {{ form.prefecture }}
+
+    {% for error in form.errors.prefecture %}
+    <p class="fr-error-text">
+      {{ error }}
+    </p>
+    {% endfor %}
+  </div>
+
+  <!-- Non-fields errors -->
+  {% if form.non_field_errors %}
+    <div class="fr-col-12 fr-input-group fr-input-group--error">
+      {% for error in form.non_field_errors %}
+      <!-- Non-field error -->
+      <p class="fr-error-text">
+        {{ error }}
+      </p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="fr-col-12 fr-input-group">
+    <button type="submit" class="fr-btn">Envoyer la demande à la préfecture</button>
+  </div>
+</form>
 {% endblock %}
 
 {% block endbody %}

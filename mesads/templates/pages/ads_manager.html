@@ -3,34 +3,30 @@
 {% block title %}Gestion des ADS{% endblock %}
 
 {% block body %}
-<div class="fr-grid-row fr-grid-row--center">
-  <div class="fr-col-12 fr-col-sm-8 fr-col-md-8">
-    <div class="fr-table">
-      <table>
-        <caption>ADS de {{ ads_manager.content_object.display_value }}</caption>
-        <thead>
-          <tr>
-            <th>Numéro</th>
-            <th>Date de création</th>
-            <th>Date d'attribution</th>
-            <th>CPAM</th>
-            <th>Propriétaire</th>
-            <th>Utilisateur</th>
-        </thead>
-        <tbody>
-          {% for ads in ads_list %}
-          <tr>
-            <td>{{ ads.number }}</td>
-            <td>{{ ads.ads_creation_date }}</td>
-            <td>{{ ads.attribution_date }}</td>
-            <td>{% if ads.accepted_cpam %}👍{% else %}🚫{% endif %}</td>
-            <td>{{ ads.owner_firstname}}<br />{{ ads.owner_lastname }}</td>
-            <td>{{ ads.user_name }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
+<div class="fr-table">
+  <table>
+    <caption>ADS de {{ ads_manager.content_object.display_value }}</caption>
+    <thead>
+      <tr>
+        <th>Numéro</th>
+        <th>Date de création</th>
+        <th>Date d'attribution</th>
+        <th>CPAM</th>
+        <th>Propriétaire</th>
+        <th>Utilisateur</th>
+    </thead>
+    <tbody>
+      {% for ads in ads_list %}
+      <tr>
+        <td>{{ ads.number }}</td>
+        <td>{{ ads.ads_creation_date }}</td>
+        <td>{{ ads.attribution_date }}</td>
+        <td>{% if ads.accepted_cpam %}👍{% else %}🚫{% endif %}</td>
+        <td>{{ ads.owner_firstname}}<br />{{ ads.owner_lastname }}</td>
+        <td>{{ ads.user_name }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {% endblock %}
