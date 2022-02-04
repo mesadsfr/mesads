@@ -25,6 +25,10 @@
         <td>{{ ads.owner_firstname}}<br />{{ ads.owner_lastname }}</td>
         <td>{{ ads.user_name }}</td>
       </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6">Aucune ADS enregistrée</td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
