@@ -138,17 +138,13 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
 class ADSManagerRequestAdmin(admin.ModelAdmin):
     autocomplete_fields = ('ads_manager',)
 
-    list_display = ('created_at', 'user', 'administration_type', 'administration', 'accepted')
+    list_display = ('created_at', 'user', 'administration', 'accepted')
     ordering = ('-created_at',)
     list_filter = ('accepted',)
 
     @admin.display
-    def administration_type(self, ads_manager_request):
-        return ads_manager_request.ads_manager.content_object.display_type()
-
-    @admin.display
     def administration(self, ads_manager_request):
-        return ads_manager_request.ads_manager.content_object.display_value()
+        return ads_manager_request.ads_manager.content_object.display_text()
 
     def get_queryset(self, request):
         req = super().get_queryset(request)

@@ -8,12 +8,8 @@ class AdministrationModel(models.Model):
     class Meta:
         abstract = True
 
-    def display_type(self):
-        """Administration type (Prefecture, EPCI or Commune)."""
-        raise NotImplementedError
-
-    def display_value(self):
-        """Value displayed to users."""
+    def display_text(self):
+        """Human readable name of this administration."""
         raise NotImplementedError
 
 
@@ -35,11 +31,10 @@ class Commune(AdministrationModel):
             ('departement', 'libelle'),
         )
 
-    def display_type(self):
-        return 'Commune'
-
-    def display_value(self):
-        return self.libelle
+    def display_text(self):
+        if self.libelle.lower()[0:1] in 'aeiouy':
+            return f'commune d\'{self.libelle}'
+        return f'commune de {self.libelle}'
 
     def __str__(self):
         return f'{self.departement} - {self.libelle} (INSEE: {self.insee})'
@@ -72,11 +67,14 @@ class Prefecture(AdministrationModel):
         related_query_name='prefecture'
     )
 
-    def display_type(self):
-        return 'Préfecture'
-
-    def display_value(self):
-        return self.libelle
+    def display_text(self):
+        # Special case when "libelle" equals "Préfecture de Police de Paris":
+        # return "préfecture de xxx" (with lowercase "p" at the beginning)
+        if self.libelle.lower().startswith('préfecture'):
+            return 'p' + self.libelle[1:]
+        elif self.libelle.lower()[0:1] in 'aeiouy':
+            return f'préfecture d\'{self.libelle}'
+        return f'préfecture de {self.libelle}'
 
     def __str__(self):
         return f'{self.numero} - {self.libelle}'
@@ -102,11 +100,8 @@ class EPCI(AdministrationModel):
             ('departement', 'name'),
         )
 
-    def display_type(self):
-        return 'EPCI'
-
-    def display_value(self):
-        return self.name
+    def display_text(self):
+        return f'EPCI {self.name}'
 
     def __str__(self):
         return self.name

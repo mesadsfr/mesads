@@ -10,16 +10,14 @@
     <caption>Administrations en gestion</caption>
     <thead>
       <tr>
-        <th>Type d'administration</th>
-        <th>Nom</th>
+        <th>Administration</th>
         <th>Statut</th>
       </tr>
     </thead>
     <tbody>
       {% for request in user.adsmanagerrequest_set.all %}
       <tr>
-        <td>{{ request.ads_manager.content_object.display_type }}</td>
-        <td>{{ request.ads_manager.content_object.display_value }}</td>
+        <td>{{ request.ads_manager.content_object.display_text|capfirst }}</td>
         <td>
           {% if request.accepted is None %}
           ⏱ En attente de validation par la préfecture
