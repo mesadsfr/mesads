@@ -14,5 +14,8 @@ class UserAdmin(admin.ModelAdmin):
         roles = user.adsmanageradministrator_set.all()
         return format_html('<br />'.join(str(role) for role in roles))
 
+    def has_add_permission(self, request, obj=None):
+        return False
+
 
 admin.site.register(User, UserAdmin)
