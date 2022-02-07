@@ -40,19 +40,21 @@ class ADSInline(ReadOnlyInline):
 
 @admin.register(ADSManager)
 class ADSManagerAdmin(admin.ModelAdmin):
+
+    @admin.display(description='Administration')
+    def administration(self, obj):
+        return obj.content_object.display_text()
+
     list_display = (
-        lambda ads_manager: ads_manager.content_type.name,
-        'content_object',
+        'administration',
     )
 
     fields = (
-        'content_type',
-        'object_id',
+        'administration',
     )
 
     readonly_fields = (
-        'content_type',
-        'object_id',
+        'administration',
     )
 
     search_fields = (
@@ -142,7 +144,7 @@ class ADSManagerRequestAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)
     list_filter = ('accepted',)
 
-    @admin.display
+    @admin.display(description='Administration')
     def administration(self, ads_manager_request):
         return ads_manager_request.ads_manager.content_object.display_text()
 
@@ -156,8 +158,13 @@ class ADSManagerRequestAdmin(admin.ModelAdmin):
 
 @admin.register(ADS)
 class ADSAdmin(admin.ModelAdmin):
+
+    @admin.display(description='Administration')
+    def administration(self, ads):
+        return ads.ads_manager.content_object.display_text()
+
     list_display = (
-        'ads_manager',
+        'administration',
         'number',
         'ads_creation_date',
         'attribution_date',
