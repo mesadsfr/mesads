@@ -143,6 +143,41 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
         """Added by command load_ads_managers."""
         return False
 
+    def save_related(self, request, form, formsets, change):
+        """When saving ADSManagerAdministrator, we create a ADSManagerRequest
+        with the attribute "accepted" to True for each user with access, or
+        remove the request for each removed user.
+
+        This allows users to manage the ADS of the prefecture of which they are
+        administrators.
+        """
+        super().save_related(request, form, formsets, change)
+
+        # formsets[1] is a list of dict with the following keys:
+        # * adsmanageradministrator: the object being updated
+        # * user: called for each user added/removed from administrators
+        # * DELETE: boolean to "True" if the user is being removed
+        #
+        # The dictionary is empty for non-configured rows (ie. rows without
+        # user selected).
+        for row in formsets[1].cleaned_data:
+            if not row:
+                continue
+
+            ads_manager = ADSManager.objects.get(
+                prefecture=row['adsmanageradministrator'].prefecture
+            )
+            (ads_manager_request, _) = ADSManagerRequest.objects.get_or_create(
+                user=row['user'],
+                ads_manager=ads_manager
+            )
+
+            if row['DELETE']:
+                ads_manager_request.delete()
+            elif not ads_manager_request.accepted:
+                ads_manager_request.accepted = True
+                ads_manager_request.save()
+
 
 @admin.register(ADSManagerRequest)
 class ADSManagerRequestAdmin(admin.ModelAdmin):
