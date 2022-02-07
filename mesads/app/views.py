@@ -15,12 +15,9 @@ class HomepageView(RedirectView):
     HowItWorksView.
     """
     def get_redirect_url(self, *args, **kwargs):
-        if self.request.user.is_authenticated:
-            if len(self.request.user.adsmanageradministrator_set.all()):
-                return reverse('ads-manager-admin')
-            if len(self.request.user.adsmanager_set.all()):
-                return reverse('ads-manager-request')
-        return reverse('how-it-works')
+        if self.request.user.is_authenticated and len(self.request.user.adsmanageradministrator_set.all()):
+            return reverse('ads-manager-admin')
+        return reverse('ads-manager-request')
 
 
 class HowItWorksView(TemplateView):
