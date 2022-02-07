@@ -85,8 +85,16 @@ class ADSManagerAdmin(admin.ModelAdmin):
 class ADSManagerInline(ReadOnlyInline):
     model = ADSManagerAdministrator.ads_managers.through
 
+    @admin.display(description='Administration')
+    def administration(self, rel):
+        return rel.adsmanager.content_object.display_text()
+
     fields = (
-        'adsmanager',
+        'administration',
+    )
+
+    readonly_fields = (
+        'administration',
     )
 
     def get_queryset(self, request):
