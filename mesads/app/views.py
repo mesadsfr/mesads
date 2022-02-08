@@ -76,6 +76,20 @@ class ADSManagerRequestView(FormView):
     form_class = ADSManagerForm
     success_url = reverse_lazy('ads-manager-request')
 
+    def get_context_data(self, **kwargs):
+        """Expose the list of ADSManagerAdministrators for which current user
+        is configured.
+
+        It is also accessible through user.adsmanageradministrator_set.all, but
+        we need to prefetch ads_managers__content_object to reduce the number
+        of SQL queries generated.
+        """
+        ctx = super().get_context_data(**kwargs)
+        ctx['ads_managers_administrators'] = ADSManagerAdministrator.objects.filter(
+            users__in=[self.request.user]
+        ).prefetch_related('ads_managers__content_object')
+        return ctx
+
     def form_valid(self, form):
         ADSManagerRequest.objects.get_or_create(
             user=self.request.user,

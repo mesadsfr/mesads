@@ -32,12 +32,35 @@
     </tbody>
   </table>
 </div>
+{% endif %}
+
+{% for ads_manager_administrator in ads_managers_administrators %}
+<div class="fr-table">
+  <table>
+      <caption>{{ ads_manager_administrator.prefecture.display_text|capfirst }}</caption>
+    <thead>
+      <tr>
+        <th>Administration</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ads_manager in ads_manager_administrator.ads_managers.all  %}
+      <tr>
+        <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
+        <td>
+          ✅ <a href="{% url 'ads-manager' manager_id=ads_manager.id %}">Gérez les ADS</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endfor %}
 
 <p>
   Si vous avez le moindre problème, par exemple si votre demande est refusée ou met trop de temps avant d'être acceptée, vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
 </p>
-
-{% endif %}
 
 <h4>Configuration de l'accès gestionnaire</h4>
 

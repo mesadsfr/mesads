@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
-from django.db import transaction
 
 from .models import ADS, ADSManager, ADSManagerAdministrator, ADSManagerRequest
 
@@ -143,41 +142,6 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         """Added by command load_ads_managers."""
         return False
-
-    def save_related(self, request, form, formsets, change):
-        """ADSManagerAdministrator contains a list of users who can accept or
-        reject requests to become ADSManager from administrations managed by
-        the prefecture.
-
-        When saving users of ADSManagerAdministrator, we create for each of
-        them an entry in ADSManagerRequest for each administration depending on
-        the prefecture.
-
-        In other words, people working for the prefecture can manage the ADS of
-        administrations under the authority of this prefecture.
-        """
-        super().save_related(request, form, formsets, change)
-
-        with transaction.atomic():
-            for ads_manager in form.instance.ads_managers.all():
-                # formsets[1] is a list of dict with the keys "user" (user for which we
-                # add or remove access) and "DELETE" (True when user is removed)
-                #
-                # Dictionary is empty if user is not configured for this form row.
-                for row in formsets[1].cleaned_data:
-                    if not row:
-                        continue
-
-                    (ads_manager_request, created) = ADSManagerRequest.objects.get_or_create(
-                        user=row['user'],
-                        ads_manager=ads_manager
-                    )
-
-                    if row['DELETE']:
-                        ads_manager_request.delete()
-                    elif created:
-                        ads_manager_request.accepted = True
-                        ads_manager_request.save()
 
 
 @admin.register(ADSManagerRequest)
