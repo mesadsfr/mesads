@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
+from django.db import transaction
 
 from .models import ADS, ADSManager, ADSManagerAdministrator, ADSManagerRequest
 
@@ -144,39 +145,39 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
         return False
 
     def save_related(self, request, form, formsets, change):
-        """When saving ADSManagerAdministrator, we create a ADSManagerRequest
-        with the attribute "accepted" to True for each user with access, or
-        remove the request for each removed user.
+        """ADSManagerAdministrator contains a list of users who can accept or
+        reject requests to become ADSManager from administrations managed by
+        the prefecture.
 
-        This allows users to manage the ADS of the prefecture of which they are
-        administrators.
+        When saving users of ADSManagerAdministrator, we create for each of
+        them an entry in ADSManagerRequest for each administration depending on
+        the prefecture.
+
+        In other words, people working for the prefecture can manage the ADS of
+        administrations under the authority of this prefecture.
         """
         super().save_related(request, form, formsets, change)
 
-        # formsets[1] is a list of dict with the following keys:
-        # * adsmanageradministrator: the object being updated
-        # * user: called for each user added/removed from administrators
-        # * DELETE: boolean to "True" if the user is being removed
-        #
-        # The dictionary is empty for non-configured rows (ie. rows without
-        # user selected).
-        for row in formsets[1].cleaned_data:
-            if not row:
-                continue
+        with transaction.atomic():
+            for ads_manager in form.instance.ads_managers.all():
+                # formsets[1] is a list of dict with the keys "user" (user for which we
+                # add or remove access) and "DELETE" (True when user is removed)
+                #
+                # Dictionary is empty if user is not configured for this form row.
+                for row in formsets[1].cleaned_data:
+                    if not row:
+                        continue
 
-            ads_manager = ADSManager.objects.get(
-                prefecture=row['adsmanageradministrator'].prefecture
-            )
-            (ads_manager_request, _) = ADSManagerRequest.objects.get_or_create(
-                user=row['user'],
-                ads_manager=ads_manager
-            )
+                    (ads_manager_request, created) = ADSManagerRequest.objects.get_or_create(
+                        user=row['user'],
+                        ads_manager=ads_manager
+                    )
 
-            if row['DELETE']:
-                ads_manager_request.delete()
-            elif not ads_manager_request.accepted:
-                ads_manager_request.accepted = True
-                ads_manager_request.save()
+                    if row['DELETE']:
+                        ads_manager_request.delete()
+                    elif created:
+                        ads_manager_request.accepted = True
+                        ads_manager_request.save()
 
 
 @admin.register(ADSManagerRequest)
