@@ -4,8 +4,16 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models import Count
 
 from mesads.fradm.models import Prefecture
+
+
+class ADSManagerModelManager(models.Manager):
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.annotate(ads_count=Count('ads'))
+        return qs
 
 
 class ADSManager(models.Model):
@@ -23,8 +31,14 @@ class ADSManager(models.Model):
             ('content_type', 'object_id'),
         )
 
+        # This is required, otherwise reverse relationship don't get the
+        # attribute ads_count set by ADSManagerModelManager.
+        base_manager_name = 'objects'
+
     def __str__(self):
         return f'{self.content_type.name} - {self.content_object}'
+
+    objects = ADSManagerModelManager()
 
     content_type = models.ForeignKey(
         ContentType,

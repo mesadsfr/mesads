@@ -11,6 +11,7 @@
     <thead>
       <tr>
         <th>Administration</th>
+        <th>Nombre d'ADS enregistrées</th>
         <th>Statut</th>
       </tr>
     </thead>
@@ -18,6 +19,7 @@
       {% for request in user.adsmanagerrequest_set.all %}
       <tr>
         <td>{{ request.ads_manager.content_object.display_text|capfirst }}</td>
+        <td>{% if request.ads_manager.ads_count %}{{ request.ads_manager.ads_count }}{% else %}-{% endif %}</td>
         <td>
           {% if request.accepted is None %}
           ⏱ En attente de validation par la préfecture
@@ -41,6 +43,7 @@
     <thead>
       <tr>
         <th>Administration</th>
+        <th>Nombre d'ADS enregistrées</th>
         <th>Action</th>
       </tr>
     </thead>
@@ -48,6 +51,7 @@
       {% for ads_manager in ads_manager_administrator.ads_managers.all  %}
       <tr>
         <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
+        <td>{% if ads_manager.ads_count %}{{ ads_manager.ads_count }}{% else %}-{% endif %}</td>
         <td>
           ✅ <a href="{% url 'ads-manager' manager_id=ads_manager.id %}">Gérez les ADS</a>
         </td>
