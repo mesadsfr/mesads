@@ -47,14 +47,17 @@ class ADSManagerAdmin(admin.ModelAdmin):
 
     list_display = (
         'administration',
+        'display_ads_count',
     )
 
     fields = (
         'administration',
+        'display_ads_count',
     )
 
     readonly_fields = (
         'administration',
+        'display_ads_count',
     )
 
     search_fields = (
@@ -67,11 +70,20 @@ class ADSManagerAdmin(admin.ModelAdmin):
         ADSInline,
     )
 
+    @admin.display(description='Nombre d\'ADS enregistrées')
+    def display_ads_count(self, ads_manager):
+        """Render a dash if ads_count is zero to improve readability."""
+        return ads_manager.ads_count or '-'
+
     def get_queryset(self, request):
         req = super().get_queryset(request)
         req = req.prefetch_related('content_type')
         req = req.prefetch_related('content_object')
         return req
+
+    @admin.display(description='Nombre d\'ADS enregistrées')
+    def ads_count(self, ads_manager):
+        return ads_manager.ads_count
 
     def has_add_permission(self, request, obj=None):
         """Added by command load_ads_managers."""
@@ -91,11 +103,16 @@ class ADSManagerInline(ReadOnlyInline):
 
     fields = (
         'administration',
+        'ads_count',
     )
 
     readonly_fields = (
         'administration',
+        'ads_count',
     )
+
+    def ads_count(self, ads_manager_admin_m2m):
+        return ads_manager_admin_m2m.adsmanager.ads_count or '-'
 
     def get_queryset(self, request):
         req = super().get_queryset(request)
@@ -113,7 +130,13 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         req = super().get_queryset(request)
         req = req.prefetch_related('prefecture')
+        req = req.prefetch_related('ads_managers')
         return req
+
+    list_display = (
+        '__str__',
+        'ads_count',
+    )
 
     inlines = (
         ADSManagerInline,
@@ -122,10 +145,12 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
 
     fields = (
         'prefecture',
+        'ads_count',
     )
 
     readonly_fields = (
         'prefecture',
+        'ads_count',
     )
 
     search_fields = (
@@ -134,6 +159,13 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
 
     # ads_managers is rendered by ADSManagerInline.
     exclude = ('ads_managers',)
+
+    @admin.display(description='Nombre d\'ADS enregistrées')
+    def ads_count(self, ads_manager_administrator):
+        return sum(
+            ads_manager.ads_count
+            for ads_manager in ads_manager_administrator.ads_managers.all()
+        ) or '-'
 
     def has_add_permission(self, request, obj=None):
         """Added by command load_ads_managers."""
