@@ -28,6 +28,7 @@ class ADSInline(ReadOnlyInline):
     """ADS can be created, deleted or changed from ADSAdmin. This inline is
     read only."""
     model = ADS
+    show_change_link = True
 
     fields = (
         'number',
@@ -94,8 +95,28 @@ class ADSManagerAdmin(admin.ModelAdmin):
         return False
 
 
+@admin.register(ADSManagerAdministrator.ads_managers.through)
+class ADSManagerAdministratorASDManagers(admin.ModelAdmin):
+    """M2M model of ADSManagerAdministrator.ads_managers.
+
+    In ADSManagerInline, show_change_link is set to True so a link redirecting
+    to this model is displayed in
+    /admin/app/adsmanageradministrator/xxx/change. If this model was not
+    registered, the link would not be rendered."""
+    readonly_fields = (
+        'adsmanageradministrator',
+        'adsmanager',
+    )
+
+    def has_module_permission(self, request):
+        """Remove entry from menu. We do not need to expose the listing page of
+        this model."""
+        return False
+
+
 class ADSManagerInline(ReadOnlyInline):
     model = ADSManagerAdministrator.ads_managers.through
+    show_change_link = True
 
     @admin.display(description='Administration')
     def administration(self, rel):

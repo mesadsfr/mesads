@@ -176,6 +176,9 @@ class ADS(models.Model):
         verbose_name = 'ADS'
         verbose_name_plural = 'ADS'
 
+    def __str__(self):
+        return f'ADS {self.id}'
+
     number = models.CharField(max_length=255, null=False, blank=False)
     ads_manager = models.ForeignKey(ADSManager, on_delete=models.CASCADE)
 
