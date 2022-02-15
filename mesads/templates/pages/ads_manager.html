@@ -8,12 +8,13 @@
     <caption>ADS de {{ ads_manager.content_object.display_text }}</caption>
     <thead>
       <tr>
-        <th>Numéro</th>
-        <th>Date de création</th>
-        <th>Date d'attribution</th>
-        <th>Conventionné<br />CPAM ?</th>
-        <th>Propriétaire</th>
-        <th>Utilisateur</th>
+        <th>♯ Numéro</th>
+        <th>📜 Date de création</th>
+        <th>🗓 Date d'attribution</th>
+        <th>🚑 Conventionné<br />CPAM ?</th>
+        <th>🤴 Propriétaire</th>
+        <th>🚕 Utilisateur</th>
+        <th>🔎 Action</th>
     </thead>
     <tbody>
       {% for ads in ads_list %}
@@ -24,6 +25,7 @@
         <td>{% if ads.accepted_cpam %}👍{% else %}🚫{% endif %}</td>
         <td>{{ ads.owner_firstname}}<br />{{ ads.owner_lastname }}</td>
         <td>{{ ads.user_name }}</td>
+        <td><a href="#">Modifier</a></td>
       </tr>
       {% empty %}
       <tr>
