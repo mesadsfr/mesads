@@ -3,10 +3,27 @@
 {% block title %}Gestion des ADS{% endblock %}
 
 {% block body %}
+<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
+  <div class="fr-collapse" id="breadcrumb-1">
+    <ol class="fr-breadcrumb__list">
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'ads-manager-request' %}">Gestion des ADS</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'ads-manager' manager_id=ads.ads_manager.id %}">{{ ads.ads_manager.content_object.display_text|capfirst }}</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" aria-current="page">ADS numéro {{ ads.number }}</a>
+      </li>
+    </ol>
+  </div>
+</nav>
+
 <h1>{{ ads.ads_manager.content_object.display_text|capfirst }}, ADS numéro {{ ads.number }}</h1>
 
 <div class="fr-grid-row">
-  <form class="fr-col-12 fr-col-sm-8 fr-col-md-6" method="post" action="{% url 'ads' manager_id=ads.ads_manager.id ads_id=ads.id %}">
+  <form class="fr-col-12 fr-col-sm-8 fr-col-md-6" method="post">
     {% csrf_token %}
 
     <!-- ADS number -->
