@@ -17,6 +17,10 @@
   </div>
 </nav>
 
+<p>
+  <a class="fr-link fr-fi-arrow-right-line fr-link--icon-right" href="{% url 'ads.create' manager_id=ads_manager.id %}">Créer une nouvelle ADS</a>
+</p>
+
 <div class="fr-table">
   <table>
     <caption>ADS de {{ ads_manager.content_object.display_text }}</caption>

@@ -140,7 +140,31 @@ class ADSView(UpdateView):
     )
 
     def get_success_url(self):
-        return reverse('ads', kwargs=self.kwargs)
+        return reverse('ads', kwargs={
+            'manager_id': self.kwargs['manager_id'],
+            'ads_id': self.kwargs['ads_id'],
+        })
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['ads_manager'] = ADSManager.objects.get(id=self.kwargs['manager_id'])
+        return ctx
 
     def get_object(self, queryset=None):
         return get_object_or_404(ADS, id=self.kwargs['ads_id'])
+
+
+class ADSCreateView(ADSView):
+    def get_object(self, queryset=None):
+        return None
+
+    def get_success_url(self):
+        return reverse('ads', kwargs={
+            'manager_id': self.kwargs['manager_id'],
+            'ads_id': self.object.id,
+        })
+
+    def form_valid(self, form):
+        ads_manager = ADSManager.objects.get(id=self.kwargs['manager_id'])
+        form.instance.ads_manager = ads_manager
+        return super().form_valid(form)

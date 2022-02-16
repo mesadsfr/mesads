@@ -11,16 +11,26 @@
         <a class="fr-breadcrumb__link" href="{% url 'ads-manager-request' %}">Gestion des ADS</a>
       </li>
       <li>
-        <a class="fr-breadcrumb__link" href="{% url 'ads-manager' manager_id=ads.ads_manager.id %}">{{ ads.ads_manager.content_object.display_text|capfirst }}</a>
+        <a class="fr-breadcrumb__link" href="{% url 'ads-manager' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
       </li>
       <li>
+      {% if ads %}
         <a class="fr-breadcrumb__link" aria-current="page">ADS numéro {{ ads.number }}</a>
+      {% else %}
+        <a class="fr-breadcrumb__link" aria-current="page">Création d'une nouvelle ADS</a>
+      {% endif %}
       </li>
     </ol>
   </div>
 </nav>
 
-<h1>{{ ads.ads_manager.content_object.display_text|capfirst }}, ADS numéro {{ ads.number }}</h1>
+<h1>
+{% if ads %}
+{{ ads.ads_manager.content_object.display_text|capfirst }}, ADS numéro {{ ads.number }}
+{% else %}
+Création d'une nouvelle ADS
+{% endif %}
+</h1>
 
 <div class="fr-grid-row">
   <form class="fr-col-12 fr-col-sm-8 fr-col-md-6" method="post">
@@ -75,7 +85,11 @@
     {% include 'pages/ads-form_string.html' with field_title="SIRET de l'utilisateur de l'ADS" field=form.user_siret field_errors=form.errors.user_siret %}
 
     <div class="fr-col-12 fr-input-group">
+      {% if ads %}
       <button type="submit" class="fr-btn">Modifier</button>
+      {% else %}
+      <button type="submit" class="fr-btn">Créer la nouvelle ADS</button>
+      {% endif %}
     </div>
   </form>
 </div>
