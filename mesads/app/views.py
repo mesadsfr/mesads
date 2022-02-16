@@ -140,8 +140,7 @@ class ADSView(UpdateView):
     )
 
     def get_success_url(self):
-        return reverse('ads', kwargs={'ads_id': self.kwargs['ads'].id})
+        return reverse('ads', kwargs=self.kwargs)
 
     def get_object(self, queryset=None):
-        # self.kwargs['ads'] is set by the decorator ads_manager_required
-        return self.kwargs['ads']
+        return get_object_or_404(ADS, id=self.kwargs['ads_id'])

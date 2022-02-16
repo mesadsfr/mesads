@@ -6,7 +6,7 @@
 <h1>{{ ads.ads_manager.content_object.display_text|capfirst }}, ADS numéro {{ ads.number }}</h1>
 
 <div class="fr-grid-row">
-  <form class="fr-col-12 fr-col-sm-8 fr-col-md-6" method="post" action="{% url 'ads' ads_id=ads.id %}">
+  <form class="fr-col-12 fr-col-sm-8 fr-col-md-6" method="post" action="{% url 'ads' manager_id=ads.ads_manager.id ads_id=ads.id %}">
     {% csrf_token %}
 
     <!-- ADS number -->

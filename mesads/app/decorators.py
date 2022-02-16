@@ -3,7 +3,7 @@ import functools
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 
-from .models import ADS, ADSManagerRequest, ADSManagerAdministrator
+from .models import ADSManagerRequest, ADSManagerAdministrator
 
 
 def ads_manager_required(func):
@@ -11,15 +11,7 @@ def ads_manager_required(func):
     flag "accepted" set to True, or if the user is not administrator.
     """
     @functools.wraps(func)
-    def wrapped(request, ads_id=None, manager_id=None, *args, **kwargs):
-        # Accept to provide ads_id or manager_id, not both.
-        assert bool(ads_id) ^ bool(manager_id)
-
-        ads = None
-        if ads_id:
-            ads = get_object_or_404(ADS, id=ads_id)
-            manager_id = ads.ads_manager.id
-
+    def wrapped(request, manager_id=None, *args, **kwargs):
         if not ADSManagerAdministrator.objects.filter(
             ads_managers__in=[manager_id],
             users__in=[request.user]
@@ -30,5 +22,5 @@ def ads_manager_required(func):
                 ads_manager__id=manager_id,
                 accepted=True,
             )
-        return func(request, ads=ads, manager_id=manager_id, *args, **kwargs)
+        return func(request, manager_id=manager_id, *args, **kwargs)
     return login_required(wrapped)
