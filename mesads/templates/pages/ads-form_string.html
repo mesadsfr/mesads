@@ -1,0 +1,22 @@
+<div class="fr-col-12 fr-input-group{% if field_errors %} fr-input-group--error{% endif %}">
+  <label
+    class="fr-label"
+    for="{{ field.name }}"
+  >
+    {{ field_title }} :
+  </label>
+
+  <input
+    class="fr-input{% if field_errors %} fr-input--error{% endif %}"
+    type="text"
+    id="{{ field.name}}"
+    name="{{ field.name }}"
+    value="{{ field.value|default:"" }}"
+  />
+
+  {% for error in field_errors %}
+  <p class="fr-error-text">
+    {{ error }}
+  </p>
+  {% endfor %}
+</div>

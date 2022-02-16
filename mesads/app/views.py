@@ -2,6 +2,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import RedirectView, TemplateView
+from django.views.generic import UpdateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 
@@ -113,3 +114,34 @@ class ADSManagerView(ListView):
         ctx = super().get_context_data(**kwargs)
         ctx['ads_manager'] = ADSManager.objects.get(id=self.kwargs['manager_id'])
         return ctx
+
+
+class ADSView(UpdateView):
+    template_name = 'pages/ads.html'
+    model = ADS
+    fields = (
+        'number',
+        'ads_creation_date',
+        'ads_type',
+        'attribution_date',
+        'attribution_type',
+        'attribution_reason',
+        'accepted_cpam',
+        'immatriculation_plate',
+        'vehicle_compatible_pmr',
+        'eco_vehicle',
+        'owner_firstname',
+        'owner_lastname',
+        'owner_siret',
+        'used_by_owner',
+        'user_status',
+        'user_name',
+        'user_siret',
+    )
+
+    def get_success_url(self):
+        return reverse('ads', kwargs={'ads_id': self.kwargs['ads'].id})
+
+    def get_object(self, queryset=None):
+        # self.kwargs['ads'] is set by the decorator ads_manager_required
+        return self.kwargs['ads']

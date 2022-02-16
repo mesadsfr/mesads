@@ -11,4 +11,5 @@ urlpatterns = [
     path('admin_gestionnaires', login_required(views.ADSManagerAdminView.as_view()), name='ads-manager-admin'),
     path('demande_gestion', login_required(views.ADSManagerRequestView.as_view()), name='ads-manager-request'),
     path('ads_gestion/<int:manager_id>/', ads_manager_required(views.ADSManagerView.as_view()), name='ads-manager'),
+    path('ads/<int:ads_id>', ads_manager_required(views.ADSView.as_view()), name='ads'),
 ]

@@ -25,7 +25,7 @@
         <td>{% if ads.accepted_cpam %}👍{% else %}🚫{% endif %}</td>
         <td>{{ ads.owner_firstname}}<br />{{ ads.owner_lastname }}</td>
         <td>{{ ads.user_name }}</td>
-        <td><a href="#">Modifier</a></td>
+        <td><a href="{% url 'ads' ads_id=ads.id %}">Modifier</a></td>
       </tr>
       {% empty %}
       <tr>
