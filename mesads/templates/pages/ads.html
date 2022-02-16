@@ -24,9 +24,15 @@
   </div>
 </nav>
 
+{% if ads %}
+<p>
+  <a class="fr-link fr-fi-arrow-right-line fr-link--icon-right" href="{% url 'ads.delete' manager_id=ads_manager.id ads_id=ads.id %}">Supprimer cette ADS</a>
+</p>
+{% endif %}
+
 <h1>
 {% if ads %}
-{{ ads.ads_manager.content_object.display_text|capfirst }}, ADS numéro {{ ads.number }}
+ADS numéro {{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})
 {% else %}
 Création d'une nouvelle ADS
 {% endif %}

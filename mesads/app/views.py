@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 from django.views.generic import UpdateView
-from django.views.generic.edit import FormView
+from django.views.generic.edit import CreateView, DeleteView, FormView
 from django.views.generic.list import ListView
 
 from .forms import ADSManagerForm
@@ -154,7 +154,17 @@ class ADSView(UpdateView):
         return get_object_or_404(ADS, id=self.kwargs['ads_id'])
 
 
-class ADSCreateView(ADSView):
+class ADSDeleteView(DeleteView, ADSView):
+    template_name = 'pages/ads_confirm_delete.html'
+    model = ADS
+
+    def get_success_url(self):
+        return reverse('ads-manager', kwargs={
+            'manager_id': self.kwargs['manager_id'],
+        })
+
+
+class ADSCreateView(ADSView, CreateView):
     def get_object(self, queryset=None):
         return None
 

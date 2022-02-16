@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Suppression de l'ADS {{ ads.numero }}{% endblock %}
+
+{% block body %}
+<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
+  <div class="fr-collapse" id="breadcrumb-1">
+    <ol class="fr-breadcrumb__list">
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'ads-manager-request' %}">Gestion des ADS</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'ads-manager' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" aria-current="page">ADS numéro {{ ads.number }}</a>
+      </li>
+    </ol>
+  </div>
+</nav>
+
+<h1>
+  Suppression de l'ADS numéro {{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})
+</h1>
+
+<form method="post">
+  {% csrf_token %}
+  <p>
+    Êtes-vous sûr de vouloir supprimer cette ADS ?
+  </p>
+  <input class="fr-btn" type="submit" value="Supprimer définitivement">
+</form>
+
+
+{% endblock %}
