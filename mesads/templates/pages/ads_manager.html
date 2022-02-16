@@ -22,7 +22,7 @@
         <td>{{ ads.number }}</td>
         <td>{{ ads.ads_creation_date }}</td>
         <td>{{ ads.attribution_date }}</td>
-        <td>{% if ads.accepted_cpam %}👍{% else %}🚫{% endif %}</td>
+        <td>{% if ads.accepted_cpam %}👍 Oui{% else %}❌ Non{% endif %}</td>
         <td>{{ ads.owner_firstname}}<br />{{ ads.owner_lastname }}</td>
         <td>{{ ads.user_name }}</td>
         <td><a href="{% url 'ads' ads_id=ads.id %}">Modifier</a></td>
