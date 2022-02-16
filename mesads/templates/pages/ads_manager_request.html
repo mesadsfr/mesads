@@ -37,7 +37,7 @@
           {% elif request.accepted is False %}
           🚫 Demande refusée
           {% elif request.accepted is True %}
-          ✅ <a href="{% url 'ads-manager' manager_id=request.ads_manager.id %}">Gérez les ADS</a>
+          <a class="fr-btn fr-btn--sm" href="{% url 'ads-manager' manager_id=request.ads_manager.id %}">Gérez les ADS</a>
           {% endif %}
         </td>
       </tr>
@@ -64,7 +64,7 @@
         <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
         <td>{% if ads_manager.ads_count %}{{ ads_manager.ads_count }}{% else %}-{% endif %}</td>
         <td>
-          ✅ <a href="{% url 'ads-manager' manager_id=ads_manager.id %}">Gérez les ADS</a>
+          <a class="fr-btn fr-btn--sm" href="{% url 'ads-manager' manager_id=ads_manager.id %}">Gérez les ADS</a>
         </td>
       </tr>
       {% endfor %}
