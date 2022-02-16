@@ -5,57 +5,58 @@
 {% block body %}
 <h1>{{ ads.ads_manager.content_object.display_text|capfirst }}, ADS numéro {{ ads.number }}</h1>
 
-<form class="fr-grid-row fr-grid-row--middle" method="post" action="{% url 'ads' ads_id=ads.id %}">
-  {% csrf_token %}
+<div class="fr-grid-row">
+  <form class="fr-col-12 fr-col-sm-8 fr-col-md-6" method="post" action="{% url 'ads' ads_id=ads.id %}">
+    {% csrf_token %}
 
-  <!-- ADS number -->
-  {% include 'pages/ads-form_string.html' with field_title="Numéro de l'ADS" field=form.number field_errors=form.errors.number %}
+    <!-- ADS number -->
+    {% include 'pages/ads-form_string.html' with field_title="Numéro de l'ADS" field=form.number field_errors=form.errors.number %}
 
-  <!-- ADS creation date -->
-  {% include 'pages/ads-form_date.html' with field_title="Date de création de l'ADS" field=form.ads_creation_date field_errors=form.errors.ads_creation_date %}
+    <!-- ADS creation date -->
+    {% include 'pages/ads-form_date.html' with field_title="Date de création de l'ADS" field=form.ads_creation_date field_errors=form.errors.ads_creation_date %}
 
-  <!-- ADS type -->
-  {% include 'pages/ads-form_select.html' with field_title="Type d'ADS" field=form.ads_type field_errors=form.errors.ads_type %}
+    <!-- ADS type -->
+    {% include 'pages/ads-form_select.html' with field_title="Type d'ADS" field=form.ads_type field_errors=form.errors.ads_type %}
 
-  <!-- ADS attribution type -->
-  {% include 'pages/ads-form_select.html' with field_title="Type d'attribution de l'ADS" field=form.attribution_type field_errors=form.errors.attribution_type %}
+    <!-- ADS attribution type -->
+    {% include 'pages/ads-form_select.html' with field_title="Type d'attribution de l'ADS" field=form.attribution_type field_errors=form.errors.attribution_type %}
 
-  <!-- ADS attribution reason -->
-  {% include 'pages/ads-form_string.html' with field_title="Raison d'attribution" field=form.attribution_reason field_errors=form.errors.attribution_reason %}
+    <!-- ADS attribution reason -->
+    {% include 'pages/ads-form_string.html' with field_title="Raison d'attribution" field=form.attribution_reason field_errors=form.errors.attribution_reason %}
 
-  <!-- Accepted by CPAM -->
-  {% include 'pages/ads-form_select.html' with field_title="Véhicule conventionné CPAM ?" field=form.accepted_cpam field_errors=form.errors.accepted_cpam %}
+    <!-- Accepted by CPAM -->
+    {% include 'pages/ads-form_select.html' with field_title="Véhicule conventionné CPAM ?" field=form.accepted_cpam field_errors=form.errors.accepted_cpam %}
 
-  <!-- Immatriculation plate -->
-  {% include 'pages/ads-form_string.html' with field_title="Plaque d'immatriculation" field=form.immatriculation_plate field_errors=form.errors.immatriculation_plate %}
+    <!-- Immatriculation plate -->
+    {% include 'pages/ads-form_string.html' with field_title="Plaque d'immatriculation" field=form.immatriculation_plate field_errors=form.errors.immatriculation_plate %}
 
-  <!-- Compatible PMR ? -->
-  {% include 'pages/ads-form_select.html' with field_title="Véhicule compatible PMR ?" field=form.vehicle_compatible_pmr field_errors=form.errors.vehicle_compatible_pmr %}
+    <!-- Compatible PMR ? -->
+    {% include 'pages/ads-form_select.html' with field_title="Véhicule compatible PMR ?" field=form.vehicle_compatible_pmr field_errors=form.errors.vehicle_compatible_pmr %}
 
-  <!-- Eco vehicle ? -->
-  {% include 'pages/ads-form_select.html' with field_title="Véhicule électrique ou hybride ?" field=form.eco_vehicle field_errors=form.errors.eco_vehicle %}
+    <!-- Eco vehicle ? -->
+    {% include 'pages/ads-form_select.html' with field_title="Véhicule électrique ou hybride ?" field=form.eco_vehicle field_errors=form.errors.eco_vehicle %}
 
-  <!-- Owner firstname -->
-  {% include 'pages/ads-form_string.html' with field_title="Prénom du propriétaire de l'ADS" field=form.owner_firstname field_errors=form.errors.owner_firstname %}
-  <!-- Owner lastname -->
-  {% include 'pages/ads-form_string.html' with field_title="Nom du propriétaire de l'ADS" field=form.owner_lastname field_errors=form.errors.owner_lastname %}
-  <!-- Owner SIRET -->
-  {% include 'pages/ads-form_string.html' with field_title="SIRET du propriétaire de l'ADS" field=form.owner_siret field_errors=form.errors.owner_siret %}
+    <!-- Owner firstname -->
+    {% include 'pages/ads-form_string.html' with field_title="Prénom du propriétaire de l'ADS" field=form.owner_firstname field_errors=form.errors.owner_firstname %}
+    <!-- Owner lastname -->
+    {% include 'pages/ads-form_string.html' with field_title="Nom du propriétaire de l'ADS" field=form.owner_lastname field_errors=form.errors.owner_lastname %}
+    <!-- Owner SIRET -->
+    {% include 'pages/ads-form_string.html' with field_title="SIRET du propriétaire de l'ADS" field=form.owner_siret field_errors=form.errors.owner_siret %}
 
-  <!-- Used by owner ? -->
-  {% include 'pages/ads-form_select.html' with field_title="ADS utilisée par son propriétaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner %}
+    <!-- Used by owner ? -->
+    {% include 'pages/ads-form_select.html' with field_title="ADS utilisée par son propriétaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner %}
 
-  <!-- User status -->
-  {% include 'pages/ads-form_select.html' with field_title="Statut de l'utilisateur de l'ADS" field=form.user_status field_errors=form.errors.user_status %}
+    <!-- User status -->
+    {% include 'pages/ads-form_select.html' with field_title="Statut de l'utilisateur de l'ADS" field=form.user_status field_errors=form.errors.user_status %}
 
-  <!-- User name -->
-  {% include 'pages/ads-form_string.html' with field_title="Nom de l'utilisateur de l'ADS" field=form.user_name field_errors=form.errors.user_name %}
-  <!-- User SIRET -->
-  {% include 'pages/ads-form_string.html' with field_title="SIRET de l'utilisateur de l'ADS" field=form.user_siret field_errors=form.errors.user_siret %}
+    <!-- User name -->
+    {% include 'pages/ads-form_string.html' with field_title="Nom de l'utilisateur de l'ADS" field=form.user_name field_errors=form.errors.user_name %}
+    <!-- User SIRET -->
+    {% include 'pages/ads-form_string.html' with field_title="SIRET de l'utilisateur de l'ADS" field=form.user_siret field_errors=form.errors.user_siret %}
 
-  <div class="fr-col-12 fr-input-group">
-    <button type="submit" class="fr-btn">Modifier</button>
-  </div>
-
-</form>
+    <div class="fr-col-12 fr-input-group">
+      <button type="submit" class="fr-btn">Modifier</button>
+    </div>
+  </form>
+</div>
 {% endblock %}
