@@ -1,97 +1,493 @@
-import argparse
-import csv
 from datetime import datetime
+import json
+import os
+import pathlib
+import re
+from urllib.request import urlretrieve, HTTPError
 import sys
 
+import requests
+
 from django.core.management.base import BaseCommand
-from django.db import transaction
 
 from mesads.app.models import ADS
 from mesads.fradm.models import Commune
 
 
-class CSV_COLNAMES:
-    """Mapping between fields and columns in CSV file exported by demarches-simplifiees."""
-    insee = "Établissement code INSEE localité"
-    ads_number = "Indiquer le numéro d’identification de l'ADS dans votre commune, EPCI ou préfecture"
-    ads_creation_date = "Indiquer la date de création initiale de l’ADS"
-    attribution_date = "Indiquer la date d’attribution de l’ADS au titulaire actuel"
-    attribution_type = "Indiquer le mode d'obtention de l'ADS par le titulaire actuel"
-    attribution_reason = "Si Autre, précisez le mode d'obtention"
-    accepted_cpam = "Indiquer si l'autorisation de stationnement exploitée est conventionnée par l'Assurance Maladie"
-    licence_plate = "Indiquer le numéro d'immatriculation du véhicule de taxi"
-    pmr = "Indiquer si le véhicule est équipé pour le transport de personnes à mobilité réduite (PMR)"
-    eco_vehicle = "Indiquer si le véhicule est électrique ou hybride"
-    owner_firstname = "Indiquer le prénom du titulaire, ou du représentant légal de l'entreprise titulaire de l'ADS"
-    owner_lastname = "Indiquer le nom du titulaire, ou du représentant légal de l'entreprise titulaire de l'ADS"
-    owner_siret = "Indiquer le numéro SIRET du titulaire de l'ADS *"
-    used_by_owner = "Est-ce que le titulaire exploite personnellement son ADS ?"
-    user_status = "Indiquer le statut de l’exploitant"
-    user_name = "Indiquer la raison sociale de l'exploitant, ou son nom et prénom"
-    user_siret = "Indiquer le numéro SIRET de l'exploitant *"
-    legal_file = "Joindre la copie de l'arrêté d'attribution de l'ADS"
-
-
 class Command(BaseCommand):
     help = (
-        "Load ADS for Ille et Vilaine from CSV file exported by demarches-simplfiees."
+        "Load ADS for Ille et Vilaine from info stored on demarches-simplfiees."
     )
 
+    DEMARCHE_NUMBER = 35579
+
+    # This query is given as an example in demarches-simplifiees.fr examples and
+    # dumps all data of a demarche.
+    # https://doc.demarches-simplifiees.fr/pour-aller-plus-loin/graphql
+    GRAPHQL_QUERY = '''
+    query getDemarche(
+      $demarcheNumber: Int!
+      $state: DossierState
+      $order: Order
+      $after: String
+    ) {
+      demarche(number: $demarcheNumber) {
+        id
+        number
+        title
+        publishedRevision {
+          ...RevisionFragment
+        }
+        groupeInstructeurs {
+          id
+          number
+          label
+          instructeurs {
+            id
+            email
+          }
+        }
+        dossiers(state: $state, order: $order, after: $after) {
+          pageInfo {
+            endCursor
+            hasNextPage
+          }
+          nodes {
+            ...DossierFragment
+          }
+        }
+      }
+    }
+
+    query getGroupeInstructeur(
+      $groupeInstructeurNumber: Int!
+      $state: DossierState
+      $order: Order
+      $after: String
+    ) {
+      groupeInstructeur(number: $groupeInstructeurNumber) {
+        id
+        number
+        label
+        instructeurs {
+          id
+          email
+        }
+        dossiers(state: $state, order: $order, after: $after) {
+          pageInfo {
+            endCursor
+            hasNextPage
+          }
+          nodes {
+            ...DossierFragment
+          }
+        }
+      }
+    }
+
+    query getDossier($dossierNumber: Int!) {
+      dossier(number: $dossierNumber) {
+        ...DossierFragment
+        demarche {
+          ...DemarcheDescriptorFragment
+        }
+      }
+    }
+
+    query getDeletedDossiers($demarcheNumber: Int!, $order: Order, $after: String) {
+      demarche(number: $demarcheNumber) {
+        deletedDossiers(order: $order, after: $after) {
+          nodes {
+            ...DeletedDossierFragment
+          }
+        }
+      }
+    }
+
+    fragment DossierFragment on Dossier {
+      id
+      number
+      archived
+      state
+      dateDerniereModification
+      datePassageEnConstruction
+      datePassageEnInstruction
+      dateTraitement
+      motivation
+      motivationAttachment {
+        ...FileFragment
+      }
+      attestation {
+        ...FileFragment
+      }
+      pdf {
+        url
+      }
+      instructeurs {
+        email
+      }
+      groupeInstructeur {
+        id
+        number
+        label
+      }
+      revision {
+        ...RevisionFragment
+      }
+      champs {
+        ...ChampFragment
+        ...RootChampFragment
+      }
+      annotations {
+        ...ChampFragment
+        ...RootChampFragment
+      }
+      avis {
+        ...AvisFragment
+      }
+      messages {
+        ...MessageFragment
+      }
+      demandeur {
+        ... on PersonnePhysique {
+          civilite
+          nom
+          prenom
+          dateDeNaissance
+        }
+        ...PersonneMoraleFragment
+      }
+    }
+
+    fragment DemarcheDescriptorFragment on DemarcheDescriptor {
+      id
+      number
+      title
+      description
+      state
+      declarative
+      dateCreation
+      datePublication
+      dateDerniereModification
+      dateDepublication
+      dateFermeture
+    }
+
+    fragment DeletedDossierFragment on DeletedDossier {
+      id
+      number
+      dateSupression
+      state
+      reason
+    }
+
+    fragment RevisionFragment on Revision {
+      id
+      champDescriptors {
+        ...ChampDescriptorFragment
+        champDescriptors {
+          ...ChampDescriptorFragment
+        }
+      }
+      annotationDescriptors {
+        ...ChampDescriptorFragment
+        champDescriptors {
+          ...ChampDescriptorFragment
+        }
+      }
+    }
+
+    fragment ChampDescriptorFragment on ChampDescriptor {
+      id
+      type
+      label
+      description
+      required
+      options
+    }
+
+    fragment AvisFragment on Avis {
+      id
+      question
+      reponse
+      dateQuestion
+      dateReponse
+      claimant {
+        email
+      }
+      expert {
+        email
+      }
+      attachment {
+        ...FileFragment
+      }
+    }
+
+    fragment MessageFragment on Message {
+      id
+      email
+      body
+      createdAt
+      attachment {
+        ...FileFragment
+      }
+    }
+
+    fragment GeoAreaFragment on GeoArea {
+      id
+      source
+      description
+      geometry {
+        type
+        coordinates
+      }
+      ... on ParcelleCadastrale {
+        commune
+        numero
+        section
+        prefixe
+        surface
+      }
+    }
+
+    fragment RootChampFragment on Champ {
+      ... on RepetitionChamp {
+        champs {
+          ...ChampFragment
+        }
+      }
+      ... on SiretChamp {
+        etablissement {
+          ...PersonneMoraleFragment
+        }
+      }
+      ... on CarteChamp {
+        geoAreas {
+          ...GeoAreaFragment
+        }
+      }
+      ... on DossierLinkChamp {
+        dossier {
+          id
+          state
+          usager {
+            email
+          }
+        }
+      }
+    }
+
+    fragment ChampFragment on Champ {
+      id
+      label
+      stringValue
+      ... on DateChamp {
+        date
+      }
+      ... on DatetimeChamp {
+        datetime
+      }
+      ... on CheckboxChamp {
+        checked: value
+      }
+      ... on DecimalNumberChamp {
+        decimalNumber: value
+      }
+      ... on IntegerNumberChamp {
+        integerNumber: value
+      }
+      ... on CiviliteChamp {
+        civilite: value
+      }
+      ... on LinkedDropDownListChamp {
+        primaryValue
+        secondaryValue
+      }
+      ... on MultipleDropDownListChamp {
+        values
+      }
+      ... on PieceJustificativeChamp {
+        file {
+          ...FileFragment
+        }
+      }
+      ... on AddressChamp {
+        address {
+          ...AddressFragment
+        }
+      }
+      ... on CommuneChamp {
+        commune {
+          name
+          code
+        }
+        departement {
+          name
+          code
+        }
+      }
+    }
+
+    fragment PersonneMoraleFragment on PersonneMorale {
+      siret
+      siegeSocial
+      naf
+      libelleNaf
+      address {
+        ...AddressFragment
+      }
+      entreprise {
+        siren
+        capitalSocial
+        numeroTvaIntracommunautaire
+        formeJuridique
+        formeJuridiqueCode
+        nomCommercial
+        raisonSociale
+        siretSiegeSocial
+        codeEffectifEntreprise
+        dateCreation
+        nom
+        prenom
+        attestationFiscaleAttachment {
+          ...FileFragment
+        }
+        attestationSocialeAttachment {
+          ...FileFragment
+        }
+      }
+      association {
+        rna
+        titre
+        objet
+        dateCreation
+        dateDeclaration
+        datePublication
+      }
+    }
+
+    fragment FileFragment on File {
+      filename
+      contentType
+      checksum
+      byteSizeBigInt
+      url
+    }
+
+    fragment AddressFragment on Address {
+      label
+      type
+      streetAddress
+      streetNumber
+      streetName
+      postalCode
+      cityName
+      cityCode
+      departmentName
+      departmentCode
+      regionName
+      regionCode
+    }
+    '''
+
     def add_arguments(self, parser):
-        parser.add_argument('csv_file', type=argparse.FileType('r'))
+        parser.add_argument('--auth-token', required=True)
 
-    def handle(self, *args, **options):
-        reader = csv.DictReader(options['csv_file'])
-        with transaction.atomic():
-            for row in reader:
-                commune = Commune.objects.filter(
-                    insee=row[CSV_COLNAMES.insee]).get()
+        # defaults to root directory
+        parser.add_argument(
+            '--cache-dir',
+            default=(pathlib.Path(__file__) / '../../../../../.cache/ads-ille-et-vilaine').resolve()
+        )
 
-                # Our database models support a many to many relationship
-                # between ADSManager and Commune, but in reality there is only
-                # one manager for a given Commune.
-                #
-                # If this line raises, it means there is more than one manager
-                # for the commune and we need a way to find which one should be
-                # linked to the ADS created below.
-                manager = commune.ads_managers.get()
+    def _log(self, level, msg):
+        sys.stdout.write(level(f'{msg}\n'))
 
-                self.create_ads_for(row, manager)
+    def _get_pdf(self, dossier, **opts):
+        """Get PDF stored in a dossier."""
+        url = dossier['pdf']['url']
+        cache_path = opts['cache_dir'] / f'{dossier["id"]}.pdf'
+
+        # File already in cache
+        if os.path.exists(cache_path):
+            return cache_path
+
+        # Store in cache
+        try:
+            try:
+                self._log(self.style.SUCCESS, f'Downloading PDF of dossier {dossier["id"]} to {cache_path}')
+                urlretrieve(url, cache_path)
+            except HTTPError:
+                self._log(self.style.ERROR, (
+                    f'Unable to download {url}.\n'
+                    f'-> Try to remove {opts["cache_dir"]} and run this script again.\n'
+                ))
+                raise
+        except:  # noqa
+            raise
+        return cache_path
+
+    def _load_demarche(self, after=None, **opts):
+        """Load demarche from demarches-simplifiees.fr. Stores response in cache to speedup future runs."""
+        cache_path = opts['cache_dir'] / ('api.json' if not after else f'api-after-{after}.json')
+
+        # Load from cache.
+        try:
+            with open(cache_path) as handle:
+                self._log(self.style.NOTICE, f'Load {cache_path} from cache')
+                return json.loads(handle.read())
+        except FileNotFoundError:
+            pass
+
+        variables = {
+            'demarcheNumber': self.DEMARCHE_NUMBER,
+            'after': after,
+        }
+
+        self._log(self.style.SUCCESS, f'Retrieving API after={after} and store in {cache_path}')
+
+        # Load from API and store in cache.
+        resp = requests.post(
+            'https://www.demarches-simplifiees.fr/api/v2/graphql',
+            data=json.dumps({
+                'query': self.GRAPHQL_QUERY,
+                'operationName': 'getDemarche',
+                'variables': variables,
+            }),
+            headers={
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {opts["auth_token"]}',
+            }
+        )
+        content = resp.json()
+
+        with open(cache_path, 'w+') as handle:
+            handle.write(json.dumps(content, indent=2))
+
+        return content
+
+    def _iterate_demarches(self, **opts):
+        demarche = self._load_demarche(**opts)
+
+        while True:
+            for dossier in demarche['data']['demarche']['dossiers']['nodes']:
+                yield dossier
+
+            page_info = demarche['data']['demarche']['dossiers']['pageInfo']
+            if not page_info['hasNextPage']:
+                return
+
+            demarche = self._load_demarche(after=page_info['endCursor'], **opts)
 
     def _parse_date(self, value):
-        """Parse %Y-%m-%d date, or return None."""
         if not value:
             return None
-        try:
-            return datetime.strptime(value, '%Y-%m-%d').date()
-        except ValueError:
-            sys.stdout.write(self.style.WARNING(
-                f'Date {value} with invalid format ignored, considered as None\n'))
-            return None
 
-    def _is_after(self, date_a, date_b):
-        """Return True if date_a is after date_b."""
-        if not date_a or not date_b:
-            return False
-        return date_a > date_b
+        # Fix misspells: replace 20007 (three 0's) with 2007.
+        res = re.match(r'^(\d)000(\d)-(.*)$', value)
+        if res:
+            value = f'{res.group(1)}00{res.group(2)}-{res.group(3)}'
 
-    def _parse_attribution_type(self, row):
-        """Parse column attribution_type."""
-        label_to_key = {v: k for k, v in ADS.ATTRIBUTION_TYPES}
-        value = row[CSV_COLNAMES.attribution_type]
-        try:
-            return label_to_key[value]
-        except KeyError:
-            raise ValueError(f"Invalid attribution type {value}")
-
-    def _parse_user_status(self, row):
-        # Reverse the choices
-        label_to_key = {v: k for k, v in ADS.ADS_USER_STATUS}
-        value = row[CSV_COLNAMES.user_status]
-        try:
-            return label_to_key[value]
-        except KeyError:
-            raise ValueError(f"Invalid user status {value}")
+        return datetime.strptime(value, '%Y-%m-%d').date()
 
     def _parse_bool(self, value, mandatory=False):
         if value.lower() == "oui":
@@ -102,53 +498,95 @@ class Command(BaseCommand):
             return None
         raise ValueError(f"Invalid bool value {value}")
 
-    def create_ads_for(self, row, manager):
-        """Create or update ADS entry."""
-        ads_number = row[CSV_COLNAMES.ads_number].strip()
-        ads, created = ADS.objects.get_or_create(
-            ads_manager=manager, number=ads_number)
+    def handle(self, *args, **opts):
+        # Form does not provide stable identifiers for each field, so we have no other way than hardcoding the index of
+        # each field. If the form changes, this script will break.
+        for dossier in self._iterate_demarches(**opts):
+            fields = dossier['champs']
+            requester = fields[2]
 
-        ads_creation_date = self._parse_date(
-            row[CSV_COLNAMES.ads_creation_date])
-        attribution_date = self._parse_date(row[CSV_COLNAMES.attribution_date])
+            # In demarches simplifiees, address of the "Mairie" should be under " Identification de l'autorité ayant
+            # délivré l'ADS " but for some files the taxi's company info has been provided. We have to ignore these
+            # entries and create the ADS by hand.
+            try:
+                if requester['etablissement']['entreprise']['formeJuridique'] != 'Commune et commune nouvelle':
+                    raise ValueError
+            except:  # noqa
+                self._log(
+                    self.style.ERROR,
+                    f'Dossier {dossier["number"]} is invalid: the authority of the ADS is not correct. It should be a '
+                    f'"commune", and it is either not set or equal to the taxi\'s company'
+                )
+                continue
 
-        # Remove duplicates from database.
-        if self._is_after(ads.ads_creation_date, ads_creation_date):
-            sys.stdout.write(self.style.WARNING(
-                f'ADS number {ads.number} for {manager} exists in database with '
-                f'a creation date of {ads.ads_creation_date}. The CSV file '
-                f'contains a row for this ADS with a creation date of '
-                f'{ads_creation_date}. Since this row is older than the value in '
-                f'database, it is ignored.\n'
-            ))
-            return
+            commune = Commune.objects.filter(insee=requester['etablissement']['address']['cityCode']).get()
 
-        if self._is_after(ads.attribution_date, attribution_date):
-            sys.stdout.write(self.style.WARNING(
-                f'ADS number {ads.number} for {manager} exists in database with '
-                f'a attribution date of {ads.attribution_date}. The CSV file '
-                f'contains a row for this ADS with an attribution date of '
-                f'{attribution_date}. Since this row is older than the value in '
-                f'database, it is ignored.\n'
-            ))
-            return
+            # Our database models support a many to many relationship between ADSManager and Commune, but in reality
+            # there is only one manager for a given Commune.
+            #
+            # If this line raises, it means there is more than one manager for the commune and we need a way to find
+            # which one should be linked to the ADS created below.
+            ads_manager = commune.ads_managers.get()
 
-        ads.ads_creation_date = ads_creation_date
-        ads.attribution_date = attribution_date
-        ads.attribution_type = self._parse_attribution_type(row)
-        ads.attribution_reason = row[CSV_COLNAMES.attribution_reason]
-        ads.accepted_cpam = self._parse_bool(row[CSV_COLNAMES.accepted_cpam])
-        ads.immatriculation_plate = row[CSV_COLNAMES.licence_plate]
-        ads.vehicle_compatible_pmr = self._parse_bool(row[CSV_COLNAMES.pmr])
-        ads.eco_vehicle = self._parse_bool(row[CSV_COLNAMES.eco_vehicle])
-        ads.owner_firstname = row[CSV_COLNAMES.owner_firstname]
-        ads.owner_lastname = row[CSV_COLNAMES.owner_lastname]
-        ads.owner_siret = row[CSV_COLNAMES.owner_siret]
-        ads.used_by_owner = self._parse_bool(
-            row[CSV_COLNAMES.used_by_owner], mandatory=True)
-        ads.user_status = self._parse_user_status(row)
-        ads.user_name = row[CSV_COLNAMES.user_name]
-        ads.user_siret = row[CSV_COLNAMES.user_siret]
-        # ads.legal_file = TODO need to extract files using the DS API
+            ads_number = fields[6]['stringValue']
 
-        ads.save()
+            ads, created = ADS.objects.get_or_create(ads_manager=ads_manager, number=ads_number)
+
+            ads_creation_date = self._parse_date(fields[7]['date'])
+            ads_attribution_date = self._parse_date(fields[9]['date'])
+
+            if not created:
+                if ads.ads_creation_date and not ads_creation_date:
+                    self._log(
+                        self.style.WARNING,
+                        f'In database, ADS id {ads.id} (number {ads.number} for {ads_manager}) has a creation date set '
+                        f'to {ads.ads_creation_date}. API provides data for this same ADS but without a creation date. '
+                        f'This ADS returned from API is ignored.'
+                    )
+                    continue
+                if ads.ads_creation_date and ads.ads_creation_date > ads_creation_date:
+                    self._log(
+                        self.style.WARNING,
+                        f'In database, ADS id {ads.id} (number {ads.number} for {ads_manager}) has a creation date set '
+                        f'to {ads.ads_creation_date}. API provides data for this same ADS, but with an older creation '
+                        f'date of {ads_creation_date}. Since the API date is older than the value currently in '
+                        f'database, we ignore this ADS entry.',
+                    )
+                    continue
+
+            ads.ads_creation_date = ads_creation_date
+            ads.attribution_date = ads_attribution_date
+
+            ads.attribution_type = [
+                key
+                for key, value in ADS.ATTRIBUTION_TYPES
+                if value == fields[10]['stringValue']
+            ][0]
+
+            ads.attribution_reason = fields[11]['stringValue']
+            ads.accepted_cpam = self._parse_bool(fields[12]['stringValue'])
+            ads.immatriculation_plate = fields[14]['stringValue']
+            ads.vehicle_compatible_pmr = self._parse_bool(fields[15]['stringValue'])
+            ads.eco_vehicle = self._parse_bool(fields[16]['stringValue'])
+            ads.owner_firstname = fields[19]['stringValue']
+            ads.owner_lastname = fields[20]['stringValue']
+
+            if fields[21]['etablissement']:
+                ads.owner_siret = fields[21]['etablissement']['siret']
+
+            ads.used_by_owner = fields[22]['checked']
+            ads.user_status = [
+                key
+                for key, value in ADS.ADS_USER_STATUS
+                if value == fields[25]['stringValue']
+            ][0]
+
+            ads.user_name = fields[26]['stringValue']
+            if fields[27]['etablissement']:
+                ads.user_siret = fields[27]['etablissement']['siret']
+
+            # XXX TODO: insert drivers?
+            # insert legal file
+            # print(json.dumps(fields[28:], indent=2))
+
+            ads.save()

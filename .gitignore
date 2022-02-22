@@ -4,3 +4,4 @@ node_modules
 /static
 /uploads
 *.csv
+.cache
