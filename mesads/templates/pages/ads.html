@@ -39,7 +39,7 @@ Création d'une nouvelle ADS
 </h1>
 
 <div class="fr-grid-row">
-  <form class="fr-col-12 fr-col-sm-8 fr-col-md-6" method="post">
+  <form class="fr-col-12 fr-col-sm-8 fr-col-md-6" method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
     <!-- ADS number -->
@@ -89,6 +89,9 @@ Création d'une nouvelle ADS
     {% include 'pages/ads-form_string.html' with field_title="Nom de l'utilisateur de l'ADS" field=form.user_name field_errors=form.errors.user_name %}
     <!-- User SIRET -->
     {% include 'pages/ads-form_string.html' with field_title="SIRET de l'utilisateur de l'ADS" field=form.user_siret field_errors=form.errors.user_siret %}
+
+    <!-- Legal file -->
+    {% include 'pages/ads-form_input.html' with field_title="Arrêté portant l'attribution de l'ADS" field=form.legal_file field_errors=form.errors.legal_file %}
 
     <div class="fr-col-12 fr-input-group">
       {% if ads %}

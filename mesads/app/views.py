@@ -137,6 +137,7 @@ class ADSView(UpdateView):
         'user_status',
         'user_name',
         'user_siret',
+        'legal_file',
     )
 
     def get_success_url(self):
