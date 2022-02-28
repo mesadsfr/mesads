@@ -164,7 +164,7 @@ STATIC_ROOT = BASE_DIR / 'static'
 
 STATICFILES_DIRS = [
     ('', BASE_DIR / 'mesads/static'),
-    ('@gouvfr', BASE_DIR / 'node_modules/@gouvfr/dsfr/dist'),
+    ('@gouvfr', BASE_DIR / 'node_modules/@gouvfr/dsfr/dist/'),
 ]
 
 MEDIA_ROOT = BASE_DIR / 'uploads'

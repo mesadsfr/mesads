@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="{% static '@gouvfr/css/dsfr.min.css' %}">
+    <link rel="stylesheet" href="{% static '@gouvfr/dsfr/dsfr.min.css' %}">
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <title>{% block title %}{% endblock %}</title>
@@ -138,7 +138,7 @@
       </div>
     </footer>
 
-    <script type="module" src="{% static '@gouvfr/js/dsfr.module.min.js' %}"></script>
+    <script type="module" src="{% static '@gouvfr/dsfr/dsfr.module.min.js' %}"></script>
     <script type="text/javascript" nomodule src="{% static '@gouvfr/js/dsfr.nomodule.min.js' %}"></script>
     {% block endbody %}{% endblock %}
   </body>
