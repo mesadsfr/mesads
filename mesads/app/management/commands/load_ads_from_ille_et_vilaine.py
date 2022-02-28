@@ -8,6 +8,7 @@ import sys
 
 import requests
 
+from django.core.files import File
 from django.core.management.base import BaseCommand
 
 from mesads.app.models import ADS
@@ -404,15 +405,13 @@ class Command(BaseCommand):
 
     def _get_pdf(self, dossier, **opts):
         """Get PDF stored in a dossier."""
-        url = dossier['pdf']['url']
-        cache_path = opts['cache_dir'] / f'{dossier["id"]}.pdf'
+        url = dossier['champs'][31]['file']['url']
+        file_info = dossier['champs'][31]['file']
+        checksum = file_info['checksum'].replace('/', '\\')
+        cache_path = opts['cache_dir'] / f'{checksum}_{file_info["filename"]}'
 
-        # File already in cache
-        if os.path.exists(cache_path):
-            return cache_path
-
-        # Store in cache
-        try:
+        # If file not in cache, download and store it
+        if not os.path.exists(cache_path):
             try:
                 self._log(self.style.SUCCESS, f'Downloading PDF of dossier {dossier["id"]} to {cache_path}')
                 urlretrieve(url, cache_path)
@@ -422,8 +421,6 @@ class Command(BaseCommand):
                     f'-> Try to remove {opts["cache_dir"]} and run this script again.\n'
                 ))
                 raise
-        except:  # noqa
-            raise
         return cache_path
 
     def _load_demarche(self, after=None, **opts):
@@ -460,6 +457,9 @@ class Command(BaseCommand):
         )
         content = resp.json()
 
+        # Create root folders
+        opts['cache_dir'].mkdir(parents=True, exist_ok=True)
+        # Store file content
         with open(cache_path, 'w+') as handle:
             handle.write(json.dumps(content, indent=2))
 
@@ -585,8 +585,6 @@ class Command(BaseCommand):
             if fields[27]['etablissement']:
                 ads.user_siret = fields[27]['etablissement']['siret']
 
-            # XXX TODO: insert drivers?
-            # insert legal file
-            # print(json.dumps(fields[28:], indent=2))
-
-            ads.save()
+            with open(self._get_pdf(dossier, **opts), 'rb') as pdf_handle:
+                ads.legal_file = File(pdf_handle)
+                ads.save()

@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -240,11 +241,16 @@ class ADS(models.Model):
     user_siret = models.CharField(max_length=128, blank=True, null=False)
 
     def get_legal_filename(self, filename):
-        return '%s/%s_ADS-%s_%s' % (
-            '%s-%s' % (self.ads_manager.id, self.ads_manager.raison_sociale),
-            datetime.now().isoformat(),
-            self.id,
-            filename
-        )
+        now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+        filename = os.path.basename(filename)
+        name = '/'.join([
+            '%s %s - %s' % (
+                self.ads_manager.content_type.name.capitalize(),
+                self.ads_manager.content_object.id,
+                self.ads_manager.content_object.display_text().capitalize()
+            ),
+            f'{now}|ADS {self.id}|{filename}'
+        ])
+        return name
 
     legal_file = models.FileField(upload_to=get_legal_filename, blank=True)
