@@ -86,6 +86,17 @@ Django = ">=2.2"
 sqlparse = ">=0.2.0"
 
 [[package]]
+name = "django-querysetsequence"
+version = "0.15"
+description = "Chain together multiple (disparate) QuerySets to treat them as a single QuerySet."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+django = ">=2.2"
+
+[[package]]
 name = "django-registration"
 version = "3.2"
 description = "An extensible user-registration application for Django"
@@ -216,7 +227,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "0957d59b7d0c072ad3b077d1e846c592cbb373bb03a29fd7f556ea14235d23ce"
+content-hash = "488d514da03ccce231cc468b6824e2711111f34e2b69e457de0fb89bd0028bc3"
 
 [metadata.files]
 asgiref = [
@@ -245,6 +256,10 @@ django-autocomplete-light = [
 django-debug-toolbar = [
     {file = "django-debug-toolbar-3.2.2.tar.gz", hash = "sha256:8c5b13795d4040008ee69ba82dcdd259c49db346cf7d0de6e561a49d191f0860"},
     {file = "django_debug_toolbar-3.2.2-py3-none-any.whl", hash = "sha256:d7bab7573fab35b0fd029163371b7182f5826c13da69734beb675c761d06a4d3"},
+]
+django-querysetsequence = [
+    {file = "django-querysetsequence-0.15.tar.gz", hash = "sha256:19673a13867c58582c7aca343d4d7d84cdfa32a9c89444efd67ab36dd97a9dc9"},
+    {file = "django_querysetsequence-0.15-py3-none-any.whl", hash = "sha256:537997c88dbf79c188951f77c075ded113e579a9402ad22b016a735bbaeb000b"},
 ]
 django-registration = [
     {file = "django-registration-3.2.tar.gz", hash = "sha256:2ea8c7d89a8760ccde41dfd335aa28ba89073d09aab5a0f5f3d7c8c148fcc518"},
