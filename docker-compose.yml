@@ -21,7 +21,9 @@ services:
       - 9432:5432
 
   app:
-    build: .
+    build:
+      context: .
+      target: local
     volumes:
       - .:/app
       - app-poetry:/home/mesads/.cache/pypoetry

@@ -14,29 +14,41 @@ import os
 import socket
 from pathlib import Path
 
+
+def parse_env_bool(key, default):
+    """Helper function to parse environment variable."""
+    value = os.getenv(key)
+
+    if value is None:
+        return default
+    elif value.lower() in ('yes', 'true' '1', 't'):
+        return True
+    elif value.lower() in ('no', 'false' '0', 'f', ''):
+        return False
+
+    raise ValueError(f'Unknown boolean environment variable {value}')
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = parse_env_bool('DEBUG', True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 
-SECRET_KEYFILENAME = os.getenv('SECRET_KEYFILE')
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+    'django-insecure-#tx=c!1uiqr9*e^cz%u2_!7$rl$c4$sg!=m!n$5llbhnxebj@$'
+)
 
-if SECRET_KEYFILENAME:
-    SECRET_KEY = Path(SECRET_KEYFILENAME).read_bytes().strip()
-elif DEBUG:
-    SECRET_KEY = 'django-insecure-#tx=c!1uiqr9*e^cz%u2_!7$rl$c4$sg!=m!n$5llbhnxebj@$'
-else:
-    raise RuntimeError('Provide a valid SECRET_KEYFILE for production deployment')
-
-
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    part for part in os.getenv('ALLOWED_HOSTS', '').split(';')
+    if part
+]
 
 # Application definition
 
@@ -106,10 +118,10 @@ WSGI_APPLICATION = 'mesads.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mesads',
-        'HOST': 'db',
-        'USER': 'postgres',
-        'PASSWORD': 'mesads',
+        'NAME': os.getenv('DB_NAME', 'mesads'),
+        'HOST': os.getenv('DB_HOST', 'db'),
+        'USER': os.getenv('DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'mesads'),
     }
 }
 
@@ -184,11 +196,12 @@ if DEBUG:
 
 MESADS_CONTACT_EMAIL = 'equipe@mesads.fr'
 
-EMAIL_HOST = 'maildev'
-# EMAIL_PORT =
-# EMAIL_HOST_USER =
-# EMAIL_HOST_PASSWORD =
-# EMAIL_USE_TLS =
+
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'maildev')
+EMAIL_PORT = os.getenv('EMAIL_PORT', 25)
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = parse_env_bool('EMAIL_USE_TLS', False)
 
 # Add configuration below to log SQL queries to console
 # LOGGING = {

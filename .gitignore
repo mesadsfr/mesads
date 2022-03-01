@@ -1,7 +1,6 @@
-__pycache__
-*.sqlite3
-node_modules
-/static
-/uploads
 *.csv
 .cache
+/static
+/uploads
+__pycache__
+node_modules
