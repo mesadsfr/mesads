@@ -548,9 +548,9 @@ class Command(BaseCommand):
                     self._log(
                         self.style.WARNING,
                         f'In database, ADS id {ads.id} (number {ads.number} for {ads_manager}) has a creation date set '
-                        f'to {ads.ads_creation_date}. API provides data for this same ADS, but with an older creation '
-                        f'date of {ads_creation_date}. Since the API date is older than the value currently in '
-                        f'database, we ignore this ADS entry.',
+                        f'to {ads.ads_creation_date}. API provides data for this same ADS in dossier '
+                        f'{dossier["number"]}, but with an older creation date of {ads_creation_date}. Since the '
+                        f'API date is older than the value currently in database, we ignore this ADS entry.',
                     )
                     continue
 
