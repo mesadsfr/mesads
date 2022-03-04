@@ -26,7 +26,7 @@ def parse_env_bool(key, default):
     elif value.lower() in ('no', 'false' '0', 'f', ''):
         return False
 
-    raise ValueError(f'Unknown boolean environment variable {value}')
+    raise ValueError(f'Invalid boolean value "{value}" for environment variable {key}')
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
