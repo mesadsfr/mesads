@@ -21,9 +21,9 @@ def parse_env_bool(key, default):
 
     if value is None:
         return default
-    elif value.lower() in ('yes', 'true' '1', 't'):
+    elif value.lower() in ('yes', 'true', '1', 't'):
         return True
-    elif value.lower() in ('no', 'false' '0', 'f', ''):
+    elif value.lower() in ('no', 'false', '0', 'f', ''):
         return False
 
     raise ValueError(f'Invalid boolean value "{value}" for environment variable {key}')
