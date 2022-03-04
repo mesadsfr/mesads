@@ -40,10 +40,15 @@ DEBUG = parse_env_bool('DEBUG', True)
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 
-SECRET_KEY = os.getenv(
-    'SECRET_KEY',
-    'django-insecure-#tx=c!1uiqr9*e^cz%u2_!7$rl$c4$sg!=m!n$5llbhnxebj@$'
-)
+if DEBUG:
+    SECRET_KEY = os.getenv(
+        'SECRET_KEY',
+        'django-insecure-#tx=c!1uiqr9*e^cz%u2_!7$rl$c4$sg!=m!n$5llbhnxebj@$'
+    )
+else:
+    # SECRET_KEY is mandatory when DEBUG is False
+    SECRET_KEY = os.environ['SECRET_KEY']
+
 
 ALLOWED_HOSTS = [
     part for part in os.getenv('ALLOWED_HOSTS', '').split(';')
