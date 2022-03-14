@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Erreur serveur 500{% endblock %}
+
+{% block body %}
+<h1>Erreur de notre serveur</h1>
+
+<p>
+  Nous avons rencontré un problème technique en affichant la page demandée.
+  <br />
+  Vous pouvez tenter de rafraichir la page.
+</p>
+
+<p>
+</p>
+
+<p>
+  Si le problème persiste, n'hésitez pas à nous contacter par email sur <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+</p>
+
+{% endblock %}

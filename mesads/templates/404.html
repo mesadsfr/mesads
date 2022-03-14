@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Page introuvable{% endblock %}
+
+{% block body %}
+<h1>La page demandée n'existe pas</h1>
+
+<p>
+  💨 Le lien que vous avez suivi mène vers une page qui n'existe pas.
+</p>
+
+<p>
+  Si vous pensez qu'il s'agit d'une erreur, n'hésitez pas à contacter notre équipe sur <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+</p>
+
+{% endblock %}

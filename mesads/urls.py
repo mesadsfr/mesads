@@ -3,6 +3,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from .app import views
+
 import debug_toolbar
 
 
@@ -17,3 +19,6 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+handler500 = lambda request: views.HTTP500View.as_view()(request)  # noqa

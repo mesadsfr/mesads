@@ -10,6 +10,13 @@ from .forms import ADSManagerForm
 from .models import ADS, ADSManager, ADSManagerAdministrator, ADSManagerRequest
 
 
+class HTTP500View(TemplateView):
+    """The default HTTP/500 handler can't access to context processors and does
+    not have access to the variable MESADS_CONTACT_EMAIL.
+    """
+    template_name = '500.html'
+
+
 class HomepageView(RedirectView):
     """Redirect to ADSManagerAdminView or ADSManagerView depending on the
     user role. If user is not authenticated or has no roles, redirect to
