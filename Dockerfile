@@ -54,6 +54,8 @@ COPY --from=python-builder /venv /venv
 
 RUN poetry run python manage.py collectstatic
 
+EXPOSE 8000
+
 ENTRYPOINT ["poetry", "run"]
 
 # We can't use the syntax CMD [...] because we need subshells to provide variables.
