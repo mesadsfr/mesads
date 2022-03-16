@@ -59,8 +59,9 @@ EXPOSE 8000
 ENTRYPOINT ["poetry", "run"]
 
 # We can't use the syntax CMD [...] because we need subshells to provide variables.
+# --enable-threads: required for sentry
 # -M: start worker process
 # -p: number of workers
 # -R: restart worker after N requests
 CMD python manage.py migrate && \
-    uwsgi -H \$\(VIRTUAL_ENV\) --http :8000 --module mesads.wsgi -M -p $(nproc) -R 100 --static-map /static=/app/static
+    uwsgi --enable-threads -H \$\(VIRTUAL_ENV\) --http :8000 --module mesads.wsgi -M -p $(nproc) -R 100 --static-map /static=/app/static

@@ -36,6 +36,7 @@ class ADSManagerAdminView(TemplateView):
     template_name = 'pages/ads_manager_admin.html'
 
     def get_context_data(self, **kwargs):
+        raise ValueError
         ctx = super().get_context_data(**kwargs)
 
         ctx['ads_manager_requests'] = {}

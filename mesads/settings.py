@@ -14,6 +14,9 @@ import os
 import socket
 from pathlib import Path
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 
 def parse_env_bool(key, default):
     """Helper function to parse environment variable."""
@@ -48,6 +51,14 @@ if DEBUG:
 else:
     # SECRET_KEY is mandatory when DEBUG is False
     SECRET_KEY = os.environ['SECRET_KEY']
+    # Initialize sentry only in production
+    if os.environ.get('SENTRY_DSN'):
+        sentry_sdk.init(
+            dsn=os.environ['SENTRY_DSN'],
+            integrations=[DjangoIntegration()],
+            traces_sample_rate=0,
+            send_default_pii=True,
+        )
 
 
 ALLOWED_HOSTS = [
