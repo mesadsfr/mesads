@@ -219,7 +219,10 @@ if DEBUG:
 # Upload files to S3: https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
 # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-MESADS_CONTACT_EMAIL = 'equipe@mesads.fr'
+MESADS_CONTACT_EMAIL = 'equipe@mesads.beta.gouv.fr'
+
+DEFAULT_FROM_EMAIL = MESADS_CONTACT_EMAIL
+SERVER_EMAIL = MESADS_CONTACT_EMAIL
 
 
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'maildev')
