@@ -1,5 +1,8 @@
+from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
+from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 from django.views.generic import UpdateView
@@ -103,6 +106,30 @@ class ADSManagerRequestView(FormView):
             user=self.request.user,
             ads_manager=form.cleaned_data['ads_manager'],
         )
+
+        # Send notifications to administrators.
+        email_subject = render_to_string(
+            'pages/email_ads_manager_request_administrator_subject.txt', {
+                'user': self.request.user,
+            }
+        ).strip()
+        email_content = render_to_string(
+            'pages/email_ads_manager_request_administrator_content.txt', {
+                'request': self.request,
+                'ads_manager': form.cleaned_data['ads_manager'],
+                'user': self.request.user,
+            }
+        )
+
+        for administrator_user in form.cleaned_data['ads_manager'].get_administrators_users():
+            send_mail(
+                email_subject,
+                email_content,
+                settings.MESADS_CONTACT_EMAIL,
+                [administrator_user],
+                fail_silently=True,
+            )
+
         return super().form_valid(form)
 
 

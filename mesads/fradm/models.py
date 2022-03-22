@@ -12,6 +12,10 @@ class AdministrationModel(models.Model):
         """Human readable name of this administration."""
         raise NotImplementedError
 
+    def display_fulltext(self):
+        """Like display_text(), buf prefixed with the correct french article "la" or "l'"."""
+        raise NotImplementedError
+
 
 class Commune(AdministrationModel):
     """Communes of France. Inserted by the django admin command
@@ -35,6 +39,9 @@ class Commune(AdministrationModel):
         if self.libelle.lower()[0:1] in 'aeiouy':
             return f'commune d\'{self.libelle}'
         return f'commune de {self.libelle}'
+
+    def display_fulltext(self):
+        return f'la {self.display_text()}'
 
     def __str__(self):
         return f'{self.departement} - {self.libelle} (INSEE: {self.insee})'
@@ -76,6 +83,9 @@ class Prefecture(AdministrationModel):
             return f'préfecture d\'{self.libelle}'
         return f'préfecture de {self.libelle}'
 
+    def display_fulltext(self):
+        return f'la {self.display_text()}'
+
     def __str__(self):
         return f'{self.numero} - {self.libelle}'
 
@@ -102,6 +112,9 @@ class EPCI(AdministrationModel):
 
     def display_text(self):
         return f'EPCI {self.name}'
+
+    def display_fulltext(self):
+        return 'l\'{self.display_text()}'
 
     def __str__(self):
         return self.name

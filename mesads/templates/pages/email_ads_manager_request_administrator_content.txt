@@ -1,0 +1,7 @@
+L'utilisateur {{ user.email }} souhaite obtenir la permission de gérer les autorisations de stationnement de {{ ads_manager.content_object.display_fulltext }}.
+
+En tant qu'administrateur, vous avez le pouvoir d'accepter ou de refuser d'accéder à cette demande.
+
+Rendez-vous sur MesADS sur {{ request.scheme }}://{{ request.get_host }}{% url 'ads-manager-admin' %} pour répondre à la demande.
+
+Attention : avant d'accepter une demande, assurez-vous que le demandeur travaille bien pour l'administration renseignée. N'hésitez pas à lui envoyer un email ou un appel téléphonique pour demander confirmation.
