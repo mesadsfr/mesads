@@ -1,5 +1,6 @@
 # Fonctionnement de Mes ADS
 
+Ce dépôt contient le code source de MesADS, disponible sur https://mesads.beta.gouv.fr
 
 # Contexte
 
