@@ -79,6 +79,26 @@ class ADSManagerAdminView(TemplateView):
             ads_manager_request.accepted = False
         ads_manager_request.save()
 
+        # Send notification to user
+        email_subject = render_to_string(
+            'pages/email_ads_manager_request_result_subject.txt', {
+                'ads_manager_request': ads_manager_request,
+            }
+        ).strip()
+        email_content = render_to_string(
+            'pages/email_ads_manager_request_result_content.txt', {
+                'request': request,
+                'ads_manager_request': ads_manager_request,
+                'MESADS_CONTACT_EMAIL': settings.MESADS_CONTACT_EMAIL,
+            }
+        )
+        send_mail(
+            email_subject,
+            email_content,
+            settings.MESADS_CONTACT_EMAIL,
+            [ads_manager_request.user.email],
+            fail_silently=True,
+        )
         return redirect(reverse('ads-manager-admin'))
 
 
