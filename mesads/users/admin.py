@@ -8,7 +8,7 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ('email', 'admin_roles')
 
     readonly_fields = ('date_joined', 'last_login',)
-    fields = ('date_joined', 'last_login', 'is_superuser', 'is_active',)
+    fields = ('date_joined', 'last_login', 'is_superuser', 'is_staff', 'is_active',)
 
     def admin_roles(self, user):
         roles = user.adsmanageradministrator_set.all()
