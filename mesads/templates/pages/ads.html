@@ -40,6 +40,17 @@ Création d'une nouvelle ADS
 
 <div class="fr-grid-row">
   <form class="fr-col-12 fr-col-sm-8 fr-col-md-6" method="post" enctype="multipart/form-data">
+    {% if form.non_field_errors %}
+      <div class="fr-input-group fr-input-group--error">
+        {% for error in form.non_field_errors %}
+        <!-- Non-field error -->
+        <p class="fr-error-text">
+          {{ error }}
+        </p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
     {% csrf_token %}
 
     <!-- ADS number -->
