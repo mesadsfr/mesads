@@ -191,9 +191,21 @@ class ADS(models.Model):
     class Meta:
         verbose_name = 'ADS'
         verbose_name_plural = 'ADS'
+        constraints = [
+            models.UniqueConstraint(fields=['number', 'ads_manager_id'], name='unique_ads_number')
+        ]
 
     def __str__(self):
         return f'ADS {self.id}'
+
+    UNIQUE_ERROR_MSG = "Une ADS avec ce numéro existe déjà. Supprimez l'ADS existante, ou utilisez un autre numéro."
+
+    def validate_unique(self, exclude=None):
+        """validate_unique() is called when a ModelForm instance calls validate_unique, when the object is updated."""
+        try:
+            return super().validate_unique(exclude=exclude)
+        except ValidationError:
+            raise ValidationError({'number': self.UNIQUE_ERROR_MSG})
 
     number = models.CharField(max_length=255, null=False, blank=False)
     ads_manager = models.ForeignKey(ADSManager, on_delete=models.CASCADE)

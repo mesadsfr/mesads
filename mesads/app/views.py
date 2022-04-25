@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -232,4 +233,12 @@ class ADSCreateView(ADSView, CreateView):
     def form_valid(self, form):
         ads_manager = ADSManager.objects.get(id=self.kwargs['manager_id'])
         form.instance.ads_manager = ads_manager
-        return super().form_valid(form)
+
+        # CreateView doesn't call form.validate_unique(). The try/catch below
+        # attemps to save the object. If IntegrityError is returned from
+        # database, we return a custom error message for "number".
+        try:
+            return super().form_valid(form)
+        except IntegrityError:
+            form.add_error('number', ADS.UNIQUE_ERROR_MSG)
+            return super().form_invalid(form)
