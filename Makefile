@@ -2,7 +2,7 @@ debug: build
 	docker-compose run --service-ports --rm app
 
 shell: build
-	docker-compose run --no-deps --rm --service-ports app bash
+	docker-compose run --service-ports --rm app bash
 
 build:
 	docker-compose build
