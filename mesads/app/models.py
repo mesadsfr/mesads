@@ -1,9 +1,11 @@
 from datetime import datetime
 import os
+import re
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Count
 
@@ -127,6 +129,11 @@ class ADSManagerAdministrator(models.Model):
     ads_managers = models.ManyToManyField(ADSManager, blank=True)
 
 
+def validate_siret(value):
+    if not re.match(r'^\d{14}$', value):
+        raise ValidationError('Un SIRET doit être composé de 14 numéros')
+
+
 class ADS(models.Model):
     """Autorisation De Stationnement created by ADSManager.
 
@@ -230,7 +237,8 @@ class ADS(models.Model):
     owner_firstname = models.CharField(max_length=1024, blank=True, null=False)
     owner_lastname = models.CharField(max_length=1024, blank=True, null=False)
 
-    owner_siret = models.CharField(max_length=128, blank=True, null=False)
+    owner_siret = models.CharField(max_length=128, blank=True, null=False,
+                                   validators=[validate_siret])
 
     used_by_owner = models.BooleanField(blank=True, null=True)
 
@@ -246,7 +254,8 @@ class ADS(models.Model):
 
     user_name = models.CharField(max_length=1024, blank=True, null=False)
 
-    user_siret = models.CharField(max_length=128, blank=True, null=False)
+    user_siret = models.CharField(max_length=128, blank=True, null=False,
+                                  validators=[validate_siret])
 
     def get_legal_filename(self, filename):
         now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
