@@ -31,10 +31,6 @@ class HomepageView(RedirectView):
         return reverse('ads-manager-request')
 
 
-class HowItWorksView(TemplateView):
-    template_name = 'pages/how-it-works.html'
-
-
 class ADSManagerAdminView(TemplateView):
     template_name = 'pages/ads_manager_admin.html'
 
