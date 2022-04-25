@@ -6,13 +6,15 @@
   {{ field_title }} :
   </label>
 
-  <input
-    class="fr-input{% if field_errors %} fr-input--error{% endif %}"
-    type="date"
-    id="{{ field.name}}"
-    name="{{ field.name }}"
-    value="{{ field.value|date:"Y-m-d"|default:"" }}"
-  />
+  <div class="fr-input-wrap fr-fi-calendar-line">
+    <input
+      class="fr-input{% if field_errors %} fr-input--error{% endif %}"
+      type="date"
+      id="{{ field.name}}"
+      name="{{ field.name }}"
+      value="{{ field.value|date:"Y-m-d"|default:"" }}"
+    />
+  </div>
 
   {% for error in field_errors %}
   <p class="fr-error-text">
