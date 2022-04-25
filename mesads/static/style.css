@@ -14,21 +14,6 @@ h2 {
   margin-bottom: 2rem;
 }
 
-.alternatives h4 {
-  text-align: center;
-}
-
-.alternatives .alternative:not(:first-child) {
-  border-top: 5px solid #000074;
-}
-
-@media only screen and (min-width: 768px) {
-  .alternatives .alternative:not(:first-child) {
-    border-left: 5px solid #000074;
-    border-top: none;
-  }
-}
-
 .table-row-success {
   background-color: rgba(31, 141, 73, 0.3) !important;
 }

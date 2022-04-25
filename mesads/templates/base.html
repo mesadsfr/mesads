@@ -38,15 +38,7 @@
             <div class="fr-header__tools">
               <div class="fr-header__tools-links">
                 <ul class="fr-links-group">
-                  {% if not user.is_authenticated %}
-                    <li>
-                      <a class="fr-link fr-fi-lock-line" href="{% url 'login' %}">Se connecter</a>
-                    </li>
-
-                    <li>
-                      <a class="fr-link fr-fi-account-line" href="{% url 'django_registration_register' %}">S’enregistrer</a>
-                    </li>
-                  {% else %}
+                  {% if user.is_authenticated %}
                     <li>
                       <a class="fr-link fr-fi-user-line" href="{% url 'password_change' %}">Changer de mot de passe</a>
                     </li>
@@ -72,6 +64,7 @@
           <button class="fr-link--close fr-link" aria-controls="modal-833">Fermer</button>
           <div class="fr-header__menu-links"></div>
           <nav class="fr-nav" id="navigation-832" role="navigation" aria-label="Menu principal">
+            {% if user.is_authenticated %}
             <ul class="fr-nav__list">
               <li class="fr-nav__item">
                 <a class="fr-nav__link" href="{% url 'ads-manager-request' %}">Gestion des ADS</a>
@@ -82,6 +75,7 @@
               </li>
               {% endif %}
             </ul>
+            {% endif %}
           </nav>
         </div>
       </div>

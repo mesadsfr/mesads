@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
-from django.views.generic import RedirectView, TemplateView
+from django.views.generic import TemplateView
 from django.views.generic import UpdateView
 from django.views.generic.edit import CreateView, DeleteView, FormView
 from django.views.generic.list import ListView
@@ -20,15 +20,19 @@ class HTTP500View(TemplateView):
     template_name = '500.html'
 
 
-class HomepageView(RedirectView):
-    """Redirect to ADSManagerAdminView or ADSManagerView depending on the
-    user role. If user is not authenticated or has no roles, redirect to
-    HowItWorksView.
+class HomepageView(TemplateView):
+    """Render template when user is not connected. If user is connected,
+    redirect to ads-manager-admin or ads-manager-request depending on
+    permissions.
     """
-    def get_redirect_url(self, *args, **kwargs):
-        if self.request.user.is_authenticated and len(self.request.user.adsmanageradministrator_set.all()):
-            return reverse('ads-manager-admin')
-        return reverse('ads-manager-request')
+    template_name = 'pages/homepage.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            if len(self.request.user.adsmanageradministrator_set.all()):
+                return redirect(reverse('ads-manager-admin'))
+            return redirect(reverse('ads-manager-request'))
+        return super().dispatch(request, *args, **kwargs)
 
 
 class ADSManagerAdminView(TemplateView):

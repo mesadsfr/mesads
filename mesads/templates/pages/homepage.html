@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+<div class="fr-grid-row fr-grid-row--center">
+  <div class="fr-col-12 fr-col-sm-8">
+    <h1>Vous êtes une autorité créatrice d’ADS&nbsp;?</h1>
+
+    <p>
+      Accédez à la base de données française des autorisations de stationnement sur votre secteur de compétences.
+    </p>
+
+    <a href="{% url 'login' %}" class="fr-btn">Se connecter</a>
+    ou
+    <a href="{% url 'django_registration_register' %}" class="fr-btn">Créer un compte</a>
+  </div>
+</div>
+
+{% endblock %}
