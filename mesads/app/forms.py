@@ -8,8 +8,11 @@ from .models import ADSManager
 class ADSManagerForm(FrenchAdministrationForm):
     """Form to retrieve an ADSManager.
 
-    The base class displays three fields to select either an EPCI, a Commune or
-    a Prefecture, and allows to select only one of them.
+    The base class FrenchAdministrationForm displays three fields to select
+    either an EPCI, a Commune or a Prefecture, and allows to select only one of
+    them.
+
+    This class sets the field ads_manager to the selected choice.
     """
     def clean(self):
         # super() method ensures only one field is set
