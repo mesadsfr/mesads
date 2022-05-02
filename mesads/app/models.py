@@ -154,6 +154,9 @@ class ADS(models.Model):
     :param attribution_type: 'free', 'paid' or 'other' depending on how the
         current owner obtained the ADS.
 
+    :param transaction_identifier: Identifier of the transaction in the
+        "registre des transactions".
+
     :param attribution_reason: Explains how the ADS has been attributed when
         attribution_type is "other".
 
@@ -233,6 +236,10 @@ class ADS(models.Model):
 
     attribution_type = models.CharField(
         max_length=16, choices=ATTRIBUTION_TYPES, blank=True, null=False)
+
+    transaction_identifier = models.CharField(
+        max_length=64, blank=True, null=False
+    )
 
     attribution_reason = models.CharField(
         max_length=4096, blank=True, null=False)

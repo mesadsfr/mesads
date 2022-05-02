@@ -68,6 +68,9 @@ Création d'une nouvelle ADS
     <!-- ADS attribution type -->
     {% include 'pages/ads-form_select.html' with field_title="Type d'attribution de l'ADS" field=form.attribution_type field_errors=form.errors.attribution_type %}
 
+    <!-- Transaction identifier -->
+    {% include 'pages/ads-form_string.html' with field_title="Numéro d'identification lié au registre des transactions" field=form.transaction_identifier field_errors=form.errors.transaction_identifier data_display_src=form.attribution_type.name data_show_value="paid" %}
+
     <!-- ADS attribution reason -->
     {% include 'pages/ads-form_string.html' with field_title="Raison d'attribution" field=form.attribution_reason field_errors=form.errors.attribution_reason %}
 
@@ -90,7 +93,7 @@ Création d'une nouvelle ADS
     <!-- Owner SIRET -->
     {% include 'pages/ads-form_string.html' with field_title="SIRET du propriétaire de l'ADS" field=form.owner_siret field_errors=form.errors.owner_siret %}
 
-    <div data-hide-src="{{ form.ads_type.name }}" data-hide-value="new">
+    <div data-display-src="{{ form.ads_type.name }}" data-hide-value="new">
       <!-- Used by owner ? -->
       {% include 'pages/ads-form_select.html' with field_title="ADS utilisée par son propriétaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner %}
 
@@ -119,26 +122,44 @@ Création d'une nouvelle ADS
 
 {% block endbody %}
 <script type="text/javascript">
-  const els = document.querySelectorAll('[data-hide-src]');
+document.addEventListener('DOMContentLoaded', () => {
+  const els = document.querySelectorAll('[data-display-src]');
 
   for (i = 0; i < els.length; ++i) {
+    // Node to hide or show depending on the value of src
     const dst = els[i];
 
-    // Id of the source element to watch
-    const srcId = dst.getAttribute('data-hide-src');
     // Element to watch
+    const srcId = dst.getAttribute('data-display-src');
     const src = document.getElementById(srcId);
 
-    const hideValue = dst.getAttribute('data-hide-value');
+    const setDisplay = (src, dst) => {
+      // Use data-hide-value to show by default and hide when values match.
+      // Use data-show-value to hide by default and show when values match.
+      const hideValue = dst.getAttribute('data-hide-value');
+      const showValue = dst.getAttribute('data-show-value');
 
-    // Watch src. When value is srcHideValue, hide dst.
-    src.addEventListener('change', () => {
-      dst.style.display = src.value === hideValue ? 'none' : 'block';
-    });
+      if (hideValue && showValue) {
+          throw new Exception('You should set data-hide-value or data-show-value, not both!');
+      }
+
+      if (!hideValue && !showValue) {
+        throw new Exception('You should set data-hide-value or data-show-value');
+      }
+
+      if (hideValue) {
+        dst.style.display = src.value === hideValue ? 'none' : 'block';
+      } else if (showValue) {
+        dst.style.display = src.value === showValue ? 'block' : 'none';
+      }
+    };
+
     // Initial rendering
-    document.addEventListener('DOMContentLoaded', () => {
-      dst.style.display = src.value === hideValue ? 'none' : 'block';
-    });
+    setDisplay(src, dst);
+
+    // Watch src
+    src.addEventListener('change', () => setDisplay(src, dst));
   }
+});
 </script>
 {% endblock %}
