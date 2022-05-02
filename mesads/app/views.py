@@ -180,6 +180,7 @@ class ADSView(UpdateView):
         'ads_type',
         'attribution_date',
         'attribution_type',
+        'transaction_identifier',
         'attribution_reason',
         'accepted_cpam',
         'immatriculation_plate',
