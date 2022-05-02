@@ -6,16 +6,6 @@
     {{ field_title }}
   </label>
 
-  {% comment %}
-  <input
-    class="fr-input{% if field_errors %} fr-input--error{% endif %}"
-    type="text"
-    id="{{ field.name}}"
-    name="{{ field.name }}"
-    value="{{ field.value }}"
-  />
-  {% endcomment %}
-
   <select class="fr-select{% if field_errors %} fr-select--error{% endif %}" id="{{ field.name }}" name="{{ field.name }}">
     {% for option in field %}
       {{ option }}
