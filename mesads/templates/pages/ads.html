@@ -90,16 +90,18 @@ Création d'une nouvelle ADS
     <!-- Owner SIRET -->
     {% include 'pages/ads-form_string.html' with field_title="SIRET du propriétaire de l'ADS" field=form.owner_siret field_errors=form.errors.owner_siret %}
 
-    <!-- Used by owner ? -->
-    {% include 'pages/ads-form_select.html' with field_title="ADS utilisée par son propriétaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner %}
+    <div data-hide-src="{{ form.ads_type.name }}" data-hide-value="new">
+      <!-- Used by owner ? -->
+      {% include 'pages/ads-form_select.html' with field_title="ADS utilisée par son propriétaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner %}
 
-    <!-- User status -->
-    {% include 'pages/ads-form_select.html' with field_title="Statut de l'utilisateur de l'ADS" field=form.user_status field_errors=form.errors.user_status %}
+      <!-- User status -->
+      {% include 'pages/ads-form_select.html' with field_title="Statut de l'utilisateur de l'ADS" field=form.user_status field_errors=form.errors.user_status %}
 
-    <!-- User name -->
-    {% include 'pages/ads-form_string.html' with field_title="Nom de l'utilisateur de l'ADS" field=form.user_name field_errors=form.errors.user_name %}
-    <!-- User SIRET -->
-    {% include 'pages/ads-form_string.html' with field_title="SIRET de l'utilisateur de l'ADS" field=form.user_siret field_errors=form.errors.user_siret %}
+      <!-- User name -->
+      {% include 'pages/ads-form_string.html' with field_title="Nom de l'utilisateur de l'ADS" field=form.user_name field_errors=form.errors.user_name %}
+      <!-- User SIRET -->
+      {% include 'pages/ads-form_string.html' with field_title="SIRET de l'utilisateur de l'ADS" field=form.user_siret field_errors=form.errors.user_siret %}
+    </div>
 
     <!-- Legal file -->
     {% include 'pages/ads-form_input.html' with field_title="Arrêté portant l'attribution de l'ADS" field=form.legal_file field_errors=form.errors.legal_file %}
@@ -113,4 +115,30 @@ Création d'une nouvelle ADS
     </div>
   </form>
 </div>
+{% endblock %}
+
+{% block endbody %}
+<script type="text/javascript">
+  const els = document.querySelectorAll('[data-hide-src]');
+
+  for (i = 0; i < els.length; ++i) {
+    const dst = els[i];
+
+    // Id of the source element to watch
+    const srcId = dst.getAttribute('data-hide-src');
+    // Element to watch
+    const src = document.getElementById(srcId);
+
+    const hideValue = dst.getAttribute('data-hide-value');
+
+    // Watch src. When value is srcHideValue, hide dst.
+    src.addEventListener('change', () => {
+      dst.style.display = src.value === hideValue ? 'none' : 'block';
+    });
+    // Initial rendering
+    document.addEventListener('DOMContentLoaded', () => {
+      dst.style.display = src.value === hideValue ? 'none' : 'block';
+    });
+  }
+</script>
 {% endblock %}
