@@ -79,69 +79,92 @@
 
 <h4>Configuration de l'accès gestionnaire</h4>
 
-<p>
-  Si vous souhaitez gérer les ADS d'une administration, renseignez ci-dessous la commune <strong>ou</strong> l'EPCI <strong>ou</strong> la préfecture.
-</p>
-
-<p>
-  La préfecture recevra la demande. Une fois celle-ci acceptée, vous pourrez gérer les ADS.
-</p>
-
 <form class="fr-grid-row fr-grid-row--middle" method="post" action="{% url 'ads-manager-request' %}">
   {% csrf_token %}
+  <div class="fr-form-group">
+    <fieldset class="fr-fieldset">
+      <legend class="fr-fieldset__legend fr-text--regular" id='radio-inline-legend'>
+          Vous souhaitez obtenir un accès pour la gestion des autorisations de stationnement :
+      </legend>
 
-  <!-- Commune -->
-  <div class="fr-col-12 fr-input-group{% if form.errors.commune %} fr-input-group--error{% endif %}">
-    <label
-      class="fr-label"
-      for="{{ form.commune.name }}"
-    >
-      {{ form.commune.label }} :
-    </label>
+      <div class="fr-fieldset__content">
+        <!-- Commune -->
+        <div class="fr-radio-group">
+          <input type="radio" id="radio-inline-1" name="radio-inline">
+          <label class="fr-label" for="radio-inline-1">
+            D'une commune
+          </label>
 
-    {{ form.commune }}
+          <div class="fr-col-12 fr-input-group radio-inline{% if form.errors.commune %} fr-input-group--error{% endif %}">
+            <label
+              class="fr-label"
+              for="{{ form.commune.name }}"
+            >
+              Sélectionnez la commune:
+            </label>
 
-    {% for error in form.errors.commune %}
-    <p class="fr-error-text">
-      {{ error }}
-    </p>
-    {% endfor %}
-  </div>
+            {{ form.commune }}
 
-  <!-- EPCI -->
-  <div class="fr-col-12 fr-input-group{% if form.errors.epci %} fr-input-group--error{% endif %}">
-    <label
-      class="fr-label"
-      for="{{ form.epci.name }}"
-    >
-      {{ form.epci.label }} :
-    </label>
+            {% for error in form.errors.commune %}
+            <p class="fr-error-text">
+              {{ error }}
+            </p>
+            {% endfor %}
+          </div>
+        </div>
 
-    {{ form.epci }}
+        <!-- EPCI -->
+        <div class="fr-radio-group">
+          <input type="radio" id="radio-inline-2" name="radio-inline">
+          <label class="fr-label" for="radio-inline-2">
+            D'un établissement public à fiscalité propre (métropole, communauté de commune, communauté d’agglomération ou communauté urbaine)
+          </label>
 
-    {% for error in form.errors.epci %}
-    <p class="fr-error-text">
-      {{ error }}
-    </p>
-    {% endfor %}
-  </div>
+          <div class="fr-col-12 fr-input-group radio-inline{% if form.errors.epci %} fr-input-group--error{% endif %}">
+            <label
+              class="fr-label"
+              for="{{ form.epci.name }}"
+            >
+              Sélectionnez l'établissement :
+            </label>
 
-  <!-- Prefecture -->
-  <div class="fr-col-12 fr-input-group{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
-    <label
-      class="fr-label"
-      for="{{ form.prefecture.name }}"
-    >
-      {{ form.prefecture.label }} :
-    </label>
+            {{ form.epci }}
 
-    {{ form.prefecture }}
+            {% for error in form.errors.epci %}
+            <p class="fr-error-text">
+              {{ error }}
+            </p>
+            {% endfor %}
+          </div>
+        </div>
 
-    {% for error in form.errors.prefecture %}
-    <p class="fr-error-text">
-      {{ error }}
-    </p>
-    {% endfor %}
+        <!-- Préfecture -->
+        <div class="fr-radio-group">
+          <input type="radio" id="radio-inline-3" name="radio-inline">
+          <label class="fr-label" for="radio-inline-3">
+            D'une préfecture (ADS aéroport)
+          </label>
+
+          <div class="fr-col-12 fr-input-group radio-inline{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
+            <label
+              class="fr-label"
+              for="{{ form.prefecture.name }}"
+            >
+              Sélectionnez la préfecture :
+            </label>
+
+            {{ form.prefecture }}
+
+            {% for error in form.errors.prefecture %}
+            <p class="fr-error-text">
+              {{ error }}
+            </p>
+            {% endfor %}
+          </div>
+        </div>
+
+      </div>
+    </fieldset>
   </div>
 
   <!-- Non-fields errors -->
@@ -169,5 +192,29 @@
   {% if form %}
     <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
     {{ form.media }}
+
+
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', () => {
+        const radios = document.getElementsByName('radio-inline');
+
+        // Only display the selected element, hide the others
+        function setADSRequestFormVisibility() {
+          radios.forEach((radio) => {
+            const child = radio.parentElement.getElementsByClassName('radio-inline')[0];
+            child.style.display = radio.checked ? 'block' : 'none';
+            // XXX: if element is not checked, we should remove the selection
+            //      of child.getElementsByTagName('select')[0];
+          });
+        }
+
+        // Set initial rendering
+        setADSRequestFormVisibility();
+
+        // Hook to changes to reset visibility
+        radios.forEach((radio) => radio.addEventListener('change', setADSRequestFormVisibility));
+      });
+
+    </script>
   {% endif %}
 {% endblock %}
