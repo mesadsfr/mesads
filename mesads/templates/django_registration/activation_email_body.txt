@@ -1,11 +1,11 @@
 {% load abs_activation_uri %}
 
-Nous avons reçu votre demande d'inscription Mes ADS. Cliquez sur le lien ci-dessous pour valider votre compte.
+Cliquez sur le lien ci-dessous pour procéder à l’activation de votre compte gestionnaire Mes.ADS  : {% abs_activation_uri activation_key %}
 
+Ce lien est valide pendant {{ expiration_days }} jours.
 
-    {% abs_activation_uri activation_key %}
-
+Votre identifiant Mes.ADS est : {{ user.email }}
 
 Si vous n'êtes pas à l'origine de la demande, vous pouvez ignorer cet email.
 
-Un problème ? Une question ? Contactez notre équipe par email sur {{ MESADS_CONTACT_EMAIL }}.
+Signalez nous toute difficulté sur l’adresse : {{ MESADS_CONTACT_EMAIL }}
