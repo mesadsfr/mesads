@@ -203,8 +203,10 @@
           radios.forEach((radio) => {
             const child = radio.parentElement.getElementsByClassName('radio-inline')[0];
             child.style.display = radio.checked ? 'block' : 'none';
-            // XXX: if element is not checked, we should remove the selection
-            //      of child.getElementsByTagName('select')[0];
+
+            if (!radio.checked) {
+              $(child.getElementsByTagName('select')[0]).empty();
+            }
           });
         }
 
