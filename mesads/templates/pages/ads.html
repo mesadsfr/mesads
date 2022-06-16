@@ -97,13 +97,15 @@ Création d'une nouvelle ADS
       <!-- Used by owner ? -->
       {% include 'pages/ads-form_select.html' with field_title="ADS exploitée par son titulaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner %}
 
-      <!-- User status -->
-      {% include 'pages/ads-form_select.html' with field_title="Statut de l'exploitant de l'ADS" field=form.user_status field_errors=form.errors.user_status %}
+      <div data-display-src="{{ form.used_by_owner.name }}" data-hide-value="true">
+        <!-- User status -->
+        {% include 'pages/ads-form_select.html' with field_title="Statut de l'exploitant de l'ADS" field=form.user_status field_errors=form.errors.user_status %}
 
-      <!-- User name -->
-      {% include 'pages/ads-form_string.html' with field_title="Nom de l'exploitant de l'ADS" field=form.user_name field_errors=form.errors.user_name %}
-      <!-- User SIRET -->
-      {% include 'pages/ads-form_string.html' with field_title="SIRET de l'exploitant de l'ADS" field=form.user_siret field_errors=form.errors.user_siret %}
+        <!-- User name -->
+        {% include 'pages/ads-form_string.html' with field_title="Nom de l'exploitant de l'ADS" field=form.user_name field_errors=form.errors.user_name %}
+        <!-- User SIRET -->
+        {% include 'pages/ads-form_string.html' with field_title="SIRET de l'exploitant de l'ADS" field=form.user_siret field_errors=form.errors.user_siret %}
+      </div>
     </div>
 
     <!-- Legal file -->
