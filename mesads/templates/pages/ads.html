@@ -63,7 +63,7 @@ Création d'une nouvelle ADS
     {% include 'pages/ads-form_select.html' with field_title="Type d'ADS" field=form.ads_type field_errors=form.errors.ads_type %}
 
     <!-- ADS attribution date -->
-    {% include 'pages/ads-form_date.html' with field_title="Date d'attribution de l'ADS" field=form.attribution_date field_errors=form.errors.attribution_date %}
+    {% include 'pages/ads-form_date.html' with field_title="Date d'attribution de l'ADS au titulaire actuel" field=form.attribution_date field_errors=form.errors.attribution_date %}
 
     <!-- ADS attribution type -->
     {% include 'pages/ads-form_select.html' with field_title="Type d'attribution de l'ADS" field=form.attribution_type field_errors=form.errors.attribution_type %}
