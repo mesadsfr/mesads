@@ -87,15 +87,15 @@ Création d'une nouvelle ADS
     {% include 'pages/ads-form_select.html' with field_title="Véhicule électrique ou hybride ?" field=form.eco_vehicle field_errors=form.errors.eco_vehicle %}
 
     <!-- Owner firstname -->
-    {% include 'pages/ads-form_string.html' with field_title="Prénom du propriétaire de l'ADS" field=form.owner_firstname field_errors=form.errors.owner_firstname %}
+    {% include 'pages/ads-form_string.html' with field_title="Prénom du titulaire de l'ADS" field=form.owner_firstname field_errors=form.errors.owner_firstname %}
     <!-- Owner lastname -->
-    {% include 'pages/ads-form_string.html' with field_title="Nom du propriétaire de l'ADS" field=form.owner_lastname field_errors=form.errors.owner_lastname %}
+    {% include 'pages/ads-form_string.html' with field_title="Nom du titulaire de l'ADS" field=form.owner_lastname field_errors=form.errors.owner_lastname %}
     <!-- Owner SIRET -->
-    {% include 'pages/ads-form_string.html' with field_title="SIRET du propriétaire de l'ADS" field=form.owner_siret field_errors=form.errors.owner_siret %}
+    {% include 'pages/ads-form_string.html' with field_title="SIRET du titulaire de l'ADS" field=form.owner_siret field_errors=form.errors.owner_siret %}
 
     <div data-display-src="{{ form.ads_type.name }}" data-hide-value="new">
       <!-- Used by owner ? -->
-      {% include 'pages/ads-form_select.html' with field_title="ADS utilisée par son propriétaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner %}
+      {% include 'pages/ads-form_select.html' with field_title="ADS utilisée par son titulaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner %}
 
       <!-- User status -->
       {% include 'pages/ads-form_select.html' with field_title="Statut de l'utilisateur de l'ADS" field=form.user_status field_errors=form.errors.user_status %}
