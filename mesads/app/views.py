@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.db import IntegrityError
@@ -103,7 +104,7 @@ class ADSManagerAdminView(TemplateView):
         return redirect(reverse('ads-manager-admin'))
 
 
-class ADSManagerRequestView(FormView):
+class ADSManagerRequestView(SuccessMessageMixin, FormView):
     template_name = 'pages/ads_manager_request.html'
     form_class = ADSManagerForm
     success_url = reverse_lazy('ads-manager-request')
@@ -152,6 +153,40 @@ class ADSManagerRequestView(FormView):
             )
 
         return super().form_valid(form)
+
+    def get_success_message(self, cleaned_data):
+        prefectures = [
+            ads_manager_administrator.prefecture
+            for ads_manager_administrator in
+            cleaned_data['ads_manager'].adsmanageradministrator_set.all()
+        ]
+
+        # Request for EPCI or prefectures
+        if not prefectures:
+            return '''
+                Votre demande vient d’être envoyée à notre équipe. Vous recevrez une confirmation de validation de votre
+                accès par mail.<br /><br />
+
+                En cas de difficulté ou si vous n’obtenez pas de validation de votre demande vous pouvez contacter
+                <a href="mailto:%(email)s">%(email)s</a>.<br /><br />
+
+                Vous pouvez également demander un accès pour la gestion des ADS d’une autre collectivité.
+            ''' % {
+                'email': settings.MESADS_CONTACT_EMAIL
+            }
+
+        return '''
+            Votre demande vient d’être envoyée à %(prefectures)s. Vous recevrez une confirmation de validation de votre
+            accès par mail.<br /><br />
+
+            En cas de difficulté ou si vous n’obtenez pas de validation de votre demande vous pouvez
+            contacter <a href="mailto:%(email)s">%(email)s</a>.<br /><br />
+
+            Vous pouvez également demander un accès pour la gestion des ADS d’une autre collectivité.
+        ''' % {
+            'prefectures': ', '.join([prefecture.display_fulltext() for prefecture in prefectures]),
+            'email': settings.MESADS_CONTACT_EMAIL
+        }
 
 
 class ADSManagerView(ListView):

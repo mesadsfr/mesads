@@ -82,6 +82,16 @@
     </header>
 
     <main class="fr-container">
+      {% for message in messages %}
+      <div class="fr-alert fr-alert--info
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}fr-alert--info {% endif %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}fr-alert--success {% endif %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}fr-alert--error {% endif %}
+      ">
+        <p>{{ message|safe }}</p>
+      </div>
+      {% endfor %}
+
       {% block body %}{% endblock %}
     </main>
 
