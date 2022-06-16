@@ -98,12 +98,12 @@ Création d'une nouvelle ADS
       {% include 'pages/ads-form_select.html' with field_title="ADS utilisée par son titulaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner %}
 
       <!-- User status -->
-      {% include 'pages/ads-form_select.html' with field_title="Statut de l'utilisateur de l'ADS" field=form.user_status field_errors=form.errors.user_status %}
+      {% include 'pages/ads-form_select.html' with field_title="Statut de l'exploitant de l'ADS" field=form.user_status field_errors=form.errors.user_status %}
 
       <!-- User name -->
-      {% include 'pages/ads-form_string.html' with field_title="Nom de l'utilisateur de l'ADS" field=form.user_name field_errors=form.errors.user_name %}
+      {% include 'pages/ads-form_string.html' with field_title="Nom de l'exploitant de l'ADS" field=form.user_name field_errors=form.errors.user_name %}
       <!-- User SIRET -->
-      {% include 'pages/ads-form_string.html' with field_title="SIRET de l'utilisateur de l'ADS" field=form.user_siret field_errors=form.errors.user_siret %}
+      {% include 'pages/ads-form_string.html' with field_title="SIRET de l'exploitant de l'ADS" field=form.user_siret field_errors=form.errors.user_siret %}
     </div>
 
     <!-- Legal file -->
