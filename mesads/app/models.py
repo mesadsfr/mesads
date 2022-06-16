@@ -263,8 +263,9 @@ class ADS(models.Model):
 
     ADS_USER_STATUS = [
         ('titulaire_exploitant', 'Titulaire exploitant'),
-        ('cooperateur', 'Coopérateur'),
-        ('locataire_gerance', 'Locataire gérance'),
+        ('cooperateur', 'Locataire coopérateur'),
+        ('locataire_gerant', 'Locataire gérant'),
+        ('salarie', 'Salarié'),
         ('autre', 'Autre'),
     ]
 
