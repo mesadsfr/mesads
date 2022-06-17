@@ -1,8 +1,11 @@
+import csv
+
 from django.conf import settings
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.db import IntegrityError
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -278,3 +281,53 @@ class ADSCreateView(ADSView, CreateView):
         except IntegrityError:
             form.add_error('number', ADS.UNIQUE_ERROR_MSG)
             return super().form_invalid(form)
+
+
+def prefecture_export_ads(request, ads_manager_administrator):
+    prefecture = ads_manager_administrator.prefecture
+    response = HttpResponse(
+        content_type='text/csv',
+        headers={
+            'Content-Disposition': 'attachment; filename="ADS_prefecture_%s.csv"' % prefecture.numero
+        },
+    )
+
+    def display_bool(value):
+        if value is None:
+            return ''
+        return 'oui' if value else 'non'
+
+    fields = [
+        ('Administration', lambda ads: ads.ads_manager.content_object.display_text()),
+        ('Numéro', lambda ads: ads.number),
+        ('Date de création', lambda ads: ads.ads_creation_date),
+        ("Type", lambda ads: ads.ads_type and dict(ADS.ads_type.field.choices)[ads.ads_type]),
+        ("Date d'attribution au titulaire actuel", lambda ads: ads.attribution_date),
+        ("Type d'attribution", lambda ads: ads.attribution_type and dict(ADS.attribution_type.field.choices)[ads.attribution_type]),
+        ("Raison de l'attribution", lambda ads: ads.attribution_reason),
+        ("Conventionné CPAM ?", lambda ads: display_bool(ads.accepted_cpam)),
+        ("Plaque d'immatriculation", lambda ads: ads.immatriculation_plate),
+        ("Véhicule copmatible PMR ?", lambda ads: display_bool(ads.vehicle_compatible_pmr)),
+        ("Véhicule électrique ou hybridge ?", lambda ads: display_bool(ads.eco_vehicle)),
+        ("Prénom titulaire", lambda ads: ads.owner_firstname),
+        ("Nom titulaire", lambda ads: ads.owner_lastname),
+        ("SIRET titulaire", lambda ads: ads.owner_siret),
+        ("ADS exploitée par le titulaire ?", lambda ads: display_bool(ads.used_by_owner)),
+        ("Statut de l'exploitant", lambda ads: ads.user_status and dict(ADS.user_status.field.choices)[ads.user_status]),
+        ("Nom de l'exploitant", lambda ads: ads.user_name),
+        ("SIRET de l'exploitant", lambda ads: ads.user_siret),
+    ]
+
+    writer = csv.DictWriter(response, fieldnames=[field[0] for field in fields])
+
+    writer.writeheader()
+
+    for ads in ADS.objects.prefetch_related(
+        'ads_manager__content_object'
+    ).filter(ads_manager__in=ads_manager_administrator.ads_managers.all()):
+        writer.writerow({
+            field[0]: field[1](ads)
+            for field in fields
+        })
+
+    return response

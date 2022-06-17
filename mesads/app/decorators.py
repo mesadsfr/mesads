@@ -1,7 +1,7 @@
 import functools
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_list_or_404, get_object_or_404
 
 from .models import ADSManagerRequest, ADSManagerAdministrator
 
@@ -23,4 +23,23 @@ def ads_manager_required(func):
                 accepted=True,
             )
         return func(request, manager_id=manager_id, *args, **kwargs)
+    return login_required(wrapped)
+
+
+def ads_manager_administrator_required(func):
+    @functools.wraps(func)
+    def wrapped(request, prefecture_id=None, *args, **kwargs):
+        if prefecture_id:
+            ads_manager_administrator = get_object_or_404(
+                ADSManagerAdministrator,
+                prefecture=prefecture_id,
+                users__in=[request.user]
+            )
+            return func(request, ads_manager_administrator=ads_manager_administrator, *args, **kwargs)
+
+        get_list_or_404(
+            ADSManagerAdministrator,
+            users__in=[request.user]
+        )
+        return func(request, *args, **kwargs)
     return login_required(wrapped)

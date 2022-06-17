@@ -71,6 +71,14 @@
     </tbody>
   </table>
 </div>
+
+<ul class="fr-btns-group fr-btns-group--inline fr-m-3w">
+  <li>
+    <a class="fr-btn fr-btn--secondary fr-btn--sm" href="{% url 'prefecture_export_ads' prefecture_id=ads_manager_administrator.prefecture.id %}">
+      Export CSV
+    </a>
+  </li>
+</ul>
 {% endfor %}
 
 <p>
