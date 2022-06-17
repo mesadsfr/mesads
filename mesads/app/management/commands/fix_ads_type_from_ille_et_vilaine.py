@@ -8,7 +8,6 @@ import sys
 
 import requests
 
-from django.core.files import File
 from django.core.management.base import BaseCommand
 
 from mesads.app.models import ADS
@@ -535,7 +534,6 @@ class Command(BaseCommand):
             ads, created = ADS.objects.get_or_create(ads_manager=ads_manager, number=ads_number)
 
             ads_creation_date = self._parse_date(fields[7]['date'])
-            ads_attribution_date = self._parse_date(fields[9]['date'])
 
             if not created:
                 if ads.ads_creation_date and not ads_creation_date:
