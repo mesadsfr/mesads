@@ -263,3 +263,5 @@ ACCOUNT_ACTIVATION_DAYS = 14
 # too many form values are provided.
 # We set a large value to avoid the issue.
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 2 ** 16
+
+INSEE_TOKEN = os.getenv('INSEE_TOKEN')

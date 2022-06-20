@@ -1,6 +1,9 @@
 from datetime import datetime
+import logging
 import os
 import re
+
+import requests
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -132,6 +135,38 @@ class ADSManagerAdministrator(models.Model):
 def validate_siret(value):
     if not re.match(r'^\d{14}$', value):
         raise ValidationError('Un SIRET doit être composé de 14 numéros')
+
+    if not settings.INSEE_TOKEN:
+        return
+
+    try:
+        resp = requests.get(
+            f'https://api.insee.fr/entreprises/sirene/V3/siret/{value}',
+            headers={
+                'Authorization': f'Bearer {settings.INSEE_TOKEN}'
+            },
+            timeout=1
+        )
+    # INSEE API did not answer fast enough, consider the number is valid
+    except requests.exceptions.Timeout:
+        return
+
+    # Ok
+    if resp.status_code >= 200 and resp.status_code < 300:
+        return
+
+    if resp.status_code == 404:
+        raise ValidationError('Ce numéro SIRET est invalide')
+
+    # Unknown case, log it to sentry for future investigation
+    logging.error(
+        'Unknown return value from INSEE API while checking for SIRET validity',
+        extra={
+            'insee': value,
+            'resp_status_code': resp.status_code,
+            'resp': resp.text,
+        }
+    )
 
 
 class ADS(models.Model):
