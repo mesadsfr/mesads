@@ -13,7 +13,7 @@
   Si vous avez la moindre question, contactez notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
 </p>
 
-{% for ads_manager_admin, ads_manager_requests in ads_manager_requests.items|dictsort:"0.id" %}
+{% for ads_manager_admin, ads_manager_requests in ads_manager_requests.items %}
 <div class="fr-table">
   <table>
     <caption>Demandes pour la {{ ads_manager_admin.prefecture.display_text }}</caption>
