@@ -33,11 +33,9 @@ class HomepageView(TemplateView):
     template_name = 'pages/homepage.html'
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            if len(self.request.user.adsmanageradministrator_set.all()):
-                return redirect(reverse('ads-manager-admin'))
-            return redirect(reverse('ads-manager-request'))
-        return super().dispatch(request, *args, **kwargs)
+        if len(self.request.user.adsmanageradministrator_set.all()):
+            return redirect(reverse('ads-manager-admin'))
+        return redirect(reverse('ads-manager-request'))
 
 
 class ADSManagerAdminView(TemplateView):

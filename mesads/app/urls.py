@@ -9,7 +9,7 @@ from .decorators import (
 
 
 urlpatterns = [
-    path('', views.HomepageView.as_view(), name='homepage'),
+    path('', login_required(views.HomepageView.as_view()), name='homepage'),
     path('admin_gestion', ads_manager_administrator_required(views.ADSManagerAdminView.as_view()), name='ads-manager-admin'),
     path('gestion', login_required(views.ADSManagerRequestView.as_view()), name='ads-manager-request'),
     path('gestion/<int:manager_id>/', ads_manager_required(views.ADSManagerView.as_view()), name='ads-manager'),
