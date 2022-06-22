@@ -32,6 +32,7 @@ class ClientTestCase(BaseClientTestCase):
         self.create_fixtures()
 
     def create_fixtures(self):
+        """Simulates the commands load_communes, load_epci and load_prefectures."""
         self.fixtures_communes = []
         self.fixtures_epci = []
         self.fixtures_prefectures = []
