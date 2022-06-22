@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.contenttypes.models import ContentType
 
 from mesads.fradm.models import Commune, Prefecture
@@ -39,6 +41,14 @@ class ClientTestCase(BaseClientTestCase):
         prefecture = Prefecture.objects.filter(numero=35).get()
         self.ads_manager_administrator_35 = ADSManagerAdministrator.objects.get(prefecture=prefecture)
         self.ads_manager_administrator_35.users.add(self.ads_manager_administrator_35_user)
+
+        # Disable logging below critical to avoid useless messages during
+        # unittests (requests error 404 for example).
+        logging.disable(logging.CRITICAL)
+
+    def tearDown(self):
+        # Enable logging
+        logging.disable(logging.NOTSET)
 
     def create_fixtures(self):
         """Create ADSManager and ADSManagerAdministrator entries.
