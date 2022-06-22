@@ -126,3 +126,11 @@ class TestADSManagerRequestView(ClientTestCase):
         # Make sure django message is in the next request
         resp = self.auth_client.get('/gestion')
         self.assertEqual(len(resp.context['messages']), 1)
+
+
+class TestADSManagerView(ClientTestCase):
+    def test_get(self):
+        resp = self.ads_manager_city35_client.get(
+            f'/gestion/{self.ads_manager_city35.id}/'
+        )
+        self.assertIn(self.ads_manager_city35.content_object.libelle, resp.content.decode('utf8'))
