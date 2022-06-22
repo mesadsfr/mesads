@@ -193,7 +193,7 @@ class ADSManagerRequestView(SuccessMessageMixin, FormView):
 class ADSManagerView(ListView):
     template_name = 'pages/ads_manager.html'
     model = ADS
-    paginate_by = 20
+    paginate_by = None
     ordering = ['id']
 
     def get_queryset(self):
