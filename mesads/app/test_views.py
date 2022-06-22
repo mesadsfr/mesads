@@ -1,3 +1,5 @@
+from django.core import mail
+
 from .models import ADSManagerRequest
 from .unittest import ClientTestCase
 
@@ -45,6 +47,8 @@ class TestADSManagerAdminView(ClientTestCase):
         self.assertEqual(resp.status_code, 404)
 
     def test_accept(self):
+        self.assertEqual(len(mail.outbox), 0)
+
         resp = self.ads_manager_administrator_35_client.post(
             '/admin_gestion',
             {'action': 'accept', 'request_id': self.ads_manager_request.id}
@@ -53,8 +57,11 @@ class TestADSManagerAdminView(ClientTestCase):
         self.assertEqual(resp.url, '/admin_gestion')
         self.ads_manager_request.refresh_from_db()
         self.assertTrue(self.ads_manager_request.accepted)
+        self.assertEqual(len(mail.outbox), 1)
 
     def test_deny(self):
+        self.assertEqual(len(mail.outbox), 0)
+
         resp = self.ads_manager_administrator_35_client.post(
             '/admin_gestion',
             {'action': 'deny', 'request_id': self.ads_manager_request.id}
@@ -63,3 +70,4 @@ class TestADSManagerAdminView(ClientTestCase):
         self.assertEqual(resp.url, '/admin_gestion')
         self.ads_manager_request.refresh_from_db()
         self.assertFalse(self.ads_manager_request.accepted)
+        self.assertEqual(len(mail.outbox), 1)
