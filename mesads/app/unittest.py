@@ -22,10 +22,10 @@ class ClientTestCase(BaseClientTestCase):
         self.ads_manager_city35_client, ads_manager_city35_user = self.create_client()
 
         # Retrieve ADSManager entry for Melesse created in self.create_fixtures()
-        commune_melesse = Commune.objects.filter(libelle='Melesse').get()
+        self.commune_melesse = Commune.objects.filter(libelle='Melesse').get()
         self.ads_manager_city35 = ADSManager.objects.get(
-            content_type=ContentType.objects.get_for_model(commune_melesse),
-            object_id=commune_melesse.id
+            content_type=ContentType.objects.get_for_model(self.commune_melesse),
+            object_id=self.commune_melesse.id
         )
 
         # Give permissions to client by creating an entry in ADSManagerRequest
