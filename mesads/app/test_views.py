@@ -157,8 +157,8 @@ class TestADSManagerView(ClientTestCase):
                 resp = client.get(f'/gestion/{self.ads_manager_city35.id}/')
                 self.assertEqual(resp.status_code, expected_status)
 
-    def test_get_invalid(self):
-        resp = self.ads_manager_city35_client.get(f'/gestion/99999/')
+    def test_get_404(self):
+        resp = self.ads_manager_city35_client.get('/gestion/99999/')
         self.assertEqual(resp.status_code, 404)
 
     def test_get(self):
