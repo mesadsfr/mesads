@@ -274,3 +274,34 @@ class TestADSCreateView(ClientTestCase):
         )
         self.assertEqual(resp.status_code, 200)
         self.assertIn('Une ADS avec ce numéro existe déjà', resp.content.decode('utf8'))
+
+
+class TestCSVExport(ClientTestCase):
+    def test_permissions(self):
+        for client_name, client, expected_status in (
+            ('anonymous', self.anonymous_client, 302),
+            ('auth', self.auth_client, 404),
+            ('ads_manager 35', self.ads_manager_city35_client, 404),
+            ('ads_manager_admin 35', self.ads_manager_administrator_35_client, 200),
+        ):
+            with self.subTest(client_name=client_name, expected_status=expected_status):
+                resp = client.get(f'/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export')
+                self.assertEqual(resp.status_code, expected_status)
+
+    def test_get_404(self):
+        resp = self.ads_manager_administrator_35_client.get('/prefectures/9999/export')
+        self.assertEqual(resp.status_code, 404)
+
+    def test_export(self):
+        ADS.objects.create(number='1', ads_manager=self.ads_manager_city35)
+        ADS.objects.create(number='2', ads_manager=self.ads_manager_city35)
+        ADS.objects.create(number='3', ads_manager=self.ads_manager_city35)
+
+        resp = self.ads_manager_administrator_35_client.get(
+            f'/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export'
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.headers['Content-Type'], 'text/csv')
+
+        # Header + 2 ADS
+        self.assertEqual(len(resp.content.splitlines()), 4)
