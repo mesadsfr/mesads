@@ -171,7 +171,7 @@ class TestADSManagerView(ClientTestCase):
 class TestADSView(ClientTestCase):
     def setUp(self):
         super().setUp()
-        self.ads = ADS.objects.create(id='12346', ads_manager=self.ads_manager_city35)
+        self.ads = ADS.objects.create(number='12346', ads_manager=self.ads_manager_city35)
 
     def test_permissions(self):
         for client_name, client, expected_status in (
@@ -200,6 +200,18 @@ class TestADSView(ClientTestCase):
         self.assertEqual(resp.url, f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}')
         self.ads.refresh_from_db()
         self.assertEqual(self.ads.user_name, 'Jean-Jacques')
+
+    def test_update_duplicate(self):
+        """Update ADS with the id of another ADS."""
+        other_ads = ADS.objects.create(number='xxx', ads_manager=self.ads_manager_city35)
+        resp = self.ads_manager_city35_client.post(
+            f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}',
+            {
+                'number': other_ads.number,
+            },
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Une ADS avec ce numéro existe déjà', resp.content.decode('utf8'))
 
 
 class TestADSDeleteView(ClientTestCase):
