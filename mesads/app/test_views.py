@@ -8,21 +8,16 @@ from .unittest import ClientTestCase
 
 class TestHomepageView(ClientTestCase):
     def test_redirection(self):
-        resp = self.anonymous_client.get('/')
-        self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp.url, '/auth/login/?next=/')
-
-        resp = self.auth_client.get('/')
-        self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp.url, '/gestion')
-
-        resp = self.ads_manager_city35_client.get('/')
-        self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp.url, '/gestion')
-
-        resp = self.ads_manager_administrator_35_client.get('/')
-        self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp.url, '/admin_gestion')
+        for client_name, client, expected_status, redirect_url in (
+            ('anonymous', self.anonymous_client, 302, '/auth/login/?next=/'),
+            ('auth', self.auth_client, 302, '/gestion'),
+            ('ads_manager 35', self.ads_manager_city35_client, 302, '/gestion'),
+            ('ads_manager_admin 35', self.ads_manager_administrator_35_client, 302, '/admin_gestion'),
+        ):
+            with self.subTest(client_name=client_name, expected_status=expected_status, redirect_url=redirect_url):
+                resp = client.get('/')
+                self.assertEqual(resp.status_code, expected_status)
+                self.assertEqual(resp.url, redirect_url)
 
 
 class TestADSManagerAdminView(ClientTestCase):
@@ -33,6 +28,17 @@ class TestADSManagerAdminView(ClientTestCase):
             ads_manager=self.ads_manager_city35,
             accepted=None
         )
+
+    def test_permissions(self):
+        for client_name, client, expected_status in (
+            ('anonymous', self.anonymous_client, 302),
+            ('auth', self.auth_client, 404),
+            ('ads_manager 35', self.ads_manager_city35_client, 404),
+            ('ads_manager_admin 35', self.ads_manager_administrator_35_client, 200),
+        ):
+            with self.subTest(client_name=client_name, expected_status=expected_status):
+                resp = client.get('/admin_gestion')
+                self.assertEqual(resp.status_code, expected_status)
 
     def test_invalid_action(self):
         resp = self.ads_manager_administrator_35_client.post(
@@ -79,6 +85,17 @@ class TestADSManagerRequestView(ClientTestCase):
     def setUp(self):
         super().setUp()
         self.initial_ads_managers_count = ADSManagerRequest.objects.count()
+
+    def test_permissions(self):
+        for client_name, client, expected_status in (
+            ('anonymous', self.anonymous_client, 302),
+            ('auth', self.auth_client, 200),
+            ('ads_manager 35', self.ads_manager_city35_client, 200),
+            ('ads_manager_admin 35', self.ads_manager_administrator_35_client, 200),
+        ):
+            with self.subTest(client_name=client_name, expected_status=expected_status):
+                resp = client.get('/gestion')
+                self.assertEqual(resp.status_code, expected_status)
 
     def test_create_request_invalid_id(self):
         """Provide the id of a non-existing object."""
@@ -129,6 +146,21 @@ class TestADSManagerRequestView(ClientTestCase):
 
 
 class TestADSManagerView(ClientTestCase):
+    def test_permissions(self):
+        for client_name, client, expected_status in (
+            ('anonymous', self.anonymous_client, 302),
+            ('auth', self.auth_client, 404),
+            ('ads_manager 35', self.ads_manager_city35_client, 200),
+            ('ads_manager_admin 35', self.ads_manager_administrator_35_client, 200),
+        ):
+            with self.subTest(client_name=client_name, expected_status=expected_status):
+                resp = client.get(f'/gestion/{self.ads_manager_city35.id}/')
+                self.assertEqual(resp.status_code, expected_status)
+
+    def test_get_invalid(self):
+        resp = self.ads_manager_city35_client.get(f'/gestion/99999/')
+        self.assertEqual(resp.status_code, 404)
+
     def test_get(self):
         resp = self.ads_manager_city35_client.get(
             f'/gestion/{self.ads_manager_city35.id}/'
