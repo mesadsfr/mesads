@@ -52,11 +52,6 @@ Si vous souhaitez importer les données de l'Ille et Vilaine stockées sur demar
 
 # Ressources
 
-Formulaire existant sur démarches simplifiées pour les ADS de l'Ille et Vilaine :
-
-  * https://www.demarches-simplifiees.fr/admin/procedures/35579/apercu
-
-
 Liste des EPCI, "établissement public de coopération intercommunale":
 
   * https://www.collectivites-locales.gouv.fr/institutions/liste-et-composition-des-epci-fiscalite-propre
