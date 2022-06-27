@@ -229,3 +229,36 @@ class TestADSDeleteView(ClientTestCase):
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp.url, f'/gestion/{self.ads_manager_city35.id}/')
         self.assertRaises(ADS.DoesNotExist, self.ads.refresh_from_db)
+
+
+class TestADSCreateView(ClientTestCase):
+    def test_permissions(self):
+        for client_name, client, expected_status in (
+            ('anonymous', self.anonymous_client, 302),
+            ('auth', self.auth_client, 404),
+            ('ads_manager 35', self.ads_manager_city35_client, 200),
+            ('ads_manager_admin 35', self.ads_manager_administrator_35_client, 200),
+        ):
+            with self.subTest(client_name=client_name, expected_status=expected_status):
+                resp = client.get(f'/gestion/{self.ads_manager_city35.id}/ads/')
+                self.assertEqual(resp.status_code, expected_status)
+
+    def test_create(self):
+        resp = self.ads_manager_city35_client.post(
+            f'/gestion/{self.ads_manager_city35.id}/ads/',
+            {'number': 'abcdef'}
+        )
+        self.assertEqual(resp.status_code, 302)
+        new_ads = ADS.objects.order_by('-id')[0]
+        self.assertEqual(resp.url, f'/gestion/{self.ads_manager_city35.id}/ads/{new_ads.id}')
+
+    def test_create_duplicate(self):
+        """Attempt to create ads with already-existing id."""
+        ADS.objects.create(number='123', ads_manager=self.ads_manager_city35)
+
+        resp = self.ads_manager_city35_client.post(
+            f'/gestion/{self.ads_manager_city35.id}/ads/',
+            {'number': '123'}
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Une ADS avec ce numéro existe déjà', resp.content.decode('utf8'))

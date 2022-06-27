@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
@@ -281,7 +281,8 @@ class ADSCreateView(ADSView, CreateView):
         # attemps to save the object. If IntegrityError is returned from
         # database, we return a custom error message for "number".
         try:
-            return super().form_valid(form)
+            with transaction.atomic():
+                return super().form_valid(form)
         except IntegrityError:
             form.add_error('number', ADS.UNIQUE_ERROR_MSG)
             return super().form_invalid(form)
