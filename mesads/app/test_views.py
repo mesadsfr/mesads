@@ -2,7 +2,7 @@ from django.core import mail
 
 from mesads.fradm.models import EPCI, Prefecture
 
-from .models import ADSManagerRequest
+from .models import ADS, ADSManagerRequest
 from .unittest import ClientTestCase
 
 
@@ -166,3 +166,37 @@ class TestADSManagerView(ClientTestCase):
             f'/gestion/{self.ads_manager_city35.id}/'
         )
         self.assertIn(self.ads_manager_city35.content_object.libelle, resp.content.decode('utf8'))
+
+
+class TestADSView(ClientTestCase):
+    def setUp(self):
+        super().setUp()
+        self.ads = ADS.objects.create(id='12346', ads_manager=self.ads_manager_city35)
+
+    def test_permissions(self):
+        for client_name, client, expected_status in (
+            ('anonymous', self.anonymous_client, 302),
+            ('auth', self.auth_client, 404),
+            ('ads_manager 35', self.ads_manager_city35_client, 200),
+            ('ads_manager_admin 35', self.ads_manager_administrator_35_client, 200),
+        ):
+            with self.subTest(client_name=client_name, expected_status=expected_status):
+                resp = client.get(f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}')
+                self.assertEqual(resp.status_code, expected_status)
+
+    def test_get_404(self):
+        resp = self.ads_manager_city35_client.get(f'/gestion/{self.ads_manager_city35.id}/ads/999')
+        self.assertEqual(resp.status_code, 404)
+
+    def test_update(self):
+        resp = self.ads_manager_city35_client.post(
+            f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}',
+            {
+                'number': self.ads.id,
+                'user_name': 'Jean-Jacques'
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp.url, f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}')
+        self.ads.refresh_from_db()
+        self.assertEqual(self.ads.user_name, 'Jean-Jacques')
