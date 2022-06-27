@@ -247,9 +247,15 @@ class ADSView(UpdateView):
         return get_object_or_404(ADS, id=self.kwargs['ads_id'])
 
 
-class ADSDeleteView(DeleteView, ADSView):
+class ADSDeleteView(DeleteView):
     template_name = 'pages/ads_confirm_delete.html'
     model = ADS
+    pk_url_kwarg = 'ads_id'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['ads_manager'] = ADSManager.objects.get(id=self.kwargs['manager_id'])
+        return ctx
 
     def get_success_url(self):
         return reverse('ads-manager', kwargs={
