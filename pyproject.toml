@@ -4,6 +4,15 @@ version = "0.1.0"
 description = ""
 authors = ["Julien Castets"]
 
+[tool.coverage.run]
+omit = [
+    "manage.py",
+    "*/wsgi.py",
+    "*/asgi.py",
+    "*/migrations/*.py",
+    "*urls.py",
+]
+
 [tool.poetry.dependencies]
 python = "^3.10"
 Django = "^4.0.5"
@@ -21,6 +30,7 @@ django-storages = "^1.12.3"
 [tool.poetry.dev-dependencies]
 django-debug-toolbar = "^3.2.2"
 flake8 = "^4.0.1"
+coverage = {version = "^6.4.1", extras = ["toml"]}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
