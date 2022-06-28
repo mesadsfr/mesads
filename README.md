@@ -1,5 +1,7 @@
 [![codecov](https://codecov.io/gh/mesadsfr/mesads/branch/master/graph/badge.svg?token=2RT9SXITWB)](https://codecov.io/gh/mesadsfr/mesads)
 
+[![Known Vulnerabilities](https://snyk.io/test/github/mesadsfr/mesads/badge.svg)]
+
 # Fonctionnement de Mes ADS
 
 Ce dépôt contient le code source de MesADS, disponible sur https://mesads.beta.gouv.fr
