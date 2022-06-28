@@ -293,7 +293,7 @@ class TestCSVExport(ClientTestCase):
         self.assertEqual(resp.status_code, 404)
 
     def test_export(self):
-        ADS.objects.create(number='1', ads_manager=self.ads_manager_city35)
+        ADS.objects.create(number='1', ads_manager=self.ads_manager_city35, accepted_cpam=True)
         ADS.objects.create(number='2', ads_manager=self.ads_manager_city35)
         ADS.objects.create(number='3', ads_manager=self.ads_manager_city35)
 
