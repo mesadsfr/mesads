@@ -114,7 +114,7 @@ class EPCI(AdministrationModel):
         return f'EPCI {self.name}'
 
     def display_fulltext(self):
-        return 'l\'{self.display_text()}'
+        return f'l\'{self.display_text()}'
 
     def __str__(self):
         return self.name
