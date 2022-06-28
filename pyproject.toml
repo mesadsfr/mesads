@@ -37,6 +37,7 @@ django-storages = "^1.12.3"
 django-debug-toolbar = "^3.2.2"
 flake8 = "^4.0.1"
 coverage = {version = "^6.4.1", extras = ["toml"]}
+requests-mock = "^1.9.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
