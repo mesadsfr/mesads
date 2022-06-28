@@ -29,7 +29,7 @@ class ClientTestCase(BaseClientTestCase):
         )
 
         # Give permissions to client by creating an entry in ADSManagerRequest
-        ADSManagerRequest.objects.create(
+        self.ads_manager_request = ADSManagerRequest.objects.create(
             user=ads_manager_city35_user,
             ads_manager=self.ads_manager_city35,
             accepted=True
