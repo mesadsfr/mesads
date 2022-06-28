@@ -12,6 +12,8 @@ omit = [
     "*/asgi.py",
     "*/migrations/*.py",
     "*urls.py",
+    "*/test_*.py",
+    "*/unittest.py",
 ]
 
 [tool.coverage.report]
