@@ -31,11 +31,17 @@ jobs:
       - name: Install dependencies
         run: |
           python -m poetry install
-      - name: Run tests
+      - name: Run tests and coverage
         run: |
-          poetry run python manage.py test
+          poetry run coverage run --source=. manage.py test
         env:
           DB_HOST: postgres
           DB_PORT: 5432
           DB_USER: postgres
           DB_PASSWORD: postgres
+      - name: Coverage report
+        run: |
+          poetry run coverage report
+          poetry run coverage xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
