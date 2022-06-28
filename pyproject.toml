@@ -21,6 +21,9 @@ omit = [
 
 [tool.coverage.report]
 show_missing = true
+exclude_lines = [
+    "raise NotImplementedError",
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
