@@ -194,77 +194,77 @@
 {% endblock %}
 
 {% block endbody %}
-  {% comment %}
-  Extra javascript to display form for new requests.
-  {% endcomment %}
-  {% if form %}
-    {{ form.media }}
+  {% comment %}Extra javascript to display form for new requests.{% endcomment %}
+  {{ form.media }}
 
+  <script type="text/javascript">
+    /*
+     * Only display the selected entry from the form.
+     */
+    document.addEventListener('DOMContentLoaded', () => {
+      const radios = document.getElementsByName('radio-inline');
 
-    <script type="text/javascript">
-      document.addEventListener('DOMContentLoaded', () => {
-        const radios = document.getElementsByName('radio-inline');
+      // Only display the selected element, hide the others
+      function setADSRequestFormVisibility() {
+        radios.forEach((radio) => {
+          const child = radio.parentElement.getElementsByClassName('radio-inline')[0];
+          child.style.display = radio.checked ? 'block' : 'none';
 
-        // Only display the selected element, hide the others
-        function setADSRequestFormVisibility() {
-          radios.forEach((radio) => {
-            const child = radio.parentElement.getElementsByClassName('radio-inline')[0];
-            child.style.display = radio.checked ? 'block' : 'none';
+          if (!radio.checked) {
+            $(child.getElementsByTagName('select')[0]).empty();
+          }
+        });
+      }
 
-            if (!radio.checked) {
-              $(child.getElementsByTagName('select')[0]).empty();
-            }
-          });
-        }
+      // Set initial rendering
+      setADSRequestFormVisibility();
 
-        // Set initial rendering
-        setADSRequestFormVisibility();
+      // Hook to changes to reset visibility
+      radios.forEach((radio) => radio.addEventListener('change', setADSRequestFormVisibility));
+    });
+  </script>
 
-        // Hook to changes to reset visibility
-        radios.forEach((radio) => radio.addEventListener('change', setADSRequestFormVisibility));
-      });
-    </script>
+  <script type="text/javascript">
+    /*
+     * For each table of the page, if data-load-more is set, hide all rows
+     * exceeding this value and add a butotn to display them.
+     */
+    $('table').each((idx, table) => {
+      if (!table.dataset.loadMore) {
+        return ;
+      }
+      const maxDisplay = parseInt(table.dataset.loadMore, 10);
 
-    <script type="text/javascript">
-      // For each table of the page, if data-load-more is set, hide all
-      // rows exceeding this value and add a butotn to display them.
-      $('table').each((idx, table) => {
-        if (!table.dataset.loadMore) {
+      // Hide all rows after maxDisplay (+ 1 for the header)
+      const extraRows = $(table).find('tr').filter((idx) => idx >= maxDisplay + 1);
+      if (extraRows.length) {
+        const numCols = $(table).find('th').length;
+
+        // If table is just a bit bigger than data-load-more, it is still
+        // better to display it completely.
+        if (extraRows.length <= 5) {
           return ;
         }
-        const maxDisplay = parseInt(table.dataset.loadMore, 10);
 
-        // Hide all rows after maxDisplay (+ 1 for the header)
-        const extraRows = $(table).find('tr').filter((idx) => idx >= maxDisplay + 1);
-        if (extraRows.length) {
-          const numCols = $(table).find('th').length;
+        extraRows.hide();
 
-          // If table is just a bit bigger than data-load-more, it is still
-          // better to display it completely.
-          if (extraRows.length <= 5) {
-            return ;
-          }
+        const loadMoreButton = $('<button>')
+          .addClass('fr-btn').addClass('fr-btn--secondary').addClass('fr-btn--sm')
+          .append(`Afficher les ${extraRows.length} entrées du tableau`)
+          .click(() => {
+            extraRows.show();
+            loadMoreRow.hide();
+          });
+        ;
+        const loadMoreRow = $('<tr>')
+          .append(
+            $('<td>')
+              .attr({ colspan: 3 })
+              .append(loadMoreButton)
+          );
 
-          extraRows.hide();
-
-          const loadMoreButton = $('<button>')
-            .addClass('fr-btn').addClass('fr-btn--secondary').addClass('fr-btn--sm')
-            .append(`Afficher les ${extraRows.length} entrées du tableau`)
-            .click(() => {
-              extraRows.show();
-              loadMoreRow.hide();
-            });
-          ;
-          const loadMoreRow = $('<tr>')
-            .append(
-              $('<td>')
-                .attr({ colspan: 3 })
-                .append(loadMoreButton)
-            );
-
-          $(table).find('tbody > tr:last-child').after(loadMoreRow);
-        }
-      });
-    </script>
-  {% endif %}
+        $(table).find('tbody > tr:last-child').after(loadMoreRow);
+      }
+    });
+  </script>
 {% endblock %}
