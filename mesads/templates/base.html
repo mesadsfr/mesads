@@ -67,11 +67,13 @@
             {% if user.is_authenticated %}
             <ul class="fr-nav__list">
               <li class="fr-nav__item">
-                <a class="fr-nav__link" href="{% url 'ads-manager-request' %}">Gestion des ADS</a>
+                {% url 'ads-manager-request' as ads_manager_request_url %}
+                <a class="fr-nav__link" href="{% url 'ads-manager-request' %}"{% if request.path == ads_manager_request_url %} aria-current="page"{% endif %}>Gestion des ADS</a>
               </li>
               {% if user.adsmanageradministrator_set.all|length > 0 %}
               <li class="fr-nav__item">
-                <a class="fr-nav__link" href="{% url 'ads-manager-admin' %}">Administration des gestionnaires</a>
+                {% url 'ads-manager-admin' as ads_manager_admin_url %}
+                <a class="fr-nav__link" href="{% url 'ads-manager-admin' %}"{% if request.path == ads_manager_admin_url %} aria-current="page"{% endif %}>Administration des gestionnaires</a>
               </li>
               {% endif %}
             </ul>
