@@ -10,7 +10,7 @@ RUN npm install
 #
 # Python builder
 #
-FROM python AS python-builder
+FROM python:3.11.0b1-slim-bullseye AS python-builder
 
 RUN pip install \
   poetry
@@ -38,7 +38,7 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 #
 # Production runner
 #
-FROM python
+FROM python:3.11.0b1-slim-bullseye
 
 RUN pip install \
     poetry \
