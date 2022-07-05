@@ -109,7 +109,7 @@ Création d'une nouvelle ADS
     </div>
 
     <!-- Legal file -->
-    {% include 'pages/ads-form_input.html' with field_title="Arrêté portant l'attribution de l'ADS" field=form.legal_file field_errors=form.errors.legal_file %}
+    {% include 'pages/ads-form_file.html' with field_title="Arrêté portant l'attribution de l'ADS" field=form.legal_file field_errors=form.errors.legal_file %}
 
     <div class="fr-col-12 fr-input-group">
       {% if ads %}
