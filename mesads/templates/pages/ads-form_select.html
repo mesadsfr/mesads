@@ -4,6 +4,7 @@
     for="{{ field.name }}"
   >
     {{ field_title }}
+    {% if field_description %}<span class="fr-hint-text">{{ field_description }}</span>{% endif %}
   </label>
 
   <select class="fr-select{% if field_errors %} fr-select--error{% endif %}" id="{{ field.name }}" name="{{ field.name }}">

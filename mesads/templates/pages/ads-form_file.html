@@ -1,6 +1,7 @@
 <div class="fr-input-group fr-upload-group{% if field_errors %} fr-input-group--error{% endif %}">
   <label class="fr-label" for="{{ field.name }}">
     {{ field_title }}
+    {% if field_description %}<span class="fr-hint-text">{{ field_description }}</span>{% endif %}
 
     <span class="fr-hint-text">
       {% if field.value %}
@@ -24,3 +25,5 @@
   </p>
   {% endfor %}
 </div>
+
+<hr />

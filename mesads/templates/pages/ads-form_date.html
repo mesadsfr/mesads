@@ -3,7 +3,8 @@
     class="fr-label"
     for="{{ field.name }}"
   >
-  {{ field_title }} :
+  {{ field_title }}
+  {% if field_description %}<span class="fr-hint-text">{{ field_description }}</span>{% endif %}
   </label>
 
   <div class="fr-input-wrap fr-fi-calendar-line">
