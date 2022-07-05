@@ -1,7 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 
-from .models import ADS, ADSManager, ADSManagerAdministrator, ADSManagerRequest
+from .models import (
+    ADS,
+    ADSManager,
+    ADSManagerAdministrator,
+    ADSManagerRequest,
+    ADSUser,
+)
 
 
 # Remove "Group" administration from admin. We do not use groups in the
@@ -35,7 +41,6 @@ class ADSInline(ReadOnlyInline):
         'owner_firstname',
         'owner_lastname',
         'immatriculation_plate',
-        'user_name',
     )
 
 
@@ -217,6 +222,13 @@ class ADSManagerRequestAdmin(admin.ModelAdmin):
         return req
 
 
+class ADSUserInline(admin.TabularInline):
+    model = ADSUser
+    extra = 0
+    verbose_name = 'Exploitant de l\'ADS'
+    verbose_name_plural = 'Exploitants de l\'ADS'
+
+
 @admin.register(ADS)
 class ADSAdmin(admin.ModelAdmin):
 
@@ -232,7 +244,6 @@ class ADSAdmin(admin.ModelAdmin):
         'immatriculation_plate',
         'owner_firstname',
         'owner_lastname',
-        'user_name',
     )
 
     search_fields = (
@@ -243,6 +254,10 @@ class ADSAdmin(admin.ModelAdmin):
     autocomplete_fields = (
         'ads_manager',
     )
+
+    inlines = [
+        ADSUserInline,
+    ]
 
     def get_queryset(self, request):
         req = super().get_queryset(request)

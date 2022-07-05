@@ -217,14 +217,6 @@ class ADS(models.Model):
 
     :param used_by_owner: True if the ADS is used by the owner. NULL if
         unknown.
-
-    :param user_status: Status of the person using the ADS. The ADS owner
-        doesn't have to be the same person than the ADS user.
-
-    :param user_name: Firstname and lastname of the person using the ADS, or
-        "raison sociale".
-
-    :param user_siret: SIRET of the ADS user.
     """
     class Meta:
         verbose_name = 'ADS'
@@ -296,22 +288,6 @@ class ADS(models.Model):
 
     used_by_owner = models.BooleanField(blank=True, null=True)
 
-    ADS_USER_STATUS = [
-        ('titulaire_exploitant', 'Titulaire exploitant'),
-        ('cooperateur', 'Locataire coopérateur'),
-        ('locataire_gerant', 'Locataire gérant'),
-        ('salarie', 'Salarié'),
-        ('autre', 'Autre'),
-    ]
-
-    user_status = models.CharField(max_length=255, choices=ADS_USER_STATUS,
-                                   blank=True, null=False)
-
-    user_name = models.CharField(max_length=1024, blank=True, null=False)
-
-    user_siret = models.CharField(max_length=128, blank=True, null=False,
-                                  validators=[validate_siret])
-
     def get_legal_filename(self, filename):
         now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
         filename = os.path.basename(filename)
@@ -326,3 +302,36 @@ class ADS(models.Model):
         return name
 
     legal_file = models.FileField(upload_to=get_legal_filename, blank=True)
+
+
+class ADSUser(models.Model):
+    """"Exploitant" of an ADS.
+
+    ADS created before 2014 are allowed to be used by another person than it's owner.
+
+    :param status: Status of ADS user.
+
+    :param user_name: Firstname and lastname of the person using the ADS, or
+        "raison sociale".
+
+    :param user_siret: SIRET of the ADS user.
+    :param name: Firstname and lastname of the person using the ADS, or "raison sociale".
+
+    :param siret: SIRET of the ADS user.
+    """
+    def __str__(self):
+        return f'{self.name}'
+
+    ads = models.ForeignKey(ADS, on_delete=models.CASCADE)
+
+    ADS_USER_STATUS = [
+        ('titulaire_exploitant', 'Titulaire exploitant'),
+        ('cooperateur', 'Locataire coopérateur'),
+        ('locataire_gerant', 'Locataire gérant'),
+        ('salarie', 'Salarié'),
+        ('autre', 'Autre'),
+    ]
+
+    status = models.CharField(max_length=255, choices=ADS_USER_STATUS, blank=True, null=False)
+    name = models.CharField(max_length=1024, blank=True, null=False)
+    siret = models.CharField(max_length=128, blank=True, null=False, validators=[validate_siret])

@@ -14,8 +14,14 @@ from django.views.generic import UpdateView
 from django.views.generic.edit import CreateView, DeleteView, FormView
 from django.views.generic.list import ListView
 
-from .forms import ADSManagerForm
-from .models import ADS, ADSManager, ADSManagerAdministrator, ADSManagerRequest
+from .forms import ADSManagerForm, ADSUserFormSet
+from .models import (
+    ADS,
+    ADSManager,
+    ADSManagerAdministrator,
+    ADSManagerRequest,
+    ADSUser,
+)
 
 
 class HTTP500View(TemplateView):
@@ -226,9 +232,6 @@ class ADSView(UpdateView):
         'owner_lastname',
         'owner_siret',
         'used_by_owner',
-        'user_status',
-        'user_name',
-        'user_siret',
         'legal_file',
     )
 
@@ -241,10 +244,25 @@ class ADSView(UpdateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['ads_manager'] = ADSManager.objects.get(id=self.kwargs['manager_id'])
+
+        if self.request.POST:
+            ctx['ads_users_formset'] = ADSUserFormSet(self.request.POST, instance=self.object)
+        else:
+            ctx['ads_users_formset'] = ADSUserFormSet(instance=self.object)
         return ctx
 
     def get_object(self, queryset=None):
         return get_object_or_404(ADS, id=self.kwargs['ads_id'])
+
+    def form_valid(self, form):
+        ctx = self.get_context_data()
+        ads_users_formset = ctx['ads_users_formset']
+        if ads_users_formset.is_valid():
+            resp = super().form_valid(form)
+            ads_users_formset.instance = self.object
+            ads_users_formset.save()
+            return resp
+        return super().form_invalid(form)
 
 
 class ADSDeleteView(DeleteView):
@@ -318,9 +336,18 @@ def prefecture_export_ads(request, ads_manager_administrator):
         ("Nom titulaire", lambda ads: ads.owner_lastname),
         ("SIRET titulaire", lambda ads: ads.owner_siret),
         ("ADS exploitée par le titulaire ?", lambda ads: display_bool(ads.used_by_owner)),
-        ("Statut de l'exploitant", lambda ads: ads.user_status and dict(ADS.user_status.field.choices)[ads.user_status]),
-        ("Nom de l'exploitant", lambda ads: ads.user_name),
-        ("SIRET de l'exploitant", lambda ads: ads.user_siret),
+        ("Statuts des exploitants (un par ligne)", lambda ads: '\n'.join([
+            dict(ADSUser.status.field.choices)[ads_user.status] if ads_user.status else ''
+            for ads_user in ads.adsuser_set.all()
+        ])),
+        ("Noms des exploitants (un par ligne)", lambda ads: '\n'.join([
+            ads_user.name
+            for ads_user in ads.adsuser_set.all()
+        ])),
+        ("SIRET des exploitants (un par ligne)", lambda ads: '\n'.join([
+            ads_user.siret
+            for ads_user in ads.adsuser_set.all()
+        ])),
     ]
 
     writer = csv.DictWriter(response, fieldnames=[field[0] for field in fields])
@@ -328,7 +355,8 @@ def prefecture_export_ads(request, ads_manager_administrator):
     writer.writeheader()
 
     for ads in ADS.objects.prefetch_related(
-        'ads_manager__content_object'
+        'ads_manager__content_object',
+        'adsuser_set',
     ).filter(ads_manager__in=ads_manager_administrator.ads_managers.all()):
         writer.writerow({
             field[0]: field[1](ads)

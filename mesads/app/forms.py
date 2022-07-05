@@ -1,8 +1,9 @@
 from django.contrib.contenttypes.models import ContentType
+from django.forms import BaseInlineFormSet, inlineformset_factory
 
 from mesads.fradm.forms import FrenchAdministrationForm
 
-from .models import ADSManager
+from .models import ADS, ADSManager, ADSUser
 
 
 class ADSManagerForm(FrenchAdministrationForm):
@@ -27,3 +28,24 @@ class ADSManagerForm(FrenchAdministrationForm):
         )
 
         self.cleaned_data['ads_manager'] = manager
+
+
+class AutoDeleteADSUserFormSet(BaseInlineFormSet):
+    """By default, to remove an entry from a formset, you need to render a
+    checkbox "DELETE" that needs to be checked to remove the entry.
+
+    Here, we override the private method _should_delete_form to ask to remove
+    the entry if all the fields are empty.
+    """
+    def _should_delete_form(self, form):
+        for key in set(form.fields.keys()) - set(['ads', 'id', 'DELETE']):
+            if form.cleaned_data.get(key):
+                return super()._should_delete_form(form)
+        return True
+
+
+ADSUserFormSet = inlineformset_factory(
+    ADS, ADSUser, fields=('status', 'name', 'siret'),
+    can_delete=True, extra=10, max_num=10,
+    formset=AutoDeleteADSUserFormSet
+)

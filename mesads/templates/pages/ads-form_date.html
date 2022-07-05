@@ -1,7 +1,7 @@
 <div class="fr-input-group{% if field_errors %} fr-input-group--error{% endif %}">
   <label
     class="fr-label"
-    for="{{ field.name }}"
+    for="{{ field.id_for_label }}"
   >
   {{ field_title }}
   {% if field_description %}<span class="fr-hint-text">{{ field_description }}</span>{% endif %}
@@ -11,8 +11,8 @@
     <input
       class="fr-input{% if field_errors %} fr-input--error{% endif %}"
       type="date"
-      id="{{ field.name}}"
-      name="{{ field.name }}"
+      id="{{ field.id_for_label }}"
+      name="{{ field.html_name }}"
       value="{{ field.value|date:"Y-m-d"|default:"" }}"
     />
   </div>

@@ -38,6 +38,8 @@ Création d'une nouvelle ADS
 {% endif %}
 </h1>
 
+iciiiiiiiiiiiiiiiiiii {{ ads_users_formset.errors }}
+
 <div class="fr-grid-row">
   <form class="fr-col-12 fr-col-sm-8 fr-col-md-6" method="post" enctype="multipart/form-data">
     {% if form.non_field_errors %}
@@ -93,18 +95,37 @@ Création d'une nouvelle ADS
     <!-- Owner SIRET -->
     {% include 'pages/ads-form_string.html' with field_title="SIRET du titulaire de l'ADS" field=form.owner_siret field_errors=form.errors.owner_siret %}
 
-    <div class="fr-input-group" data-display-src="{{ form.ads_type.name }}" data-hide-value="new">
+    <div class="fr-input-group" data-display-src="{{ form.ads_type.id_for_label }}" data-hide-value="new">
       <!-- Used by owner ? -->
       {% include 'pages/ads-form_select.html' with field_title="ADS exploitée par son titulaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner %}
 
-      <div data-display-src="{{ form.used_by_owner.name }}" data-hide-value="true">
-        <!-- User status -->
-        {% include 'pages/ads-form_select.html' with field_title="Statut de l'exploitant de l'ADS" field=form.user_status field_errors=form.errors.user_status %}
+      <div data-display-src="{{ form.used_by_owner.id_for_label }}" data-show-value="false">
+        {{ ads_users_formset.management_form }}
 
-        <!-- User name -->
-        {% include 'pages/ads-form_string.html' with field_title="Nom de l'exploitant de l'ADS" field=form.user_name field_errors=form.errors.user_name %}
-        <!-- User SIRET -->
-        {% include 'pages/ads-form_string.html' with field_title="SIRET de l'exploitant de l'ADS" field=form.user_siret field_errors=form.errors.user_siret %}
+        {% for ads_user_form in ads_users_formset %}
+          <div class="fr-form-group ads-user-form">
+            <fieldset class="fr-fieldset">
+                <legend class="fr-fieldset__legend">{{ forloop.counter }}<sup>{% if forloop.counter == 1 %}er{% else %}e{% endif %}</sup> exploitant taxi</legend>
+
+              <div class="fr-pl-3w">
+                <!-- User status -->
+                {% include 'pages/ads-form_select.html' with field_title="Statut de l'exploitant de l'ADS" field=ads_user_form.status field_errors=ads_user_form.errors.status %}
+                <!-- User name -->
+                {% include 'pages/ads-form_string.html' with field_title="Nom de l'exploitant de l'ADS" field=ads_user_form.name field_errors=ads_user_form.errors.name %}
+                <!-- User SIRET -->
+                {% include 'pages/ads-form_string.html' with field_title="SIRET de l'exploitant de l'ADS" field=ads_user_form.siret field_errors=ads_user_form.errors.siret %}
+              </div>
+
+              {% for hidden_field in ads_user_form.hidden_fields %}
+                {{ hidden_field }}
+              {% endfor %}
+            </fieldset>
+          </div>
+        {% endfor %}
+
+        <button type="button" id="displayADSUserForm" class="fr-btn fr-btn--sm fr-fi-checkbox-circle-line fr-btn--icon-left fr-btn--secondary">
+            Ajouter un exploitant
+        </button>
       </div>
     </div>
 
@@ -118,6 +139,7 @@ Création d'une nouvelle ADS
       <button type="submit" class="fr-btn">Créer la nouvelle ADS</button>
       {% endif %}
     </div>
+
   </form>
 </div>
 {% endblock %}
@@ -125,6 +147,7 @@ Création d'une nouvelle ADS
 {% block endbody %}
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', () => {
+  // Display or hide fields depending on the value of other fields.
   const els = document.querySelectorAll('[data-display-src]');
 
   for (i = 0; i < els.length; ++i) {
@@ -169,6 +192,40 @@ document.addEventListener('DOMContentLoaded', () => {
     // Watch src
     src.addEventListener('change', () => setDisplay(src, dst));
   }
+
+  // Iterate over forms from the end. If one form has a non-empty field,
+  // display it and also all the forms before it. In any case, always
+  // display the first form (i = 0);
+  const ads_user_forms = document.getElementsByClassName('ads-user-form');
+
+  let display = false;
+  for (i = ads_user_forms.length - 1; i >= 1; i--) {
+    if (!display) {
+      // nonEmptyElem is not null if there is at least one input with a value
+      const nonEmptyElem = ads_user_forms[i].querySelector('input:not([type="hidden"]):not([value=""])');
+
+      if (nonEmptyElem) {
+        display = true;
+      }
+    }
+    ads_user_forms[i].style.display = display ? 'block' : 'none';
+  }
+
+  // Add button to display the next undisplayed form
+  document.getElementById('displayADSUserForm').addEventListener('click', function(e) {
+    e.preventDefault();
+    for (i = 0; i < ads_user_forms.length; i++) {
+      if (ads_user_forms[i].style.display == 'none') {
+        ads_user_forms[i].style.display = 'block';
+
+        // Hide button, there is no more forms to display
+        if (i == ads_user_forms.length - 1) {
+          e.target.style.display = 'none';
+        }
+        return ;
+      }
+    }
+  });
 });
 </script>
 {% endblock %}

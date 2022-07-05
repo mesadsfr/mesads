@@ -1,13 +1,13 @@
 <div class="fr-select-group{% if field_errors %} fr-select-group--error{% endif %}">
   <label
     class="fr-label"
-    for="{{ field.name }}"
+    for="{{ field.id_for_label }}"
   >
     {{ field_title }}
     {% if field_description %}<span class="fr-hint-text">{{ field_description }}</span>{% endif %}
   </label>
 
-  <select class="fr-select{% if field_errors %} fr-select--error{% endif %}" id="{{ field.name }}" name="{{ field.name }}">
+  <select class="fr-select{% if field_errors %} fr-select--error{% endif %}" id="{{ field.id_for_label }}" name="{{ field.html_name }}">
     {% for option in field %}
       {{ option }}
     {% endfor %}

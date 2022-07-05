@@ -1,7 +1,7 @@
 <hr />
 
 <div class="fr-input-group fr-upload-group{% if field_errors %} fr-input-group--error{% endif %}">
-  <label class="fr-label" for="{{ field.name }}">
+  <label class="fr-label" for="{{ field.id_for_label }}">
     {{ field_title }}
     {% if field_description %}<span class="fr-hint-text">{{ field_description }}</span>{% endif %}
 
@@ -17,16 +17,16 @@
   <input
     class="fr-upload"
     type="file"
-    id="{{ field.name }}"
-    name="{{ field.name }}"
+    id="{{ field.id_for_label }}"
+    name="{{ field.html_name }}"
     data-display-src="{{ field.name }}-clear_id"
     data-show-value="false"
   />
 
   {% if field.value %}
   <div class="fr-checkbox-group fr-mt-3w">
-    <input type="checkbox" name="{{ field.name }}-clear" id="{{ field.name }}-clear_id">
-    <label class="fr-label" for="{{ field.name }}-clear_id">Cochez cette case pour effacer le fichier</label>
+    <input type="checkbox" name="{{ field.html_name }}-clear" id="{{ field.id_for_label }}-clear_id">
+    <label class="fr-label" for="{{ field.id_for_label }}-clear_id">Cochez cette case pour effacer le fichier</label>
   </div>
   {% endif %}
 
