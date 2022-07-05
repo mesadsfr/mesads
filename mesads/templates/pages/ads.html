@@ -145,11 +145,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const hideValue = dst.getAttribute('data-hide-value');
       const showValue = dst.getAttribute('data-show-value');
 
-      if (hideValue && showValue) {
+      if (hideValue !== null && showValue !== null) {
         throw new Error('You should set data-hide-value or data-show-value, not both!');
       }
 
-      if (!hideValue && !showValue) {
+      if (hideValue === null && showValue === null) {
         throw new Error('You should set data-hide-value or data-show-value');
       }
 
