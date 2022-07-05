@@ -142,11 +142,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const showValue = dst.getAttribute('data-show-value');
 
       if (hideValue && showValue) {
-          throw new Exception('You should set data-hide-value or data-show-value, not both!');
+        throw new Error('You should set data-hide-value or data-show-value, not both!');
       }
 
       if (!hideValue && !showValue) {
-        throw new Exception('You should set data-hide-value or data-show-value');
+        throw new Error('You should set data-hide-value or data-show-value');
       }
 
       if (hideValue) {
