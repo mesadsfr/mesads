@@ -49,7 +49,7 @@
 
 {% for ads_manager_administrator in ads_managers_administrators %}
 <div class="fr-table">
-  <table data-load-more="2">
+  <table data-load-more="5">
       <caption>{{ ads_manager_administrator.prefecture.display_text|capfirst }}</caption>
     <thead>
       <tr>
@@ -250,7 +250,7 @@
 
         const loadMoreButton = $('<button>')
           .addClass('fr-btn').addClass('fr-btn--secondary').addClass('fr-btn--sm')
-          .append(`Afficher les ${extraRows.length} entrées du tableau`)
+          .append(`Afficher les ${extraRows.length} autres entrées du tableau...`)
           .click(() => {
             extraRows.show();
             loadMoreRow.hide();
