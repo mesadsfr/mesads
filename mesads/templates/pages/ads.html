@@ -93,7 +93,7 @@ Création d'une nouvelle ADS
     <!-- Owner SIRET -->
     {% include 'pages/ads-form_string.html' with field_title="SIRET du titulaire de l'ADS" field=form.owner_siret field_errors=form.errors.owner_siret %}
 
-    <div data-display-src="{{ form.ads_type.name }}" data-hide-value="new">
+    <div class="fr-input-group" data-display-src="{{ form.ads_type.name }}" data-hide-value="new">
       <!-- Used by owner ? -->
       {% include 'pages/ads-form_select.html' with field_title="ADS exploitée par son titulaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner %}
 
@@ -135,6 +135,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const srcId = dst.getAttribute('data-display-src');
     const src = document.getElementById(srcId);
 
+    if (!src) {
+      continue ;
+    }
+
     const setDisplay = (src, dst) => {
       // Use data-hide-value to show by default and hide when values match.
       // Use data-show-value to hide by default and show when values match.
@@ -149,10 +153,13 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error('You should set data-hide-value or data-show-value');
       }
 
+      // If src is a checkbox, use the "checked" attribute. For other inputs, use the input value.
+      const value = src.type === 'checkbox' ? src.checked.toString() : src.value;
+
       if (hideValue) {
-        dst.style.display = src.value === hideValue ? 'none' : 'block';
+        dst.style.display = value === hideValue ? 'none' : 'block';
       } else if (showValue) {
-        dst.style.display = src.value === showValue ? 'block' : 'none';
+        dst.style.display = value === showValue ? 'block' : 'none';
       }
     };
 

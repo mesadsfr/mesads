@@ -1,3 +1,5 @@
+<hr />
+
 <div class="fr-input-group fr-upload-group{% if field_errors %} fr-input-group--error{% endif %}">
   <label class="fr-label" for="{{ field.name }}">
     {{ field_title }}
@@ -12,12 +14,21 @@
     </span>
   </label>
 
-  <input class="fr-upload" type="file" id="{{ field.name }}" name="{{ field.name }}">
+  <input
+    class="fr-upload"
+    type="file"
+    id="{{ field.name }}"
+    name="{{ field.name }}"
+    data-display-src="{{ field.name }}-clear_id"
+    data-show-value="false"
+  />
 
-  <div class="fr-checkbox-group">
+  {% if field.value %}
+  <div class="fr-checkbox-group fr-mt-3w">
     <input type="checkbox" name="{{ field.name }}-clear" id="{{ field.name }}-clear_id">
-    <label class="fr-label" for="{{ field.name }}-clear_id">Effacer le fichier ?</label>
+    <label class="fr-label" for="{{ field.name }}-clear_id">Cochez cette case pour effacer le fichier</label>
   </div>
+  {% endif %}
 
   {% for error in field_errors %}
   <p class="fr-error-text">
