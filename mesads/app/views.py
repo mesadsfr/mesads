@@ -5,6 +5,8 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
+from django.db.models import Count, Q, Value
+from django.db.models.functions import Concat, Replace
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
@@ -14,7 +16,11 @@ from django.views.generic import UpdateView
 from django.views.generic.edit import CreateView, DeleteView, FormView
 from django.views.generic.list import ListView
 
-from .forms import ADSManagerForm, ADSUserFormSet
+from .forms import (
+    ADSSearchForm,
+    ADSManagerForm,
+    ADSUserFormSet,
+)
 from .models import (
     ADS,
     ADSManager,
@@ -202,13 +208,40 @@ class ADSManagerView(ListView):
     paginate_by = 50
     ordering = ['id']
 
+    def _get_form(self):
+        return ADSSearchForm(self.request.GET)
+
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.filter(ads_manager__id=self.kwargs['manager_id'])
-        return qs
+
+        form = self._get_form()
+        if form.is_valid():
+            if form.cleaned_data['accepted_cpam'] is not None:
+                qs = qs.filter(accepted_cpam=form.cleaned_data['accepted_cpam'])
+
+            q = form.cleaned_data['q']
+            if q:
+                qs = qs.annotate(
+                    owner_firstname_lastname=Concat('owner_firstname', 'owner_lastname'),
+                    owner_lastname_firstname=Concat('owner_lastname', 'owner_firstname'),
+                    clean_immatriculation_plate=Replace('immatriculation_plate', Value('-'), Value(''))
+                )
+
+                qs = qs.filter(
+                    Q(owner_siret__icontains=q)
+                    | Q(adsuser__name__icontains=q)
+                    | Q(adsuser__siret__icontains=q)
+                    | Q(owner_firstname_lastname__icontains=q.replace(' ', ''))
+                    | Q(owner_lastname_firstname__icontains=q.replace(' ', ''))
+                    | Q(clean_immatriculation_plate__icontains=q)
+                )
+
+        return qs.annotate(c=Count('id'))
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+        ctx['search_form'] = self._get_form()
         ctx['ads_manager'] = ADSManager.objects.get(id=self.kwargs['manager_id'])
         return ctx
 

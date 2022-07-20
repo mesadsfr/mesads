@@ -167,6 +167,112 @@ class TestADSManagerView(ClientTestCase):
         )
         self.assertIn(self.ads_manager_city35.content_object.libelle, resp.content.decode('utf8'))
 
+    def test_filters(self):
+        """Test filtering"""
+        # ADS 1
+        ADS.objects.create(
+            number='FILTER1', ads_manager=self.ads_manager_city35,
+            immatriculation_plate='imm4tri-cul4tion',
+            accepted_cpam=True
+        )
+        # ADS 2
+        ADS.objects.create(
+            number='FILTER2', ads_manager=self.ads_manager_city35,
+            owner_firstname='Bob',
+            owner_lastname='Dylan',
+            accepted_cpam=False
+        )
+        # ADS 3
+        ads3 = ADS.objects.create(
+            number='FILTER3', ads_manager=self.ads_manager_city35,
+            owner_siret='12312312312312'
+        )
+        ADSUser.objects.create(
+            ads=ads3, name='Henri super',
+            siret='11111111111111'
+        )
+        # ADS 4
+        ads4 = ADS.objects.create(
+            number='FILTER4', ads_manager=self.ads_manager_city35
+        )
+        ADSUser.objects.create(
+            ads=ads4,
+            name='Matthieu pas super',
+            siret='22222222222222'
+        )
+
+        # Immatriculatin plate, returns first ADS
+        resp = self.ads_manager_city35_client.get(
+            f'/gestion/{self.ads_manager_city35.id}/?q=imm4tricul4tion'
+        )
+        self.assertIn('FILTER1', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER2', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER3', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER4', resp.content.decode('utf8'))
+
+        # Owner firstname/lastname, returns second ADS
+        resp = self.ads_manager_city35_client.get(
+            f'/gestion/{self.ads_manager_city35.id}/?q=dylan bo'
+        )
+        self.assertNotIn('FILTER1', resp.content.decode('utf8'))
+        self.assertIn('FILTER2', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER3', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER4', resp.content.decode('utf8'))
+
+        # Owner SIRET, return third ADS
+        resp = self.ads_manager_city35_client.get(
+            f'/gestion/{self.ads_manager_city35.id}/?q=123123123'
+        )
+        self.assertNotIn('FILTER1', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER2', resp.content.decode('utf8'))
+        self.assertIn('FILTER3', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER4', resp.content.decode('utf8'))
+
+        # User SIRET, return ADS 4
+        resp = self.ads_manager_city35_client.get(
+            f'/gestion/{self.ads_manager_city35.id}/?q=22222222222222'
+        )
+        self.assertNotIn('FILTER1', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER2', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER3', resp.content.decode('utf8'))
+        self.assertIn('FILTER4', resp.content.decode('utf8'))
+
+        # User name, return ADS 3
+        resp = self.ads_manager_city35_client.get(
+            f'/gestion/{self.ads_manager_city35.id}/?q=Henri SUPER'
+        )
+        self.assertNotIn('FILTER1', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER2', resp.content.decode('utf8'))
+        self.assertIn('FILTER3', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER4', resp.content.decode('utf8'))
+
+        # CPAM accepted true, return ads 1
+        resp = self.ads_manager_city35_client.get(
+            f'/gestion/{self.ads_manager_city35.id}/?accepted_cpam=True'
+        )
+        self.assertIn('FILTER1', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER2', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER3', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER4', resp.content.decode('utf8'))
+
+        # CPAM accepted false, return ads 2
+        resp = self.ads_manager_city35_client.get(
+            f'/gestion/{self.ads_manager_city35.id}/?accepted_cpam=False'
+        )
+        self.assertNotIn('FILTER1', resp.content.decode('utf8'))
+        self.assertIn('FILTER2', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER3', resp.content.decode('utf8'))
+        self.assertNotIn('FILTER4', resp.content.decode('utf8'))
+
+        # CPAM accepted any, and no filters, return all
+        resp = self.ads_manager_city35_client.get(
+            f'/gestion/{self.ads_manager_city35.id}/?q=&accepted_cpam='
+        )
+        self.assertIn('FILTER1', resp.content.decode('utf8'))
+        self.assertIn('FILTER2', resp.content.decode('utf8'))
+        self.assertIn('FILTER3', resp.content.decode('utf8'))
+        self.assertIn('FILTER4', resp.content.decode('utf8'))
+
 
 class TestADSView(ClientTestCase):
     def setUp(self):

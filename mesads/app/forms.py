@@ -1,4 +1,5 @@
 from django.contrib.contenttypes.models import ContentType
+from django import forms
 from django.forms import BaseInlineFormSet, inlineformset_factory
 
 from mesads.fradm.forms import FrenchAdministrationForm
@@ -49,3 +50,22 @@ ADSUserFormSet = inlineformset_factory(
     can_delete=True, extra=10, max_num=10,
     formset=AutoDeleteADSUserFormSet
 )
+
+
+class ADSSearchForm(forms.Form):
+    q = forms.CharField(
+        label="Nom du titulaire, de l'exploitant, SIRET, plaque d'immatriculation, …",
+        required=False
+    )
+
+    accepted_cpam = forms.NullBooleanField(
+        label='Taxi conventionné CPAM ?',
+        widget=forms.Select(
+            choices=(
+                ('', 'Peu importe'),
+                (True, 'Oui'),
+                (False, 'Non'),
+            ),
+        ),
+        required=False
+    )
