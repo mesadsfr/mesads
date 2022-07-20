@@ -42,7 +42,7 @@
         <td><a href="{% url 'ads' manager_id=ads_manager.id ads_id=ads.id %}">{{ ads.number }}</a></td>
         <td>{{ ads.ads_creation_date }}</td>
         <td>{{ ads.attribution_date }}</td>
-        <td>{% if ads.accepted_cpam %}👍 Oui{% else %}❌ Non{% endif %}</td>
+        <td>{% if ads.accepted_cpam is None %}⁉️  Inconnu{% elif ads.accepted_cpam is True %}👍 Oui{% else %}❌ Non{% endif %}</td>
         <td>{{ ads.owner_firstname}}<br />{{ ads.owner_lastname }}</td>
         <td>{{ ads.user_name }}</td>
         <td>
