@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let searchParams = new URLSearchParams(window.location.search)
 
   // By default, hide
-  if (!searchParams.get('q') && !searchParams.get('aaccepted_cpam')) {
+  if (!searchParams.get('q') && !searchParams.get('accepted_cpam')) {
     $('#ADSFilters').hide();
   } else {
     // otherwise, set arrow down
