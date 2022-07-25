@@ -14,10 +14,14 @@ h2 {
   margin-bottom: 2rem;
 }
 
-.table-row-success {
-  background-color: rgba(31, 141, 73, 0.3) !important;
+.table-row-success td:first-child:before {
+  content: "✅ ";
 }
 
-.table-row-failure {
-  background-color: rgba(246, 7, 0, 0.3) !important;
+.table-row-failure td:first-child:before {
+  content: "🚫 ";
+}
+
+.table-row-unknown td:first-child:before {
+  content: "⁉️  ";
 }
