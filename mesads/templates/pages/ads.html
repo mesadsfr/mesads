@@ -26,7 +26,7 @@
 
 {% if ads %}
 <p>
-  <a class="fr-link fr-fi-arrow-right-line fr-link--icon-right" href="{% url 'ads.delete' manager_id=ads_manager.id ads_id=ads.id %}">Supprimer cette ADS</a>
+  <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'ads.delete' manager_id=ads_manager.id ads_id=ads.id %}">Supprimer cette ADS</a>
 </p>
 {% endif %}
 
@@ -121,7 +121,7 @@ Création d'une nouvelle ADS
           </div>
         {% endfor %}
 
-        <button type="button" id="displayADSUserForm" class="fr-btn fr-btn--sm fr-fi-checkbox-circle-line fr-btn--icon-left fr-btn--secondary">
+        <button type="button" id="displayADSUserForm" class="fr-btn fr-btn--sm fr-icon-checkbox-circle-line fr-btn--icon-left fr-btn--secondary">
             Ajouter un exploitant
         </button>
       </div>
