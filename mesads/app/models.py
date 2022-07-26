@@ -207,11 +207,8 @@ class ADS(models.Model):
     :param eco_vehicle: Boolean set to True when the vehicle is electric or
         hybrid. NULL if unknown.
 
-    :param owner_firstname: Firstname of the ADS owner. When the owner is a
-        company, firstname of the legal representative of the company.
-
-    :param owner_lastname: Firstname of the ADS owner. When the owner is a
-        company, lastname of the legal representative of the company.
+    :param owner_name: Name of the ADS owner. When the owner is a
+        company, name the legal representative of the company.
 
     :param owner_siret: SIRET of the ADS owner.
 
@@ -280,8 +277,7 @@ class ADS(models.Model):
 
     eco_vehicle = models.BooleanField(blank=True, null=True)
 
-    owner_firstname = models.CharField(max_length=1024, blank=True, null=False)
-    owner_lastname = models.CharField(max_length=1024, blank=True, null=False)
+    owner_name = models.CharField(max_length=1024, blank=True, null=False)
 
     owner_siret = models.CharField(max_length=128, blank=True, null=False,
                                    validators=[validate_siret])

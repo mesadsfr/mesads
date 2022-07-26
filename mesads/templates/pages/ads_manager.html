@@ -84,7 +84,7 @@
       <tr>
         <th>♯ Numéro</th>
         <th>📜 Date de création</th>
-        <th>🗓 Date d'attribution au titulaire actuel</th>
+        <th>🗓 Date d'attribution<br />au titulaire actuel</th>
         <th>🚑 Conventionné<br />CPAM ?</th>
         <th>🤴 Titulaire</th>
         <th>🔎 Action</th>
@@ -96,8 +96,7 @@
         <td>{{ ads.ads_creation_date|default:"" }}</td>
         <td>{{ ads.attribution_date|default:"" }}</td>
         <td>{% if ads.accepted_cpam is None %}⁉️  Inconnu{% elif ads.accepted_cpam is True %}👍 Oui{% else %}❌ Non{% endif %}</td>
-        <td>{{ ads.owner_firstname}}<br />{{ ads.owner_lastname }}</td>
-        <td>{{ ads.user_name }}</td>
+        <td>{{ ads.owner_name }}</td>
         <td>
           <a class="fr-btn fr-btn--sm" href="{% url 'ads' manager_id=ads_manager.id ads_id=ads.id %}">Détails</a>
         </td>

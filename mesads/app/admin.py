@@ -38,8 +38,7 @@ class ADSInline(ReadOnlyInline):
 
     fields = (
         'number',
-        'owner_firstname',
-        'owner_lastname',
+        'owner_name',
         'immatriculation_plate',
     )
 
@@ -242,8 +241,7 @@ class ADSAdmin(admin.ModelAdmin):
         'ads_creation_date',
         'attribution_date',
         'immatriculation_plate',
-        'owner_firstname',
-        'owner_lastname',
+        'owner_name',
     )
 
     search_fields = (

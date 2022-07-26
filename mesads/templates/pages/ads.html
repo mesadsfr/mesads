@@ -86,10 +86,9 @@ Création d'une nouvelle ADS
     <!-- Eco vehicle ? -->
     {% include 'pages/ads-form_select.html' with field_title="Véhicule électrique ou hybride ?" field=form.eco_vehicle field_errors=form.errors.eco_vehicle %}
 
-    <!-- Owner firstname -->
-    {% include 'pages/ads-form_string.html' with field_title="Prénom du titulaire de l'ADS" field=form.owner_firstname field_errors=form.errors.owner_firstname %}
-    <!-- Owner lastname -->
-    {% include 'pages/ads-form_string.html' with field_title="Nom du titulaire de l'ADS" field=form.owner_lastname field_errors=form.errors.owner_lastname %}
+    <!-- Owner name -->
+    {% include 'pages/ads-form_string.html' with field_title="Nom du titulaire de l'ADS" field=form.owner_name field_errors=form.errors.owner_name %}
+
     <!-- Owner SIRET -->
     {% include 'pages/ads-form_string.html' with field_title="SIRET du titulaire de l'ADS" field=form.owner_siret field_errors=form.errors.owner_siret %}
 

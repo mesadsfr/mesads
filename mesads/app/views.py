@@ -223,8 +223,6 @@ class ADSManagerView(ListView):
             q = form.cleaned_data['q']
             if q:
                 qs = qs.annotate(
-                    owner_firstname_lastname=Concat('owner_firstname', 'owner_lastname'),
-                    owner_lastname_firstname=Concat('owner_lastname', 'owner_firstname'),
                     clean_immatriculation_plate=Replace('immatriculation_plate', Value('-'), Value(''))
                 )
 
@@ -232,8 +230,7 @@ class ADSManagerView(ListView):
                     Q(owner_siret__icontains=q)
                     | Q(adsuser__name__icontains=q)
                     | Q(adsuser__siret__icontains=q)
-                    | Q(owner_firstname_lastname__icontains=q.replace(' ', ''))
-                    | Q(owner_lastname_firstname__icontains=q.replace(' ', ''))
+                    | Q(owner_name__icontains=q)
                     | Q(clean_immatriculation_plate__icontains=q)
                 )
 
@@ -261,8 +258,7 @@ class ADSView(UpdateView):
         'immatriculation_plate',
         'vehicle_compatible_pmr',
         'eco_vehicle',
-        'owner_firstname',
-        'owner_lastname',
+        'owner_name',
         'owner_siret',
         'used_by_owner',
         'legal_file',
@@ -365,8 +361,7 @@ def prefecture_export_ads(request, ads_manager_administrator):
         ("Plaque d'immatriculation", lambda ads: ads.immatriculation_plate),
         ("Véhicule copmatible PMR ?", lambda ads: display_bool(ads.vehicle_compatible_pmr)),
         ("Véhicule électrique ou hybridge ?", lambda ads: display_bool(ads.eco_vehicle)),
-        ("Prénom titulaire", lambda ads: ads.owner_firstname),
-        ("Nom titulaire", lambda ads: ads.owner_lastname),
+        ("Nom du titulaire", lambda ads: ads.owner_name),
         ("SIRET titulaire", lambda ads: ads.owner_siret),
         ("ADS exploitée par le titulaire ?", lambda ads: display_bool(ads.used_by_owner)),
         ("Statuts des exploitants (un par ligne)", lambda ads: '\n'.join([

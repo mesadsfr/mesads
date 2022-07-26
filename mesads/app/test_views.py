@@ -178,8 +178,7 @@ class TestADSManagerView(ClientTestCase):
         # ADS 2
         ADS.objects.create(
             number='FILTER2', ads_manager=self.ads_manager_city35,
-            owner_firstname='Bob',
-            owner_lastname='Dylan',
+            owner_name='Bob Dylan',
             accepted_cpam=False
         )
         # ADS 3
@@ -212,7 +211,7 @@ class TestADSManagerView(ClientTestCase):
 
         # Owner firstname/lastname, returns second ADS
         resp = self.ads_manager_city35_client.get(
-            f'/gestion/{self.ads_manager_city35.id}/?q=dylan bo'
+            f'/gestion/{self.ads_manager_city35.id}/?q=bob dyla'
         )
         self.assertNotIn('FILTER1', resp.content.decode('utf8'))
         self.assertIn('FILTER2', resp.content.decode('utf8'))
@@ -300,7 +299,7 @@ class TestADSView(ClientTestCase):
             f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}',
             {
                 'number': self.ads.id,
-                'owner_firstname': 'Jean-Jacques',
+                'owner_name': 'Jean-Jacques Goldman',
             },
         )
         self.assertEqual(resp.status_code, 200)
@@ -311,7 +310,7 @@ class TestADSView(ClientTestCase):
             f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}',
             {
                 'number': self.ads.id,
-                'owner_firstname': 'Jean-Jacques',
+                'owner_name': 'Jean-Jacques Goldman',
                 'adsuser_set-TOTAL_FORMS': 10,
                 'adsuser_set-INITIAL_FORMS': 2,
                 'adsuser_set-MIN_NUM_FORMS': 0,
@@ -321,7 +320,7 @@ class TestADSView(ClientTestCase):
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp.url, f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}')
         self.ads.refresh_from_db()
-        self.assertEqual(self.ads.owner_firstname, 'Jean-Jacques')
+        self.assertEqual(self.ads.owner_name, 'Jean-Jacques Goldman')
 
     def test_update_duplicate(self):
         """Update ADS with the id of another ADS."""
