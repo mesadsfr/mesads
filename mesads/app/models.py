@@ -212,6 +212,12 @@ class ADS(models.Model):
 
     :param owner_siret: SIRET of the ADS owner.
 
+    :param owner_phone: Fixed phone of the ADS owner.
+
+    :param owner_mobile: Mobile phone of the ADS owner.
+
+    :param owner_email: Email of the ADS owner.
+
     :param used_by_owner: True if the ADS is used by the owner. NULL if
         unknown.
     """
@@ -281,6 +287,10 @@ class ADS(models.Model):
 
     owner_siret = models.CharField(max_length=128, blank=True, null=False,
                                    validators=[validate_siret])
+
+    owner_phone = models.CharField(max_length=128, blank=True, null=False)
+    owner_mobile = models.CharField(max_length=128, blank=True, null=False)
+    owner_email = models.CharField(max_length=128, blank=True, null=False)
 
     used_by_owner = models.BooleanField(blank=True, null=True)
 
