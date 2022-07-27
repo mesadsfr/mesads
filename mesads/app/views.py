@@ -6,7 +6,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
 from django.db.models import Count, Q, Value
-from django.db.models.functions import Concat, Replace
+from django.db.models.functions import Replace
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
