@@ -208,7 +208,6 @@ class ADSManagerView(ListView):
     template_name = 'pages/ads_manager.html'
     model = ADS
     paginate_by = 50
-    ordering = ['id']
 
     def _get_form(self):
         return ADSSearchForm(self.request.GET)
@@ -236,7 +235,13 @@ class ADSManagerView(ListView):
                     | Q(clean_immatriculation_plate__icontains=q)
                 )
 
-        return qs.annotate(c=Count('id'))
+        # Add ordering on the number. CAST is necessary in the case the ADS number is not an integer.
+        qs_ordered = qs.extra(
+            select={'ads_number_as_int': "CAST(substring(number FROM '^[0-9]+') AS INTEGER)"}
+        )
+
+        # First, order by number if it is an integer, then by string.
+        return qs_ordered.annotate(c=Count('id')).order_by('ads_number_as_int', 'number')
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
