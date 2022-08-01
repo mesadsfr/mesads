@@ -69,7 +69,7 @@ Création d'une nouvelle ADS
     {% include 'pages/ads-form_select.html' with field_title="Type d'attribution de l'ADS" field=form.attribution_type field_errors=form.errors.attribution_type %}
 
     <!-- Transaction identifier -->
-    {% include 'pages/ads-form_string.html' with field_title="Numéro d'identification lié au registre des transactions" field=form.transaction_identifier field_errors=form.errors.transaction_identifier data_display_src=form.attribution_type.name data_show_value="paid" %}
+    {% include 'pages/ads-form_string.html' with field_title="Numéro d'identification lié au registre des transactions" field=form.transaction_identifier field_errors=form.errors.transaction_identifier data_display_src=form.attribution_type.id_for_label data_show_value="paid" %}
 
     <!-- ADS attribution reason -->
     {% include 'pages/ads-form_string.html' with field_title="Raison d'attribution" field=form.attribution_reason field_errors=form.errors.attribution_reason %}
