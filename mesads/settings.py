@@ -93,6 +93,7 @@ INSTALLED_APPS = [
 
     'debug_toolbar',
     'django_registration',
+    'reversion',
 
     'mesads.app',
     'mesads.users',

@@ -16,6 +16,8 @@ from django.views.generic import UpdateView
 from django.views.generic.edit import CreateView, DeleteView, FormView
 from django.views.generic.list import ListView
 
+from reversion.views import RevisionMixin
+
 from .forms import (
     ADSSearchForm,
     ADSManagerForm,
@@ -50,7 +52,7 @@ class HomepageView(TemplateView):
         return redirect(reverse('ads-manager-request'))
 
 
-class ADSManagerAdminView(TemplateView):
+class ADSManagerAdminView(RevisionMixin, TemplateView):
     template_name = 'pages/ads_manager_admin.html'
 
     def get_context_data(self, **kwargs):
@@ -243,7 +245,7 @@ class ADSManagerView(ListView):
         return ctx
 
 
-class ADSView(UpdateView):
+class ADSView(RevisionMixin, UpdateView):
     template_name = 'pages/ads.html'
     model = ADS
     fields = (

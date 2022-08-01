@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 
+from reversion.admin import VersionAdmin
+
 from .models import (
     ADS,
     ADSManager,
@@ -202,7 +204,7 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
 
 
 @admin.register(ADSManagerRequest)
-class ADSManagerRequestAdmin(admin.ModelAdmin):
+class ADSManagerRequestAdmin(VersionAdmin):
     autocomplete_fields = ('ads_manager',)
 
     list_display = ('created_at', 'user', 'administration', 'accepted')
@@ -229,7 +231,7 @@ class ADSUserInline(admin.TabularInline):
 
 
 @admin.register(ADS)
-class ADSAdmin(admin.ModelAdmin):
+class ADSAdmin(VersionAdmin):
 
     @admin.display(description='Administration')
     def administration(self, ads):
