@@ -54,47 +54,47 @@ Création d'une nouvelle ADS
     {% csrf_token %}
 
     <!-- ADS number -->
-    {% include 'pages/ads-form_string.html' with field_title="Numéro de l'ADS" field=form.number field_errors=form.errors.number %}
+    {% include 'pages/ads-form_string.html' with field_title="Numéro de l'ADS" field=form.number field_errors=form.errors.number required=form.fields.number.required %}
 
     <!-- ADS creation date -->
-    {% include 'pages/ads-form_date.html' with field_title="Date de création de l'ADS" field=form.ads_creation_date field_errors=form.errors.ads_creation_date %}
+    {% include 'pages/ads-form_date.html' with field_title="Date de création de l'ADS" field=form.ads_creation_date field_errors=form.errors.ads_creation_date required=form.fields.ads_creation_date.required %}
 
     <!-- ADS type -->
-    {% include 'pages/ads-form_select.html' with field_title="Type d'ADS" field=form.ads_type field_errors=form.errors.ads_type %}
+    {% include 'pages/ads-form_select.html' with field_title="Type d'ADS" field=form.ads_type field_errors=form.errors.ads_type required=form.fields.ads_type.required %}
 
     <!-- ADS attribution date -->
-    {% include 'pages/ads-form_date.html' with field_title="Date d'attribution de l'ADS au titulaire actuel" field=form.attribution_date field_errors=form.errors.attribution_date %}
+    {% include 'pages/ads-form_date.html' with field_title="Date d'attribution de l'ADS au titulaire actuel" field=form.attribution_date field_errors=form.errors.attribution_date required=form.fields.attribution_date.required %}
 
     <!-- ADS attribution type -->
-    {% include 'pages/ads-form_select.html' with field_title="Type d'attribution de l'ADS" field=form.attribution_type field_errors=form.errors.attribution_type %}
+    {% include 'pages/ads-form_select.html' with field_title="Type d'attribution de l'ADS" field=form.attribution_type field_errors=form.errors.attribution_type required=form.fields.attribution_type.required %}
 
     <!-- Transaction identifier -->
-    {% include 'pages/ads-form_string.html' with field_title="Numéro d'identification lié au registre des transactions" field=form.transaction_identifier field_errors=form.errors.transaction_identifier data_display_src=form.attribution_type.id_for_label data_show_value="paid" %}
+    {% include 'pages/ads-form_string.html' with field_title="Numéro d'identification lié au registre des transactions" field=form.transaction_identifier field_errors=form.errors.transaction_identifier data_display_src=form.attribution_type.id_for_label data_show_value="paid" required=form.fields.transaction_identifier.required %}
 
     <!-- ADS attribution reason -->
-    {% include 'pages/ads-form_string.html' with field_title="Raison d'attribution" field=form.attribution_reason field_errors=form.errors.attribution_reason %}
+    {% include 'pages/ads-form_string.html' with field_title="Raison d'attribution" field=form.attribution_reason field_errors=form.errors.attribution_reason required=form.fields.attribution_reason.required %}
 
     <!-- Accepted by CPAM -->
-    {% include 'pages/ads-form_select.html' with field_title="Véhicule conventionné CPAM ?" field=form.accepted_cpam field_errors=form.errors.accepted_cpam %}
+    {% include 'pages/ads-form_select.html' with field_title="Véhicule conventionné CPAM ?" field=form.accepted_cpam field_errors=form.errors.accepted_cpam required=form.fields.accepted_cpam.required %}
 
     <!-- Immatriculation plate -->
-    {% include 'pages/ads-form_string.html' with field_title="Plaque d'immatriculation" field=form.immatriculation_plate field_errors=form.errors.immatriculation_plate %}
+    {% include 'pages/ads-form_string.html' with field_title="Plaque d'immatriculation" field=form.immatriculation_plate field_errors=form.errors.immatriculation_plate required=form.fields.immatriculation_plate.required %}
 
     <!-- Compatible PMR ? -->
-    {% include 'pages/ads-form_select.html' with field_title="Véhicule compatible PMR ?" field=form.vehicle_compatible_pmr field_errors=form.errors.vehicle_compatible_pmr %}
+    {% include 'pages/ads-form_select.html' with field_title="Véhicule compatible PMR ?" field=form.vehicle_compatible_pmr field_errors=form.errors.vehicle_compatible_pmr required=form.fields.vehicle_compatible_pmr.required %}
 
     <!-- Eco vehicle ? -->
-    {% include 'pages/ads-form_select.html' with field_title="Véhicule électrique ou hybride ?" field=form.eco_vehicle field_errors=form.errors.eco_vehicle %}
+    {% include 'pages/ads-form_select.html' with field_title="Véhicule électrique ou hybride ?" field=form.eco_vehicle field_errors=form.errors.eco_vehicle required=form.fields.eco_vehicle.required %}
 
     <!-- Owner name -->
-    {% include 'pages/ads-form_string.html' with field_title="Nom du titulaire de l'ADS" field=form.owner_name field_errors=form.errors.owner_name %}
+    {% include 'pages/ads-form_string.html' with field_title="Nom du titulaire de l'ADS" field=form.owner_name field_errors=form.errors.owner_name required=form.fields.owner_name.required %}
 
     <!-- Owner SIRET -->
-    {% include 'pages/ads-form_string.html' with field_title="SIRET du titulaire de l'ADS" field=form.owner_siret field_errors=form.errors.owner_siret %}
+    {% include 'pages/ads-form_string.html' with field_title="SIRET du titulaire de l'ADS" field=form.owner_siret field_errors=form.errors.owner_siret required=form.fields.owner_siret.required %}
 
     <div class="fr-input-group" data-display-src="{{ form.ads_type.id_for_label }}" data-hide-value="new">
       <!-- Used by owner ? -->
-      {% include 'pages/ads-form_select.html' with field_title="ADS exploitée par son titulaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner %}
+      {% include 'pages/ads-form_select.html' with field_title="ADS exploitée par son titulaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner required=form.fields.used_by_owner.required %}
 
       <div data-display-src="{{ form.used_by_owner.id_for_label }}" data-show-value="false">
         {{ ads_users_formset.management_form }}
@@ -106,11 +106,11 @@ Création d'une nouvelle ADS
 
               <div class="fr-pl-3w">
                 <!-- User status -->
-                {% include 'pages/ads-form_select.html' with field_title="Statut de l'exploitant de l'ADS" field=ads_user_form.status field_errors=ads_user_form.errors.status %}
+                {% include 'pages/ads-form_select.html' with field_title="Statut de l'exploitant de l'ADS" field=ads_user_form.status field_errors=ads_user_form.errors.status required=ads_user_form.fields.status.required %}
                 <!-- User name -->
-                {% include 'pages/ads-form_string.html' with field_title="Nom de l'exploitant de l'ADS" field=ads_user_form.name field_errors=ads_user_form.errors.name %}
+                {% include 'pages/ads-form_string.html' with field_title="Nom de l'exploitant de l'ADS" field=ads_user_form.name field_errors=ads_user_form.errors.name required=ads_user_form.fields.name.required %}
                 <!-- User SIRET -->
-                {% include 'pages/ads-form_string.html' with field_title="SIRET de l'exploitant de l'ADS" field=ads_user_form.siret field_errors=ads_user_form.errors.siret %}
+                {% include 'pages/ads-form_string.html' with field_title="SIRET de l'exploitant de l'ADS" field=ads_user_form.siret field_errors=ads_user_form.errors.siret required=ads_user_form.fields.siret.required %}
               </div>
 
               {% for hidden_field in ads_user_form.hidden_fields %}
@@ -127,7 +127,7 @@ Création d'une nouvelle ADS
     </div>
 
     <!-- Legal file -->
-    {% include 'pages/ads-form_file.html' with field_title="Arrêté portant l'attribution de l'ADS" field=form.legal_file field_errors=form.errors.legal_file %}
+    {% include 'pages/ads-form_file.html' with field_title="Arrêté portant l'attribution de l'ADS" field=form.legal_file field_errors=form.errors.legal_file required=form.fields.legal_file.required %}
 
     <div class="fr-col-12 fr-input-group">
       {% if ads %}
