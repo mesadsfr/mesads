@@ -13,11 +13,12 @@ class ClientTestCase(TestCase):
 
         * anonymous_client: client not logged in
         * auth_client: client authenticated, but without permissions
+        * auth_user: user object behind auth_client
         """
         super().setUp()
 
         self.anonymous_client = Client()
-        self.auth_client, _ = self.create_client()
+        self.auth_client, self.auth_user = self.create_client()
 
     def create_user(self):
         email = '%s@domain.com' % ''.join(random.choice(string.ascii_lowercase) for _ in range(16))
