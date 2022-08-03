@@ -1,6 +1,6 @@
 {% load abs_activation_uri %}
 
-Cliquez sur le lien ci-dessous pour procéder à l’activation de votre compte gestionnaire Mes.ADS  : {% abs_activation_uri activation_key %}
+Rendez-vous sur le lien suivant pour procéder à l’activation de votre compte Mes ADS  : {% abs_activation_uri activation_key %}
 
 Ce lien est valide pendant {{ expiration_days }} jours.
 
