@@ -14,7 +14,7 @@
 
   <input
     class="fr-input{% if field_errors %} fr-input--error{% endif %}"
-    type="text"
+    type="{% if html_type %}{{ html_type }}{% else %}text{% endif %}"
     id="{{ field.id_for_label }}"
     name="{{ field.html_name }}"
     value="{{ field.value|default:"" }}"

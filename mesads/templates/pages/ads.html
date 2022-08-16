@@ -92,6 +92,15 @@ Création d'une nouvelle ADS
     <!-- Owner SIRET -->
     {% include 'pages/ads-form_string.html' with field_title="SIRET du titulaire de l'ADS" field=form.owner_siret field_errors=form.errors.owner_siret required=form.fields.owner_siret.required %}
 
+    <!-- Owner phone -->
+    {% include 'pages/ads-form_string.html' with field_title="Téléphone fixe du titulaire de l'ADS" field=form.owner_phone field_errors=form.errors.owner_phone required=form.fields.owner_phone.required %}
+
+    <!-- Owner mobile -->
+    {% include 'pages/ads-form_string.html' with field_title="Téléphone mobile du titulaire de l'ADS" field=form.owner_mobile field_errors=form.errors.owner_mobile required=form.fields.owner_mobile.required %}
+
+    <!-- Owner email -->
+    {% include 'pages/ads-form_string.html' with field_title="Email du titulaire de l'ADS" field=form.owner_email field_errors=form.errors.owner_email required=form.fields.owner_email.required html_type="email" %}
+
     <div class="fr-input-group" data-display-src="{{ form.ads_type.id_for_label }}" data-hide-value="new">
       <!-- Used by owner ? -->
       {% include 'pages/ads-form_select.html' with field_title="ADS exploitée par son titulaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner required=form.fields.used_by_owner.required %}

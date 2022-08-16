@@ -267,6 +267,9 @@ class ADSView(RevisionMixin, UpdateView):
         'eco_vehicle',
         'owner_name',
         'owner_siret',
+        'owner_phone',
+        'owner_mobile',
+        'owner_email',
         'used_by_owner',
         'legal_file',
     )
