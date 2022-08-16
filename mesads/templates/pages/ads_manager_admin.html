@@ -10,7 +10,7 @@
 </p>
 
 <p>
-  Si vous avez la moindre question, contactez notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+  Si vous avez la moindre question, ou si vous souhaitez révoquer un accès, contactez notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
 </p>
 
 {% for ads_manager_admin, ads_manager_requests in ads_manager_requests.items %}
@@ -49,16 +49,6 @@
                 <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
                 <input type="hidden" name="action" value="deny" />
                 <button type="submit" class="fr-btn fr-btn--sm">Refuser</button>
-              </form>
-            </div>
-            {% comment %}Request has been accepted: allow to revoke access{% endcomment %}
-            {% elif ads_manager_request.accepted is True %}
-            <div class="fr-p-1w">
-              <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
-                <input type="hidden" name="action" value="deny" />
-                <button type="submit" class="fr-btn fr-btn--sm">Supprimer l'accès</button>
               </form>
             </div>
             {% comment %}Request has been denied: allow to accept it{% endcomment %}
