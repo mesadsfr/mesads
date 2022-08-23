@@ -206,7 +206,19 @@
 
   <script type="text/javascript">
     /*
-     * Only display the selected entry from the form.
+     * The form to create a new ADS manager shows three radio buttons to select
+     * the commune, EPCI or préfecture. When checked, a select input appears to
+     * select the administration.
+     *
+     * The code below hides the select inputs for the unchecked radio buttons.
+     *
+     * We can't easily use alpinejs here because the select inputs are managed
+     * by mesads.fradm.forms.FrenchAdministrationForm and is not so easy to add
+     * custom properties. It is much easier to write a few line of plain
+     * javascript.
+     *
+     * We also make sure the select value of related to unchecked radio buttons
+     * are always empty.
      */
     document.addEventListener('DOMContentLoaded', () => {
       const radios = document.getElementsByName('radio-inline');
