@@ -49,7 +49,7 @@
 
 {% for ads_manager_administrator in ads_managers_administrators %}
 <div class="fr-table">
-  <table data-load-more="5">
+  <table x-data="{ displayExtra: false }">
       <caption>{{ ads_manager_administrator.prefecture.display_text|capfirst }}</caption>
     <thead>
       <tr>
@@ -60,7 +60,7 @@
     </thead>
     <tbody>
       {% for ads_manager in ads_manager_administrator.ads_managers.all  %}
-      <tr>
+      <tr x-show="displayExtra || {{ forloop.counter0 }} < 5">
         <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
         <td>{% if ads_manager.ads_count %}{{ ads_manager.ads_count }}{% else %}-{% endif %}</td>
         <td>
@@ -68,6 +68,13 @@
         </td>
       </tr>
       {% endfor %}
+      <tr x-show="{{ ads_manager_administrator.ads_managers.count }} > 5 && !displayExtra">
+        <td colspan="3">
+          <button class="fr-btn fr-btn--secondary fr-btn--sm" x-on:click="displayExtra = true">
+            Afficher les {{ ads_manager_administrator.ads_managers.count|add:"-5" }} autres entrées du tableau...
+          </button>
+        </td>
+      </tr>
     </tbody>
   </table>
 </div>
@@ -221,50 +228,6 @@
 
       // Hook to changes to reset visibility
       radios.forEach((radio) => radio.addEventListener('change', setADSRequestFormVisibility));
-    });
-  </script>
-
-  <script type="text/javascript">
-    /*
-     * For each table of the page, if data-load-more is set, hide all rows
-     * exceeding this value and add a button to display them.
-     */
-    $('table').each((idx, table) => {
-      if (!table.dataset.loadMore) {
-        return ;
-      }
-      const maxDisplay = parseInt(table.dataset.loadMore, 10);
-
-      // Hide all rows after maxDisplay (+ 1 for the header)
-      const extraRows = $(table).find('tr').filter((idx) => idx >= maxDisplay + 1);
-      if (extraRows.length) {
-        const numCols = $(table).find('th').length;
-
-        // If table is just a bit bigger than data-load-more, it is still
-        // better to display it completely.
-        if (extraRows.length <= 5) {
-          return ;
-        }
-
-        extraRows.hide();
-
-        const loadMoreButton = $('<button>')
-          .addClass('fr-btn').addClass('fr-btn--secondary').addClass('fr-btn--sm')
-          .append(`Afficher les ${extraRows.length} autres entrées du tableau...`)
-          .click(() => {
-            extraRows.show();
-            loadMoreRow.hide();
-          });
-        ;
-        const loadMoreRow = $('<tr>')
-          .append(
-            $('<td>')
-              .attr({ colspan: 3 })
-              .append(loadMoreButton)
-          );
-
-        $(table).find('tbody > tr:last-child').after(loadMoreRow);
-      }
     });
   </script>
 {% endblock %}

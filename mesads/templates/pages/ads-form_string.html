@@ -1,8 +1,6 @@
 <div
-    class="fr-input-group{% if field_errors %} fr-input-group--error{% endif %}"
-    {% if data_display_src %} data-display-src="{{ data_display_src }}"{% endif %}
-    {% if data_show_value %} data-show-value="{{ data_show_value }}"{% endif %}
-    {% if data_hide_value %} data-hide-value="{{ data_hide_value }}"{% endif %}
+  class="fr-input-group{% if field_errors %} fr-input-group--error{% endif %}"
+  {% if x_show %}x-show="{{ x_show }}"{% endif %}
 >
   <label
     class="fr-label"

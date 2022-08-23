@@ -23,58 +23,69 @@
   <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'ads.create' manager_id=ads_manager.id %}">Créer une nouvelle ADS</a>
 </p>
 
-<p id="ADSFiltersButton">
-  <button class="fr-link fr-icon-arrow-right-line fr-link--icon-right">Rechercher une ADS</button>
-</p>
+<div x-data="{ displayFilters: new URLSearchParams(window.location.search).get('q') || new URLSearchParams(window.location.search).get('accepted_cpam')}">
+  <p id="ADSFiltersButton">
+    <button
+      x-show="! displayFilters"
+      x-on:click="displayFilters = true"
+      class="fr-link fr-icon-arrow-right-line fr-link--icon-right">
+        Rechercher une ADS
+    </button>
+    <button
+      x-show="displayFilters"
+      x-on:click="displayFilters = false"
+      class="fr-link fr-icon-arrow-down-line fr-link--icon-right">
+        Rechercher une ADS
+    </button>
+  </p>
 
-<div id="ADSFilters">
-  <h6>Filtrer les ADS</h6>
+  <div x-show="displayFilters" id="ADSFilters">
+    <h6>Filtrer les ADS</h6>
 
-  <form method="get" class="fr-mb-3w">
-    <!-- form.q -->
-    <div class="fr-col-lg-6 fr-input-group{% if search_form.q.errors %} fr-input-group--error{% endif %}">
-      <label class="fr-label" for="{{ search_form.q.id_for_label }}" >
+    <form method="get" class="fr-mb-3w">
+      <!-- form.q -->
+      <div class="fr-col-lg-6 fr-input-group{% if search_form.q.errors %} fr-input-group--error{% endif %}">
+        <label class="fr-label" for="{{ search_form.q.id_for_label }}">
           Rechercher par nom ou SIRET du titulaire, ou de l'exploitant, ou plaque d'immatriculation du véhicule
-      </label>
+        </label>
 
-      <input
-        class="fr-input{% if search_form.q.errors %} fr-input--error{% endif %}"
-        type="text"
-        id="{{ search_form.q.id_for_label }}"
-        name="{{ search_form.q.html_name }}"
-        value="{{ search_form.q.value|default:"" }}"
-      />
+        <input class="fr-input{% if search_form.q.errors %} fr-input--error{% endif %}" type="text"
+          id="{{ search_form.q.id_for_label }}" name="{{ search_form.q.html_name }}"
+          value="{{ search_form.q.value|default:"" }}" />
 
-      {% for error in search_form.q.errors %}
-      <p class="fr-error-text">
-        {{ error }}
-      </p>
-      {% endfor %}
-    </div>
-
-    <!-- form.accepted_cpam  -->
-    <div class="fr-col-lg-6 fr-select-group{% if search_form.accepted_cpam.errors %} fr-select-group--error{% endif %}">
-      <label class="fr-label" for="{{ search_form.accepted_cpam.id_for_label }}" >
-          Lister seulement les ADS conventionnées CPAM ?
-      </label>
-
-      <select class="fr-select{% if search_form.accepted_cpam.errors %} fr-select--error{% endif %}" id="{{ search_form.accepted_cpam.id_for_label }}" name="{{ search_form.accepted_cpam.html_name }}">
-        {% for option in search_form.accepted_cpam %}
-          {{ option }}
+        {% for error in search_form.q.errors %}
+        <p class="fr-error-text">
+          {{ error }}
+        </p>
         {% endfor %}
-      </select>
+      </div>
 
-      {% for error in search_form.accepted_cpam.errors %}
-      <p class="fr-error-text">
-        {{ error }}
-      </p>
-      {% endfor %}
-    </div>
+      <!-- form.accepted_cpam  -->
+      <div
+        class="fr-col-lg-6 fr-select-group{% if search_form.accepted_cpam.errors %} fr-select-group--error{% endif %}">
+        <label class="fr-label" for="{{ search_form.accepted_cpam.id_for_label }}">
+          Lister seulement les ADS conventionnées CPAM ?
+        </label>
 
-    <div class="fr-input-group">
-      <button type="submit" class="fr-btn">Filtrer</button>
-    </div>
-  </form>
+        <select class="fr-select{% if search_form.accepted_cpam.errors %} fr-select--error{% endif %}"
+          id="{{ search_form.accepted_cpam.id_for_label }}" name="{{ search_form.accepted_cpam.html_name }}">
+          {% for option in search_form.accepted_cpam %}
+          {{ option }}
+          {% endfor %}
+        </select>
+
+        {% for error in search_form.accepted_cpam.errors %}
+        <p class="fr-error-text">
+          {{ error }}
+        </p>
+        {% endfor %}
+      </div>
+
+      <div class="fr-input-group">
+        <button type="submit" class="fr-btn">Filtrer</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <div class="fr-table">
@@ -111,34 +122,4 @@
 
   {% show_pagination_links page_obj %}
 </div>
-
-{% endblock %}
-
-{% block endbody %}
-<script type="text/javascript">
-document.addEventListener('DOMContentLoaded', () => {
-  let searchParams = new URLSearchParams(window.location.search)
-
-  // By default, hide
-  if (!searchParams.get('q') && !searchParams.get('accepted_cpam')) {
-    $('#ADSFilters').hide();
-  } else {
-    // otherwise, set arrow down
-    $('#ADSFiltersButton button').removeClass('fr-icon-arrow-right-line');
-    $('#ADSFiltersButton button').addClass('fr-icon-arrow-down-line');
-  }
-
-  $('#ADSFiltersButton').click(() => {
-    $('#ADSFilters').toggle();
-    const classes = $('#ADSFiltersButton button').attr('class');
-    if (classes.includes('fr-icon-arrow-right-line')) {
-      $('#ADSFiltersButton button').removeClass('fr-icon-arrow-right-line');
-      $('#ADSFiltersButton button').addClass('fr-icon-arrow-down-line');
-    } else {
-      $('#ADSFiltersButton button').removeClass('fr-icon-arrow-down-line');
-      $('#ADSFiltersButton button').addClass('fr-icon-arrow-right-line');
-    }
-  });
-});
-</script>
 {% endblock %}

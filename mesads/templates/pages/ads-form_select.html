@@ -7,7 +7,12 @@
     {% if field_description %}<span class="fr-hint-text">{{ field_description }}</span>{% endif %}
   </label>
 
-  <select class="fr-select{% if field_errors %} fr-select--error{% endif %}" id="{{ field.id_for_label }}" name="{{ field.html_name }}">
+  <select
+    class="fr-select{% if field_errors %} fr-select--error{% endif %}"
+    id="{{ field.id_for_label }}"
+    name="{{ field.html_name }}"
+    {% if x_model %}x-model="{{ x_model }}"{% endif %}
+  >
     {% for option in field %}
       {{ option }}
     {% endfor %}
