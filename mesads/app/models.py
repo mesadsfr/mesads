@@ -12,6 +12,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Count
 
+import reversion
+
 from mesads.fradm.models import Prefecture
 
 
@@ -80,6 +82,7 @@ class ADSManagerRequestModelManager(models.Manager):
         return qs
 
 
+@reversion.register
 class ADSManagerRequest(models.Model):
     """User request to become ADSManager. Has to be accepted by the
     administrator (ie. the prefecture) of the ADSManager.
@@ -169,6 +172,7 @@ def validate_siret(value):
     )
 
 
+@reversion.register
 class ADS(models.Model):
     """Autorisation De Stationnement created by ADSManager.
 
@@ -310,6 +314,7 @@ class ADS(models.Model):
     legal_file = models.FileField(upload_to=get_legal_filename, blank=True)
 
 
+@reversion.register
 class ADSUser(models.Model):
     """"Exploitant" of an ADS.
 
