@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboards d'administration{% endblock %}
+
+{% block body %}
+
+<div class="fr-table fr-table--bordered">
+    <table>
+        <caption>Nombre d'ADS enregistrées par préfecture</caption>
+        <thead>
+            <tr>
+                <th>&nbsp;</th>
+                <th style="text-align:center; border-bottom:1px solid #000" colspan="4">Mises à jour</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th>Depuis toujours</th>
+                <th>&gt; 3 mois</th>
+                <th>&gt; 6 mois</th>
+                <th>&gt; 12 mois</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in stats_ads_count.values|dictsort:"obj.id" %}
+            <tr>
+                <td>{{ row.obj.prefecture }}</td>
+                <td>{% if row.now %}{{ row.now }}{% endif %}</td>
+                <td>{{ row.3_months|default:"-" }}</td>
+                <td>{{ row.6_months|default:"-" }}</td>
+                <td>{{ row.12_months|default:"-" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

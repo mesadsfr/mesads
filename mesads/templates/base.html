@@ -67,6 +67,12 @@
           <nav class="fr-nav" id="navigation-832" role="navigation" aria-label="Menu principal">
             {% if user.is_authenticated %}
             <ul class="fr-nav__list">
+              {% if user.is_staff %}
+              <li class="fr-nav__item">
+                {% url 'dashboards' as dashboards_url %}
+                <a class="fr-nav__link" href="{% url 'dashboards' %}"{% if request.path == dashboards_url %} aria-current="page"{% endif %}>Dashboards</a>
+              </li>
+              {% endif %}
               {% if user.adsmanageradministrator_set.all|length > 0 %}
               <li class="fr-nav__item">
                 {% url 'ads-manager-admin' as ads_manager_admin_url %}
