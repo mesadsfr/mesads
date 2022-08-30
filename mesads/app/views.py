@@ -1,5 +1,6 @@
+import collections
 import csv
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.messages.views import SuccessMessageMixin
@@ -11,6 +12,7 @@ from django.db.models.functions import Replace
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.urls import reverse, reverse_lazy
 from django.views.generic import TemplateView
 from django.views.generic import UpdateView
@@ -413,56 +415,103 @@ class DashboardsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['stats_ads_count'] = self.stats_ads_count()
+        ctx['stats'] = self._get_stats()
         return ctx
 
-    def stats_ads_count(self):
-        """Returns the total number of ADS registered for each ADSManagerAdministrator.
+    def _get_stats(self):
+        """Get a list of ADSManagerAdministrator instances the following statistics:
+            - number of ADS (now, and 3/6/12 months ago)
+            - number of ADSManager accounts (now, and 3/6/12 months ago)
 
-        >>> {
-        ...     <prefecture_id>: {
-        ...         obj: <ADSManagerAdministrator object>
-        ...         'now': <int, number of ADS currently registered>
-        ...         '3_months': <number of ADS updated less than 3 months ago>
-        ...         '6_months':
-        ...         '12_months':
-        ...     }
-        ... }
+        >>> [
+        ...      obj: <ADSManagerAdministrator object>
+        ...      'ads': {
+        ...          'now': <int, number of ADS currently registered>
+        ...          '3_months': <number of ADS updated less than 3 months ago>
+        ...          '6_months':
+        ...          '12_months':
+        ...      },
+        ...      'ads_managers': {
+        ...          'now': <int, number of ADS managers>
+        ...          '3_months': <number of managers 3 months ago>
+        ...          '6_months':
+        ...          '12_months':
+        ...       }
+        ...  ]
         """
-        query_now = ADSManagerAdministrator.objects \
+        now = timezone.now()
+
+        stats = collections.defaultdict(lambda: {
+            'obj': None,
+            'ads': {},
+            'ads_managers': {}
+        })
+
+        ads_query_now = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
+            .annotate(ads_count=Count('ads_managers__ads')) \
+            .filter(ads_count__gt=0)
+
+        ads_query_3_months = ADSManagerAdministrator.objects \
+            .select_related('prefecture') \
+            .filter(ads_managers__ads__creation_date__lte=now - timedelta(weeks=4 * 3)) \
             .annotate(ads_count=Count('ads_managers__ads'))
 
-        now = datetime.now()
-        query_last_3_months = ADSManagerAdministrator.objects \
+        ads_query_6_months = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
-            .filter(ads_managers__ads__last_update__gte=now - timedelta(weeks=4 * 1)) \
+            .filter(ads_managers__ads__creation_date__lte=now - timedelta(weeks=4 * 6)) \
             .annotate(ads_count=Count('ads_managers__ads'))
 
-        query_last_6_months = ADSManagerAdministrator.objects \
+        ads_query_12_months = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
-            .filter(ads_managers__ads__last_update__gte=now - timedelta(weeks=4 * 6)) \
+            .filter(ads_managers__ads__creation_date__lte=now - timedelta(weeks=4 * 12)) \
             .annotate(ads_count=Count('ads_managers__ads'))
-
-        query_last_12_months = ADSManagerAdministrator.objects \
-            .select_related('prefecture') \
-            .filter(ads_managers__ads__last_update__gte=now - timedelta(weeks=4 * 12)) \
-            .annotate(ads_count=Count('ads_managers__ads'))
-
-        stats = {
-            row.prefecture.id: {
-                'obj': row,
-                'now': row.ads_count
-            }
-            for row in query_now
-            if row.ads_count
-        }
 
         for (label, query) in (
-            ('3_months', query_last_3_months),
-            ('6_months', query_last_6_months),
-            ('12_months', query_last_12_months),
+            ('now', ads_query_now),
+            ('3_months', ads_query_3_months),
+            ('6_months', ads_query_6_months),
+            ('12_months', ads_query_12_months),
         ):
             for row in query:
-                stats[row.prefecture.id][label] = row.ads_count
-        return stats
+                stats[row.prefecture.id]['obj'] = row
+                stats[row.prefecture.id]['ads'][label] = row.ads_count
+
+        ads_managers_query_now = ADSManagerAdministrator.objects \
+            .select_related('prefecture') \
+            .filter(ads_managers__adsmanagerrequest__accepted=True) \
+            .annotate(ads_managers_count=Count('id'))
+
+        ads_managers_query_3_months = ADSManagerAdministrator.objects \
+            .select_related('prefecture') \
+            .filter(
+                ads_managers__adsmanagerrequest__accepted=True,
+                ads_managers__adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 3)
+            ).annotate(ads_managers_count=Count('id'))
+
+        ads_managers_query_6_months = ADSManagerAdministrator.objects \
+            .select_related('prefecture') \
+            .filter(
+                ads_managers__adsmanagerrequest__accepted=True,
+                ads_managers__adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 6)
+            ).annotate(ads_managers_count=Count('id'))
+
+        ads_managers_query_12_months = ADSManagerAdministrator.objects \
+            .select_related('prefecture') \
+            .filter(
+                ads_managers__adsmanagerrequest__accepted=True,
+                ads_managers__adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 12)
+            ).annotate(ads_managers_count=Count('id'))
+
+        for (label, query) in (
+            ('now', ads_managers_query_now),
+            ('3_months', ads_managers_query_3_months),
+            ('6_months', ads_managers_query_6_months),
+            ('12_months', ads_managers_query_12_months),
+        ):
+            for row in query.all():
+                stats[row.prefecture.id]['obj'] = row
+                stats[row.prefecture.id]['ads_managers'][label] = row.ads_managers_count
+
+        # Transform dict to an ordered list
+        return sorted(list(stats.values()), key=lambda stat: stat['obj'].id)

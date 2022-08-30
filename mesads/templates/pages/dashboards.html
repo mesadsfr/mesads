@@ -10,28 +10,41 @@
 
 <div class="fr-table fr-table--bordered">
     <table>
-        <caption>Nombre d'ADS enregistrées par préfecture</caption>
+        <caption>Statistiques par préfecture</caption>
         <thead>
             <tr>
                 <th>&nbsp;</th>
-                <th style="text-align:center; border-bottom:1px solid #000" colspan="4">Mises à jour</th>
+                <th style="text-align:center; border-bottom:1px solid #000" colspan="4">Nombre d'ADS</th>
+                <th style="text-align:center; border-bottom:1px solid #000" colspan="4">Nombre de gestionnaires</th>
             </tr>
             <tr>
                 <th></th>
-                <th>Depuis toujours</th>
-                <th>&gt; 3 mois</th>
-                <th>&gt; 6 mois</th>
-                <th>&gt; 12 mois</th>
+
+                <th>Ajd.</th>
+                <th>Il y a 3 mois</th>
+                <th>… 6 mois</th>
+                <th>… 12 mois</th>
+
+                <th>Ajd.</th>
+                <th>Il y a 3 mois</th>
+                <th>… 6 mois</th>
+                <th>… 12 mois</th>
             </tr>
         </thead>
         <tbody>
-            {% for row in stats_ads_count.values|dictsort:"obj.id" %}
+            {% for row in stats %}
             <tr>
                 <td>{{ row.obj.prefecture }}</td>
-                <td>{% if row.now %}{{ row.now }}{% endif %}</td>
-                <td>{{ row.3_months|default:"-" }}</td>
-                <td>{{ row.6_months|default:"-" }}</td>
-                <td>{{ row.12_months|default:"-" }}</td>
+
+                <td>{{ row.ads.now|default:"-" }}</td>
+                <td>{{ row.ads.3_months|default:"-" }}</td>
+                <td>{{ row.ads.6_months|default:"-" }}</td>
+                <td>{{ row.ads.12_months|default:"-" }}</td>
+
+                <td>{{ row.ads_managers.now|default:"-" }}</td>
+                <td>{{ row.ads_managers.3_months|default:"-" }}</td>
+                <td>{{ row.ads_managers.6_months|default:"-" }}</td>
+                <td>{{ row.ads_managers.12_months|default:"-" }}</td>
             </tr>
             {% endfor %}
         </tbody>
