@@ -10,7 +10,7 @@
 
 <div class="fr-table fr-table--bordered">
     <table>
-        <caption>Statistiques par préfecture</caption>
+        <caption>Statistiques de {{ object.prefecture.display_fulltext }}</caption>
         <thead>
             <tr>
                 <th>&nbsp;</th>
@@ -34,7 +34,7 @@
         <tbody>
             {% for row in stats %}
             <tr>
-                <td>{{ row.obj.prefecture }}</td>
+                <td><a href="{% url 'ads-manager' manager_id=row.obj.id %}">{{ row.obj.content_object.display_text|capfirst }}</a></td>
 
                 <td>{{ row.ads.now|default:"-" }}</td>
                 <td>{{ row.ads.3_months|default:"-" }}</td>
@@ -50,5 +50,6 @@
         </tbody>
     </table>
 </div>
+
 
 {% endblock %}

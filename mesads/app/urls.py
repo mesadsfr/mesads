@@ -11,7 +11,8 @@ from .decorators import (
 
 urlpatterns = [
     path('', login_required(views.HomepageView.as_view()), name='homepage'),
-    path('dashboards', staff_member_required(views.DashboardsView.as_view()), name='dashboards'),
+    path('dashboards', staff_member_required(views.DashboardsView.as_view()), name='dashboards.list'),
+    path('dashboards/<int:ads_manager_administrator_id>/', staff_member_required(views.DashboardsDetailView.as_view()), name='dashboards.detail'),
     path('admin_gestion', ads_manager_administrator_required(views.ADSManagerAdminView.as_view()), name='ads-manager-admin'),
     path('gestion', login_required(views.ADSManagerRequestView.as_view()), name='ads-manager-request'),
     path('gestion/<int:manager_id>/', ads_manager_required(views.ADSManagerView.as_view()), name='ads-manager'),

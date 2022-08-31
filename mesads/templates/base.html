@@ -69,8 +69,8 @@
             <ul class="fr-nav__list">
               {% if user.is_staff %}
               <li class="fr-nav__item">
-                {% url 'dashboards' as dashboards_url %}
-                <a class="fr-nav__link" href="{% url 'dashboards' %}"{% if request.path == dashboards_url %} aria-current="page"{% endif %}>Dashboards</a>
+                {% url 'dashboards.list' as dashboards_url %}
+                <a class="fr-nav__link" href="{{ dashboards_url }}"{% if request.path == dashboards_url %} aria-current="page"{% endif %}>Dashboards</a>
               </li>
               {% endif %}
               {% if user.adsmanageradministrator_set.all|length > 0 %}

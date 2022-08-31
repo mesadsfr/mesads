@@ -15,8 +15,8 @@ from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.urls import reverse, reverse_lazy
-from django.views.generic import TemplateView
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, TemplateView
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, FormView
 from django.views.generic.list import ListView
 
@@ -52,7 +52,7 @@ class HomepageView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_staff:
-            return redirect(reverse('dashboards'))
+            return redirect(reverse('dashboards.list'))
         if len(self.request.user.adsmanageradministrator_set.all()):
             return redirect(reverse('ads-manager-admin'))
         return redirect(reverse('ads-manager-request'))
@@ -415,7 +415,7 @@ def prefecture_export_ads(request, ads_manager_administrator):
 
 class DashboardsView(TemplateView):
 
-    template_name = 'pages/dashboards.html'
+    template_name = 'pages/dashboards_list.html'
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -518,4 +518,103 @@ class DashboardsView(TemplateView):
                 stats[row.prefecture.id]['ads_managers'][label] = row.ads_managers_count
 
         # Transform dict to an ordered list
+        return sorted(list(stats.values()), key=lambda stat: stat['obj'].id)
+
+
+class DashboardsDetailView(DetailView):
+    template_name = 'pages/dashboards_detail.html'
+    model = ADSManagerAdministrator
+    pk_url_kwarg = 'ads_manager_administrator_id'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['stats'] = self.get_stats()
+        return ctx
+
+    def get_stats(self):
+        stats = {}
+
+        stats = collections.defaultdict(lambda: {
+            'obj': None,
+            'ads': {},
+            'ads_managers': {}
+        })
+
+        now = timezone.now()
+
+        ads_query_now = ADSManager.objects \
+            .prefetch_related('content_type', 'content_object') \
+            .filter(
+                administrator=self.object
+            ).annotate(ads_count=Count('ads')) \
+            .filter(ads_count__gt=0)
+
+        ads_query_3_months = ADSManager.objects \
+            .prefetch_related('content_type', 'content_object') \
+            .filter(
+                administrator=self.object,
+                ads__creation_date__lte=now - timedelta(weeks=4 * 3)
+            ).annotate(ads_count=Count('ads'))
+
+        ads_query_6_months = ADSManager.objects \
+            .prefetch_related('content_type', 'content_object') \
+            .filter(
+                administrator=self.object,
+                ads__creation_date__lte=now - timedelta(weeks=4 * 6)
+            ).annotate(ads_count=Count('ads'))
+
+        ads_query_12_months = ADSManager.objects \
+            .prefetch_related('content_type', 'content_object') \
+            .filter(
+                administrator=self.object,
+                ads__creation_date__lte=now - timedelta(weeks=4 * 12)
+            ).annotate(ads_count=Count('ads'))
+
+        for (label, query) in (
+            ('now', ads_query_now),
+            ('3_months', ads_query_3_months),
+            ('6_months', ads_query_6_months),
+            ('12_months', ads_query_12_months),
+        ):
+            for row in query:
+                stats[row.id]['obj'] = row
+                stats[row.id]['ads'][label] = row.ads_count
+
+        ads_managers_query_now = ADSManager.objects \
+            .filter(
+                administrator=self.object,
+                adsmanagerrequest__accepted=True
+            ).annotate(ads_managers_count=Count('id'))
+
+        ads_managers_query_3_months = ADSManager.objects \
+            .filter(
+                administrator=self.object,
+                adsmanagerrequest__accepted=True,
+                adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 3),
+            ).annotate(ads_managers_count=Count('id'))
+
+        ads_managers_query_6_months = ADSManager.objects \
+            .filter(
+                administrator=self.object,
+                adsmanagerrequest__accepted=True,
+                adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 6),
+            ).annotate(ads_managers_count=Count('id'))
+
+        ads_managers_query_12_months = ADSManager.objects \
+            .filter(
+                administrator=self.object,
+                adsmanagerrequest__accepted=True,
+                adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 12),
+            ).annotate(ads_managers_count=Count('id'))
+
+        for (label, query) in (
+            ('now', ads_managers_query_now),
+            ('3_months', ads_managers_query_3_months),
+            ('6_months', ads_managers_query_6_months),
+            ('12_months', ads_managers_query_12_months),
+        ):
+            for row in query.all():
+                stats[row.id]['obj'] = row
+                stats[row.id]['ads_managers'][label] = row.ads_managers_count
+
         return sorted(list(stats.values()), key=lambda stat: stat['obj'].id)
