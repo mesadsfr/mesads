@@ -1,9 +1,14 @@
+from datetime import timedelta
+
 from django.core import mail
+from django.test import RequestFactory
+from django.utils import timezone
 
 from mesads.fradm.models import EPCI, Prefecture
 
 from .models import ADS, ADSManagerRequest, ADSUser
 from .unittest import ClientTestCase
+from .views import DashboardsView
 
 
 class TestHomepageView(ClientTestCase):
@@ -13,6 +18,7 @@ class TestHomepageView(ClientTestCase):
             ('auth', self.auth_client, 302, '/gestion'),
             ('ads_manager 35', self.ads_manager_city35_client, 302, '/gestion'),
             ('ads_manager_admin 35', self.ads_manager_administrator_35_client, 302, '/admin_gestion'),
+            ('admin', self.admin_client, 302, '/dashboards'),
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status, redirect_url=redirect_url):
                 resp = client.get('/')
@@ -519,3 +525,89 @@ class TestCSVExport(ClientTestCase):
 
         # Header + 2 ADS
         self.assertEqual(len(resp.content.splitlines()), 4)
+
+
+class TestDashboardsView(ClientTestCase):
+    def setUp(self):
+        super().setUp()
+        request = RequestFactory().get('/dashboards')
+        self.dashboards_view = DashboardsView()
+        self.dashboards_view.setup(request)
+
+    def test_permissions(self):
+        for client_name, client, expected_status in (
+            ('anonymous', self.anonymous_client, 302),
+            ('auth', self.auth_client, 302),
+            ('ads_manager 35', self.ads_manager_city35_client, 302),
+            ('ads_manager_admin 35', self.ads_manager_administrator_35_client, 302),
+            ('admin', self.admin_client, 200),
+        ):
+            with self.subTest(client_name=client_name, expected_status=expected_status):
+                resp = client.get('/dashboards')
+                self.assertEqual(resp.status_code, expected_status)
+
+    def test_stats_default(self):
+        # The base class ClientTestCase creates ads_manager_administrator for
+        # departement 35, and configures an ADSManager for the city fo Melesse.
+        self.assertEqual([{
+            'obj': self.ads_manager_administrator_35,
+            'ads': {},
+            'ads_managers': {
+                'now': 1,
+            }
+        }], self.dashboards_view.get_stats())
+
+    def test_stats_for_several_ads(self):
+        # Create several ADS for the city of Melesse
+        now = timezone.now()
+        for (idx, creation_date) in enumerate([
+            now - timedelta(days=365 * 2),  # 2 years old ADS
+            now - timedelta(days=300),      # > 6 && < 12 months old
+            now - timedelta(days=120),      # > 3 && < 6 months old
+            now - timedelta(days=1),        # yesterday
+        ]):
+            ads = ADS.objects.create(number=str(idx), ads_manager=self.ads_manager_city35)
+            ads.creation_date = creation_date
+            ads.save()
+
+        self.assertEqual([{
+            'obj': self.ads_manager_administrator_35,
+            'ads': {
+                'now': 4,
+                '3_months': 3,
+                '6_months': 2,
+                '12_months': 1,
+            },
+            'ads_managers': {
+                'now': 1,
+            }
+        }], self.dashboards_view.get_stats())
+
+    def test_stats_for_several_ads_managers(self):
+        now = timezone.now()
+        # Give administration permissions for several users to Melesse.
+        for creation_date in [
+            now - timedelta(days=365 * 2),  # 2 years old ADS
+            now - timedelta(days=300),      # > 6 && < 12 months old
+            now - timedelta(days=120),      # > 3 && < 6 months old
+            now - timedelta(days=1),        # yesterday
+        ]:
+            user = self.create_user().obj
+            ads_manager_request = ADSManagerRequest.objects.create(
+                user=user,
+                ads_manager=self.ads_manager_city35,
+                accepted=True,
+            )
+            ads_manager_request.created_at = creation_date
+            ads_manager_request.save()
+
+        self.assertEqual([{
+            'obj': self.ads_manager_administrator_35,
+            'ads': {},
+            'ads_managers': {
+                'now': 5,
+                '3_months': 3,
+                '6_months': 2,
+                '12_months': 1,
+            }
+        }], self.dashboards_view.get_stats())

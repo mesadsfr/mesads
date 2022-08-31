@@ -415,10 +415,10 @@ class DashboardsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['stats'] = self._get_stats()
+        ctx['stats'] = self.get_stats()
         return ctx
 
-    def _get_stats(self):
+    def get_stats(self):
         """Get a list of ADSManagerAdministrator instances the following statistics:
             - number of ADS (now, and 3/6/12 months ago)
             - number of ADSManager accounts (now, and 3/6/12 months ago)
