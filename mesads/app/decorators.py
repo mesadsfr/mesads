@@ -13,7 +13,7 @@ def ads_manager_required(func):
     @functools.wraps(func)
     def wrapped(request, manager_id=None, *args, **kwargs):
         if not ADSManagerAdministrator.objects.filter(
-            ads_managers__in=[manager_id],
+            adsmanager=manager_id,
             users__in=[request.user]
         ).count():
             get_object_or_404(

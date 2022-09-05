@@ -58,11 +58,13 @@ class ADSManagerAdmin(admin.ModelAdmin):
     )
 
     fields = (
+        'administrator',
         'administration',
         'display_ads_count',
     )
 
     readonly_fields = (
+        'administrator',
         'administration',
         'display_ads_count',
     )
@@ -84,7 +86,6 @@ class ADSManagerAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         req = super().get_queryset(request)
-        req = req.prefetch_related('content_type')
         req = req.prefetch_related('content_object')
         return req
 
@@ -101,53 +102,6 @@ class ADSManagerAdmin(admin.ModelAdmin):
         return False
 
 
-@admin.register(ADSManagerAdministrator.ads_managers.through)
-class ADSManagerAdministratorASDManagers(admin.ModelAdmin):
-    """M2M model of ADSManagerAdministrator.ads_managers.
-
-    In ADSManagerInline, show_change_link is set to True so a link redirecting
-    to this model is displayed in
-    /admin/app/adsmanageradministrator/xxx/change. If this model was not
-    registered, the link would not be rendered."""
-    readonly_fields = (
-        'adsmanageradministrator',
-        'adsmanager',
-    )
-
-    def has_module_permission(self, request):
-        """Remove entry from menu. We do not need to expose the listing page of
-        this model."""
-        return False
-
-
-class ADSManagerInline(ReadOnlyInline):
-    model = ADSManagerAdministrator.ads_managers.through
-    show_change_link = True
-
-    @admin.display(description='Administration')
-    def administration(self, rel):
-        return rel.adsmanager.content_object.display_text()
-
-    fields = (
-        'administration',
-        'ads_count',
-    )
-
-    readonly_fields = (
-        'administration',
-        'ads_count',
-    )
-
-    def ads_count(self, ads_manager_admin_m2m):
-        return ads_manager_admin_m2m.adsmanager.ads_count or '-'
-
-    def get_queryset(self, request):
-        req = super().get_queryset(request)
-        req = req.prefetch_related('adsmanager__content_type')
-        req = req.prefetch_related('adsmanager__content_object')
-        return req
-
-
 class ADSManagerAdministratorUsersInline(admin.TabularInline):
     model = ADSManagerAdministrator.users.through
 
@@ -156,8 +110,8 @@ class ADSManagerAdministratorUsersInline(admin.TabularInline):
 class ADSManagerAdministratorAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         req = super().get_queryset(request)
-        req = req.prefetch_related('prefecture')
-        req = req.prefetch_related('ads_managers')
+        req = req.select_related('prefecture')
+        req = req.prefetch_related('adsmanager_set')
         return req
 
     list_display = (
@@ -166,7 +120,6 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
     )
 
     inlines = (
-        ADSManagerInline,
         ADSManagerAdministratorUsersInline,
     )
 
@@ -184,14 +137,11 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
         'prefecture__libelle',
     )
 
-    # ads_managers is rendered by ADSManagerInline.
-    exclude = ('ads_managers',)
-
     @admin.display(description='Nombre d\'ADS enregistrées')
     def ads_count(self, ads_manager_administrator):
         return sum(
             ads_manager.ads_count
-            for ads_manager in ads_manager_administrator.ads_managers.all()
+            for ads_manager in ads_manager_administrator.adsmanager_set.all()
         ) or '-'
 
     def has_add_permission(self, request, obj=None):

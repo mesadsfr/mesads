@@ -13,9 +13,6 @@ class TestADSManager(ClientTestCase):
         self.assertIn('commune', str(self.ads_manager_city35))
         self.assertIn('Melesse', str(self.ads_manager_city35))
 
-    def test_get_administrators_users(self):
-        self.assertEqual(len(self.ads_manager_city35.get_administrators_users()), 1)
-
 
 class TestADSManagerRequest(ClientTestCase):
     def test_str(self):

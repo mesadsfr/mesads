@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
@@ -61,19 +62,16 @@ class ADSManagerAdminView(RevisionMixin, TemplateView):
     template_name = 'pages/ads_manager_admin.html'
 
     def get_context_data(self, **kwargs):
+        """Populate context with the list of ADSManagerRequest current user can accept.
+        """
         ctx = super().get_context_data(**kwargs)
-
-        ctx['ads_manager_requests'] = {}
-
-        # Get all ADSManagerAdministrator objects related to the current user
-        ads_manager_admins = ADSManagerAdministrator.objects.filter(users__in=[self.request.user])
-
-        # For each admin, get the list of requests
-        for ads_manager_admin in ads_manager_admins:
-            ads_manager_requests = ADSManagerRequest.objects.filter(
-                ads_manager__in=[obj.id for obj in ads_manager_admin.ads_managers.all()]
-            ).order_by('-id')
-            ctx['ads_manager_requests'][ads_manager_admin] = ads_manager_requests
+        ctx['ads_manager_requests'] = ADSManagerRequest.objects.select_related(
+            'ads_manager__administrator',
+            'ads_manager__administrator__prefecture',
+            'ads_manager__content_type',
+        ).filter(
+            ads_manager__administrator__users__in=[self.request.user]
+        ).order_by('ads_manager__administrator', '-created_at')
         return ctx
 
     def post(self, request):
@@ -92,7 +90,7 @@ class ADSManagerAdminView(RevisionMixin, TemplateView):
         get_object_or_404(
             ADSManagerAdministrator,
             users__in=[request.user],
-            ads_managers__in=[ads_manager_request.ads_manager]
+            adsmanager=ads_manager_request.ads_manager
         )
 
         if action == 'accept':
@@ -138,9 +136,13 @@ class ADSManagerRequestView(SuccessMessageMixin, FormView):
         of SQL queries generated.
         """
         ctx = super().get_context_data(**kwargs)
-        ctx['ads_managers_administrators'] = ADSManagerAdministrator.objects.filter(
+        ctx['ads_managers_administrators'] = ADSManagerAdministrator.objects.select_related(
+            'prefecture'
+        ).prefetch_related(
+            'adsmanager_set__content_object',
+        ).filter(
             users__in=[self.request.user]
-        ).prefetch_related('ads_managers__content_object')
+        )
         return ctx
 
     def form_valid(self, form):
@@ -163,26 +165,23 @@ class ADSManagerRequestView(SuccessMessageMixin, FormView):
             }
         )
 
-        for administrator_user in form.cleaned_data['ads_manager'].get_administrators_users():
-            send_mail(
-                email_subject,
-                email_content,
-                settings.MESADS_CONTACT_EMAIL,
-                [administrator_user],
-                fail_silently=True,
-            )
+        if form.cleaned_data['ads_manager'].administrator:
+            for administrator_user in form.cleaned_data['ads_manager'].administrator.users.all():
+                send_mail(
+                    email_subject,
+                    email_content,
+                    settings.MESADS_CONTACT_EMAIL,
+                    [administrator_user],
+                    fail_silently=True,
+                )
 
         return super().form_valid(form)
 
     def get_success_message(self, cleaned_data):
-        prefectures = [
-            ads_manager_administrator.prefecture
-            for ads_manager_administrator in
-            cleaned_data['ads_manager'].adsmanageradministrator_set.all()
-        ]
+        ads_manager_administrator = cleaned_data['ads_manager'].administrator
 
         # Request for EPCI or prefectures
-        if not prefectures:
+        if not ads_manager_administrator:
             return '''
                 Votre demande vient d’être envoyée à notre équipe. Vous recevrez une confirmation de validation de votre
                 accès par mail.<br /><br />
@@ -196,7 +195,7 @@ class ADSManagerRequestView(SuccessMessageMixin, FormView):
             }
 
         return '''
-            Votre demande vient d’être envoyée à %(prefectures)s. Vous recevrez une confirmation de validation de votre
+            Votre demande vient d’être envoyée à %(prefecture)s. Vous recevrez une confirmation de validation de votre
             accès par mail.<br /><br />
 
             En cas de difficulté ou si vous n’obtenez pas de validation de votre demande vous pouvez
@@ -204,7 +203,7 @@ class ADSManagerRequestView(SuccessMessageMixin, FormView):
 
             Vous pouvez également demander un accès pour la gestion des ADS d’une autre collectivité.
         ''' % {
-            'prefectures': ', '.join([prefecture.display_fulltext() for prefecture in prefectures]),
+            'prefecture': ads_manager_administrator.prefecture.display_fulltext(),
             'email': settings.MESADS_CONTACT_EMAIL
         }
 
@@ -380,16 +379,14 @@ def prefecture_export_ads(request, ads_manager_administrator):
         ("SIRET titulaire", lambda ads: ads.owner_siret),
         ("ADS exploitée par le titulaire ?", lambda ads: display_bool(ads.used_by_owner)),
         ("Statuts des exploitants (un par ligne)", lambda ads: '\n'.join([
-            dict(ADSUser.status.field.choices)[ads_user.status] if ads_user.status else ''
-            for ads_user in ads.adsuser_set.all()
+            dict(ADSUser.status.field.choices)[status] if status else ''
+            for status in ads.ads_users_status
         ])),
         ("Noms des exploitants (un par ligne)", lambda ads: '\n'.join([
-            ads_user.name
-            for ads_user in ads.adsuser_set.all()
+            name or '' for name in ads.ads_users_names
         ])),
         ("SIRET des exploitants (un par ligne)", lambda ads: '\n'.join([
-            ads_user.siret
-            for ads_user in ads.adsuser_set.all()
+            siret or '' for siret in ads.ads_users_sirets
         ])),
     ]
 
@@ -397,10 +394,17 @@ def prefecture_export_ads(request, ads_manager_administrator):
 
     writer.writeheader()
 
-    for ads in ADS.objects.prefetch_related(
+    for ads in ADS.objects.select_related(
+        'ads_manager__administrator__prefecture',
+    ).prefetch_related(
         'ads_manager__content_object',
-        'adsuser_set',
-    ).filter(ads_manager__in=ads_manager_administrator.ads_managers.all()):
+    ).filter(
+        ads_manager__administrator=ads_manager_administrator
+    ).annotate(
+        ads_users_status=ArrayAgg('adsuser__status'),
+        ads_users_names=ArrayAgg('adsuser__name'),
+        ads_users_sirets=ArrayAgg('adsuser__siret'),
+    ):
         writer.writerow({
             field[0]: field[1](ads)
             for field in fields
@@ -449,23 +453,23 @@ class DashboardsView(TemplateView):
 
         ads_query_now = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
-            .annotate(ads_count=Count('ads_managers__ads')) \
+            .annotate(ads_count=Count('adsmanager__ads')) \
             .filter(ads_count__gt=0)
 
         ads_query_3_months = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
-            .filter(ads_managers__ads__creation_date__lte=now - timedelta(weeks=4 * 3)) \
-            .annotate(ads_count=Count('ads_managers__ads'))
+            .filter(adsmanager__ads__creation_date__lte=now - timedelta(weeks=4 * 3)) \
+            .annotate(ads_count=Count('adsmanager__ads'))
 
         ads_query_6_months = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
-            .filter(ads_managers__ads__creation_date__lte=now - timedelta(weeks=4 * 6)) \
-            .annotate(ads_count=Count('ads_managers__ads'))
+            .filter(adsmanager__ads__creation_date__lte=now - timedelta(weeks=4 * 6)) \
+            .annotate(ads_count=Count('adsmanager__ads'))
 
         ads_query_12_months = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
-            .filter(ads_managers__ads__creation_date__lte=now - timedelta(weeks=4 * 12)) \
-            .annotate(ads_count=Count('ads_managers__ads'))
+            .filter(adsmanager__ads__creation_date__lte=now - timedelta(weeks=4 * 12)) \
+            .annotate(ads_count=Count('adsmanager__ads'))
 
         for (label, query) in (
             ('now', ads_query_now),
@@ -479,28 +483,28 @@ class DashboardsView(TemplateView):
 
         ads_managers_query_now = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
-            .filter(ads_managers__adsmanagerrequest__accepted=True) \
+            .filter(adsmanager__adsmanagerrequest__accepted=True) \
             .annotate(ads_managers_count=Count('id'))
 
         ads_managers_query_3_months = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
             .filter(
-                ads_managers__adsmanagerrequest__accepted=True,
-                ads_managers__adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 3)
+                adsmanager__adsmanagerrequest__accepted=True,
+                adsmanager__adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 3)
             ).annotate(ads_managers_count=Count('id'))
 
         ads_managers_query_6_months = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
             .filter(
-                ads_managers__adsmanagerrequest__accepted=True,
-                ads_managers__adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 6)
+                adsmanager__adsmanagerrequest__accepted=True,
+                adsmanager__adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 6)
             ).annotate(ads_managers_count=Count('id'))
 
         ads_managers_query_12_months = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
             .filter(
-                ads_managers__adsmanagerrequest__accepted=True,
-                ads_managers__adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 12)
+                adsmanager__adsmanagerrequest__accepted=True,
+                adsmanager__adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 12)
             ).annotate(ads_managers_count=Count('id'))
 
         for (label, query) in (

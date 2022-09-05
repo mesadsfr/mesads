@@ -59,7 +59,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for ads_manager in ads_manager_administrator.ads_managers.all  %}
+      {% for ads_manager in ads_manager_administrator.adsmanager_set.all  %}
       <tr x-show="displayExtra || {{ forloop.counter0 }} < 5">
         <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
         <td>{% if ads_manager.ads_count %}{{ ads_manager.ads_count }}{% else %}-{% endif %}</td>
@@ -68,10 +68,10 @@
         </td>
       </tr>
       {% endfor %}
-      <tr x-show="{{ ads_manager_administrator.ads_managers.count }} > 5 && !displayExtra">
+      <tr x-show="{{ ads_manager_administrator.adsmanager_set.count }} > 5 && !displayExtra">
         <td colspan="3">
           <button class="fr-btn fr-btn--secondary fr-btn--sm" x-on:click="displayExtra = true">
-            Afficher les {{ ads_manager_administrator.ads_managers.count|add:"-5" }} autres entrées du tableau...
+            Afficher les {{ ads_manager_administrator.adsmanager_set.count|add:"-5" }} autres entrées du tableau...
           </button>
         </td>
       </tr>

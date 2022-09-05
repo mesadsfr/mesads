@@ -78,4 +78,5 @@ class ClientTestCase(BaseClientTestCase):
                         content_type=ContentType.objects.get_for_model(commune),
                         object_id=commune.id
                     ).get()
-                    ads_manager_administrator.ads_managers.add(ads_manager)
+                    ads_manager.administrator = ads_manager_administrator
+                    ads_manager.save()

@@ -13,10 +13,11 @@
   Si vous avez la moindre question, ou si vous souhaitez révoquer un accès, contactez notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
 </p>
 
-{% for ads_manager_admin, ads_manager_requests in ads_manager_requests.items %}
+{% regroup ads_manager_requests by ads_manager.administrator as ads_manager_requests_by_administrator %}
+{% for entry in ads_manager_requests_by_administrator %}
 <div class="fr-table">
   <table>
-    <caption>Demandes pour la {{ ads_manager_admin.prefecture.display_text }}</caption>
+    <caption>Demandes pour la {{ entry.grouper.prefecture.display_text }}</caption>
     <thead>
       <tr>
         <th>👨‍💻 Utilisateur</th>
@@ -26,7 +27,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for ads_manager_request in ads_manager_requests %}
+      {% for ads_manager_request in entry.list %}
       <tr class="table-row-{% if ads_manager_request.accepted is True %}success{% elif ads_manager_request.accepted is False %}failure{% else %}unknown{% endif %}">
         <td>{{ ads_manager_request.user.email }}</td>
         <td>{{ ads_manager_request.ads_manager.content_object.display_text|capfirst }}</td>

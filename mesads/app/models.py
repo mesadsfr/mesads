@@ -68,14 +68,6 @@ class ADSManager(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
-    def get_administrators_users(self):
-        """Returns the list of users which have an entry in ADSManagerAdministrator to configure this instance."""
-        users = set()
-        for ads_manager_administrator in self.adsmanageradministrator_set.all():
-            for user in ads_manager_administrator.users.all():
-                users.add(user)
-        return list(users)
-
 
 class ADSManagerRequestModelManager(models.Manager):
     def get_queryset(self):
@@ -138,7 +130,6 @@ class ADSManagerAdministrator(models.Model):
     prefecture = models.OneToOneField(
         Prefecture, on_delete=models.CASCADE, null=False, blank=False)
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
-    ads_managers = models.ManyToManyField(ADSManager, blank=True)
 
 
 def validate_siret(value):
