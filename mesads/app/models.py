@@ -28,9 +28,9 @@ class ADSManager(models.Model):
     """Authority who can register a new ADS. Either a Prefecture, a Commune or
     a EPCI.
 
-    :param users: Users who can register ADS for this manager.
+    :param administrator: administration responsible to accept or deny ADSManagerRequest related to this object.
 
-    :param content_object: ForeignKey to fradm mdoels.
+    :param content_object: ForeignKey to fradm.models.
     """
     class Meta:
         verbose_name = 'Gestionnaire ADS'
@@ -47,6 +47,12 @@ class ADSManager(models.Model):
         return f'{self.content_type.name} - {self.content_object}'
 
     objects = ADSManagerModelManager()
+
+    administrator = models.ForeignKey(
+        'ADSManagerAdministrator',
+        on_delete=models.RESTRICT,
+        null=True
+    )
 
     content_type = models.ForeignKey(
         ContentType,

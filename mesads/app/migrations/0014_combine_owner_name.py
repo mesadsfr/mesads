@@ -4,8 +4,6 @@ from django.db import migrations
 
 
 def combine_names(apps, schema_editor):
-    # We can't import the Person model directly as it may be a newer
-    # version than this migration expects. We use the historical version.
     ADS = apps.get_model('app', 'ADS')
     for ads in ADS.objects.all():
         combined = '%s %s' % (ads.owner_lastname, ads.owner_firstname)
