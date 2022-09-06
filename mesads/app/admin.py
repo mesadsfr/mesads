@@ -156,6 +156,7 @@ class ADSManagerRequestAdmin(VersionAdmin):
     list_display = ('created_at', 'user', 'administration', 'accepted')
     ordering = ('-created_at',)
     list_filter = ('accepted',)
+    search_fields = ('user__email__icontains',)
 
     @admin.display(description='Administration')
     def administration(self, ads_manager_request):
