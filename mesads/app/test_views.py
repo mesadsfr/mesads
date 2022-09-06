@@ -8,7 +8,7 @@ from mesads.fradm.models import EPCI, Prefecture
 
 from .models import ADS, ADSManagerRequest, ADSUser
 from .unittest import ClientTestCase
-from .views import DashboardsView
+from .views import DashboardsView, DashboardsDetailView
 
 
 class TestHomepageView(ClientTestCase):
@@ -527,12 +527,17 @@ class TestCSVExport(ClientTestCase):
         self.assertEqual(len(resp.content.splitlines()), 4)
 
 
-class TestDashboardsView(ClientTestCase):
+class TestDashboardsViews(ClientTestCase):
+    """Test DashboardsView and DashboardsDetailView"""
     def setUp(self):
         super().setUp()
         request = RequestFactory().get('/dashboards')
         self.dashboards_view = DashboardsView()
         self.dashboards_view.setup(request)
+
+        request = RequestFactory().get(f'/dashboards/{self.ads_manager_administrator_35.id}')
+        self.dashboards_detail_view = DashboardsDetailView(object=self.ads_manager_administrator_35)
+        self.dashboards_detail_view.setup(request)
 
     def test_permissions(self):
         for client_name, client, expected_status in (
@@ -546,6 +551,9 @@ class TestDashboardsView(ClientTestCase):
                 resp = client.get('/dashboards')
                 self.assertEqual(resp.status_code, expected_status)
 
+                resp = client.get(f'/dashboards/{self.ads_manager_administrator_35.id}/')
+                self.assertEqual(resp.status_code, expected_status)
+
     def test_stats_default(self):
         # The base class ClientTestCase creates ads_manager_administrator for
         # departement 35, and configures an ADSManager for the city fo Melesse.
@@ -556,6 +564,14 @@ class TestDashboardsView(ClientTestCase):
                 'now': 1,
             }
         }], self.dashboards_view.get_stats())
+
+        self.assertEqual([{
+            'obj': self.ads_manager_city35,
+            'ads': {},
+            'ads_managers': {
+                'now': 1,
+            }
+        }], self.dashboards_detail_view.get_stats())
 
     def test_stats_for_several_ads(self):
         # Create several ADS for the city of Melesse
@@ -582,6 +598,19 @@ class TestDashboardsView(ClientTestCase):
                 'now': 1,
             }
         }], self.dashboards_view.get_stats())
+
+        self.assertEqual([{
+            'obj': self.ads_manager_city35,
+            'ads': {
+                'now': 4,
+                '3_months': 3,
+                '6_months': 2,
+                '12_months': 1,
+            },
+            'ads_managers': {
+                'now': 1,
+            }
+        }], self.dashboards_detail_view.get_stats())
 
     def test_stats_for_several_ads_managers(self):
         now = timezone.now()
@@ -611,3 +640,14 @@ class TestDashboardsView(ClientTestCase):
                 '12_months': 1,
             }
         }], self.dashboards_view.get_stats())
+
+        self.assertEqual([{
+            'obj': self.ads_manager_city35,
+            'ads': {},
+            'ads_managers': {
+                'now': 5,
+                '3_months': 3,
+                '6_months': 2,
+                '12_months': 1,
+            }
+        }], self.dashboards_detail_view.get_stats())
