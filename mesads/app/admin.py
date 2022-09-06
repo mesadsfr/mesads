@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
+from django.db.models import Count
 
 from reversion.admin import VersionAdmin
 
@@ -87,11 +88,8 @@ class ADSManagerAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         req = super().get_queryset(request)
         req = req.prefetch_related('content_object')
+        req = req.annotate(ads_count=Count('ads'))
         return req
-
-    @admin.display(description='Nombre d\'ADS enregistrées')
-    def ads_count(self, ads_manager):
-        return ads_manager.ads_count
 
     def has_add_permission(self, request, obj=None):
         """Added by command load_ads_managers."""
@@ -112,11 +110,12 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
         req = super().get_queryset(request)
         req = req.select_related('prefecture')
         req = req.prefetch_related('adsmanager_set')
+        req = req.annotate(ads_count=Count('adsmanager__ads'))
         return req
 
     list_display = (
         '__str__',
-        'ads_count',
+        'display_ads_count',
     )
 
     inlines = (
@@ -125,12 +124,12 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
 
     fields = (
         'prefecture',
-        'ads_count',
+        'display_ads_count',
     )
 
     readonly_fields = (
         'prefecture',
-        'ads_count',
+        'display_ads_count',
     )
 
     search_fields = (
@@ -138,11 +137,8 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
     )
 
     @admin.display(description='Nombre d\'ADS enregistrées')
-    def ads_count(self, ads_manager_administrator):
-        return sum(
-            ads_manager.ads_count
-            for ads_manager in ads_manager_administrator.adsmanager_set.all()
-        ) or '-'
+    def display_ads_count(self, ads_manager_administrator):
+        return ads_manager_administrator.ads_count or '-'
 
     def has_add_permission(self, request, obj=None):
         """Added by command load_ads_managers."""
