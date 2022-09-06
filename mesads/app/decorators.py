@@ -12,7 +12,7 @@ def ads_manager_required(func):
     """
     @functools.wraps(func)
     def wrapped(request, manager_id=None, *args, **kwargs):
-        if not ADSManagerAdministrator.objects.filter(
+        if not request.user.is_staff and not ADSManagerAdministrator.objects.filter(
             adsmanager=manager_id,
             users__in=[request.user]
         ).count():
@@ -29,7 +29,16 @@ def ads_manager_required(func):
 def ads_manager_administrator_required(func):
     @functools.wraps(func)
     def wrapped(request, prefecture_id=None, *args, **kwargs):
-        if prefecture_id:
+        # Staff user can access everything
+        if request.user.is_staff and prefecture_id:
+            ads_manager_administrator = get_object_or_404(
+                ADSManagerAdministrator,
+                prefecture=prefecture_id
+            )
+            return func(request, ads_manager_administrator=ads_manager_administrator, *args, **kwargs)
+
+        # Make sure user has access to the ADSManagerAdministrator
+        elif not request.user.is_staff and prefecture_id:
             ads_manager_administrator = get_object_or_404(
                 ADSManagerAdministrator,
                 prefecture=prefecture_id,
@@ -37,9 +46,11 @@ def ads_manager_administrator_required(func):
             )
             return func(request, ads_manager_administrator=ads_manager_administrator, *args, **kwargs)
 
-        get_list_or_404(
-            ADSManagerAdministrator,
-            users__in=[request.user]
-        )
+        # If prefecture_id is not provided, user must have access to at least one instance of ADSManagerAdministrator
+        elif not request.user.is_staff:
+            get_list_or_404(
+                ADSManagerAdministrator,
+                users__in=[request.user]
+            )
         return func(request, *args, **kwargs)
     return login_required(wrapped)
