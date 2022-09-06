@@ -435,9 +435,9 @@ class DashboardsView(TemplateView):
         ...          '6_months':
         ...          '12_months':
         ...      },
-        ...      'ads_managers': {
-        ...          'now': <int, number of ADS managers>
-        ...          '3_months': <number of managers 3 months ago>
+        ...      'users': {
+        ...          'now': <int, number of users with permissions to create ADS>
+        ...          '3_months': <number of users 3 months ago>
         ...          '6_months':
         ...          '12_months':
         ...       }
@@ -448,7 +448,7 @@ class DashboardsView(TemplateView):
         stats = collections.defaultdict(lambda: {
             'obj': None,
             'ads': {},
-            'ads_managers': {}
+            'users': {}
         })
 
         ads_query_now = ADSManagerAdministrator.objects \
@@ -481,41 +481,41 @@ class DashboardsView(TemplateView):
                 stats[row.prefecture.id]['obj'] = row
                 stats[row.prefecture.id]['ads'][label] = row.ads_count
 
-        ads_managers_query_now = ADSManagerAdministrator.objects \
+        users_query_now = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
             .filter(adsmanager__adsmanagerrequest__accepted=True) \
-            .annotate(ads_managers_count=Count('id'))
+            .annotate(users_count=Count('id'))
 
-        ads_managers_query_3_months = ADSManagerAdministrator.objects \
+        users_query_3_months = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
             .filter(
                 adsmanager__adsmanagerrequest__accepted=True,
                 adsmanager__adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 3)
-            ).annotate(ads_managers_count=Count('id'))
+            ).annotate(users_count=Count('id'))
 
-        ads_managers_query_6_months = ADSManagerAdministrator.objects \
+        users_query_6_months = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
             .filter(
                 adsmanager__adsmanagerrequest__accepted=True,
                 adsmanager__adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 6)
-            ).annotate(ads_managers_count=Count('id'))
+            ).annotate(users_count=Count('id'))
 
-        ads_managers_query_12_months = ADSManagerAdministrator.objects \
+        users_query_12_months = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
             .filter(
                 adsmanager__adsmanagerrequest__accepted=True,
                 adsmanager__adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 12)
-            ).annotate(ads_managers_count=Count('id'))
+            ).annotate(users_count=Count('id'))
 
         for (label, query) in (
-            ('now', ads_managers_query_now),
-            ('3_months', ads_managers_query_3_months),
-            ('6_months', ads_managers_query_6_months),
-            ('12_months', ads_managers_query_12_months),
+            ('now', users_query_now),
+            ('3_months', users_query_3_months),
+            ('6_months', users_query_6_months),
+            ('12_months', users_query_12_months),
         ):
             for row in query.all():
                 stats[row.prefecture.id]['obj'] = row
-                stats[row.prefecture.id]['ads_managers'][label] = row.ads_managers_count
+                stats[row.prefecture.id]['users'][label] = row.users_count
 
         # Transform dict to an ordered list
         return sorted(list(stats.values()), key=lambda stat: stat['obj'].id)
@@ -537,7 +537,7 @@ class DashboardsDetailView(DetailView):
         stats = collections.defaultdict(lambda: {
             'obj': None,
             'ads': {},
-            'ads_managers': {}
+            'users': {}
         })
 
         now = timezone.now()
@@ -580,41 +580,41 @@ class DashboardsDetailView(DetailView):
                 stats[row.id]['obj'] = row
                 stats[row.id]['ads'][label] = row.ads_count
 
-        ads_managers_query_now = ADSManager.objects \
+        users_query_now = ADSManager.objects \
             .filter(
                 administrator=self.object,
                 adsmanagerrequest__accepted=True
-            ).annotate(ads_managers_count=Count('id'))
+            ).annotate(users_count=Count('id'))
 
-        ads_managers_query_3_months = ADSManager.objects \
+        users_query_3_months = ADSManager.objects \
             .filter(
                 administrator=self.object,
                 adsmanagerrequest__accepted=True,
                 adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 3),
-            ).annotate(ads_managers_count=Count('id'))
+            ).annotate(users_count=Count('id'))
 
-        ads_managers_query_6_months = ADSManager.objects \
+        users_query_6_months = ADSManager.objects \
             .filter(
                 administrator=self.object,
                 adsmanagerrequest__accepted=True,
                 adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 6),
-            ).annotate(ads_managers_count=Count('id'))
+            ).annotate(users_count=Count('id'))
 
-        ads_managers_query_12_months = ADSManager.objects \
+        users_query_12_months = ADSManager.objects \
             .filter(
                 administrator=self.object,
                 adsmanagerrequest__accepted=True,
                 adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 12),
-            ).annotate(ads_managers_count=Count('id'))
+            ).annotate(users_count=Count('id'))
 
         for (label, query) in (
-            ('now', ads_managers_query_now),
-            ('3_months', ads_managers_query_3_months),
-            ('6_months', ads_managers_query_6_months),
-            ('12_months', ads_managers_query_12_months),
+            ('now', users_query_now),
+            ('3_months', users_query_3_months),
+            ('6_months', users_query_6_months),
+            ('12_months', users_query_12_months),
         ):
             for row in query.all():
                 stats[row.id]['obj'] = row
-                stats[row.id]['ads_managers'][label] = row.ads_managers_count
+                stats[row.id]['users'][label] = row.users_count
 
         return sorted(list(stats.values()), key=lambda stat: stat['obj'].id)

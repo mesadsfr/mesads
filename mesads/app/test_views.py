@@ -560,7 +560,7 @@ class TestDashboardsViews(ClientTestCase):
         self.assertEqual([{
             'obj': self.ads_manager_administrator_35,
             'ads': {},
-            'ads_managers': {
+            'users': {
                 'now': 1,
             }
         }], self.dashboards_view.get_stats())
@@ -568,7 +568,7 @@ class TestDashboardsViews(ClientTestCase):
         self.assertEqual([{
             'obj': self.ads_manager_city35,
             'ads': {},
-            'ads_managers': {
+            'users': {
                 'now': 1,
             }
         }], self.dashboards_detail_view.get_stats())
@@ -594,7 +594,7 @@ class TestDashboardsViews(ClientTestCase):
                 '6_months': 2,
                 '12_months': 1,
             },
-            'ads_managers': {
+            'users': {
                 'now': 1,
             }
         }], self.dashboards_view.get_stats())
@@ -607,7 +607,7 @@ class TestDashboardsViews(ClientTestCase):
                 '6_months': 2,
                 '12_months': 1,
             },
-            'ads_managers': {
+            'users': {
                 'now': 1,
             }
         }], self.dashboards_detail_view.get_stats())
@@ -633,7 +633,7 @@ class TestDashboardsViews(ClientTestCase):
         self.assertEqual([{
             'obj': self.ads_manager_administrator_35,
             'ads': {},
-            'ads_managers': {
+            'users': {
                 'now': 5,
                 '3_months': 3,
                 '6_months': 2,
@@ -644,7 +644,7 @@ class TestDashboardsViews(ClientTestCase):
         self.assertEqual([{
             'obj': self.ads_manager_city35,
             'ads': {},
-            'ads_managers': {
+            'users': {
                 'now': 5,
                 '3_months': 3,
                 '6_months': 2,
