@@ -69,6 +69,9 @@ class ADSManagerAdminView(RevisionMixin, TemplateView):
             'ads_manager__administrator',
             'ads_manager__administrator__prefecture',
             'ads_manager__content_type',
+            'user',
+        ).prefetch_related(
+            'ads_manager__content_object'
         ).filter(
             ads_manager__administrator__users__in=[self.request.user]
         ).order_by('ads_manager__administrator', '-created_at')

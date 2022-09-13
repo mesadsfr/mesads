@@ -59,17 +59,6 @@ class ADSManager(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
 
 
-class ADSManagerRequestModelManager(models.Manager):
-    def get_queryset(self):
-        """Improve performances for pages listing ADSManagerRequest.
-        """
-        qs = super().get_queryset()
-        qs = qs.select_related('user')
-        qs = qs.prefetch_related('ads_manager__content_type')
-        qs = qs.prefetch_related('ads_manager__content_object')
-        return qs
-
-
 @reversion.register
 class ADSManagerRequest(models.Model):
     """User request to become ADSManager. Has to be accepted by the
@@ -82,8 +71,6 @@ class ADSManagerRequest(models.Model):
         unique_together = (
             ('user', 'ads_manager'),
         )
-
-    objects = ADSManagerRequestModelManager()
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
