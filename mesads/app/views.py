@@ -136,13 +136,17 @@ class ADSManagerRequestView(SuccessMessageMixin, FormView):
         of SQL queries generated.
         """
         ctx = super().get_context_data(**kwargs)
-        ctx['ads_managers_administrators'] = ADSManagerAdministrator.objects.select_related(
-            'prefecture'
-        ).prefetch_related(
-            'adsmanager_set__content_object',
-        ).filter(
-            users__in=[self.request.user]
-        )
+        ctx['user_ads_manager_requests'] = ADSManagerRequest.objects \
+            .filter(user=self.request.user) \
+            .annotate(ads_count=Count('ads_manager__ads')) \
+            .all()
+        ctx['ads_managers_administrators'] = ADSManagerAdministrator.objects \
+            .select_related('prefecture') \
+            .prefetch_related(
+                'adsmanager_set__content_object',
+                'adsmanager_set__ads_set',
+            ).filter(users=self.request.user) \
+            .all()
         return ctx
 
     def form_valid(self, form):

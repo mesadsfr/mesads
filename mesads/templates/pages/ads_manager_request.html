@@ -15,7 +15,7 @@
   </div>
 </nav>
 
-{% if user.adsmanagerrequest_set.all|length > 0 %}
+{% if user_ads_manager_requests|length > 0 %}
 <div class="fr-table">
   <table>
     <caption>Administrations en gestion</caption>
@@ -27,10 +27,10 @@
       </tr>
     </thead>
     <tbody>
-      {% for request in user.adsmanagerrequest_set.all %}
+      {% for request in user_ads_manager_requests %}
       <tr>
         <td>{{ request.ads_manager.content_object.display_text|capfirst }}</td>
-        <td>{% if request.ads_manager.ads_count %}{{ request.ads_manager.ads_count }}{% else %}-{% endif %}</td>
+        <td>{% if request.ads_count %}{{ request.ads_count }}{% else %}-{% endif %}</td>
         <td>
           {% if request.accepted is None %}
           ⏱ En attente de validation par la préfecture
@@ -62,7 +62,9 @@
       {% for ads_manager in ads_manager_administrator.adsmanager_set.all  %}
       <tr x-show="displayExtra || {{ forloop.counter0 }} < 5">
         <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
-        <td>{% if ads_manager.ads_count %}{{ ads_manager.ads_count }}{% else %}-{% endif %}</td>
+        <td>
+          {% if ads_manager.ads_set.count > 0 %}{{ ads_manager.ads_set.count }}{% else %}-{% endif %}
+        </td>
         <td>
           <a class="fr-btn fr-btn--sm" href="{% url 'ads-manager' manager_id=ads_manager.id %}">Gérez les ADS</a>
         </td>
