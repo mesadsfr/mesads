@@ -140,13 +140,15 @@ class ADSManagerRequestView(SuccessMessageMixin, FormView):
             .filter(user=self.request.user) \
             .annotate(ads_count=Count('ads_manager__ads')) \
             .all()
-        ctx['ads_managers_administrators'] = ADSManagerAdministrator.objects \
-            .select_related('prefecture') \
-            .prefetch_related(
-                'adsmanager_set__content_object',
-                'adsmanager_set__ads_set',
-            ).filter(users=self.request.user) \
-            .all()
+
+        ctx['ads_managers_administrators'] = ADSManagerAdministrator.objects.select_related(
+            'prefecture'
+        ).prefetch_related(
+            'adsmanager_set__content_object',
+            'adsmanager_set__ads_set',
+        ).filter(
+            users=self.request.user
+        ).all()
         return ctx
 
     def form_valid(self, form):
