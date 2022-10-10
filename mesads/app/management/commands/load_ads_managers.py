@@ -48,5 +48,12 @@ class Command(BaseCommand):
             admin, created = ADSManagerAdministrator.objects.get_or_create(prefecture=prefecture)
 
             ADSManager.objects.filter(prefecture__id=prefecture.id).update(administrator=admin)
-            ADSManager.objects.filter(epci__departement=prefecture.numero).update(administrator=admin)
-            ADSManager.objects.filter(commune__departement=prefecture.numero).update(administrator=admin)
+
+            # Prefecture.numero is prefixed with a 0 for numero < 10.
+            ADSManager.objects.filter(
+                epci__departement=prefecture.numero.lstrip('0')
+            ).update(administrator=admin)
+
+            ADSManager.objects.filter(
+                commune__departement=prefecture.numero.lstrip('0')
+            ).update(administrator=admin)
