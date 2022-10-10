@@ -9,6 +9,12 @@ class UserAdmin(admin.ModelAdmin):
 
     readonly_fields = ('date_joined', 'last_login',)
     fields = ('date_joined', 'last_login', 'is_superuser', 'is_staff', 'is_active',)
+    search_fields = ('email', 'adsmanageradministrator__prefecture__libelle',)
+
+    def get_queryset(self, request):
+        req = super().get_queryset(request)
+        req = req.prefetch_related('adsmanageradministrator_set__prefecture')
+        return req
 
     def admin_roles(self, user):
         roles = user.adsmanageradministrator_set.all()
