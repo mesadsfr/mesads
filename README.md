@@ -63,3 +63,10 @@ Liste des départements, préfectures, communes :
 
   * https://www.insee.fr/fr/information/5057840
   * https://www.insee.fr/fr/statistiques/fichier/5057840/departement2021-csv.zip
+
+# Infrastructure
+
+* L'application django, la base de données postgresql et le bucket S3 où sont stockés les arrêtés municipaux sont hébergés chez [Clever Cloud](https://www.clever-cloud.com/).
+* Le sous-domaine mesads.beta.gouv.fr est géré sur [alwaysdata](www.alwaysdata.com) tel qu'expliqué [dans la documentation de beta.gouv](https://pad.incubateur.net/gg9OTDkhRnmSw-bnVr9WOg#).
+* La boite email equipe@mesads.beta.gouv.fr configurée sur [alwaysdata](www.alwaysdata.com) transfère les emails reçus aux membres de l'équipe.
+* [sendinblue](https://fr.sendinblue.com/) héberge le serveur SMTP utilisé pour les emails transactionnels .
