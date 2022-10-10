@@ -91,8 +91,6 @@ class Command(BaseCommand):
             if row['num_siret']:
                 params['owner_siret'] = row['num_siret']
 
-            params['owner_contact'] = {}
-
             if row['tel_fixe_titulaire']:
                 params['owner_phone'] = row['tel_fixe_titulaire']
             if row['tel_mobile_titulaire']:
