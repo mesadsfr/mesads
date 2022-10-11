@@ -20,6 +20,16 @@ class TestPasswordResetView(ClientTestCase):
         self.assertEqual(mail.outbox[0].alternatives[0][1], 'text/html')
         self.assertIn(settings.MESADS_CONTACT_EMAIL, mail.outbox[0].alternatives[0][0])
 
+    def test_reset_password_invalid_email(self):
+        resp = self.auth_client.post(
+            '/auth/password_reset/',
+            {'email': 'invalidemail@gmail.com'}
+        )
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('invalide', resp.content.decode('utf8'))
+        self.assertEqual(len(mail.outbox), 0)
+
 
 class TestCustomRegistrationView(ClientTestCase):
     def test_send_activation_email(self):
