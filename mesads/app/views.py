@@ -45,17 +45,15 @@ class HTTP500View(TemplateView):
 
 class HomepageView(TemplateView):
     """Render template when user is not connected. If user is connected,
-    redirect to ads-manager-admin or ads-manager-request depending on
-    permissions.
-    """
+    redirect depending on permissions."""
     template_name = 'pages/homepage.html'
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_staff:
-            return redirect(reverse('dashboards.list'))
+            return redirect(reverse('app.dashboards.list'))
         if len(self.request.user.adsmanageradministrator_set.all()):
-            return redirect(reverse('ads-manager-admin'))
-        return redirect(reverse('ads-manager-request'))
+            return redirect(reverse('app.ads-manager-admin.index'))
+        return redirect(reverse('app.ads-manager.index'))
 
 
 class ADSManagerAdminView(RevisionMixin, TemplateView):
@@ -122,13 +120,13 @@ class ADSManagerAdminView(RevisionMixin, TemplateView):
             [ads_manager_request.user.email],
             fail_silently=True,
         )
-        return redirect(reverse('ads-manager-admin'))
+        return redirect(reverse('app.ads-manager-admin.index'))
 
 
 class ADSManagerRequestView(SuccessMessageMixin, FormView):
     template_name = 'pages/ads_manager_request.html'
     form_class = ADSManagerForm
-    success_url = reverse_lazy('ads-manager-request')
+    success_url = reverse_lazy('app.ads-manager.index')
 
     def get_context_data(self, **kwargs):
         """Expose the list of ADSManagerAdministrators for which current user
@@ -288,7 +286,7 @@ class ADSView(RevisionMixin, UpdateView):
     )
 
     def get_success_url(self):
-        return reverse('ads', kwargs={
+        return reverse('app.ads.detail', kwargs={
             'manager_id': self.kwargs['manager_id'],
             'ads_id': self.kwargs['ads_id'],
         })
@@ -328,7 +326,7 @@ class ADSDeleteView(DeleteView):
         return ctx
 
     def get_success_url(self):
-        return reverse('ads-manager', kwargs={
+        return reverse('app.ads-manager.detail', kwargs={
             'manager_id': self.kwargs['manager_id'],
         })
 
@@ -338,7 +336,7 @@ class ADSCreateView(ADSView, CreateView):
         return None
 
     def get_success_url(self):
-        return reverse('ads', kwargs={
+        return reverse('app.ads.detail', kwargs={
             'manager_id': self.kwargs['manager_id'],
             'ads_id': self.object.id,
         })

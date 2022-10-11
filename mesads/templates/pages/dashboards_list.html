@@ -45,7 +45,7 @@
         <tbody>
             {% for row in stats %}
             <tr>
-                <td><a href="{% url 'dashboards.detail' ads_manager_administrator_id=row.obj.id %}">{{ row.obj.prefecture }}</a></td>
+                <td><a href="{% url 'app.dashboards.detail' ads_manager_administrator_id=row.obj.id %}">{{ row.obj.prefecture }}</a></td>
 
                 <td><strong>{{ row.ads.now|default:"" }}</strong></td>
                 <td><small>{{ row.ads.3_months|default:"" }}</small></td>

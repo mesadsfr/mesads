@@ -8,10 +8,10 @@
   <div class="fr-collapse" id="breadcrumb-1">
     <ol class="fr-breadcrumb__list">
       <li>
-        <a class="fr-breadcrumb__link" href="{% url 'ads-manager-request' %}">Gestion des ADS</a>
+        <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
       </li>
       <li>
-        <a class="fr-breadcrumb__link" href="{% url 'ads-manager' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
+        <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
       </li>
       <li>
       {% if ads %}
@@ -26,7 +26,7 @@
 
 {% if ads %}
 <p>
-  <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'ads.delete' manager_id=ads_manager.id ads_id=ads.id %}">Supprimer cette ADS</a>
+  <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads.delete' manager_id=ads_manager.id ads_id=ads.id %}">Supprimer cette ADS</a>
 </p>
 {% endif %}
 

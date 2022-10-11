@@ -9,7 +9,7 @@
   <div class="fr-collapse" id="breadcrumb-1">
     <ol class="fr-breadcrumb__list">
       <li>
-        <a class="fr-breadcrumb__link" href="{% url 'dashboards.list' %}">Dashboards</a>
+        <a class="fr-breadcrumb__link" href="{% url 'app.dashboards.list' %}">Dashboards</a>
       </li>
       <li>
         <a class="fr-breadcrumb__link" aria-current="page">{{ object.prefecture.display_text|capfirst }}</a>
@@ -48,7 +48,7 @@
         <tbody>
             {% for row in stats %}
             <tr>
-                <td><a href="{% url 'ads-manager' manager_id=row.obj.id %}">{{ row.obj.content_object.display_text|capfirst }}</a></td>
+                <td><a href="{% url 'app.ads-manager.detail' manager_id=row.obj.id %}">{{ row.obj.content_object.display_text|capfirst }}</a></td>
 
                 <td><strong>{{ row.ads.now|default:"" }}</strong></td>
                 <td><small>{{ row.ads.3_months|default:"" }}</small></td>

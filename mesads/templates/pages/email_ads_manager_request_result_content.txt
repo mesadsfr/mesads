@@ -5,5 +5,5 @@ Si vous pensez qu'il s'agit d'une erreur, contactez votre préfecture ou notre �
 {% else %}
 Votre demande pour gérer les autorisations de stationnement de {{ ads_manager_request.ads_manager.content_object.display_fulltext }} a été acceptée.
 
-Rendez-vous sur Mes ADS à {{ request.scheme }}://{{ request.get_host }}{% url 'ads-manager' manager_id=ads_manager_request.ads_manager.id %} gérer les autorisations de stationnement de votre administration.
+Rendez-vous sur Mes ADS à {{ request.scheme }}://{{ request.get_host }}{% url 'app.ads-manager.detail' manager_id=ads_manager_request.ads_manager.id %} gérer les autorisations de stationnement de votre administration.
 {% endif %}

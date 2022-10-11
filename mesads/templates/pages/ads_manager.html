@@ -10,7 +10,7 @@
   <div class="fr-collapse" id="breadcrumb-1">
     <ol class="fr-breadcrumb__list">
       <li>
-        <a class="fr-breadcrumb__link" href="{% url 'ads-manager-request' %}">Gestion des ADS</a>
+        <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
       </li>
       <li>
         <a class="fr-breadcrumb__link" aria-current="page">{{ ads_manager.content_object.display_text|capfirst }}</a>
@@ -20,7 +20,7 @@
 </nav>
 
 <p>
-  <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'ads.create' manager_id=ads_manager.id %}">Créer une nouvelle ADS</a>
+  <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads.create' manager_id=ads_manager.id %}">Créer une nouvelle ADS</a>
 </p>
 
 <div x-data="{ displayFilters: new URLSearchParams(window.location.search).get('q') || new URLSearchParams(window.location.search).get('accepted_cpam')}">
@@ -103,13 +103,13 @@
     <tbody>
       {% for ads in ads_list %}
       <tr>
-        <td><a href="{% url 'ads' manager_id=ads_manager.id ads_id=ads.id %}">{{ ads.number }}</a></td>
+        <td><a href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}">{{ ads.number }}</a></td>
         <td>{{ ads.ads_creation_date|default:"" }}</td>
         <td>{{ ads.attribution_date|default:"" }}</td>
         <td>{% if ads.accepted_cpam is None %}⁉️  Inconnu{% elif ads.accepted_cpam is True %}👍 Oui{% else %}❌ Non{% endif %}</td>
         <td>{{ ads.owner_name }}</td>
         <td>
-          <a class="fr-btn fr-btn--sm" href="{% url 'ads' manager_id=ads_manager.id ads_id=ads.id %}">Détails</a>
+          <a class="fr-btn fr-btn--sm" href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}">Détails</a>
         </td>
       </tr>
       {% empty %}

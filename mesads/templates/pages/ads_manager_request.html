@@ -37,7 +37,7 @@
           {% elif request.accepted is False %}
           🚫 Demande refusée
           {% elif request.accepted is True %}
-          <a class="fr-btn fr-btn--sm" href="{% url 'ads-manager' manager_id=request.ads_manager.id %}">Gérez les ADS</a>
+          <a class="fr-btn fr-btn--sm" href="{% url 'app.ads-manager.detail' manager_id=request.ads_manager.id %}">Gérez les ADS</a>
           {% endif %}
         </td>
       </tr>
@@ -66,7 +66,7 @@
           {% if ads_manager.ads_set.count > 0 %}{{ ads_manager.ads_set.count }}{% else %}-{% endif %}
         </td>
         <td>
-          <a class="fr-btn fr-btn--sm" href="{% url 'ads-manager' manager_id=ads_manager.id %}">Gérez les ADS</a>
+          <a class="fr-btn fr-btn--sm" href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">Gérez les ADS</a>
         </td>
       </tr>
       {% endfor %}
@@ -83,7 +83,7 @@
 
 <ul class="fr-btns-group fr-btns-group--inline fr-m-3w">
   <li>
-    <a class="fr-btn fr-btn--secondary fr-btn--sm" href="{% url 'prefecture_export_ads' prefecture_id=ads_manager_administrator.prefecture.id %}">
+    <a class="fr-btn fr-btn--secondary fr-btn--sm" href="{% url 'app.exports.prefecture' prefecture_id=ads_manager_administrator.prefecture.id %}">
       Export CSV
     </a>
   </li>
@@ -96,7 +96,7 @@
 
 <h4>Configuration de l'accès gestionnaire</h4>
 
-<form class="fr-grid-row fr-grid-row--middle" method="post" action="{% url 'ads-manager-request' %}">
+<form class="fr-grid-row fr-grid-row--middle" method="post" action="{% url 'app.ads-manager.index' %}">
   {% csrf_token %}
   <div class="fr-form-group">
     <fieldset class="fr-fieldset">

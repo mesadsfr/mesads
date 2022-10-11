@@ -10,21 +10,21 @@ class FrenchAdministrationForm(forms.Form):
     """Form to select a Commune, EPCI or Prefecture."""
     commune = forms.ModelChoiceField(
         queryset=Commune.objects,
-        widget=autocomplete.ListSelect2(url='commune-autocomplete'),
+        widget=autocomplete.ListSelect2(url='fradm.autocomplete.commune'),
         label='Commune',
         required=False,
     )
 
     epci = forms.ModelChoiceField(
         queryset=EPCI.objects,
-        widget=autocomplete.ListSelect2(url='epci-autocomplete'),
+        widget=autocomplete.ListSelect2(url='fradm.autocomplete.epci'),
         required=False,
         label='EPCI'
     )
 
     prefecture = forms.ModelChoiceField(
         queryset=Prefecture.objects,
-        widget=autocomplete.ListSelect2(url='prefecture-autocomplete'),
+        widget=autocomplete.ListSelect2(url='fradm.autocomplete.prefecture'),
         label='Préfecture',
         required=False,
     )

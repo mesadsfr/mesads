@@ -8,10 +8,10 @@
   <div class="fr-collapse" id="breadcrumb-1">
     <ol class="fr-breadcrumb__list">
       <li>
-        <a class="fr-breadcrumb__link" href="{% url 'ads-manager-request' %}">Gestion des ADS</a>
+        <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
       </li>
       <li>
-        <a class="fr-breadcrumb__link" href="{% url 'ads-manager' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
+        <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
       </li>
       <li>
         <a class="fr-breadcrumb__link" aria-current="page">ADS numéro {{ ads.number }}</a>
