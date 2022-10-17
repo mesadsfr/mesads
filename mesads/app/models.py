@@ -320,3 +320,45 @@ class ADSUser(models.Model):
     status = models.CharField(max_length=255, choices=ADS_USER_STATUS, blank=True, null=False)
     name = models.CharField(max_length=1024, blank=True, null=False)
     siret = models.CharField(max_length=128, blank=True, null=False, validators=[validate_siret])
+
+
+class ADSUpdateFile(models.Model):
+    """The Préfecture de Police de Paris has a custom software to manage >20 000
+    ADS. To send us updates, they upload a document on a weekly basis.
+
+    :param creation_date: when the file was uploaded.
+
+    :param user: user uploading the document. Should always be the user related to
+        Préfecture de Police de Paris.
+
+    :param update_file: the file containing ADS.
+
+    :param imported: boolean to track if the file has been imported by an
+        asynchronous job.
+    """
+    def __str__(self):
+        return f'Update file from user {self.user.id} on {self.creation_date}, imported={self.imported}'
+
+    def get_update_filename(self, filename):
+        now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+        filename = os.path.basename(filename)
+        name = '/'.join([
+            'ADS_UPDATES',
+            '%s - %s' % (
+                self.user.id,
+                self.user.email,
+            ),
+            f'{now} - {filename}'
+        ])
+        return name
+
+    creation_date = models.DateTimeField(auto_now_add=True, null=False)
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        null=False, blank=False
+    )
+
+    update_file = models.FileField(upload_to=get_update_filename, blank=True)
+
+    imported = models.BooleanField(blank=False, null=False, default=False)

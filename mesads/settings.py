@@ -94,10 +94,13 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django_registration',
     'reversion',
+    'rest_framework',
+    'rest_framework.authtoken',
 
     'mesads.app',
     'mesads.users',
     'mesads.fradm',
+    'mesads.api',
 ]
 
 AUTH_USER_MODEL = 'users.User'
@@ -270,3 +273,14 @@ ACCOUNT_ACTIVATION_DAYS = 14
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 2 ** 16
 
 INSEE_TOKEN = os.getenv('INSEE_TOKEN')
+
+# Enable pagination, which is disabled by default.
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}

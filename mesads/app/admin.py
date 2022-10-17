@@ -9,6 +9,7 @@ from .models import (
     ADSManager,
     ADSManagerAdministrator,
     ADSManagerRequest,
+    ADSUpdateFile,
     ADSUser,
 )
 
@@ -211,3 +212,19 @@ class ADSAdmin(VersionAdmin):
         req = req.prefetch_related('ads_manager__content_type')
         req = req.prefetch_related('ads_manager__content_object')
         return req
+
+
+@admin.register(ADSUpdateFile)
+class ADSUpdateFileAdmin(admin.ModelAdmin):
+
+    ordering = ('-creation_date',)
+
+    list_display = (
+        'creation_date',
+        'user',
+        'imported',
+    )
+
+    list_filter = (
+        'imported',
+    )

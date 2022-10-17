@@ -4,7 +4,7 @@ from django.test import override_settings, TestCase
 import requests
 import requests_mock
 
-from .models import ADS, validate_siret, ADSUser
+from .models import ADS, validate_siret, ADSUser, ADSUpdateFile
 from .unittest import ClientTestCase
 
 
@@ -77,3 +77,16 @@ class TestADSUser(ClientTestCase):
     def test_str(self):
         ads_user = ADSUser.objects.create(ads=self.ads, name='Bob')
         self.assertEqual(str(ads_user), 'Bob')
+
+
+class TestADSUpdateFile(ClientTestCase):
+    def test_str(self):
+        ads_update_file = ADSUpdateFile(user=self.admin_user)
+        self.assertIn(f'user {self.admin_user.id}', str(ads_update_file))
+
+    def test_get_update_filename(self):
+        ads_update_file = ADSUpdateFile(user=self.admin_user)
+        filename = ads_update_file.get_update_filename('superfile.txt')
+        self.assertIn('ADS_UPDATES', filename)
+        self.assertIn(self.admin_user.email, filename)
+        self.assertIn('superfile.txt', filename)
