@@ -65,4 +65,4 @@ ENTRYPOINT ["poetry", "run"]
 # -R: restart worker after N requests
 # --limit-post: allow to upload files up to 10MB
 CMD python manage.py migrate && \
-    uwsgi --enable-threads -H \$\(VIRTUAL_ENV\) --http :8000 --module mesads.wsgi -M -p $(nproc) -R 100 --static-map /static=/app/static --limit-post=1000000
+    uwsgi --enable-threads -H \$\(VIRTUAL_ENV\) --http :8000 --module mesads.wsgi -M -p $(nproc) -R 100 --static-map /static=/app/static --limit-post=10000000
