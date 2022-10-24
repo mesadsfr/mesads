@@ -41,7 +41,7 @@ Création d'une nouvelle ADS
 <script type="text/javascript">
   const get_x_data = () => ({
       ads_type: '{{ form.ads_type.value }}',
-      used_by_owner: '{{ form.used_by_owner.value }}',
+      used_by_owner: '{% if form.used_by_owner.value is True %}true{% elif form.used_by_owner.value is False %}false{% else %}unknown{% endif %}',
       attribution_type: '{{ form.attribution_type.value }}',
       numberOfADSUsersFormsetToDisplay: (() => {
         // All forms
