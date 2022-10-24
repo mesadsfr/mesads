@@ -13,6 +13,8 @@ from django.db import models
 
 import reversion
 
+from django_cleanup import cleanup
+
 from mesads.fradm.models import Prefecture
 
 
@@ -146,6 +148,7 @@ def validate_siret(value):
     )
 
 
+@cleanup.ignore
 @reversion.register
 class ADS(models.Model):
     """Autorisation De Stationnement created by ADSManager.
