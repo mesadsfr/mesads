@@ -96,6 +96,7 @@ INSTALLED_APPS = [
     'reversion',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_cleanup.apps.CleanupConfig',
 
     'mesads.app',
     'mesads.users',
