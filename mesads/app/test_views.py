@@ -1,12 +1,13 @@
 from datetime import timedelta
 
 from django.core import mail
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import RequestFactory
 from django.utils import timezone
 
 from mesads.fradm.models import EPCI, Prefecture
 
-from .models import ADS, ADSManagerRequest, ADSUser
+from .models import ADS, ADSLegalFile, ADSManagerRequest, ADSUser
 from .unittest import ClientTestCase
 from .views import DashboardsView, DashboardsDetailView
 
@@ -319,9 +320,14 @@ class TestADSView(ClientTestCase):
                 'number': self.ads.id,
                 'owner_name': 'Jean-Jacques Goldman',
                 'adsuser_set-TOTAL_FORMS': 10,
-                'adsuser_set-INITIAL_FORMS': 2,
+                'adsuser_set-INITIAL_FORMS': 0,
                 'adsuser_set-MIN_NUM_FORMS': 0,
                 'adsuser_set-MAX_NUM_FORMS': 10,
+
+                'adslegalfile_set-TOTAL_FORMS': 10,
+                'adslegalfile_set-INITIAL_FORMS': 0,
+                'adslegalfile_set-MIN_NUM_FORMS': 0,
+                'adslegalfile_set-MAX_NUM_FORMS': 10,
             },
         )
         self.assertEqual(resp.status_code, 302)
@@ -363,12 +369,47 @@ class TestADSView(ClientTestCase):
                 'adsuser_set-0-status': '',
                 'adsuser_set-0-name': 'Henri',
                 'adsuser_set-0-siret': '',
+
+                'adslegalfile_set-TOTAL_FORMS': 10,
+                'adslegalfile_set-INITIAL_FORMS': 0,
+                'adslegalfile_set-MIN_NUM_FORMS': 0,
+                'adslegalfile_set-MAX_NUM_FORMS': 10,
             },
         )
 
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(ADSUser.objects.count(), 1)
         self.assertEqual(ADSUser.objects.get().name, 'Henri')
+
+    def test_update_ads_legal_file(self):
+        legal_file = ADSLegalFile.objects.create(
+            ads=self.ads,
+            file=SimpleUploadedFile('file.pdf', b'Content')
+        )
+        new_upload = SimpleUploadedFile('newfile.pdf', b'New content')
+        resp = self.ads_manager_city35_client.post(
+            f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}',
+            {
+                'number': self.ads.id,
+                'adsuser_set-TOTAL_FORMS': 10,
+                'adsuser_set-INITIAL_FORMS': 0,
+                'adsuser_set-MIN_NUM_FORMS': 0,
+                'adsuser_set-MAX_NUM_FORMS': 10,
+
+                'adslegalfile_set-TOTAL_FORMS': 10,
+                'adslegalfile_set-INITIAL_FORMS': 1,
+                'adslegalfile_set-MIN_NUM_FORMS': 0,
+                'adslegalfile_set-MAX_NUM_FORMS': 10,
+                'adslegalfile_set-0-id': legal_file.id,
+                'adslegalfile_set-0-file': new_upload,
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(ADSLegalFile.objects.count(), 1)
+        self.assertEqual(
+            ADSLegalFile.objects.get().file.read(),
+            b'New content'
+        )
 
     def test_remove_ads_user(self):
         """If all the fields of a ADS user are empty, the entry should be
@@ -392,6 +433,11 @@ class TestADSView(ClientTestCase):
                 'adsuser_set-0-status': '',
                 'adsuser_set-0-name': '',
                 'adsuser_set-0-siret': '',
+
+                'adslegalfile_set-TOTAL_FORMS': 10,
+                'adslegalfile_set-INITIAL_FORMS': 0,
+                'adslegalfile_set-MIN_NUM_FORMS': 0,
+                'adslegalfile_set-MAX_NUM_FORMS': 10,
             },
         )
 
@@ -446,9 +492,14 @@ class TestADSCreateView(ClientTestCase):
             {
                 'number': 'abcdef',
                 'adsuser_set-TOTAL_FORMS': 10,
-                'adsuser_set-INITIAL_FORMS': 2,
+                'adsuser_set-INITIAL_FORMS': 0,
                 'adsuser_set-MIN_NUM_FORMS': 0,
                 'adsuser_set-MAX_NUM_FORMS': 10,
+
+                'adslegalfile_set-TOTAL_FORMS': 10,
+                'adslegalfile_set-INITIAL_FORMS': 0,
+                'adslegalfile_set-MIN_NUM_FORMS': 0,
+                'adslegalfile_set-MAX_NUM_FORMS': 10,
             }
         )
         self.assertEqual(resp.status_code, 302)
@@ -464,9 +515,14 @@ class TestADSCreateView(ClientTestCase):
             {
                 'number': '123',
                 'adsuser_set-TOTAL_FORMS': 10,
-                'adsuser_set-INITIAL_FORMS': 2,
+                'adsuser_set-INITIAL_FORMS': 0,
                 'adsuser_set-MIN_NUM_FORMS': 0,
                 'adsuser_set-MAX_NUM_FORMS': 10,
+
+                'adslegalfile_set-TOTAL_FORMS': 10,
+                'adslegalfile_set-INITIAL_FORMS': 0,
+                'adslegalfile_set-MIN_NUM_FORMS': 0,
+                'adslegalfile_set-MAX_NUM_FORMS': 10,
             }
         )
         self.assertEqual(resp.status_code, 200)
@@ -484,6 +540,11 @@ class TestADSCreateView(ClientTestCase):
                 'adsuser_set-0-status': 'autre',
                 'adsuser_set-0-name': 'Paul',
                 'adsuser_set-0-siret': '12312312312312',
+
+                'adslegalfile_set-TOTAL_FORMS': 10,
+                'adslegalfile_set-INITIAL_FORMS': 0,
+                'adslegalfile_set-MIN_NUM_FORMS': 0,
+                'adslegalfile_set-MAX_NUM_FORMS': 10,
             }
         )
         self.assertEqual(resp.status_code, 302)
@@ -495,6 +556,45 @@ class TestADSCreateView(ClientTestCase):
         self.assertEqual(new_ads_user.status, 'autre')
         self.assertEqual(new_ads_user.name, 'Paul')
         self.assertEqual(new_ads_user.siret, '12312312312312')
+
+    def test_create_with_legal_files(self):
+        legal_file1 = SimpleUploadedFile(
+            name='myfile.pdf',
+            content=b'First file',
+            content_type='application/pdf'
+        )
+        legal_file2 = SimpleUploadedFile(
+            name='myfile2.pdf',
+            content=b'Second file',
+            content_type='application/pdf'
+        )
+
+        resp = self.ads_manager_city35_client.post(
+            f'/gestion/{self.ads_manager_city35.id}/ads/',
+            {
+                'number': 'abcdef',
+                'adsuser_set-TOTAL_FORMS': 10,
+                'adsuser_set-INITIAL_FORMS': 0,
+                'adsuser_set-MIN_NUM_FORMS': 0,
+                'adsuser_set-MAX_NUM_FORMS': 10,
+
+                'adslegalfile_set-TOTAL_FORMS': 10,
+                'adslegalfile_set-INITIAL_FORMS': 0,
+                'adslegalfile_set-MIN_NUM_FORMS': 0,
+                'adslegalfile_set-MAX_NUM_FORMS': 10,
+                'adslegalfile_set-0-file': legal_file1,
+                'adslegalfile_set-1-file': legal_file2,
+            }
+        )
+        self.assertEqual(resp.status_code, 302)
+        new_ads = ADS.objects.order_by('-id')[0]
+        self.assertEqual(resp.url, f'/gestion/{self.ads_manager_city35.id}/ads/{new_ads.id}')
+
+        self.assertEqual(ADSLegalFile.objects.count(), 2)
+        legal_files = ADSLegalFile.objects.order_by('id')
+
+        self.assertEqual(legal_files[0].file.read(), b'First file')
+        self.assertEqual(legal_files[1].file.read(), b'Second file')
 
 
 class TestCSVExport(ClientTestCase):

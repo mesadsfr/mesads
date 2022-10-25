@@ -6,6 +6,7 @@ from reversion.admin import VersionAdmin
 
 from .models import (
     ADS,
+    ADSLegalFile,
     ADSManager,
     ADSManagerAdministrator,
     ADSManagerRequest,
@@ -178,6 +179,11 @@ class ADSUserInline(admin.TabularInline):
     verbose_name_plural = 'Exploitants de l\'ADS'
 
 
+class ADSLegalFileInline(admin.StackedInline):
+    model = ADSLegalFile
+    extra = 0
+
+
 @admin.register(ADS)
 class ADSAdmin(VersionAdmin):
 
@@ -205,6 +211,7 @@ class ADSAdmin(VersionAdmin):
 
     inlines = [
         ADSUserInline,
+        ADSLegalFileInline,
     ]
 
     def get_queryset(self, request):

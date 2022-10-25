@@ -48,15 +48,26 @@ Création d'une nouvelle ADS
         const ads_user_forms = [...document.getElementsByClassName('ads-user-form')];
         // List, returns true if the form is empty, false otherwise
         const filled  = ads_user_forms.map((e) => !!e.querySelector('input:not([type="hidden"]):not([value=""])'));
-        // Reverse to have last forms first
-        const reversed = filled.reverse();
         // Index of the first non-empty form
-        const nonEmptyFormIdx = reversed.findIndex((e) => e === true);
+        const nonEmptyFormIdx = filled.findLastIndex((e) => e === true);
         // All the forms are empty, display only one blank form
         if (nonEmptyFormIdx < 0) {
           return 1;
         }
-        return {{ ads_users_formset.extra }} - nonEmptyFormIdx;
+        return nonEmptyFormIdx + 1;
+      })(),
+      numberOfADSLegalFileFormsetToDisplay: (() => {
+        // All forms
+        const legal_file_forms = [...document.getElementsByClassName('ads-legal-file-form')];
+        // List, returns true if the form is empty, false otherwise
+        const filled  = legal_file_forms.map((e) => !!e.querySelector('input[type="hidden"]'));
+        // Index of the first non-empty form
+        const nonEmptyFormIdx = filled.findLastIndex((e) => e === true);
+        // All the forms are empty, display only one blank form
+        if (nonEmptyFormIdx < 0) {
+          return 0;
+        }
+        return nonEmptyFormIdx + 1;
       })(),
   });
 </script>
@@ -170,12 +181,98 @@ Création d'une nouvelle ADS
       </div>
     </div>
 
-    <!-- Legal file -->
-    {% include 'pages/ads-form_file.html' with field_title="Arrêté portant l'attribution de l'ADS" field=form.legal_file field_errors=form.errors.legal_file required=form.fields.legal_file.required %}
+    <!-- Legal files -->
+    <hr />
 
+    <div class="fr-input-group">
+      <p>
+        Vous avez la possibilité d'envoyer un ou plusieurs documents avec l'arrêté portant l'attribution de l'ADS.
+      </p>
+
+      {{ ads_legal_files_formset.management_form }}
+      {% for form in ads_legal_files_formset %}
+      <div
+        class="fr-download fr-enlarge-link fr-download--card ads-legal-file-form"
+        x-show="{{ forloop.counter0 }} < numberOfADSLegalFileFormsetToDisplay"
+        x-data="{deleteFile: false}"
+        x-bind:style="deleteFile ? {'background-color': 'rgb(253,222,222)'} : {'background-color': '#fff'}"
+      >
+        <!-- Existing document -->
+        {% if form.instance.file %}
+          {{ form.id.as_hidden }}
+          {{ form.file.as_hidden }}
+          <p>
+            <a class="fr-download__link" {% if form.instance.exists_in_storage %}href="{{ form.instance.file.url }}" target="_blank"{% endif %}>
+              {{ form.instance.human_filename }}
+
+              <span class="fr-download__detail">
+                {% if form.instance.exists_in_storage %}
+                  {{ form.instance.file.size|filesizeformat }}
+                {% else %}
+                  Le fichier n'est plus accessible
+                {% endif %}
+              </span>
+            </a>
+
+          </p>
+          <p class="fr-download__desc">
+            Le document a été envoyé le {{ form.instance.creation_date|date:"m/d/Y" }}.
+          </p>
+          <p class="fr-download__desc">
+            <input class="fr-hidden" type="checkbox" name="{{ form.DELETE.html_name }}" id="{{ form.file.id_for_label }}-clear_id" x-model="deleteFile">
+
+            <label class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-delete-line fr-btn--icon-left"
+              for="{{ form.file.id_for_label }}-clear_id" x-show="!deleteFile">
+              Supprimer le document
+            </label>
+
+            <label class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-download-line fr-btn--icon-left"
+              for="{{ form.file.id_for_label }}-clear_id" x-show="deleteFile">
+              Annuler la suppression
+            </label>
+          </p>
+        <!-- New document -->
+        {% else %}
+          <div class="fr-upload-group">
+            <label class="fr-label" for="file-upload">
+                <strong>Nouveau document</strong>
+                <span class="fr-hint-text">Taille maximale : 10 Mo. Format préféré : pdf.</span>
+            </label>
+            <input class="fr-upload" type="file" id="{{ form.file.id_for_label }}" name="{{ form.file.html_name }}">
+          </div>
+        {% endif %}
+
+        <!-- Form errors -->
+        {% for error in form.errors %}
+        <p class="fr-error-text">
+          {{ error }}
+        </p>
+        {% endfor %}
+      </div>
+      {% endfor %}
+
+      {% for error in ads_legal_files_formset.non_form_errors %}
+      <p class="fr-error-text">
+        {{ error }}
+      </p>
+      {% endfor %}
+
+      <button
+        type="button"
+        class="fr-btn fr-btn--sm fr-icon-checkbox-circle-line fr-btn--icon-left fr-btn--secondary"
+        x-on:click="numberOfADSLegalFileFormsetToDisplay++"
+        x-show="numberOfADSLegalFileFormsetToDisplay < {{ ads_legal_files_formset.extra }}"
+      >
+          Ajouter un arrêté
+      </button>
+    </div>
+
+    <hr />
+
+    <!-- Submit buttons -->
     <div class="fr-col-12 fr-input-group">
       {% if ads %}
-      <button type="submit" class="fr-btn">Modifier</button>
+      <button type="submit" class="fr-btn">Valider les modifications de l'ADS</button>
       {% else %}
       <button type="submit" class="fr-btn">Créer la nouvelle ADS</button>
       {% endif %}

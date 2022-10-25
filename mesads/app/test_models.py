@@ -1,10 +1,11 @@
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings, TestCase
 
 import requests
 import requests_mock
 
-from .models import ADS, validate_siret, ADSUser, ADSUpdateFile
+from .models import ADS, validate_siret, ADSLegalFile, ADSUser, ADSUpdateFile, get_legal_filename
 from .unittest import ClientTestCase
 
 
@@ -65,8 +66,33 @@ class TestADS(ClientTestCase):
         self.assertIn(str(self.ads.id), str(self.ads))
 
     def test_get_legal_filename(self):
-        filename = self.ads.get_legal_filename('my_filename')
+        legal_file = ADSLegalFile.objects.create(ads=self.ads)
+        filename = get_legal_filename(legal_file, 'my_filename')
         self.assertIn('my_filename', filename)
+
+
+class TestADSLegalFile(ClientTestCase):
+    def setUp(self):
+        super().setUp()
+        self.ads = ADS.objects.create(number='12346', ads_manager=self.ads_manager_city35)
+
+    def test_exists_in_storage(self):
+        ads_legal_file = ADSLegalFile(
+            ads=self.ads,
+            file=SimpleUploadedFile('file.pdf', b'File content')
+        )
+        self.assertFalse(ads_legal_file.exists_in_storage())
+
+    def test_human_filename(self):
+        ads_legal_file = ADSLegalFile(
+            ads=self.ads,
+            file=SimpleUploadedFile(
+                'temp',
+                b'File content'
+            )
+        )
+        ads_legal_file.file.name = get_legal_filename(ads_legal_file, 'xxx.pdf')
+        self.assertEqual(ads_legal_file.human_filename(), 'xxx.pdf')
 
 
 class TestADSUser(ClientTestCase):

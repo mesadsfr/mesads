@@ -4,7 +4,7 @@ from django.forms import BaseInlineFormSet, inlineformset_factory
 
 from mesads.fradm.forms import FrenchAdministrationForm
 
-from .models import ADS, ADSManager, ADSUser
+from .models import ADS, ADSLegalFile, ADSManager, ADSUser
 
 
 class ADSManagerForm(FrenchAdministrationForm):
@@ -49,6 +49,12 @@ ADSUserFormSet = inlineformset_factory(
     ADS, ADSUser, fields=('status', 'name', 'siret'),
     can_delete=True, extra=10, max_num=10,
     formset=AutoDeleteADSUserFormSet
+)
+
+
+ADSLegalFileFormSet = inlineformset_factory(
+    ADS, ADSLegalFile, fields=('file',),
+    can_delete=True, extra=5, max_num=10
 )
 
 

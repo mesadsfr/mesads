@@ -23,8 +23,9 @@ from django.views.generic.list import ListView
 from reversion.views import RevisionMixin
 
 from .forms import (
-    ADSSearchForm,
+    ADSLegalFileFormSet,
     ADSManagerForm,
+    ADSSearchForm,
     ADSUserFormSet,
 )
 from .models import (
@@ -282,7 +283,6 @@ class ADSView(RevisionMixin, UpdateView):
         'owner_mobile',
         'owner_email',
         'used_by_owner',
-        'legal_file',
     )
 
     def get_success_url(self):
@@ -297,8 +297,10 @@ class ADSView(RevisionMixin, UpdateView):
 
         if self.request.POST:
             ctx['ads_users_formset'] = ADSUserFormSet(self.request.POST, instance=self.object)
+            ctx['ads_legal_files_formset'] = ADSLegalFileFormSet(self.request.POST, self.request.FILES, instance=self.object)
         else:
             ctx['ads_users_formset'] = ADSUserFormSet(instance=self.object)
+            ctx['ads_legal_files_formset'] = ADSLegalFileFormSet(instance=self.object)
         return ctx
 
     def get_object(self, queryset=None):
@@ -307,10 +309,14 @@ class ADSView(RevisionMixin, UpdateView):
     def form_valid(self, form):
         ctx = self.get_context_data()
         ads_users_formset = ctx['ads_users_formset']
-        if ads_users_formset.is_valid():
+        ads_legal_files_formset = ctx['ads_legal_files_formset']
+
+        if ads_users_formset.is_valid() and ads_legal_files_formset.is_valid():
             resp = super().form_valid(form)
             ads_users_formset.instance = self.object
             ads_users_formset.save()
+            ads_legal_files_formset.instance = self.object
+            ads_legal_files_formset.save()
             return resp
         return super().form_invalid(form)
 

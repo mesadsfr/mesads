@@ -5,8 +5,6 @@ from rest_framework.test import APIClient
 from mesads.app.models import ADSUpdateFile
 from mesads.app.unittest import ClientTestCase
 
-from .views import ADSUpdatesViewSet
-
 
 class TestADSUpdatesViewSet(ClientTestCase):
     def test_get(self):

@@ -148,7 +148,6 @@ def validate_siret(value):
     )
 
 
-@cleanup.ignore
 @reversion.register
 class ADS(models.Model):
     """Autorisation De Stationnement created by ADSManager.
@@ -275,20 +274,41 @@ class ADS(models.Model):
 
     used_by_owner = models.BooleanField(blank=True, null=True)
 
-    def get_legal_filename(self, filename):
-        now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
-        filename = os.path.basename(filename)
-        name = '/'.join([
-            '%s %s - %s' % (
-                self.ads_manager.content_type.name.capitalize(),
-                self.ads_manager.content_object.id,
-                self.ads_manager.content_object.display_text().capitalize()
-            ),
-            f'{now}|ADS {self.id}|{filename}'
-        ])
-        return name
 
-    legal_file = models.FileField(upload_to=get_legal_filename, blank=True)
+def get_legal_filename(instance, filename):
+    now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+    filename = os.path.basename(filename)
+    name = '/'.join([
+        '%s %s - %s' % (
+            instance.ads.ads_manager.content_type.name.capitalize(),
+            instance.ads.ads_manager.content_object.id,
+            instance.ads.ads_manager.content_object.display_text().capitalize()
+        ),
+        f'{now}_ADS_{instance.ads.id}_{filename}'
+    ])
+    return name
+
+
+@cleanup.ignore
+@reversion.register
+class ADSLegalFile(models.Model):
+    def __str__(self):
+        return f'Legal file {self.file.url} for ADS {self.ads.id}'
+
+    def exists_in_storage(self):
+        """Returns False if file has been removed from storage, either manually
+        or after a database restore."""
+        return self.file.storage.exists(self.file.name)
+
+    def human_filename(self):
+        """Reverse of get_legal_filename."""
+        basename = os.path.basename(self.file.name)
+        return re.split(r'ADS_[0-9]+_', basename)[-1]
+
+    ads = models.ForeignKey(ADS, on_delete=models.CASCADE)
+    creation_date = models.DateField(auto_now_add=True, null=False)
+
+    file = models.FileField(upload_to=get_legal_filename, blank=False, null=False)
 
 
 @reversion.register

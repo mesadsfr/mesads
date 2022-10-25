@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
                 ('user_status', models.CharField(blank=True, choices=[('titulaire_exploitant', 'Titulaire exploitant'), ('cooperateur', 'Coopérateur'), ('locataire_gerance', 'Locataire gérance'), ('autre', 'Autre')], max_length=255)),
                 ('user_name', models.CharField(blank=True, max_length=1024)),
                 ('user_siret', models.CharField(blank=True, max_length=128)),
-                ('legal_file', models.FileField(blank=True, upload_to=mesads.app.models.ADS.get_legal_filename)),
+                ('legal_file', models.FileField(blank=True, upload_to=mesads.app.models.get_legal_filename)),
                 ('ads_manager', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='app.adsmanager')),
             ],
             options={
