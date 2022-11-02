@@ -42,7 +42,6 @@ DEBUG = parse_env_bool('DEBUG', True)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-
 if DEBUG:
     SECRET_KEY = os.getenv(
         'SECRET_KEY',
@@ -285,3 +284,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
+
+MESADS_CRISP_WEBSITE_ID = os.environ.get('CRISP_WEBSITE_ID')
