@@ -24,12 +24,6 @@
   </div>
 </nav>
 
-{% if ads %}
-<p>
-  <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads.delete' manager_id=ads_manager.id ads_id=ads.id %}">Supprimer cette ADS</a>
-</p>
-{% endif %}
-
 <h1>
 {% if ads %}
 ADS numéro {{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})
@@ -272,7 +266,15 @@ Création d'une nouvelle ADS
     <!-- Submit buttons -->
     <div class="fr-col-12 fr-input-group">
       {% if ads %}
-      <button type="submit" class="fr-btn">Valider les modifications de l'ADS</button>
+      <ul class="fr-btns-group">
+        <li>
+          <button type="submit" class="fr-btn">Valider les modifications de l'ADS</button>
+        </li>
+
+        <li>
+          <a class="fr-link fr-icon-delete-line fr-link--icon-left" href="{% url 'app.ads.delete' manager_id=ads_manager.id ads_id=ads.id %}" style="color: var(--text-default-error)">Supprimer cette ADS</a>
+        </li>
+      </ul>
       {% else %}
       <button type="submit" class="fr-btn">Créer la nouvelle ADS</button>
       {% endif %}
