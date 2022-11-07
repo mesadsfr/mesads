@@ -25,3 +25,15 @@ h2 {
 .table-row-unknown td:first-child:before {
   content: "⁉️  ";
 }
+
+/*
+   If the title of the download card is too long, add ellipsis.
+*/
+.fr-download--card > p:first-of-type {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fr-download--card > p:first-of-type:hover {
+  overflow: visible;
+}
