@@ -115,7 +115,7 @@
           <div class="fr-col-12 fr-input-group radio-inline{% if form.errors.commune %} fr-input-group--error{% endif %}">
             <label
               class="fr-label"
-              for="{{ form.commune.name }}"
+              for="{{ form.commune.id_for_label }}"
             >
               Sélectionnez la commune:
             </label>
@@ -140,7 +140,7 @@
           <div class="fr-col-12 fr-input-group radio-inline{% if form.errors.epci %} fr-input-group--error{% endif %}">
             <label
               class="fr-label"
-              for="{{ form.epci.name }}"
+              for="{{ form.epci.id_for_label }}"
             >
               Sélectionnez l'établissement :
             </label>
@@ -165,7 +165,7 @@
           <div class="fr-col-12 fr-input-group radio-inline{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
             <label
               class="fr-label"
-              for="{{ form.prefecture.name }}"
+              for="{{ form.prefecture.id_for_label }}"
             >
               Sélectionnez la préfecture :
             </label>
