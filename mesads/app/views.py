@@ -22,11 +22,14 @@ from django.views.generic.list import ListView
 
 from reversion.views import RevisionMixin
 
+from mesads.fradm.models import EPCI
+
 from .forms import (
     ADSLegalFileFormSet,
     ADSManagerForm,
     ADSSearchForm,
     ADSUserFormSet,
+    ADSForm,
 )
 from .models import (
     ADS,
@@ -264,26 +267,18 @@ class ADSManagerView(ListView):
 
 class ADSView(RevisionMixin, UpdateView):
     template_name = 'pages/ads.html'
-    model = ADS
-    fields = (
-        'number',
-        'ads_creation_date',
-        'ads_type',
-        'attribution_date',
-        'attribution_type',
-        'transaction_identifier',
-        'attribution_reason',
-        'accepted_cpam',
-        'immatriculation_plate',
-        'vehicle_compatible_pmr',
-        'eco_vehicle',
-        'owner_name',
-        'owner_siret',
-        'owner_phone',
-        'owner_mobile',
-        'owner_email',
-        'used_by_owner',
-    )
+    form_class = ADSForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        # For EPCI, initialize ADSForm with the parameter epci required to setup
+        # autocompletion for the field ADS.epci_commune.
+        ads_manager = get_object_or_404(ADSManager, id=self.kwargs['manager_id'])
+        if ads_manager.content_type.model_class() is EPCI:
+            kwargs['epci'] = ads_manager.content_object
+
+        return kwargs
 
     def get_success_url(self):
         return reverse('app.ads.detail', kwargs={

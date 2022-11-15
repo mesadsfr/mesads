@@ -30,6 +30,21 @@ class TestCommuneAutocompleteView(ClientTestCase):
             sum(1 for entry in self.COMMUNES if entry[1].startswith('97'))
         )
 
+    def test_queryset_with_departement_logged(self):
+        resp = self.auth_client.get('/fradm/commune/75/autocomplete')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()['results']), 1)
+        self.assertIn('paris', resp.json()['results'][0]['text'].lower())
+
+        resp = self.auth_client.get('/fradm/commune/75/autocomplete?q=paris')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()['results']), 1)
+        self.assertIn('paris', resp.json()['results'][0]['text'].lower())
+
+        resp = self.auth_client.get('/fradm/commune/75/autocomplete?q=xxxx')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()['results']), 0)
+
 
 class TestEPCIAutocompleteView(ClientTestCase):
     def test_get_queryset_anonymous(self):

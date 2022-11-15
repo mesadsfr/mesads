@@ -15,7 +15,7 @@ import reversion
 
 from django_cleanup import cleanup
 
-from mesads.fradm.models import Prefecture
+from mesads.fradm.models import Commune, Prefecture
 
 
 class ADSManager(models.Model):
@@ -159,6 +159,11 @@ class ADS(models.Model):
     :param number: ADS number. It is specified by the ADSManager. It is usually
         a number, but it doesn't have to be.
 
+    :param ads_manager: Administration managing this ADS.
+
+    :param epci_commune: If ads_manager is an EPCI, this is the Commune for
+        which the ADS is registered.
+
     :param ads_creation_date: Initial creation date of the ADS.
 
     :param ads_type: "old" if created before 2014, "new" otherwise.
@@ -222,6 +227,7 @@ class ADS(models.Model):
 
     number = models.CharField(max_length=255, null=False, blank=False)
     ads_manager = models.ForeignKey(ADSManager, on_delete=models.CASCADE)
+    epci_commune = models.ForeignKey(Commune, on_delete=models.RESTRICT, blank=True, null=True)
 
     creation_date = models.DateField(auto_now_add=True, null=False)
     last_update = models.DateField(auto_now=True, null=False)

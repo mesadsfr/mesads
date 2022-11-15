@@ -2,10 +2,11 @@ from datetime import timedelta
 
 from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db.models import Q
 from django.test import RequestFactory
 from django.utils import timezone
 
-from mesads.fradm.models import EPCI, Prefecture
+from mesads.fradm.models import Commune, EPCI, Prefecture
 
 from .models import ADS, ADSLegalFile, ADSManagerRequest, ADSUser
 from .unittest import ClientTestCase
@@ -443,6 +444,56 @@ class TestADSView(ClientTestCase):
 
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(ADSUser.objects.count(), 0)
+
+    def test_update_epci_commune(self):
+        # ADSManager related to the first EPCI in database
+        epci_ads_manager = EPCI.objects.filter(departement='01')[0].ads_managers.get()
+        epci_ads = ADS.objects.create(number='12346', ads_manager=epci_ads_manager)
+
+        # Error, the commune doesn't belong to the same departement than the EPCI
+        invalid_commune = Commune.objects.filter(~Q(departement='01')).first()
+        resp = self.admin_client.post(
+            f'/gestion/{epci_ads_manager.id}/ads/{epci_ads.id}',
+            {
+                'number': epci_ads.id,
+                'epci_commune': invalid_commune.id,
+
+                'adsuser_set-TOTAL_FORMS': 10,
+                'adsuser_set-INITIAL_FORMS': 0,
+                'adsuser_set-MIN_NUM_FORMS': 0,
+                'adsuser_set-MAX_NUM_FORMS': 10,
+
+                'adslegalfile_set-TOTAL_FORMS': 10,
+                'adslegalfile_set-INITIAL_FORMS': 0,
+                'adslegalfile_set-MIN_NUM_FORMS': 0,
+                'adslegalfile_set-MAX_NUM_FORMS': 10,
+            }
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Ce choix ne fait pas partie de ceux disponibles', resp.content.decode('utf8'))
+
+        valid_commune = Commune.objects.filter(departement='01').first()
+        resp = self.admin_client.post(
+            f'/gestion/{epci_ads_manager.id}/ads/{epci_ads.id}',
+            {
+                'number': epci_ads.id,
+                'epci_commune': valid_commune.id,
+
+                'adsuser_set-TOTAL_FORMS': 10,
+                'adsuser_set-INITIAL_FORMS': 0,
+                'adsuser_set-MIN_NUM_FORMS': 0,
+                'adsuser_set-MAX_NUM_FORMS': 10,
+
+                'adslegalfile_set-TOTAL_FORMS': 10,
+                'adslegalfile_set-INITIAL_FORMS': 0,
+                'adslegalfile_set-MIN_NUM_FORMS': 0,
+                'adslegalfile_set-MAX_NUM_FORMS': 10,
+            }
+        )
+        self.assertEqual(resp.status_code, 302)
+
+        epci_ads.refresh_from_db()
+        self.assertEqual(epci_ads.epci_commune, valid_commune)
 
 
 class TestADSDeleteView(ClientTestCase):

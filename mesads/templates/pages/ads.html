@@ -84,6 +84,26 @@ Création d'une nouvelle ADS
 
     {% csrf_token %}
 
+    <!-- EPCI commune -->
+    {% if ads_manager.content_type.name == 'EPCI' %}
+    <div class="fr-select-group{% if form.errors.epci_commune %} fr-select-group--error{% endif %}">
+      <label
+        class="fr-label"
+        for="{{ form.epci_commune.id_for_label }}"
+      >
+        Commune de l'ADS :
+      </label>
+
+      {{ form.epci_commune }}
+
+      {% for error in form.epci_commune.errors %}
+      <p class="fr-error-text">
+        {{ error }}
+      </p>
+      {% endfor %}
+    </div>
+    {% endif %}
+
     <!-- ADS number -->
     {% include 'pages/ads-form_string.html' with field_title="Numéro de l'ADS" field=form.number field_errors=form.errors.number required=form.fields.number.required %}
 
@@ -282,4 +302,9 @@ Création d'une nouvelle ADS
 
   </form>
 </div>
+{% endblock %}
+
+{% block endbody %}
+  {% comment %}Extra javascript required to display epci_commune_form.{% endcomment %}
+  {{ form.media }}
 {% endblock %}

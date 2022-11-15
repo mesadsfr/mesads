@@ -207,6 +207,7 @@ class ADSAdmin(VersionAdmin):
 
     autocomplete_fields = (
         'ads_manager',
+        'epci_commune',
     )
 
     inlines = [

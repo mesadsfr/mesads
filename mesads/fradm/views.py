@@ -1,12 +1,19 @@
+from django.db.models.functions import Lower
+
 from dal import autocomplete
 
 from .models import Commune, EPCI, Prefecture
 
 
 class CommuneAutocompleteView(autocomplete.Select2QuerySetView):
+    """This view is called by routes /commune/autocomplete and
+    /commune/<departement>/autocomplete, so kwargs['departement'] is optional.
+    """
     def get_queryset(self):
         if not self.request.user.is_authenticated:
             return Commune.objects.none()
+
+        departement = self.kwargs.get('departement', '').lower()
 
         if self.q:
             # For the row with departement=35 and libelle=Melesse, the query
@@ -15,15 +22,25 @@ class CommuneAutocompleteView(autocomplete.Select2QuerySetView):
             # * "35"
             # * "35 - melesse"
             # * "35 - mele"
+
+            departement_filter = ''
+            if departement:
+                departement_filter = f"AND LOWER(departement) = '{departement}'"
+
             qs = Commune.objects.raw('''
                 SELECT * FROM ''' + Commune.objects.model._meta.db_table + '''
                 WHERE REGEXP_REPLACE(departement || libelle, '[^\\w]', '', 'g')
                 ILIKE '%%' || REGEXP_REPLACE(%s, '[^\\w]', '', 'g') || '%%'
+                ''' + departement_filter + '''
                 ORDER BY id
             ''', [self.q])
             return qs
 
-        qs = Commune.objects.all()
+        qs = Commune.objects
+        if departement:
+            qs = qs.annotate(departement_lower=Lower('departement'))
+            qs = qs.filter(departement_lower=departement)
+
         return qs.order_by('id')
 
 

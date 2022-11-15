@@ -23,8 +23,7 @@ class Command(BaseCommand):
         print(self.style.SUCCESS(f'\nCreated: {created} new entries'))
 
     def insert_row(self, row):
-        # Remove leading 0 from departement
-        departement = row['dep_epci'].lstrip('0')
+        departement = row['dep_epci']
 
         # The get_or_create below might fail in future updates if we attempt to
         # reimport communes with different values for a row.

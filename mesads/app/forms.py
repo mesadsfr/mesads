@@ -1,8 +1,12 @@
 from django.contrib.contenttypes.models import ContentType
 from django import forms
 from django.forms import BaseInlineFormSet, inlineformset_factory
+from django.urls import reverse
+
+from dal import autocomplete
 
 from mesads.fradm.forms import FrenchAdministrationForm
+from mesads.fradm.models import Commune
 
 from .models import ADS, ADSLegalFile, ADSManager, ADSUser
 
@@ -29,6 +33,54 @@ class ADSManagerForm(FrenchAdministrationForm):
         )
 
         self.cleaned_data['ads_manager'] = manager
+
+
+class ADSForm(forms.ModelForm):
+    """Form to edit or create an instance of ADS. If :param epci: is set, the
+    field epci_commune is initialized to render an autocomplete field.
+
+    INSEE provides a list of all the communes insides EPCIs and we should
+    ideally only autocomplete with these communes. However, since we haven't
+    imported this list yet, we only limit to all the communes inside the same
+    departement."""
+    class Meta:
+        model = ADS
+        fields = (
+            'epci_commune',
+            'number',
+            'ads_creation_date',
+            'ads_type',
+            'attribution_date',
+            'attribution_type',
+            'transaction_identifier',
+            'attribution_reason',
+            'accepted_cpam',
+            'immatriculation_plate',
+            'vehicle_compatible_pmr',
+            'eco_vehicle',
+            'owner_name',
+            'owner_siret',
+            'owner_phone',
+            'owner_mobile',
+            'owner_email',
+            'used_by_owner',
+        )
+
+    def __init__(self, epci=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if epci:
+            self.fields['epci_commune'].queryset = Commune.objects.filter(departement=epci.departement)
+            self.fields['epci_commune'].widget.url = reverse(
+                'fradm.autocomplete.commune',
+                kwargs={'departement': epci.departement}
+            )
+
+    epci_commune = forms.ModelChoiceField(
+        queryset=None,
+        widget=autocomplete.ListSelect2(),
+        label='Commune',
+        required=False,
+    )
 
 
 class AutoDeleteADSUserFormSet(BaseInlineFormSet):
