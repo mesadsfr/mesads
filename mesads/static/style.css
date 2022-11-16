@@ -37,3 +37,31 @@ h2 {
 .fr-download--card > p:first-of-type:hover {
   overflow: visible;
 }
+
+/*
+  By default, django-autocomplete-light widgets are styled with
+  django/contrib/admin/static/admin/css/vendor/select2/select2.css.
+
+  The overrides below make these widgets styled the same as components using DSFR.
+*/
+.select2, .select2-container {
+  width: 100% !important;
+  margin-top: .5rem !important;
+}
+
+.select2-container .select2-selection--single {
+  height: 2.5rem !important;
+}
+
+.select2-container--default .select2-selection--single {
+  background-color: var(--background-contrast-grey) !important;
+  border: none !important;
+  box-shadow: inset 0 -2px 0 0 var(--border-plain-grey) !important;
+  border-radius: 0px !important;
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+  padding-left: 1rem !important;
+  padding-top: .5rem !important;
+  padding-bottom: .5rem !important;
+}
