@@ -88,11 +88,15 @@
   </div>
 </div>
 
+
 <div class="fr-table">
   <table>
     <caption>ADS de {{ ads_manager.content_object.display_fulltext }}</caption>
     <thead>
       <tr>
+        {% if ads_manager.content_type.name == 'EPCI' %}
+        <th>🌆 Commune</th>
+        {% endif %}
         <th>♯ Numéro</th>
         <th>📜 Date de création</th>
         <th>🗓 Date d'attribution<br />au titulaire actuel</th>
@@ -103,6 +107,9 @@
     <tbody>
       {% for ads in ads_list %}
       <tr>
+        {% if ads_manager.content_type.name == 'EPCI' %}
+        <td>{{ ads.epci_commune.libelle|default:"" }}</td>
+        {% endif %}
         <td><a href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}">{{ ads.number }}</a></td>
         <td>{{ ads.ads_creation_date|default:"" }}</td>
         <td>{{ ads.attribution_date|default:"" }}</td>
