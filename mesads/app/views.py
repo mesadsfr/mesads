@@ -252,7 +252,7 @@ class ADSManagerView(ListView):
 
         # Add ordering on the number. CAST is necessary in the case the ADS number is not an integer.
         qs_ordered = qs.extra(
-            select={'ads_number_as_int': "CAST(substring(number FROM '^[0-9]+') AS INTEGER)"}
+            select={'ads_number_as_int': "CAST(substring(number FROM '^[0-9]+') AS NUMERIC)"}
         )
 
         # First, order by number if it is an integer, then by string.
