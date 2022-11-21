@@ -33,6 +33,16 @@ Création d'une nouvelle ADS
 </h1>
 
 <script type="text/javascript">
+  // array.findLastIndex is only available for firefox>104
+  function findLastIndex(arr, func) {
+    for (i = arr.length; i > 0; --i) {
+      if (func(arr[i - 1])) {
+        return i - 1;
+      }
+    }
+    return -1;
+  }
+
   const get_x_data = () => ({
       ads_type: '{{ form.ads_type.value }}',
       used_by_owner: '{% if form.used_by_owner.value is True %}true{% elif form.used_by_owner.value is False %}false{% else %}unknown{% endif %}',
@@ -43,7 +53,7 @@ Création d'une nouvelle ADS
         // List, returns true if the form is empty, false otherwise
         const filled  = ads_user_forms.map((e) => !!e.querySelector('input:not([type="hidden"]):not([value=""])'));
         // Index of the first non-empty form
-        const nonEmptyFormIdx = filled.findLastIndex((e) => e === true);
+        const nonEmptyFormIdx = findLastIndex(filled, (e) => e === true);
         // All the forms are empty, display only one blank form
         if (nonEmptyFormIdx < 0) {
           return 1;
@@ -56,7 +66,7 @@ Création d'une nouvelle ADS
         // List, returns true if the form is empty, false otherwise
         const filled  = legal_file_forms.map((e) => !!e.querySelector('input[type="hidden"]'));
         // Index of the first non-empty form
-        const nonEmptyFormIdx = filled.findLastIndex((e) => e === true);
+        const nonEmptyFormIdx = findLastIndex(filled, (e) => e === true);
         // All the forms are empty, display only one blank form
         if (nonEmptyFormIdx < 0) {
           return 0;
