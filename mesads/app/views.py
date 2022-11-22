@@ -3,7 +3,7 @@ import csv
 from datetime import timedelta
 
 from django.conf import settings
-from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib import messages
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
@@ -127,7 +127,7 @@ class ADSManagerAdminView(RevisionMixin, TemplateView):
         return redirect(reverse('app.ads-manager-admin.index'))
 
 
-class ADSManagerRequestView(SuccessMessageMixin, FormView):
+class ADSManagerRequestView(FormView):
     template_name = 'pages/ads_manager_request.html'
     form_class = ADSManagerForm
     success_url = reverse_lazy('app.ads-manager.index')
@@ -157,48 +157,79 @@ class ADSManagerRequestView(SuccessMessageMixin, FormView):
         return ctx
 
     def form_valid(self, form):
-        ADSManagerRequest.objects.get_or_create(
+        _, created = ADSManagerRequest.objects.get_or_create(
             user=self.request.user,
             ads_manager=form.cleaned_data['ads_manager'],
         )
 
+        # Request already exists
+        if not created:
+            messages.warning(
+                self.request,
+                self.get_message_for_existing_request(form.cleaned_data['ads_manager'])
+            )
         # Send notifications to administrators.
-        email_subject = render_to_string(
-            'pages/email_ads_manager_request_administrator_subject.txt', {
-                'user': self.request.user,
-            }
-        ).strip()
-        email_content = render_to_string(
-            'pages/email_ads_manager_request_administrator_content.txt', {
-                'request': self.request,
-                'ads_manager': form.cleaned_data['ads_manager'],
-                'user': self.request.user,
-            }
-        )
+        else:
+            messages.success(
+                self.request,
+                self.get_message_for_new_request(form.cleaned_data['ads_manager'])
+            )
+            email_subject = render_to_string(
+                'pages/email_ads_manager_request_administrator_subject.txt', {
+                    'user': self.request.user,
+                }
+            ).strip()
+            email_content = render_to_string(
+                'pages/email_ads_manager_request_administrator_content.txt', {
+                    'request': self.request,
+                    'ads_manager': form.cleaned_data['ads_manager'],
+                    'user': self.request.user,
+                }
+            )
 
-        if form.cleaned_data['ads_manager'].administrator:
-            for administrator_user in form.cleaned_data['ads_manager'].administrator.users.all():
-                send_mail(
-                    email_subject,
-                    email_content,
-                    settings.MESADS_CONTACT_EMAIL,
-                    [administrator_user],
-                    fail_silently=True,
-                )
+            if form.cleaned_data['ads_manager'].administrator:
+                for administrator_user in form.cleaned_data['ads_manager'].administrator.users.all():
+                    send_mail(
+                        email_subject,
+                        email_content,
+                        settings.MESADS_CONTACT_EMAIL,
+                        [administrator_user],
+                        fail_silently=True,
+                    )
 
         return super().form_valid(form)
 
-    def get_success_message(self, cleaned_data):
-        ads_manager_administrator = cleaned_data['ads_manager'].administrator
+    def get_message_for_existing_request(self, ads_manager):
+        if not ads_manager.administrator:
+            return '''
+                Vous avez déjà effectué une demande pour gérer les ADS de %(administration)s, et notre équipe va y répondre dans les plus brefs délais.<br /><br />
 
+                Si vous n'avez eu aucun retour depuis plusieurs jours, n'hésitez pas à contacter notre équipe par email à <a href="mailto:%(email)s">%(email)s</a> ou via notre module de tchat.
+            ''' % {
+                'email': settings.MESADS_CONTACT_EMAIL,
+                'administration': ads_manager.content_object.display_fulltext(),
+            }
+        return '''
+            Vous avez déjà effectué une demande pour gérer les ADS de %(administration)s. Cette demande a été envoyée à %(prefecture)s qui devrait y répondre rapidement.<br /><br />
+
+            Si vous n'avez eu aucun retour depuis plusieurs jours, n'hésitez pas à nous signaler le problème par email à <a href="mailto:%(email)s">%(email)s</a> ou via notre module de tchat.
+            <br /><br />
+            Nous pourrons alors valider votre demande manuellement.
+        ''' % {
+            'administration': ads_manager.content_object.display_fulltext(),
+            'prefecture': ads_manager.administrator.prefecture.display_fulltext(),
+            'email': settings.MESADS_CONTACT_EMAIL,
+        }
+
+    def get_message_for_new_request(self, ads_manager):
         # Request for EPCI or prefectures
-        if not ads_manager_administrator:
+        if not ads_manager.administrator:
             return '''
                 Votre demande vient d’être envoyée à notre équipe. Vous recevrez une confirmation de validation de votre
                 accès par mail.<br /><br />
 
-                En cas de difficulté ou si vous n’obtenez pas de validation de votre demande vous pouvez contacter
-                <a href="mailto:%(email)s">%(email)s</a>.<br /><br />
+                En cas de difficulté ou si vous n’obtenez pas de validation de votre demande vous pouvez contacter par email à
+                <a href="mailto:%(email)s">%(email)s</a> ou via notre module de tchat.<br /><br />
 
                 Vous pouvez également demander un accès pour la gestion des ADS d’une autre collectivité.
             ''' % {
@@ -210,11 +241,11 @@ class ADSManagerRequestView(SuccessMessageMixin, FormView):
             accès par mail.<br /><br />
 
             En cas de difficulté ou si vous n’obtenez pas de validation de votre demande vous pouvez
-            contacter <a href="mailto:%(email)s">%(email)s</a>.<br /><br />
+            contacter par email à <a href="mailto:%(email)s">%(email)s</a> ou via notre module de tchat.<br /><br />
 
             Vous pouvez également demander un accès pour la gestion des ADS d’une autre collectivité.
         ''' % {
-            'prefecture': ads_manager_administrator.prefecture.display_fulltext(),
+            'prefecture': ads_manager.administrator.prefecture.display_fulltext(),
             'email': settings.MESADS_CONTACT_EMAIL
         }
 
