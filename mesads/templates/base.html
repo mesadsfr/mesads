@@ -168,6 +168,11 @@
       })();
     </script>
     {% endif %}
+
+    {% if MESADS_SENTRY_JS_URL %}
+    <script src="{{ MESADS_SENTRY_JS_URL }}" crossorigin="anonymous"></script>
+    {% endif %}
+
     {% block endbody %}{% endblock %}
   </body>
 </html>
