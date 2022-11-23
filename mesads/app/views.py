@@ -495,6 +495,15 @@ class DashboardsView(TemplateView):
             .annotate(ads_count=Count('adsmanager__ads')) \
             .filter(ads_count__gt=0)
 
+        # All ADSManagerAdministrator, with the count of ADS with at least one of the contact fields filled.
+        ads_with_info_query_now = ADSManagerAdministrator.objects \
+            .select_related('prefecture') \
+            .annotate(ads_count=Count(
+                'adsmanager__ads',
+                filter=~Q(adsmanager__ads__owner_email='') | ~Q(adsmanager__ads__owner_mobile='') | ~Q(adsmanager__ads__owner_phone='')
+            )) \
+            .filter(ads_count__gt=0)
+
         ads_query_3_months = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
             .filter(adsmanager__ads__creation_date__lte=now - timedelta(weeks=4 * 3)) \
@@ -512,6 +521,7 @@ class DashboardsView(TemplateView):
 
         for (label, query) in (
             ('now', ads_query_now),
+            ('with_info_now', ads_with_info_query_now),
             ('3_months', ads_query_3_months),
             ('6_months', ads_query_6_months),
             ('12_months', ads_query_12_months),
@@ -588,6 +598,14 @@ class DashboardsDetailView(DetailView):
             ).annotate(ads_count=Count('ads')) \
             .filter(ads_count__gt=0)
 
+        # All ADSManager, with the count of ADS with at least one of the contact fields filled.
+        ads_with_info_query_now = ADSManager.objects \
+            .prefetch_related('content_type', 'content_object') \
+            .filter(
+                administrator=self.object
+            ).annotate(ads_count=Count('ads', filter=~Q(ads__owner_email='') | ~Q(ads__owner_mobile='') | ~Q(ads__owner_phone=''))) \
+            .filter(ads_count__gt=0)
+
         ads_query_3_months = ADSManager.objects \
             .prefetch_related('content_type', 'content_object') \
             .filter(
@@ -611,6 +629,7 @@ class DashboardsDetailView(DetailView):
 
         for (label, query) in (
             ('now', ads_query_now),
+            ('with_info_now', ads_with_info_query_now),
             ('3_months', ads_query_3_months),
             ('6_months', ads_query_6_months),
             ('12_months', ads_query_12_months),

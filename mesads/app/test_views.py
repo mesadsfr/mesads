@@ -230,6 +230,7 @@ class TestADSManagerRequestView(ClientTestCase):
             messages.WARNING
         )
 
+
 class TestADSManagerView(ClientTestCase):
     def test_permissions(self):
         for client_name, client, expected_status in (
