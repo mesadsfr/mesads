@@ -155,9 +155,15 @@
     <script type="text/javascript" nomodule src="{% static '@gouvfr/js/dsfr.nomodule.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
     <script type="text/javascript" src="{% static 'alpinejs/cdn.min.js' %}"></script>
+
     {% if MESADS_CRISP_WEBSITE_ID %}
     <script type="text/javascript">
       window.$crisp= [];
+
+      {% if user.email %}
+      window.$crisp.push(["set", "user:email", ["{{ user.email }}"]]);
+      {% endif %}
+
       window.CRISP_WEBSITE_ID = "{{ MESADS_CRISP_WEBSITE_ID }}";
       (function(){
         d = document;
