@@ -639,12 +639,14 @@ class DashboardsDetailView(DetailView):
                 stats[row.id]['ads'][label] = row.ads_count
 
         users_query_now = ADSManager.objects \
+            .prefetch_related('content_type', 'content_object') \
             .filter(
                 administrator=self.object,
                 adsmanagerrequest__accepted=True
             ).annotate(users_count=Count('id'))
 
         users_query_3_months = ADSManager.objects \
+            .prefetch_related('content_type', 'content_object') \
             .filter(
                 administrator=self.object,
                 adsmanagerrequest__accepted=True,
@@ -652,6 +654,7 @@ class DashboardsDetailView(DetailView):
             ).annotate(users_count=Count('id'))
 
         users_query_6_months = ADSManager.objects \
+            .prefetch_related('content_type', 'content_object') \
             .filter(
                 administrator=self.object,
                 adsmanagerrequest__accepted=True,
@@ -659,6 +662,7 @@ class DashboardsDetailView(DetailView):
             ).annotate(users_count=Count('id'))
 
         users_query_12_months = ADSManager.objects \
+            .prefetch_related('content_type', 'content_object') \
             .filter(
                 administrator=self.object,
                 adsmanagerrequest__accepted=True,
