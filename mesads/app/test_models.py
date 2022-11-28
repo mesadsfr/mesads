@@ -5,7 +5,11 @@ from django.test import override_settings, TestCase
 import requests
 import requests_mock
 
-from .models import ADS, validate_siret, ADSLegalFile, ADSUser, ADSUpdateFile, get_legal_filename
+from .models import (
+    ADS, validate_siret, ADSLegalFile, ADSUser, ADSUpdateFile,
+    get_legal_filename, validate_license_number,
+)
+
 from .unittest import ClientTestCase
 
 
@@ -93,6 +97,13 @@ class TestADSLegalFile(ClientTestCase):
         )
         ads_legal_file.file.name = get_legal_filename(ads_legal_file, 'xxx.pdf')
         self.assertEqual(ads_legal_file.human_filename(), 'xxx.pdf')
+
+
+class TestValidateLicenseNumber(TestCase):
+    def test_validate_license_number(self):
+        self.assertRaises(ValidationError, validate_license_number, 'abc')
+        self.assertRaises(ValidationError, validate_license_number, '123')
+        self.assertIsNone(validate_license_number('12312312312'))
 
 
 class TestADSUser(ClientTestCase):

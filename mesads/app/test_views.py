@@ -511,6 +511,7 @@ class TestADSView(ClientTestCase):
                 'adsuser_set-0-status': '',
                 'adsuser_set-0-name': '',
                 'adsuser_set-0-siret': '',
+                'adsuser_set-0-license-number': '',
 
                 'adslegalfile_set-TOTAL_FORMS': 10,
                 'adslegalfile_set-INITIAL_FORMS': 0,
@@ -759,6 +760,7 @@ class TestCSVExport(ClientTestCase):
 
 class TestDashboardsViews(ClientTestCase):
     """Test DashboardsView and DashboardsDetailView"""
+
     def setUp(self):
         super().setUp()
         request = RequestFactory().get('/dashboards')

@@ -20,6 +20,7 @@ class ADSManagerForm(FrenchAdministrationForm):
 
     This class sets the field ads_manager to the selected choice.
     """
+
     def clean(self):
         # super() method ensures only one field is set
         super().clean()
@@ -90,6 +91,7 @@ class AutoDeleteADSUserFormSet(BaseInlineFormSet):
     Here, we override the private method _should_delete_form to ask to remove
     the entry if all the fields are empty.
     """
+
     def _should_delete_form(self, form):
         for key in set(form.fields.keys()) - set(['ads', 'id', 'DELETE']):
             if form.cleaned_data.get(key):
@@ -98,7 +100,7 @@ class AutoDeleteADSUserFormSet(BaseInlineFormSet):
 
 
 ADSUserFormSet = inlineformset_factory(
-    ADS, ADSUser, fields=('status', 'name', 'siret'),
+    ADS, ADSUser, fields=('status', 'name', 'siret', 'license_number'),
     can_delete=True, extra=10, max_num=10,
     formset=AutoDeleteADSUserFormSet
 )

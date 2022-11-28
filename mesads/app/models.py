@@ -66,6 +66,7 @@ class ADSManagerRequest(models.Model):
     """User request to become ADSManager. Has to be accepted by the
     administrator (ie. the prefecture) of the ADSManager.
     """
+
     def __str__(self):
         return f'Requete de {self.user} pour être administrateur de {self.ads_manager}'
 
@@ -317,6 +318,11 @@ class ADSLegalFile(models.Model):
     file = models.FileField(upload_to=get_legal_filename, blank=False, null=False)
 
 
+def validate_license_number(value):
+    if not re.match(r'[0-9]{11}$', value):
+        raise ValidationError('Le numéro de carte professionnelle doit être composé de 11 chiffres')
+
+
 @reversion.register
 class ADSUser(models.Model):
     """"Exploitant" of an ADS.
@@ -332,7 +338,10 @@ class ADSUser(models.Model):
     :param name: Firstname and lastname of the person using the ADS, or "raison sociale".
 
     :param siret: SIRET of the ADS user.
+
+    :param license_number: "numéro de la carte professionnelle"
     """
+
     def __str__(self):
         return f'{self.name}'
 
@@ -349,6 +358,7 @@ class ADSUser(models.Model):
     status = models.CharField(max_length=255, choices=ADS_USER_STATUS, blank=True, null=False)
     name = models.CharField(max_length=1024, blank=True, null=False)
     siret = models.CharField(max_length=128, blank=True, null=False, validators=[validate_siret])
+    license_number = models.CharField(max_length=16, blank=True, null=True, validators=[validate_license_number])
 
 
 class ADSUpdateFile(models.Model):
@@ -365,6 +375,7 @@ class ADSUpdateFile(models.Model):
     :param imported: boolean to track if the file has been imported by an
         asynchronous job.
     """
+
     def __str__(self):
         return f'Update file from user {self.user.id} on {self.creation_date}, imported={self.imported}'
 

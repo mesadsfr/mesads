@@ -184,6 +184,9 @@ Création d'une nouvelle ADS
                 {% include 'pages/ads-form_string.html' with field_title="Nom de l'exploitant de l'ADS" field=ads_user_form.name field_errors=ads_user_form.errors.name required=ads_user_form.fields.name.required %}
                 <!-- User SIRET -->
                 {% include 'pages/ads-form_string.html' with field_title="SIRET de l'exploitant de l'ADS" field=ads_user_form.siret field_errors=ads_user_form.errors.siret required=ads_user_form.fields.siret.required %}
+                <!-- Professional licence number -->
+                {% include 'pages/ads-form_string.html' with field_title="Numéro de la carte professionnelle" field=ads_user_form.license_number field_errors=ads_user_form.errors.license_number required=ads_user_form.fields.license_number.required %}
+
               </div>
 
               {% for hidden_field in ads_user_form.hidden_fields %}
