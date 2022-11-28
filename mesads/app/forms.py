@@ -112,7 +112,7 @@ ADSUserFormSet = inlineformset_factory(
 
 ADSLegalFileFormSet = inlineformset_factory(
     ADS, ADSLegalFile, fields=('file',),
-    can_delete=True, extra=5, max_num=10
+    can_delete=True, extra=10, max_num=10
 )
 
 
