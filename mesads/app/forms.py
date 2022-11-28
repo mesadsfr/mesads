@@ -93,6 +93,10 @@ class AutoDeleteADSUserFormSet(BaseInlineFormSet):
     """
 
     def _should_delete_form(self, form):
+        # If the form is invalid, cleaned_data might be empty. We do not want to
+        # remove it otherwise errors won't be displayed.
+        if not form.is_valid():
+            return super()._should_delete_form(form)
         for key in set(form.fields.keys()) - set(['ads', 'id', 'DELETE']):
             if form.cleaned_data.get(key):
                 return super()._should_delete_form(form)
