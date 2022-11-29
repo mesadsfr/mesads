@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='adsuser',
             name='license_number',
-            field=models.CharField(blank=True, max_length=16, null=True, validators=[mesads.app.models.validate_license_number]),
+            field=models.CharField(blank=True, max_length=16, null=True),
         ),
     ]

@@ -10,7 +10,13 @@ from django.utils import timezone
 
 from mesads.fradm.models import Commune, EPCI, Prefecture
 
-from .models import ADS, ADSLegalFile, ADSManagerRequest, ADSUser, validate_license_number
+from .models import (
+    ADS,
+    ADSLegalFile,
+    ADSManagerRequest,
+    ADSUser,
+    validate_siret,
+)
 from .unittest import ClientTestCase
 from .views import DashboardsView, DashboardsDetailView
 
@@ -574,7 +580,7 @@ class TestADSView(ClientTestCase):
         epci_ads.refresh_from_db()
         self.assertEqual(epci_ads.epci_commune, valid_commune)
 
-    def test_create_ads_user_invalid_license(self):
+    def test_create_ads_user_invalid_siret(self):
         resp = self.ads_manager_city35_client.post(
             f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}',
             {
@@ -586,8 +592,8 @@ class TestADSView(ClientTestCase):
                 'adsuser_set-0-id': '',
                 'adsuser_set-0-status': '',
                 'adsuser_set-0-name': '',
-                'adsuser_set-0-siret': '',
-                'adsuser_set-0-license_number': '1234',
+                'adsuser_set-0-siret': '1234',
+                'adsuser_set-0-license_number': '',
 
                 'adslegalfile_set-TOTAL_FORMS': 10,
                 'adslegalfile_set-INITIAL_FORMS': 0,
@@ -597,10 +603,10 @@ class TestADSView(ClientTestCase):
         )
         self.assertEqual(resp.status_code, 200)
 
-        # Make sure the message raised by validate_license_number is in the
+        # Make sure the message raised by validate_siret is in the
         # response.
         try:
-            validate_license_number('xxx')
+            validate_siret('xxx')
         except ValidationError as exc:
             self.assertIn(exc.message, resp.content.decode('utf8'))
 
