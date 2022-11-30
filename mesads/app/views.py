@@ -732,6 +732,10 @@ class FAQView(TemplateView):
                 },
             ],
         },
+        {
+            "title": "Problème technique, remarque, question",
+            "template": "pages/faq/contact.html",
+        }
     ]
 
     def get_context_data(self, **kwargs):
