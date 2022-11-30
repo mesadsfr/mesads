@@ -20,4 +20,5 @@ urlpatterns = [
     path('gestion/<int:manager_id>/ads/<int:ads_id>/delete', ads_manager_required(views.ADSDeleteView.as_view()), name='app.ads.delete'),
     path('gestion/<int:manager_id>/ads/', ads_manager_required(views.ADSCreateView.as_view()), name='app.ads.create'),
     path('prefectures/<int:prefecture_id>/export', ads_manager_administrator_required(views.prefecture_export_ads), name='app.exports.prefecture'),
+    path('faq', views.FAQView.as_view(), name='app.faq'),
 ]

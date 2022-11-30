@@ -680,3 +680,63 @@ class DashboardsDetailView(DetailView):
                 stats[row.id]['users'][label] = row.users_count
 
         return sorted(list(stats.values()), key=lambda stat: stat['obj'].id)
+
+
+class FAQView(TemplateView):
+    template_name = 'pages/faq.html'
+    faq_sections = [
+        {
+            "title": "Gestion du compte",
+            "subitems": [
+                {
+                    "title": "Comment créer un compte ?",
+                    "template": "pages/faq/account_create.html"
+                },
+                {
+                    "title": "Je ne reçois pas l'e-mail de validation",
+                    "template": "pages/faq/account_email_not_received.html",
+                },
+                {
+                    "title": "Comment configurer l'accès gestionnaire ?",
+                    "template": "pages/faq/account_send_request.html",
+                },
+                {
+                    "title": "J'ai oublié mon mot de passe",
+                    "template": "pages/faq/account_forgot_password.html",
+                },
+                # {
+                #     "title": "Je veux changer l'adresse e-mail de mon compte",
+                # },
+            ],
+        },
+        # {
+        #     "title": "Gestion des ADS",
+        #     "subitems": [
+        #         {
+        #             "title": "Créer une ADS",
+        #         },
+        #         {
+        #             "title": "Modifier une ADS",
+        #         },
+        #         {
+        #             "title": "Supprimer une ADS",
+        #         },
+        #         {
+        #             "title": "Pour les préfectures",
+        #             "subitems": [
+        #                 {
+        #                     "title": "Comment valider les demandes d'accès des agents territoriaux ?",
+        #                 },
+        #                 {
+        #                     "title": "Comment révoquer un accès ?",
+        #                 },
+        #             ],
+        #         },
+        #     ],
+        # },
+    ]
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['faq_sections'] = self.faq_sections
+        return ctx

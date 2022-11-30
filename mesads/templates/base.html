@@ -65,8 +65,8 @@
           <button class="fr-link--close fr-link" aria-controls="modal-833">Fermer</button>
           <div class="fr-header__menu-links"></div>
           <nav class="fr-nav" id="navigation-832" role="navigation" aria-label="Menu principal">
-            {% if user.is_authenticated %}
             <ul class="fr-nav__list">
+            {% if user.is_authenticated %}
               {% if user.is_staff %}
               <li class="fr-nav__item">
                 {% url 'app.dashboards.list' as dashboards_url %}
@@ -83,14 +83,18 @@
                 {% url 'app.ads-manager.index' as ads_manager_index_url %}
                 <a class="fr-nav__link" href="{{ ads_manager_index_url }}"{% if request.path == ads_manager_index_url %} aria-current="page"{% endif %}>Gestion des ADS</a>
               </li>
-            </ul>
             {% endif %}
+              <li class="fr-nav__item">
+                {% url 'app.faq' as faq_url %}
+                <a class="fr-nav__link" href="{{ faq_url }}"{% if request.path == faq_url %} aria-current="page"{% endif %}>FAQ</a>
+              </li>
+            </ul>
           </nav>
         </div>
       </div>
     </header>
 
-    <main class="fr-container">
+    <main class="fr-container {% block main_styles %}fr-pt-5w fr-pb-5w{% endblock %}">
       {% for message in messages %}
       <div class="fr-alert fr-alert--info
         {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}fr-alert--info {% endif %}

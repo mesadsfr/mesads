@@ -1,0 +1,26 @@
+{% load static %}
+
+<p>
+    Pour obtenir l'accès pour la gestion des autorisations de stationnement de votre administration/collectivité, il vous suffit de :
+</p>
+
+<ul>
+    <li>Vous rendre sur le menu <a class="fr-btn fr-btn--sm" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a></li>
+    <li>En bas de la page, choisir l'administration pour laquelle vous êtes gestionnaire(s) des autorisations de stationnement.</li>
+    <li>Cliquer sur le bouton Envoyer la demande à la Préfecture</li>
+</ul>
+
+<figure class="fr-content-media" role="group">
+    <div class="fr-content-media__img">
+        <img class="fr-fluid-img" src="{% static 'faq/send_ads_manager_request.png' %}" alt="Envoyer une demande de gestion à la préfecture" />
+    </div>
+    <figcaption class="fr-content-media__caption">Envoyer une demande de gestion à la préfecture</figcaption>
+</figure>
+
+<p>
+    Votre demande sera envoyée auprès de la Préfecture.
+</p>
+
+<p>
+    Si vous constatez qu'après plusieurs jours, votre demande n'a toujours pas été validée, contactez nous par e-mail à  <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+</p>
