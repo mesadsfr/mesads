@@ -14,6 +14,10 @@ h1 {
   content: "⁉️  ";
 }
 
+.highlight-shadow {
+  box-shadow: 2px 2px 2px 2px;
+}
+
 /*
    If the title of the download card is too long, add ellipsis.
 */
