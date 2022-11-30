@@ -717,17 +717,18 @@ class FAQView(TemplateView):
                     "title": "Créer, modifier et supprimer une ADS",
                     "template": "pages/faq/ads_manage.html",
                 },
-                #         {
-                #             "title": "Pour les préfectures",
-                #             "subitems": [
-                #                 {
-                #                     "title": "Comment valider les demandes d'accès des agents territoriaux ?",
-                #                 },
-                #                 {
-                #                     "title": "Comment révoquer un accès ?",
-                #                 },
-                #             ],
-                #         },
+                {
+                    "title": "Pour les préfectures",
+                    "subitems": [
+                        {
+                            "title": "Comment valider les demandes d'accès des agents territoriaux ?",
+                            "template": "pages/faq/ads_prefecture_manage.html",
+                        },
+                        # {
+                        #     "title": "Comment révoquer un accès ?",
+                        # },
+                    ],
+                },
             ],
         },
     ]
