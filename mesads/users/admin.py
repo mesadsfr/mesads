@@ -8,7 +8,7 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ('email', 'admin_roles')
 
     readonly_fields = ('date_joined', 'last_login',)
-    fields = ('date_joined', 'last_login', 'is_superuser', 'is_staff', 'is_active',)
+    fields = ('email', 'date_joined', 'last_login', 'is_superuser', 'is_staff', 'is_active',)
     search_fields = ('email', 'adsmanageradministrator__prefecture__libelle',)
 
     def get_queryset(self, request):
