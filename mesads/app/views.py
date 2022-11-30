@@ -710,31 +710,32 @@ class FAQView(TemplateView):
                 },
             ],
         },
-        # {
-        #     "title": "Gestion des ADS",
-        #     "subitems": [
-        #         {
-        #             "title": "Créer une ADS",
-        #         },
-        #         {
-        #             "title": "Modifier une ADS",
-        #         },
-        #         {
-        #             "title": "Supprimer une ADS",
-        #         },
-        #         {
-        #             "title": "Pour les préfectures",
-        #             "subitems": [
-        #                 {
-        #                     "title": "Comment valider les demandes d'accès des agents territoriaux ?",
-        #                 },
-        #                 {
-        #                     "title": "Comment révoquer un accès ?",
-        #                 },
-        #             ],
-        #         },
-        #     ],
-        # },
+        {
+            "title": "Gestion des ADS",
+            "subitems": [
+                {
+                    "title": "Créer une ADS",
+                    "template": "pages/faq/ads_create.html",
+                },
+                #         {
+                #             "title": "Modifier une ADS",
+                #         },
+                #         {
+                #             "title": "Supprimer une ADS",
+                #         },
+                #         {
+                #             "title": "Pour les préfectures",
+                #             "subitems": [
+                #                 {
+                #                     "title": "Comment valider les demandes d'accès des agents territoriaux ?",
+                #                 },
+                #                 {
+                #                     "title": "Comment révoquer un accès ?",
+                #                 },
+                #             ],
+                #         },
+            ],
+        },
     ]
 
     def get_context_data(self, **kwargs):

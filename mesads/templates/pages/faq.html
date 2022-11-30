@@ -51,7 +51,7 @@
     {% for faq_section in faq_sections %}
         {% for faq_section_item in faq_section.subitems %}
             {% if faq_section_item.template  %}
-                {% if not forloop.first %}<hr class="fr-mt-5w fr-mb-3w" />{% endif %}
+                {% if not forloop.parentloop.first or not forloop.first %}<hr class="fr-mt-5w fr-mb-3w" />{% endif %}
                 <h2 id="{{ faq_section_item.title|slugify }}">{{ faq_section_item.title }}</h2>
                 {% include faq_section_item.template  %}
             {% endif  %}
