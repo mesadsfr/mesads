@@ -10,12 +10,14 @@
     <li>Cliquer sur le bouton Envoyer la demande à la Préfecture</li>
 </ul>
 
+{% with "Envoyeer une demande de gestion à la préfecture" as alt_img_text %}
 <figure class="fr-content-media" role="group">
     <div class="fr-content-media__img">
-        <img class="fr-fluid-img" src="{% static 'faq/send_ads_manager_request.png' %}" alt="Envoyer une demande de gestion à la préfecture" />
+        <img class="fr-fluid-img" src="{% static 'faq/send_ads_manager_request.png' %}" alt="{{ alt_img_text }}" />
     </div>
-    <figcaption class="fr-content-media__caption">Envoyer une demande de gestion à la préfecture</figcaption>
+    <figcaption class="fr-content-media__caption">{{ alt_img_text }}</figcaption>
 </figure>
+{% endwith %}
 
 <p>
     Votre demande sera envoyée auprès de la Préfecture.

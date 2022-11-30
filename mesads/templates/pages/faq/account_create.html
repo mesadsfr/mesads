@@ -9,11 +9,13 @@
     <li>Renseigner votre adresse e-mail professionnelle ainsi que le mot de passe que vous aurez préalablement choisi (8 caractères minimum).</li>
 </ul>
 
+{% with "Création d'un compte Mes ADS" as alt_img_text %}
 <figure class="fr-content-media" role="group">
     <div class="fr-content-media__img">
-        <img class="fr-fluid-img" src="{% static 'faq/account_create.png' %}" alt="Création d'un compte Mes ADS" />
+        <img class="fr-fluid-img" src="{% static 'faq/account_create.png' %}" alt="{{ alt_img_text }}" />
     </div>
-    <figcaption class="fr-content-media__caption">Création d'un compte Mes ADS</figcaption>
+    <figcaption class="fr-content-media__caption">{{ alt_img_text }}</figcaption>
 </figure>
+{% endwith %}
 
 <p>Vous recevrez dans les minutes qui suivent un e-mail de confirmation de votre compte Mes.ADS. Il vous suffira de cliquer sur le bouton de validation présent dans le corps de l'e-mail reçu.</p>
