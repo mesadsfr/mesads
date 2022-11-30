@@ -6,12 +6,6 @@ main {
 
 h1 {
   font-size: 2rem;
-  margin-bottom: 2rem;
-}
-
-h2 {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
 }
 
 .table-row-success td:first-child:before {
@@ -29,12 +23,12 @@ h2 {
 /*
    If the title of the download card is too long, add ellipsis.
 */
-.fr-download--card > p:first-of-type {
+.fr-download--card>p:first-of-type {
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.fr-download--card > p:first-of-type:hover {
+.fr-download--card>p:first-of-type:hover {
   overflow: visible;
 }
 
@@ -44,7 +38,8 @@ h2 {
 
   The overrides below make these widgets styled the same as components using DSFR.
 */
-.select2, .select2-container {
+.select2,
+.select2-container {
   width: 100% !important;
   margin-top: .5rem !important;
 }
