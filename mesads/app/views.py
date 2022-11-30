@@ -704,9 +704,10 @@ class FAQView(TemplateView):
                     "title": "J'ai oublié mon mot de passe",
                     "template": "pages/faq/account_forgot_password.html",
                 },
-                # {
-                #     "title": "Je veux changer l'adresse e-mail de mon compte",
-                # },
+                {
+                    "title": "Je veux changer l'adresse e-mail de mon compte",
+                    "template": "pages/faq/account_change_email.html",
+                },
             ],
         },
         # {
