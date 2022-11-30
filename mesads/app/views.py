@@ -714,15 +714,9 @@ class FAQView(TemplateView):
             "title": "Gestion des ADS",
             "subitems": [
                 {
-                    "title": "Créer une ADS",
-                    "template": "pages/faq/ads_create.html",
+                    "title": "Créer, modifier et supprimer une ADS",
+                    "template": "pages/faq/ads_manage.html",
                 },
-                #         {
-                #             "title": "Modifier une ADS",
-                #         },
-                #         {
-                #             "title": "Supprimer une ADS",
-                #         },
                 #         {
                 #             "title": "Pour les préfectures",
                 #             "subitems": [

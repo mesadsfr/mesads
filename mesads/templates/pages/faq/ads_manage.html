@@ -1,0 +1,19 @@
+{% load static %}
+
+<p>
+    Une fois votre accès gestionnaire configuré, c'est à dire une fois que la préfecture a accepté votre demande pour pouvoir gérer les ADS de votre administration, vous pouvez vous rendre sur le menu <a href="{% url 'app.ads-manager.index' %}" class="fr-btn fr-btn--sm">Gestion des ADS</a>.
+</p>
+
+<p>
+    Depuis cette page, vous pouvez créer, modifier et supprimer les ADS. Consultez notre guide d'utilisation ci-dessous pour plus d'informations.
+</p>
+
+<div class="fr-download">
+    <p>
+        <a href="{% static "Guide d'utilisation.pdf" %}" download class="fr-download__link">Télécharger le guide d'utilisation
+            <span class="fr-download__detail">
+                PDF
+            </span>
+        </a>
+    </p>
+</div>
