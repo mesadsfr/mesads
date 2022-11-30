@@ -724,9 +724,10 @@ class FAQView(TemplateView):
                             "title": "Comment valider les demandes d'accès des agents territoriaux ?",
                             "template": "pages/faq/ads_prefecture_manage.html",
                         },
-                        # {
-                        #     "title": "Comment révoquer un accès ?",
-                        # },
+                        {
+                            "title": "Comment révoquer un accès ?",
+                            "template": "pages/faq/ads_prefecture_revoke.html",
+                        },
                     ],
                 },
             ],
