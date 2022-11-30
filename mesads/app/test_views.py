@@ -922,3 +922,9 @@ class TestDashboardsViews(ClientTestCase):
                 '12_months': 1,
             }
         }], self.dashboards_detail_view.get_stats())
+
+
+class TestFAQView(ClientTestCase):
+    def test_get(self):
+        resp = self.client.get('/faq')
+        self.assertEqual(resp.status_code, 200)
