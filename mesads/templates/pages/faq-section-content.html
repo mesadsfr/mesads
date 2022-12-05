@@ -5,7 +5,5 @@
         {% include faq_section.template  %}
     {% endif %}
 
-    {% for faq_section_item in faq_section.subitems %}
-        {% include "pages/faq-section-content.html" with faq_sections=faq_section.subitems %}
-    {% endfor %}
+    {% include "pages/faq-section-content.html" with faq_sections=faq_section.subitems %}
 {% endfor %}
