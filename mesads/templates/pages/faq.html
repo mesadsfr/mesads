@@ -12,71 +12,13 @@
             <button class="fr-sidemenu__btn" aria-controls="fr-sidemenu-wrapper" aria-expanded="false">Dans cette rubrique</button>
             <div class="fr-collapse" id="fr-sidemenu-wrapper">
                 <div class="fr-sidemenu__title">Foire aux questions</div>
-                <ul class="fr-sidemenu__list">
-                    {% for faq_section in faq_sections %}
-
-                    <li class="fr-sidemenu__item">
-                        {% if not faq_section.subitems %}
-                        <a class="fr-sidemenu__link" href="#{{ faq_section.title|slugify }}" target="_self">{{ faq_section.title }}</a>
-                        {% else %}
-                        <button class="fr-sidemenu__btn" aria-expanded="false" aria-controls="fr-sidemenu-item-{{ forloop.counter0 }}">{{ faq_section.title }}</button>
-                        <div class="fr-collapse" id="fr-sidemenu-item-{{ forloop.counter0 }}">
-                            <ul class="fr-sidemenu__list">
-                                {% for faq_section_item in faq_section.subitems %}
-                                <li class="fr-sidemenu__item">
-                                    {% if not faq_section_item.subitems %}
-                                    <a class="fr-sidemenu__link" href="#{{ faq_section_item.title|slugify }}" target="_self">{{ faq_section_item.title }}</a>
-                                    {% else %}
-                                    <button class="fr-sidemenu__btn" aria-expanded="false" aria-controls="fr-sidemenu-item-{{ forloop.parentloop.counter0 }}-sub">Pour les préfectures</button>
-                                    <div class="fr-collapse" id="fr-sidemenu-item-{{ forloop.parentloop.counter0 }}-sub">
-                                        <ul class="fr-sidemenu__list">
-                                            {% for faq_section_item_item in faq_section_item.subitems %}
-                                            <li class="fr-sidemenu__item">
-                                                <a class="fr-sidemenu__link" href="#{{ faq_section_item_item.title|slugify }}" target="_self">
-                                                    {{ faq_section_item_item.title }}
-                                                </a>
-                                            </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                    {% endif %}
-                                </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        {% endif %}
-                    </li>
-                    {% endfor %}
-                </ul>
+                {% include "pages/faq-section-header.html" %}
             </div>
         </div>
     </nav>
 
     <div class="fr-col fr-pt-2w fr-pt-md-0">
-    {% for faq_section in faq_sections %}
-    
-        {% if faq_section.template %}
-            {% if not forloop.first %}<hr class="fr-mt-5w fr-mb-3w" />{% endif %}
-            <h2 id="{{ faq_section.title|slugify }}">{{ faq_section.title }}</h2>
-            {% include faq_section.template  %}
-        {% endif %}
-
-        {% for faq_section_item in faq_section.subitems %}
-            {% if faq_section_item.template  %}
-                {% if not forloop.parentloop.first or not forloop.first %}<hr class="fr-mt-5w fr-mb-3w" />{% endif %}
-                <h2 id="{{ faq_section_item.title|slugify }}">{{ faq_section_item.title }}</h2>
-                {% include faq_section_item.template  %}
-            {% endif  %}
-
-            {% for faq_section_item_item in faq_section_item.subitems %}
-                {% if faq_section_item_item.template  %}
-                    {% if not forloop.parentloop.first or not forloop.first %}<hr class="fr-mt-5w fr-mb-3w" />{% endif %}
-                    <h2 id="{{ faq_section_item_item.title|slugify }}">{{ faq_section_item_item.title }}</h2>
-                    {% include faq_section_item_item.template  %}
-                {% endif  %}
-            {% endfor %}
-        {% endfor %}
-    {% endfor %}
+        {% include "pages/faq-section-content.html" %}
     </div>
 </div>
 {% endblock %}

@@ -1,0 +1,14 @@
+<ul class="fr-sidemenu__list">
+    {% for faq_section in faq_sections %}
+    <li class="fr-sidemenu__item">
+        {% if not faq_section.subitems %}
+        <a class="fr-sidemenu__link" href="#{{ faq_section.title|slugify }}" target="_self">{{ faq_section.title }}</a>
+        {% else %}
+        <button class="fr-sidemenu__btn" aria-expanded="false" aria-controls="fr-sidemenu-item-{{ faq_section.title|slugify }}">{{ faq_section.title }}</button>
+        <div class="fr-collapse" id="fr-sidemenu-item-{{ faq_section.title|slugify }}">
+            {% include "pages/faq-section-header.html" with faq_sections=faq_section.subitems %}
+        </div>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
