@@ -113,6 +113,9 @@ class ADSManagerAdministrator(models.Model):
 
 
 def validate_siret(value):
+    if not value:
+        return
+
     if not re.match(r'^\d{14}$', value):
         raise ValidationError('Un SIRET doit être composé de 14 numéros')
 
@@ -149,8 +152,35 @@ def validate_siret(value):
     )
 
 
+class SmartValidationMixin:
+    """Override clean() to only validate fields that have changed."""
+    SMART_VALIDATION_WATCHED_FIELDS = None
+
+    def __init__(self, *args, **kwargs):
+        """Store the initial value for the watched fields."""
+        assert self.SMART_VALIDATION_WATCHED_FIELDS
+        super().__init__(*args, **kwargs)
+        self.__smart_validation_initial_values = {
+            name: getattr(self, name)
+            for name in self.SMART_VALIDATION_WATCHED_FIELDS.keys()
+        }
+
+    def clean(self, *args, **kwargs):
+        """If any of the watched fields changed, revalidate it."""
+        super().clean(*args, **kwargs)
+        for key, initial_value in self.__smart_validation_initial_values.items():
+            if getattr(self, key) != initial_value:
+                validator = self.SMART_VALIDATION_WATCHED_FIELDS[key]
+                try:
+                    validator(getattr(self, key))
+                except Exception as exc:
+                    raise ValidationError({
+                        key: exc
+                    })
+
+
 @reversion.register
-class ADS(models.Model):
+class ADS(SmartValidationMixin, models.Model):
     """Autorisation De Stationnement created by ADSManager.
 
     :param creation_date: Creation date of the object in database.
@@ -214,6 +244,10 @@ class ADS(models.Model):
             models.UniqueConstraint(fields=['number', 'ads_manager_id'], name='unique_ads_number')
         ]
 
+    SMART_VALIDATION_WATCHED_FIELDS = {
+        'owner_siret': validate_siret,
+    }
+
     def __str__(self):
         return f'ADS {self.id}'
 
@@ -272,8 +306,7 @@ class ADS(models.Model):
 
     owner_name = models.CharField(max_length=1024, blank=True, null=False)
 
-    owner_siret = models.CharField(max_length=128, blank=True, null=False,
-                                   validators=[validate_siret])
+    owner_siret = models.CharField(max_length=128, blank=True, null=False)
 
     owner_phone = models.CharField(max_length=128, blank=True, null=False)
     owner_mobile = models.CharField(max_length=128, blank=True, null=False)
@@ -319,7 +352,7 @@ class ADSLegalFile(models.Model):
 
 
 @reversion.register
-class ADSUser(models.Model):
+class ADSUser(SmartValidationMixin, models.Model):
     """"Exploitant" of an ADS.
 
     ADS created before 2014 are allowed to be used by another person than it's owner.
@@ -342,6 +375,10 @@ class ADSUser(models.Model):
 
     ads = models.ForeignKey(ADS, on_delete=models.CASCADE)
 
+    SMART_VALIDATION_WATCHED_FIELDS = {
+        'siret': validate_siret,
+    }
+
     ADS_USER_STATUS = [
         ('titulaire_exploitant', 'Titulaire exploitant'),
         ('cooperateur', 'Locataire coopérateur'),
@@ -352,7 +389,7 @@ class ADSUser(models.Model):
 
     status = models.CharField(max_length=255, choices=ADS_USER_STATUS, blank=True, null=False)
     name = models.CharField(max_length=1024, blank=True, null=False)
-    siret = models.CharField(max_length=128, blank=True, null=False, validators=[validate_siret])
+    siret = models.CharField(max_length=128, blank=True, null=False)
     license_number = models.CharField(max_length=64, blank=True, null=True)
 
 
