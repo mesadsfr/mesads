@@ -353,7 +353,7 @@ class ADSUser(models.Model):
     status = models.CharField(max_length=255, choices=ADS_USER_STATUS, blank=True, null=False)
     name = models.CharField(max_length=1024, blank=True, null=False)
     siret = models.CharField(max_length=128, blank=True, null=False, validators=[validate_siret])
-    license_number = models.CharField(max_length=16, blank=True, null=True)
+    license_number = models.CharField(max_length=64, blank=True, null=True)
 
 
 class ADSUpdateFile(models.Model):
