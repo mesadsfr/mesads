@@ -13,10 +13,13 @@
                 "runserver",
                 "0.0.0.0:8000"
             ],
+            "envFile": "${workspaceFolder}/.env",
             "django": true,
             "justMyCode": true,
             // https://stackoverflow.com/questions/71695716/pydevd-warnings-in-visual-studio-code-debug-console
-            "env": {"PYDEVD_WARN_SLOW_RESOLVE_TIMEOUT": "2"}
+            "env": {
+                "PYDEVD_WARN_SLOW_RESOLVE_TIMEOUT": "2"
+            }
         },
         // --no-cov must be set otherwise breakpoints don't work when running unittests
         // https://code.visualstudio.com/docs/python/testing#_pytest-configuration-settings
@@ -26,7 +29,9 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "purpose": ["debug-test"],
+            "purpose": [
+                "debug-test"
+            ],
             "console": "integratedTerminal",
             "env": {
                 "PYTEST_ADDOPTS": "--no-cov"
