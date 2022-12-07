@@ -1,6 +1,5 @@
 # XXX: this is a temporary script to load ads from Yvelines, it might be broken and will be removed soon
 
-from datetime import date, datetime
 import argparse
 import csv
 import re
@@ -8,12 +7,13 @@ import sys
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
+from django.core.exceptions import ValidationError
 from django.contrib.postgres.lookups import Unaccent
-from django.db.models import F, Value, Func, TextField
+from django.db.models import F, Value, Func
 
 import dateparser
 
-from mesads.app.models import ADS, ADSManager, ADSUser
+from mesads.app.models import ADS, ADSManager, ADSUser, validate_siret
 from mesads.fradm.models import Commune
 
 
@@ -45,7 +45,7 @@ class Command(BaseCommand):
             ).annotate(
                 no_special_chars=Func(
                     F('libelle_unaccent'),
-                    Value('[ \-]'),  # spaces
+                    Value('[ -]'),  # spaces
                     Value(''),  # replacement
                     Value('g'),  # regexp flags
                     function='REGEXP_REPLACE',
@@ -212,8 +212,12 @@ class Command(BaseCommand):
             owner_siret = self.parse_siret(row["SIREN titulaire"])
             if row["SIREN titulaire"] and not owner_siret:
                 self._log(self.style.ERROR, f'Line {line}: unable to parse owner SIRET: ' + row["SIREN titulaire"])
-            if owner_siret:
-                obj.owner_siret = owner_siret
+            if owner_siret and obj.owner_siret != owner_siret:
+                try:
+                    validate_siret(owner_siret)
+                    obj.owner_siret = owner_siret
+                except ValidationError:
+                    self._log(self.style.ERROR, f'Line {line}: according to INSEE, owner SIRET is invalid: ' + row["SIREN titulaire"])
 
             user_status = self.parse_user_status(row["Statut exploitant ADS (ancienne ADS)"])
             if row["Statut exploitant ADS (ancienne ADS)"] and not user_status:
@@ -234,6 +238,13 @@ class Command(BaseCommand):
                 )
                 ads_user.status = user_status or ''
                 ads_user.name = user_name or ''
-                ads_user.siret = user_siret or ''
+
+                if user_siret and ads_user.siret != user_siret:
+                    try:
+                        validate_siret(user_siret)
+                        ads_user.siret = user_siret
+                    except ValidationError:
+                        self._log(self.style.ERROR, f'Line {line}: according to INSEE, user SIRET is invalid: ' + row["SIRET exploitant"])
+
                 ads_user.license_number = user_license_number or ''
                 ads_user.save()
