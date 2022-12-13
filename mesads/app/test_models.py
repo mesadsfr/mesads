@@ -60,6 +60,17 @@ class TestValidateSiret(TestCase):
                 self.assertIsNone(validate_siret(siret))
                 self.assertEqual(len(cm.records), 1)
 
+            # "Établissement non diffusable"
+            m.get(api_url, status_code=403, json={'header': {'statut': 403, 'message': 'Établissement non diffusable (50270280600014)'}})
+            with self.assertNoLogs():
+                self.assertIsNone(validate_siret(siret))
+
+            # Invalid JSON, should not raise exception
+            m.get(api_url, status_code=403, text='abc')
+            with self.assertLogs(logger='', level='ERROR') as cm:
+                self.assertIsNone(validate_siret(siret))
+                self.assertEqual(len(cm.records), 1)
+
 
 class TestADS(ClientTestCase):
     def setUp(self):

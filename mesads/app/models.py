@@ -141,6 +141,19 @@ def validate_siret(value):
     if resp.status_code == 404:
         raise ValidationError('Ce numéro SIRET est invalide')
 
+    # SIRET is valid, but not diffusable
+    #
+    # "La loi permet aux personnes physiques de s'opposer à la diffusion de
+    # leurs données: les siren et siret correspondants sont alors qualifiés de
+    # «non-diffusibles»."
+    try:
+        resp_json = resp.json()
+    except requests.exceptions.JSONDecodeError:
+        pass
+    else:
+        if resp.status_code == 403 and 'non diffusable' in resp_json.get('header', {}).get('message', ''):
+            return
+
     # Unknown case, log it to sentry for future investigation
     logging.error(
         'Unknown return value from INSEE API while checking for SIRET validity',
