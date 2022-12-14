@@ -64,6 +64,13 @@ Liste des départements, préfectures, communes :
   * https://www.insee.fr/fr/information/5057840
   * https://www.insee.fr/fr/statistiques/fichier/5057840/departement2021-csv.zip
 
+
+# Ressources géographiques
+
+Liste des départements
+
+  * https://www.data.gouv.fr/fr/datasets/contours-des-departements-francais-issus-d-openstreetmap/
+
 # Infrastructure
 
 * L'application django, la base de données postgresql et le bucket S3 où sont stockés les arrêtés municipaux sont hébergés chez [Clever Cloud](https://www.clever-cloud.com/).

@@ -1,6 +1,11 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Dashboards d'administration{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'leaflet/leaflet.css' %}" />
+{% endblock %}
 
 {% block body %}
 
@@ -68,4 +73,150 @@
     </table>
 </div>
 
+  <div id="map" style="width: 100%; height: 764px;"></div>
+{% endblock %}
+
+{% block endbody %}
+<script src="{% static 'leaflet/leaflet.js' %}"></script>
+<script>
+var map = L.map('map').setView([46.2276, 2.2137], 6);
+
+// Add credits to map
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+
+function displayStatsMap(data) {
+  const colors = {
+    0: '#a0a0a0',
+    1: '#FF0000',
+    3: '#FFA500',
+    20: '#00ff00',
+  };
+
+  const getFillColor = (num_ads) => {
+    const rsorted = Object.keys(colors).sort((a, b) => a - b).reverse()
+    const key = rsorted.find((e) => num_ads - e >= 0);
+    return colors[key];
+  };
+
+    /* Info box on the top right */
+    const info = L.control();
+
+    info.onAdd = () => {
+      this._div = L.DomUtil.create('div', 'leaflet-info');
+      info.update();
+      return this._div;
+    };
+
+    info.update = (props) => {
+      const title = props ?
+        `Nombre d'ADS pour ${props.code_insee} - ${props.nom}`
+        : `Nombre d'ADS`;
+
+      const content = props ?
+        `${props.num_ads} ADS enregistrées`
+        : `Survolez une région pour afficher les détails`;
+
+      this._div.innerHTML = `
+        <div class="fr-tile fr-enlarge-link fr-tile--horizontal">
+          <div class="fr-tile__body">
+              <h4 class="fr-tile__title">${title}</h4>
+              <p class="fr-tile__desc">${content}</p>
+          </div>
+      </div>
+      `;
+      return ;
+      if (!props) {
+        this._div.innerHTML = '<p class="fr-hint-text">Survlez une région pour voir les informations</p>';
+      }
+      else {
+        this._div.innerHTML = `
+          <h4 class="fr-h1">${props.code_insee} - ${props.nom}</h4>
+          <h5 class="fr-h2 fr-text--center">${props.num_ads} ADS</h5>
+        `;
+      }
+    };
+
+    info.addTo(map);
+
+
+  const geojson = L.geoJSON(data, {
+    style: (feature) => {
+      return {
+          fillColor: getFillColor(feature.properties.num_ads),
+          fillOpacity: 0.5,
+          weight: 1,
+      };
+    },
+    onEachFeature: (feature, layer) => {
+      layer.on({
+        mouseover: () => {
+          layer.setStyle({
+            fillOpacity: 1,
+          });
+          info.update(feature.properties);
+        },
+
+        mouseout: (e) => {
+          geojson.resetStyle(e.target);
+          info.update();
+        },
+
+        click: () => {
+          map.fitBounds(layer.getBounds());
+        }
+
+      });
+    }
+  }).addTo(map);
+
+  const legend = L.control({position: 'bottomright'});
+
+  legend.onAdd = () => {
+    const div = L.DomUtil.create('div');
+    const grades = Object.keys(colors).sort((a, b) => a - b);
+
+    let description = `
+      <ul class="fr-tile__desc fr-p-0" style="display: flex; flex-direction: column; gap: 5px;">`;
+    for (let i = 0; i < grades.length; i++) {
+      // If last grade, display > <number>
+      // else, if next grade is bigger than current grade plus 1, display a range
+      const label = grades[i + 1] ?
+        grades[i + 1] - grades[i] > 1
+          ? `${grades[i]} - ${grades[i + 1]}`
+          : grades[i]
+        : `> ${grades[i]}`;
+
+        description += `
+          <li class="fr-grid-row fr-grid-row--middle">
+            <i class="fr-mr-3v" style="background:${colors[grades[i]]}; width: 24px; height: 24px;"></i>
+            ${label}
+          </li>
+        `;
+    }
+    description += '</ul>';
+
+    div.innerHTML = `
+    <div class="fr-tile fr-enlarge-link fr-tile--horizontal">
+      <div class="fr-tile__body">
+          <h4 class="fr-tile__title">Légende</h4>
+          ${description}
+      </div>
+    </div>
+    `;
+
+
+    return div;
+  };
+
+  legend.addTo(map);
+}
+
+// Call API to display stats
+fetch('{% url 'api.stats.geojson.per-prefecture' %}')
+  .then((response) => response.json())
+  .then(displayStatsMap);
+</script>
 {% endblock %}

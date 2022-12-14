@@ -207,6 +207,7 @@ STATICFILES_DIRS = [
     ('', BASE_DIR / 'mesads/static'),
     ('@gouvfr', BASE_DIR / 'node_modules/@gouvfr/dsfr/dist/'),
     ('alpinejs', BASE_DIR / 'node_modules/alpinejs/dist/'),
+    ('leaflet', BASE_DIR / 'node_modules/leaflet/dist/'),
 ]
 
 MEDIA_ROOT = BASE_DIR / 'uploads'
