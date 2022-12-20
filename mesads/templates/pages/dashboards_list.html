@@ -166,6 +166,7 @@ function displayStatsMap(data) {
 
         click: () => {
           map.fitBounds(layer.getBounds());
+          info.update(feature.properties);
         }
 
       });
