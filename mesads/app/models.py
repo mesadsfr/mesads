@@ -18,13 +18,42 @@ from django_cleanup import cleanup
 from mesads.fradm.models import Commune, Prefecture
 
 
-class ADSManager(models.Model):
+class SmartValidationMixin:
+    """Override clean() to only validate fields that have changed."""
+    SMART_VALIDATION_WATCHED_FIELDS = None
+
+    def __init__(self, *args, **kwargs):
+        """Store the initial value for the watched fields."""
+        assert self.SMART_VALIDATION_WATCHED_FIELDS
+        super().__init__(*args, **kwargs)
+        self.__smart_validation_initial_values = {
+            name: getattr(self, name)
+            for name in self.SMART_VALIDATION_WATCHED_FIELDS.keys()
+        }
+
+    def clean(self, *args, **kwargs):
+        """If any of the watched fields changed, revalidate it."""
+        super().clean(*args, **kwargs)
+        for key, initial_value in self.__smart_validation_initial_values.items():
+            if getattr(self, key) != initial_value:
+                validator = self.SMART_VALIDATION_WATCHED_FIELDS[key]
+                try:
+                    validator(self, getattr(self, key))
+                except Exception as exc:
+                    raise ValidationError({
+                        key: exc
+                    })
+
+
+class ADSManager(SmartValidationMixin, models.Model):
     """Authority who can register a new ADS. Either a Prefecture, a Commune or
     a EPCI.
 
     :param administrator: administration responsible to accept or deny ADSManagerRequest related to this object.
 
     :param content_object: ForeignKey to fradm.models.
+
+    :param no_ads_declared: If True, the ADSManager has declared that it does not manage ADS.
     """
     class Meta:
         verbose_name = 'Gestionnaire ADS'
@@ -36,6 +65,16 @@ class ADSManager(models.Model):
         # This is required, otherwise reverse relationship don't get the
         # attribute ads_count set by ADSManagerModelManager.
         base_manager_name = 'objects'
+
+    def validate_no_ads_declared(instance, value):
+        if instance.ads_set.count() > 0 and value:
+            raise ValidationError(
+                'Impossible de déclarer que le gestionnaire ne gère aucune ADS, puisque des ADS sont déjà déclarées.'
+            )
+
+    SMART_VALIDATION_WATCHED_FIELDS = {
+        'no_ads_declared': validate_no_ads_declared,
+    }
 
     def __str__(self):
         return f'{self.content_type.name} - {self.content_object}'
@@ -59,6 +98,12 @@ class ADSManager(models.Model):
     )
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
+
+    no_ads_declared = models.BooleanField(
+        null=False,
+        default=False,
+        help_text='Cocher cette case si le gestionnaire ne gère aucune ADS.'
+    )
 
 
 @reversion.register
@@ -165,33 +210,6 @@ def validate_siret(value):
     )
 
 
-class SmartValidationMixin:
-    """Override clean() to only validate fields that have changed."""
-    SMART_VALIDATION_WATCHED_FIELDS = None
-
-    def __init__(self, *args, **kwargs):
-        """Store the initial value for the watched fields."""
-        assert self.SMART_VALIDATION_WATCHED_FIELDS
-        super().__init__(*args, **kwargs)
-        self.__smart_validation_initial_values = {
-            name: getattr(self, name)
-            for name in self.SMART_VALIDATION_WATCHED_FIELDS.keys()
-        }
-
-    def clean(self, *args, **kwargs):
-        """If any of the watched fields changed, revalidate it."""
-        super().clean(*args, **kwargs)
-        for key, initial_value in self.__smart_validation_initial_values.items():
-            if getattr(self, key) != initial_value:
-                validator = self.SMART_VALIDATION_WATCHED_FIELDS[key]
-                try:
-                    validator(getattr(self, key))
-                except Exception as exc:
-                    raise ValidationError({
-                        key: exc
-                    })
-
-
 @reversion.register
 class ADS(SmartValidationMixin, models.Model):
     """Autorisation De Stationnement created by ADSManager.
@@ -258,7 +276,7 @@ class ADS(SmartValidationMixin, models.Model):
         ]
 
     SMART_VALIDATION_WATCHED_FIELDS = {
-        'owner_siret': validate_siret,
+        'owner_siret': lambda _, siret: validate_siret(siret),
     }
 
     def __str__(self):
@@ -389,7 +407,7 @@ class ADSUser(SmartValidationMixin, models.Model):
     ads = models.ForeignKey(ADS, on_delete=models.CASCADE)
 
     SMART_VALIDATION_WATCHED_FIELDS = {
-        'siret': validate_siret,
+        'siret': lambda _, siret: validate_siret(siret),
     }
 
     ADS_USER_STATUS = [

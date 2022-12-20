@@ -22,6 +22,7 @@ admin.site.unregister(Group)
 
 class ReadOnlyInline(admin.TabularInline):
     """Inline table which doesn't allow to add, update or delete rows."""
+
     def has_change_permission(self, request, obj=None):
         return False
 
@@ -64,6 +65,7 @@ class ADSManagerAdmin(admin.ModelAdmin):
         'administrator',
         'administration',
         'display_ads_count',
+        'no_ads_declared',
     )
 
     readonly_fields = (
