@@ -116,7 +116,7 @@ function displayStatsMap(data) {
         : `Nombre d'ADS`;
 
       const content = props ?
-        `${props.ads_count} ADS enregistrées`
+        `${props.ads_count} ADS ${props.ads_count > 1 ? "enregistrées" : "enregistrée"}`
         : `Survolez une région pour afficher les détails`;
 
       this._div.innerHTML = `
