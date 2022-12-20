@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 
-from mesads.app.models import ADS, ADSUpdateFile
+from mesads.app.models import ADSUpdateFile
 
 
 class UserSerializer(serializers.ModelSerializer):

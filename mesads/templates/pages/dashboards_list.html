@@ -95,9 +95,9 @@ function displayStatsMap(data) {
     20: '#00ff00',
   };
 
-  const getFillColor = (num_ads) => {
+  const getFillColor = (ads_count) => {
     const rsorted = Object.keys(colors).sort((a, b) => a - b).reverse()
-    const key = rsorted.find((e) => num_ads - e >= 0);
+    const key = rsorted.find((e) => ads_count - e >= 0);
     return colors[key];
   };
 
@@ -116,7 +116,7 @@ function displayStatsMap(data) {
         : `Nombre d'ADS`;
 
       const content = props ?
-        `${props.num_ads} ADS enregistrées`
+        `${props.ads_count} ADS enregistrées`
         : `Survolez une région pour afficher les détails`;
 
       this._div.innerHTML = `
@@ -134,7 +134,7 @@ function displayStatsMap(data) {
       else {
         this._div.innerHTML = `
           <h4 class="fr-h1">${props.code_insee} - ${props.nom}</h4>
-          <h5 class="fr-h2 fr-text--center">${props.num_ads} ADS</h5>
+          <h5 class="fr-h2 fr-text--center">${props.ads_count} ADS</h5>
         `;
       }
     };
@@ -145,7 +145,7 @@ function displayStatsMap(data) {
   const geojson = L.geoJSON(data, {
     style: (feature) => {
       return {
-          fillColor: getFillColor(feature.properties.num_ads),
+          fillColor: getFillColor(feature.properties.ads_count),
           fillOpacity: 0.5,
           weight: 1,
       };
