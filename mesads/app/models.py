@@ -361,7 +361,7 @@ class ADSLegalFile(models.Model):
     ads = models.ForeignKey(ADS, on_delete=models.CASCADE)
     creation_date = models.DateField(auto_now_add=True, null=False)
 
-    file = models.FileField(upload_to=get_legal_filename, blank=False, null=False)
+    file = models.FileField(upload_to=get_legal_filename, blank=False, null=False, max_length=512)
 
 
 @reversion.register
