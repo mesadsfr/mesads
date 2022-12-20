@@ -63,8 +63,8 @@ Création d'une nouvelle ADS
       numberOfADSLegalFileFormsetToDisplay: (() => {
         // All forms
         const legal_file_forms = [...document.getElementsByClassName('ads-legal-file-form')];
-        // List, returns true if the form is empty, false otherwise
-        const filled  = legal_file_forms.map((e) => !!e.querySelector('input[type="hidden"]'));
+        // filled is a list of booleans with one entry per form, true if the form is empty, false is the form is filled or has an error
+        const filled  = legal_file_forms.map((e) => !!(e.querySelector('input[type="hidden"]') || e.querySelector('p.fr-error-text')));
         // Index of the first non-empty form
         const nonEmptyFormIdx = findLastIndex(filled, (e) => e === true);
         // All the forms are empty, display only one blank form
