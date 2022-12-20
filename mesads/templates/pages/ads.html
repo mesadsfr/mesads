@@ -270,7 +270,7 @@ Création d'une nouvelle ADS
         {% endif %}
 
         <!-- Form errors -->
-        {% for error in form.errors %}
+        {% for error in form.errors.file %}
         <p class="fr-error-text">
           {{ error }}
         </p>
