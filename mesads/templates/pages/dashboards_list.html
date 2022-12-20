@@ -102,7 +102,7 @@ function displayStatsMap(data) {
   };
 
     /* Info box on the top right */
-    const info = L.control();
+    const info = L.control({ position: 'topright'});
 
     info.onAdd = () => {
       this._div = L.DomUtil.create('div', 'leaflet-info');
