@@ -182,13 +182,7 @@ function displayStatsMap(data) {
     let description = `
       <ul class="fr-tile__desc fr-p-0" style="display: flex; flex-direction: column; gap: 5px;">`;
     for (let i = 0; i < grades.length; i++) {
-      // If last grade, display > <number>
-      // else, if next grade is bigger than current grade plus 1, display a range
-      const label = grades[i + 1] ?
-        grades[i + 1] - grades[i] > 1
-          ? `${grades[i]} - ${grades[i + 1]}`
-          : grades[i]
-        : `> ${grades[i]}`;
+        const label = i === 0 ? "Aucune ADS" : `≥ ${grades[i]}`;
 
         description += `
           <li class="fr-grid-row fr-grid-row--middle">
