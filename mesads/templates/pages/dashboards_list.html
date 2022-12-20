@@ -79,7 +79,7 @@
 {% block endbody %}
 <script src="{% static 'leaflet/leaflet.js' %}"></script>
 <script>
-var map = L.map('map').setView([46.2276, 2.2137], 6);
+var map = L.map('map', {zoomControl: false}).setView([46.2276, 2.2137], 6);
 
 // Add credits to map
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
