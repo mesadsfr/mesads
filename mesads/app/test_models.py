@@ -8,6 +8,7 @@ import requests_mock
 from .models import (
     ADS, validate_siret, ADSLegalFile, ADSUser, ADSUpdateFile,
     get_legal_filename,
+    validate_no_ads_declared,
 )
 
 from .unittest import ClientTestCase
@@ -17,6 +18,20 @@ class TestADSManager(ClientTestCase):
     def test_str(self):
         self.assertIn('commune', str(self.ads_manager_city35))
         self.assertIn('Melesse', str(self.ads_manager_city35))
+
+    def test_validate_no_ads_declared(self):
+        self.assertIsNone(validate_no_ads_declared(self.ads_manager_city35, True))
+        self.assertIsNone(validate_no_ads_declared(self.ads_manager_city35, False))
+
+        ADS(number='12345', ads_manager=self.ads_manager_city35).save()
+
+        self.assertIsNone(validate_no_ads_declared(self.ads_manager_city35, False))
+        self.assertRaises(
+            ValidationError,
+            validate_no_ads_declared,
+            self.ads_manager_city35,
+            True
+        )
 
 
 class TestADSManagerRequest(ClientTestCase):

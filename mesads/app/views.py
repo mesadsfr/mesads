@@ -17,7 +17,7 @@ from django.utils import timezone
 from django.urls import reverse, reverse_lazy
 from django.views.generic import UpdateView, TemplateView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, DeleteView, FormView
+from django.views.generic.edit import CreateView, DeleteView, FormView, ProcessFormView
 from django.views.generic.list import ListView
 
 from reversion.views import RevisionMixin
@@ -27,6 +27,7 @@ from mesads.fradm.models import EPCI
 from .forms import (
     ADSLegalFileFormSet,
     ADSManagerForm,
+    ADSManagerEditForm,
     ADSSearchForm,
     ADSUserFormSet,
     ADSForm,
@@ -250,19 +251,34 @@ class ADSManagerRequestView(FormView):
         }
 
 
-class ADSManagerView(ListView):
+class ADSManagerView(ListView, ProcessFormView):
     template_name = 'pages/ads_manager.html'
     model = ADS
     paginate_by = 50
 
-    def _get_form(self):
+    def get_ads_manager(self):
+        return ADSManager.objects.get(id=self.kwargs['manager_id'])
+
+    def get_form(self):
+        if self.request.method == 'POST':
+            return ADSManagerEditForm(instance=self.get_ads_manager(), data=self.request.POST)
+        return ADSManagerEditForm(instance=self.get_ads_manager())
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('app.ads-manager.detail', manager_id=self.kwargs['manager_id'])
+
+    def form_invalid(self, form):
+        return ListView.get(self, self.request, *self.args, **self.kwargs)
+
+    def _get_search_form(self):
         return ADSSearchForm(self.request.GET)
 
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.filter(ads_manager__id=self.kwargs['manager_id'])
 
-        form = self._get_form()
+        form = self._get_search_form()
         if form.is_valid():
             if form.cleaned_data['accepted_cpam'] is not None:
                 qs = qs.filter(accepted_cpam=form.cleaned_data['accepted_cpam'])
@@ -291,8 +307,9 @@ class ADSManagerView(ListView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['search_form'] = self._get_form()
-        ctx['ads_manager'] = ADSManager.objects.get(id=self.kwargs['manager_id'])
+        ctx['search_form'] = self._get_search_form()
+        ctx['edit_form'] = self.get_form()
+        ctx['ads_manager'] = ctx['edit_form'].instance
         return ctx
 
 
@@ -364,6 +381,13 @@ class ADSDeleteView(DeleteView):
 
 
 class ADSCreateView(ADSView, CreateView):
+
+    def dispatch(self, request, manager_id):
+        """If the ADSManager has the flag no_ads_declared to True, it is
+        imposisble to create ADS for it."""
+        get_object_or_404(ADSManager, id=manager_id, no_ads_declared=False)
+        return super().dispatch(request, manager_id)
+
     def get_object(self, queryset=None):
         return None
 

@@ -45,6 +45,13 @@ class SmartValidationMixin:
                     })
 
 
+def validate_no_ads_declared(ads_manager, value):
+    if ads_manager.ads_set.count() > 0 and value:
+        raise ValidationError(
+            'Impossible de déclarer que le gestionnaire ne gère aucune ADS, puisque des ADS sont déjà déclarées.'
+        )
+
+
 class ADSManager(SmartValidationMixin, models.Model):
     """Authority who can register a new ADS. Either a Prefecture, a Commune or
     a EPCI.
@@ -65,12 +72,6 @@ class ADSManager(SmartValidationMixin, models.Model):
         # This is required, otherwise reverse relationship don't get the
         # attribute ads_count set by ADSManagerModelManager.
         base_manager_name = 'objects'
-
-    def validate_no_ads_declared(instance, value):
-        if instance.ads_set.count() > 0 and value:
-            raise ValidationError(
-                'Impossible de déclarer que le gestionnaire ne gère aucune ADS, puisque des ADS sont déjà déclarées.'
-            )
 
     SMART_VALIDATION_WATCHED_FIELDS = {
         'no_ads_declared': validate_no_ads_declared,

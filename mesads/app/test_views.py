@@ -365,6 +365,41 @@ class TestADSManagerView(ClientTestCase):
         self.assertIn('FILTER3', resp.content.decode('utf8'))
         self.assertIn('FILTER4', resp.content.decode('utf8'))
 
+    def test_post_ok(self):
+        # Set the flag "no_ads_declared" for an administration that has no ADS
+        self.assertFalse(self.ads_manager_city35.no_ads_declared)
+        resp = self.ads_manager_city35_client.post(
+            f'/gestion/{self.ads_manager_city35.id}/',
+            {
+                'no_ads_declared': 'on',
+            }
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.ads_manager_city35.refresh_from_db()
+        self.assertTrue(self.ads_manager_city35.no_ads_declared)
+
+        # Remove the flag
+        resp = self.ads_manager_city35_client.post(
+            f'/gestion/{self.ads_manager_city35.id}/',
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.ads_manager_city35.refresh_from_db()
+        self.assertFalse(self.ads_manager_city35.no_ads_declared)
+
+    def test_post_error(self):
+        # Set the flag "no_ads_declared" for an administration which has ADS registered is impossible
+        self.assertFalse(self.ads_manager_city35.no_ads_declared)
+        ADS.objects.create(number='12346', ads_manager=self.ads_manager_city35)
+        resp = self.ads_manager_city35_client.post(
+            f'/gestion/{self.ads_manager_city35.id}/',
+            {
+                'no_ads_declared': 'on',
+            }
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.ads_manager_city35.refresh_from_db()
+        self.assertFalse(self.ads_manager_city35.no_ads_declared)
+
 
 class TestADSView(ClientTestCase):
     def setUp(self):
@@ -653,6 +688,15 @@ class TestADSCreateView(ClientTestCase):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(f'/gestion/{self.ads_manager_city35.id}/ads/')
                 self.assertEqual(resp.status_code, expected_status)
+
+    def test_create_invalid(self):
+        """It is impossible to create an ADS if the flag no_ads_declared is set."""
+        self.ads_manager_city35.no_ads_declared = True
+        self.ads_manager_city35.save()
+        resp = self.ads_manager_city35_client.get(
+            f'/gestion/{self.ads_manager_city35.id}/ads/'
+        )
+        self.assertEqual(resp.status_code, 404)
 
     def test_create(self):
         resp = self.ads_manager_city35_client.post(

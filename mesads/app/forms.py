@@ -36,6 +36,14 @@ class ADSManagerForm(FrenchAdministrationForm):
         self.cleaned_data['ads_manager'] = manager
 
 
+class ADSManagerEditForm(forms.ModelForm):
+    class Meta:
+        model = ADSManager
+        fields = (
+            'no_ads_declared',
+        )
+
+
 class ADSForm(forms.ModelForm):
     """Form to edit or create an instance of ADS. If :param epci: is set, the
     field epci_commune is initialized to render an autocomplete field.
