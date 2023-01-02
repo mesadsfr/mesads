@@ -58,7 +58,6 @@ class ADSForm(forms.ModelForm):
             'epci_commune',
             'number',
             'ads_creation_date',
-            'ads_type',
             'attribution_date',
             'attribution_type',
             'transaction_identifier',

@@ -430,7 +430,6 @@ def prefecture_export_ads(request, ads_manager_administrator):
         ('Administration', lambda ads: ads.ads_manager.content_object.display_text()),
         ('Numéro', lambda ads: ads.number),
         ('Date de création', lambda ads: ads.ads_creation_date),
-        ("Type", lambda ads: ads.ads_type and dict(ADS.ads_type.field.choices)[ads.ads_type]),
         ("Date d'attribution au titulaire actuel", lambda ads: ads.attribution_date),
         ("Type d'attribution", lambda ads: ads.attribution_type and dict(ADS.attribution_type.field.choices)[ads.attribution_type]),
         ("Raison de l'attribution", lambda ads: ads.attribution_reason),

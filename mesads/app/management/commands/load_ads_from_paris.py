@@ -44,10 +44,8 @@ class Command(BaseCommand):
             # attribution date. For other types of ADS, we don't know.
             if params['attribution_date'] >= date(2014, 10, 1):
                 params['ads_creation_date'] = params['attribution_date']
-                params['ads_type'] = 'new'
             else:
                 params['ads_creation_date'] = None
-                params['ads_type'] = 'old'
 
             # Values of field "type_ads" is any of:
             # - Payante

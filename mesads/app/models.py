@@ -229,8 +229,6 @@ class ADS(SmartValidationMixin, models.Model):
 
     :param ads_creation_date: Initial creation date of the ADS.
 
-    :param ads_type: "old" if created before 2014, "new" otherwise.
-
     :param attribution_date: Date when the ADS has been attributed to the
       current owner.
 
@@ -300,14 +298,6 @@ class ADS(SmartValidationMixin, models.Model):
     last_update = models.DateField(auto_now=True, null=False)
 
     ads_creation_date = models.DateField(blank=True, null=True)
-
-    ADS_TYPES = [
-        ('old', "L'ADS a été créée avant la loi du 1er Octobre 2014 : \"ancienne ADS \""),
-        ('new', "L'ADS a été créée après la loi du 1er Octobre 2014 : \"nouvelle ADS \""),
-    ]
-
-    ads_type = models.CharField(
-        max_length=16, choices=ADS_TYPES, blank=True, null=False)
 
     attribution_date = models.DateField(blank=True, null=True)
 
