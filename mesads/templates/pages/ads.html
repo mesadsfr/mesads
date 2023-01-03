@@ -45,6 +45,12 @@ Création d'une nouvelle ADS
 
   const get_x_data = () => ({
       ads_creation_date: '{{ form.ads_creation_date.value|date:"Y-m-d"|default:"" }}',
+
+      // If the creation date is filled and is before 2014-10-01, it is a "new ADS" and we should not display the ADSUser form
+      get should_display_ads_user() {
+        return this.ads_creation_date === '' || (new Date(this.ads_creation_date) - new Date('2014-10-01') < 0);
+      },
+
       used_by_owner: '{% if form.used_by_owner.value is True %}true{% elif form.used_by_owner.value is False %}false{% else %}unknown{% endif %}',
       attribution_type: '{{ form.attribution_type.value }}',
       numberOfADSUsersFormsetToDisplay: (() => {
@@ -118,7 +124,7 @@ Création d'une nouvelle ADS
     {% include 'pages/ads-form_string.html' with field_title="Numéro de l'ADS" field=form.number field_errors=form.errors.number required=form.fields.number.required %}
 
     <!-- ADS creation date -->
-    {% include 'pages/ads-form_date.html' with x_model="ads_creation_date" field_title="Date de création de l'ADS" field=form.ads_creation_date field_errors=form.errors.ads_creation_date required=form.fields.ads_creation_date.required field_description="Le titulaire d'une autorisation de stationnement délivrée avant le 01 Octobre 2014 a la faculté de présenter à titre onéreux un successeur à l'autorité administrative compétente pour délivrer l'autorisation. Pour les autorisations de stationnement délivrées après cette date, l'autorisation est incessible." %}
+    {% include 'pages/ads-form_date.html' with x_model="ads_creation_date" field_title="Date de création de l'ADS" field=form.ads_creation_date field_errors=form.errors.ads_creation_date required=form.fields.ads_creation_date.required field_description="Le titulaire d'une autorisation de stationnement délivrée avant le 01 Octobre 2014 a la faculté de présenter un successeur à l'autorité administrative compétente. Celle-ci peut ensuite autoriser le transfert de l'ADS à titre onéreux si les conditions de durée minimale d'exploitation sont respectées.<br />Pour les autorisations de stationnement délivrées après le  01 Octobre 2014, l'autorisation est incessible." %}
 
     <!-- ADS attribution date -->
     {% include 'pages/ads-form_date.html' with field_title="Date d'attribution de l'ADS au titulaire actuel" field=form.attribution_date field_errors=form.errors.attribution_date required=form.fields.attribution_date.required %}
@@ -159,7 +165,14 @@ Création d'une nouvelle ADS
     <!-- Owner email -->
     {% include 'pages/ads-form_string.html' with field_title="Email du titulaire de l'ADS" field=form.owner_email field_errors=form.errors.owner_email required=form.fields.owner_email.required html_type="email" %}
 
-    <div class="fr-input-group" x-show="ads_creation_date === '' || new Date(ads_creation_date) - new Date('2014-10-01') < 0">
+    <div class="fr-input-group" x-show="!should_display_ads_user">
+      <hr />
+      <span class="fr-hint-text">
+        La date de création de cette ADS est antérieure au 01 Octobre 2014. La section du formulaire permettant de renseigner les informations relatives à l'exploitant est donc masquée.
+      </span>
+    </div>
+
+    <div class="fr-input-group" x-show="should_display_ads_user">
       <!-- Used by owner ? -->
       {% include 'pages/ads-form_select.html' with x_model="used_by_owner" field_title="ADS exploitée par son titulaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner required=form.fields.used_by_owner.required %}
 
