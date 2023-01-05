@@ -59,8 +59,8 @@ else:
             send_default_pii=True,
         )
 
-# Upload to S3 in production
-if not DEBUG:
+# Upload to S3 in production, or if S3 is defined in debug mode
+if not DEBUG or os.environ.get('AWS_S3_ENDPOINT_URL'):
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     AWS_S3_ENDPOINT_URL = os.environ['AWS_S3_ENDPOINT_URL']
     AWS_S3_ACCESS_KEY_ID = os.environ['AWS_S3_ACCESS_KEY_ID']
