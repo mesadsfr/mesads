@@ -80,6 +80,12 @@ class TestValidateSiret(TestCase):
             with self.assertNoLogs():
                 self.assertIsNone(validate_siret(siret))
 
+            # Rate limit exceeded
+            m.get(api_url, status_code=429)
+            with self.assertLogs(logger='', level='INFO') as cm:
+                self.assertIsNone(validate_siret(siret))
+                self.assertEqual(len(cm.records), 1)
+
             # Invalid JSON, should not raise exception
             m.get(api_url, status_code=403, text='abc')
             with self.assertLogs(logger='', level='ERROR') as cm:

@@ -187,6 +187,10 @@ def validate_siret(value):
     if resp.status_code == 404:
         raise ValidationError('Ce numéro SIRET est invalide')
 
+    if resp.status_code == 429:
+        logging.info(f'INSEE API rate limit reached, could not verify SIRET validity {value}')
+        return
+
     # SIRET is valid, but not diffusable
     #
     # "La loi permet aux personnes physiques de s'opposer à la diffusion de
