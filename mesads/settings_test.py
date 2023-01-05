@@ -3,7 +3,7 @@
 Make sure to reset production data that might have been retrieved from the
 environment. We do not want to store files in S3 or send emails in tests.
 """
-from .settings import *
+from .settings import *  # noqa
 
 
 INSEE_TOKEN = None
