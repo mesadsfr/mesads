@@ -90,6 +90,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_cron',
+
     'debug_toolbar',
     'django_registration',
     'reversion',
@@ -101,6 +103,10 @@ INSTALLED_APPS = [
     'mesads.users',
     'mesads.fradm',
     'mesads.api',
+]
+
+CRON_CLASSES = [
+    'mesads.app.crons.ImportDataForParis',
 ]
 
 AUTH_USER_MODEL = 'users.User'

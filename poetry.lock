@@ -181,6 +181,17 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "django-cron"
+version = "0.6.0"
+description = "Running python crons in a Django project"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = ">=3.2"
+
+[[package]]
 name = "django-debug-toolbar"
 version = "3.4.0"
 description = "A configurable set of panels that display various debug information about the current request/response."
@@ -617,7 +628,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "77a3cca4cb02025eb9e99886599932484616c2801de46f99ba75b98e0cce46bb"
+content-hash = "d6cc15efa1d8da13c21861e7d77c67add42ef597ef409d6c532217da6cfb0ca4"
 
 [metadata.files]
 asgiref = [
@@ -722,6 +733,10 @@ django-autocomplete-light = [
 django-cleanup = [
     {file = "django-cleanup-6.0.0.tar.gz", hash = "sha256:922e06ef8839c92bd3ab37a84db6058b8764f3fe44dbb4487bbca941d288280a"},
     {file = "django_cleanup-6.0.0-py2.py3-none-any.whl", hash = "sha256:997feab3b1f7a2e84f71c29e83b1d664459ec0d4b1924977b1fa25b5babb8703"},
+]
+django-cron = [
+    {file = "django-cron-0.6.0.tar.gz", hash = "sha256:dc3c0d3433a2e4e7012f77f6d8415ad90367ba068649db2674325bc36f935841"},
+    {file = "django_cron-0.6.0-py3-none-any.whl", hash = "sha256:016203554748512b7f19d7363b4fde8741c6ff63fe8a15051f3031f4a0506a41"},
 ]
 django-debug-toolbar = [
     {file = "django-debug-toolbar-3.4.0.tar.gz", hash = "sha256:ae6bec2c1ce0e6900b0ab0443e1427eb233d8e6f57a84a0b2705eeecb8874e22"},

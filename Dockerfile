@@ -66,5 +66,15 @@ ENTRYPOINT ["poetry", "run"]
 # --limit-post: allow to upload files up to 10MB
 # --http-manage-expect: to upload large files, cURL first sends a 100-continue request which is not handled by default by uWSGI, see https://github.com/unbit/uwsgi/issues/2129
 # --ignore-sigpipe, --ignore-write-errors, --disable-write-exceptions: don't report WriteError to sentry when client disconnects before the response is sent
+# --cron: every hour, call python manage.py runcrons
 CMD python manage.py migrate && \
-    uwsgi --enable-threads -H \$\(VIRTUAL_ENV\) --http :8000 --module mesads.wsgi -M -p $(nproc) -R 100 --static-map /static=/app/static --limit-post=10000000 --http-manage-expect --ignore-sigpipe --ignore-write-errors --disable-write-exception
+    uwsgi --enable-threads -H \$\(VIRTUAL_ENV\) \
+      --http :8000 \
+      --module mesads.wsgi \
+      -M -p $(nproc) \
+      -R 100 \
+      --static-map /static=/app/static \
+      --limit-post=10000000 \
+      --http-manage-expect \
+      --ignore-sigpipe --ignore-write-errors --disable-write-exception \
+      --cron='0 -1 -1 -1 -1 poetry run python /app/manage.py runcrons'
