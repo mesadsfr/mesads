@@ -67,7 +67,7 @@ ENTRYPOINT ["poetry", "run"]
 # --http-manage-expect: to upload large files, cURL first sends a 100-continue request which is not handled by default by uWSGI, see https://github.com/unbit/uwsgi/issues/2129
 # --ignore-sigpipe, --ignore-write-errors, --disable-write-exceptions: don't report WriteError to sentry when client disconnects before the response is sent
 # --cron: every hour, call python manage.py runcrons
-CMD python manage.py migrate && \
+CMD python manage.py makemigrations && python manage.py migrate && \
     uwsgi --enable-threads -H \$\(VIRTUAL_ENV\) \
       --http :8000 \
       --module mesads.wsgi \
