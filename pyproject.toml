@@ -26,6 +26,8 @@ omit = [
     # This file is mostly a copy of django classes, to allow authentication
     # with email. There's no value to add unittests here.
     "mesads/users/models.py",
+
+    "mesads/app/crons.py",
 ]
 
 [tool.coverage.report]
