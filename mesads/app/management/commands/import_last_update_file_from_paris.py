@@ -1,7 +1,5 @@
 # XXX: this is a temporary script to load ads from Paris, it might be broken
 
-from datetime import date, datetime
-import argparse
 import csv
 import re
 import sys
