@@ -166,24 +166,25 @@ Création d'une nouvelle ADS
     <!-- Owner email -->
     {% include 'pages/ads-form_string.html' with field_title="Email du titulaire de l'ADS" field=form.owner_email field_errors=form.errors.owner_email required=form.fields.owner_email.required html_type="email" %}
 
-    <div class="fr-input-group" x-show="!should_display_ads_user">
+    <div class="fr-input-group" x-show="!should_display_ads_user" x-transition>
       <hr />
       <span class="fr-hint-text">
         La date de création de cette ADS est antérieure au 01 Octobre 2014. La section du formulaire permettant de renseigner les informations relatives à l'exploitant est donc masquée.
       </span>
     </div>
 
-    <div class="fr-input-group" x-show="should_display_ads_user">
+    <div class="fr-input-group" x-show="should_display_ads_user" x-transition>
       <!-- Used by owner ? -->
       {% include 'pages/ads-form_select.html' with x_model="used_by_owner" field_title="ADS exploitée par son titulaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner required=form.fields.used_by_owner.required %}
 
-      <div x-show="used_by_owner !== 'true'">
+      <div x-show="used_by_owner !== 'true'" x-transition>
         {{ ads_users_formset.management_form }}
 
         {% for ads_user_form in ads_users_formset %}
           <div
             x-show="{{ forloop.counter0 }} < numberOfADSUsersFormsetToDisplay"
             class="fr-form-group ads-user-form"
+            x-transition
           >
             <fieldset class="fr-fieldset">
                 <legend class="fr-fieldset__legend">{{ forloop.counter }}<sup>{% if forloop.counter == 1 %}er{% else %}e{% endif %}</sup> exploitant taxi</legend>
@@ -213,6 +214,7 @@ Création d'une nouvelle ADS
           class="fr-btn fr-btn--sm fr-icon-checkbox-circle-line fr-btn--icon-left fr-btn--secondary"
           x-on:click="numberOfADSUsersFormsetToDisplay++"
           x-show="numberOfADSUsersFormsetToDisplay < {{ ads_users_formset.extra }}"
+          x-transition
         >
             Ajouter un exploitant
         </button>
@@ -234,6 +236,7 @@ Création d'une nouvelle ADS
         x-show="{{ forloop.counter0 }} < numberOfADSLegalFileFormsetToDisplay"
         x-data="{deleteFile: false}"
         x-bind:style="deleteFile ? {'background-color': 'rgb(253,222,222)'} : {'background-color': '#fff'}"
+        x-transition
       >
         <!-- Existing document -->
         {% if form.instance.file %}

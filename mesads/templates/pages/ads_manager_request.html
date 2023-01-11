@@ -60,7 +60,7 @@
     </thead>
     <tbody>
       {% for ads_manager in ads_manager_administrator.adsmanager_set.all  %}
-      <tr x-show="displayExtra || {{ forloop.counter0 }} < 5">
+      <tr x-show="displayExtra || {{ forloop.counter0 }} < 5" x-transition>
         <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
         <td>
           {% if ads_manager.ads_set.count > 0 %}{{ ads_manager.ads_set.count }}{% else %}-{% endif %}
