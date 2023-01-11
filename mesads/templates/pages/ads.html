@@ -180,7 +180,7 @@ Création d'une nouvelle ADS
       <!-- Used by owner ? -->
       {% include 'pages/ads-form_select.html' with x_model="used_by_owner" field_title="ADS exploitée par son titulaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner required=form.fields.used_by_owner.required %}
 
-      <div x-show="used_by_owner !== 'true'" x-transition>
+      <div x-show="used_by_owner === 'false'" x-transition>
         {{ ads_users_formset.management_form }}
 
         {% for ads_user_form in ads_users_formset %}
