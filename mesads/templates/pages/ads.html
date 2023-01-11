@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load str_to_date %}
 
 {% block title %}Gestion des ADS{% endblock %}
 
@@ -44,7 +45,7 @@ Création d'une nouvelle ADS
   }
 
   const get_x_data = () => ({
-      ads_creation_date: '{{ form.ads_creation_date.value|date:"Y-m-d"|default:"" }}',
+      ads_creation_date: '{{ form.ads_creation_date.value|str_to_date|date:"Y-m-d"|default:"" }}',
 
       // If the creation date is filled and is before 2014-10-01, it is a "new ADS" and we should not display the ADSUser form
       get should_display_ads_user() {

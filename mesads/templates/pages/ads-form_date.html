@@ -1,3 +1,5 @@
+{% load str_to_date %}
+
 <div class="fr-input-group{% if field_errors %} fr-input-group--error{% endif %}">
   <label
     class="fr-label"
@@ -13,7 +15,7 @@
       type="date"
       id="{{ field.id_for_label }}"
       name="{{ field.html_name }}"
-      value="{{ field.value|date:"Y-m-d"|default:"" }}"
+      value="{{ field.value|str_to_date|date:"Y-m-d"|default:"" }}"
       {% if x_model %}x-model="{{ x_model }}"{% endif %}
     />
   </div>
