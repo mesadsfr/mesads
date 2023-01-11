@@ -125,7 +125,7 @@ Création d'une nouvelle ADS
     {% include 'pages/ads-form_string.html' with field_title="Numéro de l'ADS" field=form.number field_errors=form.errors.number required=form.fields.number.required %}
 
     <!-- ADS creation date -->
-    {% include 'pages/ads-form_date.html' with x_model="ads_creation_date" field_title="Date de création de l'ADS" field=form.ads_creation_date field_errors=form.errors.ads_creation_date required=form.fields.ads_creation_date.required field_description="Le titulaire d'une autorisation de stationnement délivrée avant le 01 Octobre 2014 a la faculté de présenter un successeur à l'autorité administrative compétente. Celle-ci peut ensuite autoriser le transfert de l'ADS à titre onéreux si les conditions de durée minimale d'exploitation sont respectées.<br />Pour les autorisations de stationnement délivrées après le  01 Octobre 2014, l'autorisation est incessible." %}
+    {% include 'pages/ads-form_date.html' with x_model="ads_creation_date" field_title="Date de création de l'ADS" field=form.ads_creation_date field_errors=form.errors.ads_creation_date required=form.fields.ads_creation_date.required %}
 
     <!-- ADS attribution date -->
     {% include 'pages/ads-form_date.html' with field_title="Date d'attribution de l'ADS au titulaire actuel" field=form.attribution_date field_errors=form.errors.attribution_date required=form.fields.attribution_date.required %}
@@ -169,7 +169,10 @@ Création d'une nouvelle ADS
     <div class="fr-input-group" x-show="!should_display_ads_user" x-transition>
       <hr />
       <span class="fr-hint-text">
-        La date de création de cette ADS est ultérieure au 01 Octobre 2014. La section du formulaire permettant de renseigner les informations relatives à l'exploitant est donc masquée.
+        Le titulaire d'une autorisation de stationnement délivrée avant le 01 Octobre 2014 a la faculté de présenter un successeur à l'autorité administrative compétente. Celle-ci peut ensuite autoriser le transfert de l'ADS à titre onéreux si les conditions de durée minimale d'exploitation sont respectées.
+        <br />
+        <br />
+        Pour les autorisations de stationnement délivrées après le 01 Octobre 2014, l'autorisation est incessible et la section du formulaire permettant de renseigner les informations relatives à l'exploitant est donc masquée.
       </span>
     </div>
 
