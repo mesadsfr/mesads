@@ -329,9 +329,8 @@ class ADSView(RevisionMixin, UpdateView):
         return kwargs
 
     def get_success_url(self):
-        return reverse('app.ads.detail', kwargs={
+        return reverse('app.ads-manager.detail', kwargs={
             'manager_id': self.kwargs['manager_id'],
-            'ads_id': self.kwargs['ads_id'],
         })
 
     def get_context_data(self, **kwargs):

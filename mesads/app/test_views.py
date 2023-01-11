@@ -451,7 +451,7 @@ class TestADSView(ClientTestCase):
             },
         )
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp.url, f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}')
+        self.assertEqual(resp.url, f'/gestion/{self.ads_manager_city35.id}/')
         self.ads.refresh_from_db()
         self.assertEqual(self.ads.owner_name, 'Jean-Jacques Goldman')
 
