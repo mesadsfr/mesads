@@ -38,7 +38,10 @@ class StatsGeoJSONPerPrefecture(views.APIView):
             .annotate(ads_count=Count('adsmanager__ads'))
 
         stats = {
-            ads_manager_administrator.prefecture.numero: ads_manager_administrator.ads_count
+            ads_manager_administrator.prefecture.numero: {
+                'ads_count': ads_manager_administrator.ads_count,
+                'expected_ads_count': ads_manager_administrator.expected_ads_count,
+            }
             for ads_manager_administrator in query_stats.all()
         }
 
@@ -47,7 +50,7 @@ class StatsGeoJSONPerPrefecture(views.APIView):
             geojson = shp.__geo_interface__
             for feature in geojson['features']:
                 insee_code = feature['properties']['code_insee']
-                ads_count = stats[insee_code]
-                feature['properties']['ads_count'] = ads_count
+                feature['properties']['ads_count'] = stats[insee_code]['ads_count']
+                feature['properties']['expected_ads_count'] = stats[insee_code]['expected_ads_count']
 
             return Response(geojson)
