@@ -88,64 +88,81 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 function displayStatsMap(data) {
+  const unknown_color = '#0000FF';
+
   const colors = {
-    0: '#a0a0a0',
+    0: '#A0A0A0',
     1: '#FF0000',
-    3: '#FFA500',
-    20: '#00ff00',
+    30: '#FFA500',
+    70: '#00FF00',
   };
 
-  const getFillColor = (ads_count) => {
+  const getFillColor = (ads_count, expected_ads_count) => {
+    if (expected_ads_count === null) {
+      if (ads_count) {
+        return unknown_color;
+      } else {
+        return colors[0];
+      }
+    }
+
+    const pct_filled = ads_count / (expected_ads_count || 0) * 100;
+
     const rsorted = Object.keys(colors).sort((a, b) => a - b).reverse()
-    const key = rsorted.find((e) => ads_count - e >= 0);
+    const key = rsorted.find((e) => pct_filled - e >= 0);
     return colors[key];
   };
 
-    /* Info box on the top right */
-    const info = L.control({ position: 'topright'});
+  /* Info box on the top right */
+  const info = L.control({ position: 'topright'});
 
-    info.onAdd = () => {
-      this._div = L.DomUtil.create('div', 'leaflet-info');
-      info.update();
-      return this._div;
-    };
+  info.onAdd = () => {
+    this._div = L.DomUtil.create('div', 'leaflet-info');
+    info.update();
+    return this._div;
+  };
 
-    info.update = (props) => {
-      const title = props ?
-        `Nombre d'ADS pour ${props.code_insee} - ${props.nom}`
-        : `Nombre d'ADS`;
+  getInfoboxContent = (ads_count, expected_ads_count) => {
+    const infos = [
+        `${ads_count} ADS ${ads_count > 1 ? "enregistrées" : "enregistrée"}`,
+    ];
 
-      const content = props ?
-        `${props.ads_count} ADS ${props.ads_count > 1 ? "enregistrées" : "enregistrée"}`
-        : `Survolez une région pour afficher les détails`;
+    if (expected_ads_count !== null) {
+      infos.push(`${expected_ads_count} ADS au total dans la préfecture`);
+      infos.push(`<strong>Taux de remplissage: ${Math.round(ads_count / expected_ads_count * 100)}%</strong>`)
+    } else {
+      infos.push("Nombre d'ADS total inconnu pour cette préfecture");
+    }
 
-      this._div.innerHTML = `
-        <div class="fr-tile fr-enlarge-link fr-tile--horizontal">
-          <div class="fr-tile__body">
-              <h4 class="fr-tile__title">${title}</h4>
-              <p class="fr-tile__desc">${content}</p>
-          </div>
-      </div>
-      `;
-      return ;
-      if (!props) {
-        this._div.innerHTML = '<p class="fr-hint-text">Survlez une région pour voir les informations</p>';
-      }
-      else {
-        this._div.innerHTML = `
-          <h4 class="fr-h1">${props.code_insee} - ${props.nom}</h4>
-          <h5 class="fr-h2 fr-text--center">${props.ads_count} ADS</h5>
-        `;
-      }
-    };
+    return infos.join('<br />');
+  };
 
-    info.addTo(map);
+  info.update = (props) => {
+    const title = props ?
+      `Nombre d'ADS pour ${props.code_insee} - ${props.nom}`
+      : `Nombre d'ADS`;
 
+    const content = props ?
+      getInfoboxContent(props.ads_count, props.expected_ads_count)
+      : `Survolez une région pour afficher les détails`
+    ;
+
+    this._div.innerHTML = `
+      <div class="fr-tile fr-enlarge-link fr-tile--horizontal">
+        <div class="fr-tile__body">
+            <h4 class="fr-tile__title">${title}</h4>
+            <p class="fr-tile__desc">${content}</p>
+        </div>
+    </div>
+    `;
+  };
+
+  info.addTo(map);
 
   const geojson = L.geoJSON(data, {
     style: (feature) => {
       return {
-          fillColor: getFillColor(feature.properties.ads_count),
+          fillColor: getFillColor(feature.properties.ads_count, feature.properties.expected_ads_count),
           fillOpacity: 0.5,
           color: '#777',
           weight: 1,
@@ -182,8 +199,16 @@ function displayStatsMap(data) {
 
     let description = `
       <ul class="fr-tile__desc fr-p-0" style="display: flex; flex-direction: column; gap: 5px;">`;
+
+      description += `
+        <li class="fr-grid-row fr-grid-row--bottom">
+          <i class="fr-mr-3v" style="background:${unknown_color}; width: 24px; height: 24px;"></i>
+          Taux de remplissage inconnu
+        </li>
+      `;
+
     for (let i = 0; i < grades.length; i++) {
-        const label = i === 0 ? "Aucune ADS" : `≥ ${grades[i]}`;
+        const label = i === 0 ? "Aucune ADS enregistrée" : `≥ ${grades[i]}%`;
 
         description += `
           <li class="fr-grid-row fr-grid-row--bottom">
@@ -202,8 +227,6 @@ function displayStatsMap(data) {
       </div>
     </div>
     `;
-
-
     return div;
   };
 
