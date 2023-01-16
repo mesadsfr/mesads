@@ -22,11 +22,11 @@ class Command(BaseCommand):
     def handle(self, **opts):
         ads_update_file = ADSUpdateFile.objects.order_by('-id').first()
         if not ads_update_file:
-            print('No file found, skip')
+            self._log(self.style.SUCCESS, 'No file found, skip')
             return
 
         if ads_update_file.imported:
-            print(f'ADSUpdateFile {ads_update_file.id} ({ads_update_file.update_file.name}) has already been imported, skip')
+            self._log(self.style.SUCCESS, f'ADSUpdateFile {ads_update_file.id} ({ads_update_file.update_file.name}) has already been imported, skip')
             return
 
         ads_manager = ADSManager.objects.filter(
@@ -34,7 +34,7 @@ class Command(BaseCommand):
             object_id=Prefecture.objects.filter(numero='75').get().id
         ).get()
 
-        print(f'Currently {ads_manager.ads_set.count()} ADS for Paris')
+        self._log(self.style.SUCCESS, f'Currently {ads_manager.ads_set.count()} ADS for Paris')
 
         all_paris_ads = {
             ads.number: ads
@@ -54,13 +54,13 @@ class Command(BaseCommand):
                 else:
                     update_count += 1
 
-        print(f'{new_count} new ADS imported, {update_count} ADS updated')
+        self._log(self.style.SUCCESS, f'{new_count} new ADS imported, {update_count} ADS updated')
         delete_count = 0
         for ads in all_paris_ads.values():
             if not getattr(ads, '_HAS_BEEN_UPDATED', False):
                 delete_count += 1
                 ads.delete()
-        print(f'{delete_count} ADS deleted')
+        self._log(self.style.SUCCESS, f'{delete_count} ADS deleted')
 
         ads_update_file.imported = True
         ads_update_file.save()
