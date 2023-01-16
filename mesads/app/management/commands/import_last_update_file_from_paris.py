@@ -1,5 +1,3 @@
-# XXX: this is a temporary script to load ads from Paris, it might be broken
-
 import csv
 import re
 import sys
