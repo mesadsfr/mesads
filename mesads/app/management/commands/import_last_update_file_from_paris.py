@@ -11,7 +11,9 @@ from mesads.fradm.models import Prefecture
 
 class Command(BaseCommand):
     help = (
-        "Import data for Paris"
+        "Every week, the Préfecture de Police de Paris publishes a CSV file with "
+        "ADS updates. This command attempts to import the last file if it has not "
+        "been already imported."
     )
 
     def _log(self, level, msg):
