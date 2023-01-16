@@ -145,6 +145,8 @@ class ADSManagerAdministrator(models.Model):
     :param users: Users who can manage the list of ads_managers.
 
     :param ads_managers: ADSManager managed by this administrator.
+
+    :param expected_ads_count: Number of ADSManager expected for this prefecture.
     """
     class Meta:
         verbose_name = 'Administrateur des gestionnaires ADS'
@@ -156,6 +158,11 @@ class ADSManagerAdministrator(models.Model):
     prefecture = models.OneToOneField(
         Prefecture, on_delete=models.CASCADE, null=False, blank=False)
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
+    expected_ads_count = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text='Nombre de gestionnaires ADS attendus pour cette préfecture.'
+    )
 
 
 def validate_siret(value):

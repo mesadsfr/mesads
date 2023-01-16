@@ -120,6 +120,7 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
     list_display = (
         '__str__',
         'display_ads_count',
+        'expected_ads_count',
     )
 
     inlines = (
@@ -128,6 +129,7 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
 
     fields = (
         'prefecture',
+        'expected_ads_count',
         'display_ads_count',
     )
 
