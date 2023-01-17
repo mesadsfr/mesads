@@ -49,7 +49,7 @@
         </thead>
         <tbody>
             {% for row in stats %}
-            <tr>
+            <tr id="prefecture_{{ row.obj.prefecture.numero }}" x-data="{selected: window.location.hash}" @hashchange.window="selected = window.location.hash" :class="selected == '#prefecture_{{ row.obj.prefecture.numero }}' ? 'tr-highlighted' : ''">
                 <td><a href="{% url 'app.dashboards.detail' ads_manager_administrator_id=row.obj.id %}">{{ row.obj.prefecture }}</a></td>
 
                 <td>
@@ -185,6 +185,7 @@ function displayStatsMap(data) {
         click: () => {
           map.fitBounds(layer.getBounds());
           info.update(feature.properties);
+          window.location.href = `#prefecture_${feature.properties.code_insee}`;
         }
 
       });
