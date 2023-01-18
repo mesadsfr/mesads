@@ -21,7 +21,7 @@
 </nav>
 
 {% comment %}If the administration declared it does not manage ADS, hide the creation button.{% endcomment %}
-{% if not ads_manager.no_ads_declared %}
+{% if not ads_manager.no_ads_declared and not ads_manager.is_locked %}
 <p>
   <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads.create' manager_id=ads_manager.id %}">Créer une nouvelle ADS</a>
 </p>

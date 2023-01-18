@@ -173,6 +173,16 @@ class ADSAdmin(VersionAdmin):
     def administration(self, ads):
         return ads.ads_manager.content_object.display_text()
 
+    def has_change_permission(self, request, obj=None):
+        if obj and obj.ads_manager.is_locked:
+            return False
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.ads_manager.is_locked:
+            return False
+        return True
+
     list_display = (
         'administration',
         'number',

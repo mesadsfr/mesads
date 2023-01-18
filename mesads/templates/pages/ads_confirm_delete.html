@@ -24,13 +24,24 @@
   Suppression de l'ADS numéro {{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})
 </h1>
 
+{% if ads.ads_manager.is_locked %}
+<p>
+  Vous ne pouvez pas supprimer cette ADS, car elle appartient à un gestionnaire pour lequel les modifications manuelles ont été bloquées car les données sont mises à jour automatiquement.
+</p>
+{% else %}
 <form method="post">
   {% csrf_token %}
   <p>
     Êtes-vous sûr de vouloir supprimer cette ADS ?
   </p>
-  <input class="fr-btn" type="submit" value="Supprimer définitivement" style="background-color: var(--background-flat-error)">
+  <input
+    class="fr-btn"
+    type="submit"
+    value="Supprimer définitivement"
+    style="background-color: var(--background-flat-error)"
+  />
 </form>
+{% endif %}
 
 
 {% endblock %}
