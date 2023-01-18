@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.db.models import Count
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from reversion.admin import VersionAdmin
 
@@ -20,35 +22,6 @@ from .models import (
 admin.site.unregister(Group)
 
 
-class ReadOnlyInline(admin.TabularInline):
-    """Inline table which doesn't allow to add, update or delete rows."""
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
-    def has_add_permission(self, request, obj=None):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def get_readonly_fields(self, request, obj=None):
-        return list(super().get_fields(request, obj))
-
-
-class ADSInline(ReadOnlyInline):
-    """ADS can be created, deleted or changed from ADSAdmin. This inline is
-    read only."""
-    model = ADS
-    show_change_link = True
-
-    fields = (
-        'number',
-        'owner_name',
-        'immatriculation_plate',
-    )
-
-
 @admin.register(ADSManager)
 class ADSManagerAdmin(admin.ModelAdmin):
 
@@ -64,25 +37,21 @@ class ADSManagerAdmin(admin.ModelAdmin):
     fields = (
         'administrator',
         'administration',
-        'display_ads_count',
         'no_ads_declared',
         'is_locked',
+        'ads_link',
     )
 
     readonly_fields = (
         'administrator',
         'administration',
-        'display_ads_count',
+        'ads_link',
     )
 
     search_fields = (
         'commune__libelle',
         'prefecture__libelle',
         'epci__name',
-    )
-
-    inlines = (
-        ADSInline,
     )
 
     @admin.display(description='Nombre d\'ADS enregistrées')
@@ -92,17 +61,25 @@ class ADSManagerAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         req = super().get_queryset(request)
-        req = req.prefetch_related('content_object')
         req = req.annotate(ads_count=Count('ads'))
         return req
 
     def has_add_permission(self, request, obj=None):
-        """Added by command load_ads_managers."""
+        """ADSManager entries are created with the django command
+        load_ads_managers. It should not be possible to create or delete them
+        from the admin."""
         return False
 
     def has_delete_permission(self, request, obj=None):
-        """Added by command load_ads_managers."""
+        """ADSManager entries are created with the django command
+        load_ads_managers. It should not be possible to create or delete them
+        from the admin."""
         return False
+
+    @admin.display(description='Liste des ADS du gestionnaire')
+    def ads_link(self, obj):
+        ads_url = reverse('admin:app_ads_changelist') + '?ads_manager=' + str(obj.id)
+        return mark_safe(f'<a href="{ads_url}">Voir les {obj.ads_count} ADS</a>')
 
 
 class ADSManagerAdministratorUsersInline(admin.TabularInline):
