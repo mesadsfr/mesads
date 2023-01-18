@@ -12,6 +12,7 @@
     id="{{ field.id_for_label }}"
     name="{{ field.html_name }}"
     {% if x_model %}x-model="{{ x_model }}"{% endif %}
+    {% if readonly %}disabled{% endif %}
   >
     {% for option in field %}
       {{ option }}

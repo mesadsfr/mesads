@@ -17,6 +17,7 @@
       name="{{ field.html_name }}"
       value="{{ field.value|str_to_date|date:"Y-m-d"|default:"" }}"
       {% if x_model %}x-model="{{ x_model }}"{% endif %}
+      {% if readonly %}readonly{% endif %}
     />
   </div>
 
