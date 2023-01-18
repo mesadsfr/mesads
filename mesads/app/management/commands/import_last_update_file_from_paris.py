@@ -44,15 +44,16 @@ class Command(BaseCommand):
         new_count = 0
         update_count = 0
         with ads_update_file.update_file.storage.open(ads_update_file.update_file.name, 'r') as handle:
-            reader = csv.DictReader(handle)
-            for row in reader:
-                import_ret = self.import_ads(ads_manager, all_paris_ads, row)
-                if import_ret is None:  # did nothing
-                    continue
-                elif import_ret:
-                    new_count += 1
-                else:
-                    update_count += 1
+            reader = csv.DictReader(handle.read().splitlines())
+
+        for row in reader:
+            import_ret = self.import_ads(ads_manager, all_paris_ads, row)
+            if import_ret is None:  # did nothing
+                continue
+            elif import_ret:
+                new_count += 1
+            else:
+                update_count += 1
 
         self._log(self.style.SUCCESS, f'{new_count} new ADS imported, {update_count} ADS updated')
         delete_count = 0
