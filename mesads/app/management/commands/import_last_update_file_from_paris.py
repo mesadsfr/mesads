@@ -34,6 +34,14 @@ class Command(BaseCommand):
             object_id=Prefecture.objects.filter(numero='75').get().id
         ).get()
 
+        try:
+            # Remove ADSManager lock, otherwise ADS.save() will fail
+            ads_manager.is_locked = False
+            self.do_import(ads_update_file, ads_manager)
+        finally:
+            ads_manager.is_locked = True
+
+    def do_import(self, ads_update_file, ads_manager):
         self._log(self.style.SUCCESS, f'Currently {ads_manager.ads_set.count()} ADS for Paris')
 
         all_paris_ads = {
