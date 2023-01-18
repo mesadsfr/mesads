@@ -106,6 +106,11 @@ class ADSManager(SmartValidationMixin, models.Model):
         help_text='Cocher cette case si le gestionnaire ne gère aucune ADS.'
     )
 
+    is_locked = models.BooleanField(
+        default=False,
+        help_text="Cochez cette case pour empêcher la gestion manuelle des ADS pour cette administration"
+    )
+
 
 @reversion.register
 class ADSManagerRequest(models.Model):

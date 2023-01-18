@@ -66,6 +66,7 @@ class ADSManagerAdmin(admin.ModelAdmin):
         'administration',
         'display_ads_count',
         'no_ads_declared',
+        'is_locked',
     )
 
     readonly_fields = (
