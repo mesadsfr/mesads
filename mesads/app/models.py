@@ -297,6 +297,16 @@ class ADS(SmartValidationMixin, models.Model):
     def __str__(self):
         return f'ADS {self.id}'
 
+    def save(self, *args, **kwargs):
+        if self.ads_manager.is_locked:
+            raise ValidationError("Il n'est pas possible d'apporter des modifications sur les ADS d'une administration verrouillée.")
+        return super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.ads_manager.is_locked:
+            raise ValidationError("Il n'est pas possible de supprimer une ADS d'une administration verrouillée.")
+        return super().delete(*args, **kwargs)
+
     UNIQUE_ERROR_MSG = "Une ADS avec ce numéro existe déjà. Supprimez l'ADS existante, ou utilisez un autre numéro."
 
     def validate_unique(self, exclude=None):
