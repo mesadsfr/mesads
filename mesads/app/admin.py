@@ -108,11 +108,13 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
     fields = (
         'prefecture',
         'expected_ads_count',
+        'ads_managers_link',
         'display_ads_count',
     )
 
     readonly_fields = (
         'prefecture',
+        'ads_managers_link',
         'display_ads_count',
     )
 
@@ -131,6 +133,11 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         """Added by command load_ads_managers."""
         return False
+
+    @admin.display(description="Liste des gestionnaires d'ADS")
+    def ads_managers_link(self, obj):
+        ads_managers_url = reverse('admin:app_adsmanager_changelist') + '?administrator=' + str(obj.id)
+        return mark_safe(f'<a href="{ads_managers_url}">Voir les {obj.adsmanager_set.count()} gestionnaires ADS</a>')
 
 
 @admin.register(ADSManagerRequest)
