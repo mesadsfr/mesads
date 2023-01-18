@@ -106,6 +106,11 @@ class TestADS(ClientTestCase):
         filename = get_legal_filename(legal_file, 'my_filename')
         self.assertIn('my_filename', filename)
 
+    def test_update_when_locked(self):
+        self.ads.ads_manager.is_locked = True
+        self.assertRaises(ValidationError, self.ads.save)
+        self.assertRaises(ValidationError, self.ads.delete)
+
 
 class TestADSLegalFile(ClientTestCase):
     def setUp(self):
