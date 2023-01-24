@@ -72,7 +72,13 @@
 
             <tr>
               <td><strong>TOTAL</strong></td>
-              <td><strong>{{ stats_total.ads.now|default:"" }}</strong></td>
+              <td>
+                <strong>{{ stats_total.ads.now|default:"" }}</strong>
+                {% if stats_total.ads.with_info_now %}
+                <br />
+                <small>{{ stats_total.ads.with_info_now }} avec infos contact</small
+                {% endif %}
+              </td>
               <td><small>{{ stats_total.ads.3_months|default:"" }}</small></td>
               <td><small>{{ stats_total.ads.6_months|default:"" }}</small></td>
               <td><small>{{ stats_total.ads.12_months|default:"" }}</small></td>
