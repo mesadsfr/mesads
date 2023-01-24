@@ -715,7 +715,7 @@ class TestADSCreateView(ClientTestCase):
             }
         )
         self.assertEqual(resp.status_code, 302)
-        new_ads = ADS.objects.order_by('-id')[0]
+        ADS.objects.order_by('-id')[0]
         self.assertEqual(resp.url, f'/gestion/{self.ads_manager_city35.id}/')
 
     def test_create_duplicate(self):
@@ -760,7 +760,7 @@ class TestADSCreateView(ClientTestCase):
             }
         )
         self.assertEqual(resp.status_code, 302)
-        new_ads = ADS.objects.order_by('-id')[0]
+        ADS.objects.order_by('-id')[0]
         self.assertEqual(resp.url, f'/gestion/{self.ads_manager_city35.id}/')
 
         self.assertEqual(ADSUser.objects.count(), 1)
@@ -799,7 +799,7 @@ class TestADSCreateView(ClientTestCase):
             }
         )
         self.assertEqual(resp.status_code, 302)
-        new_ads = ADS.objects.order_by('-id')[0]
+        ADS.objects.order_by('-id')[0]
         self.assertEqual(resp.url, f'/gestion/{self.ads_manager_city35.id}/')
 
         self.assertEqual(ADSLegalFile.objects.count(), 2)
@@ -872,13 +872,32 @@ class TestDashboardsViews(ClientTestCase):
     def test_stats_default(self):
         # The base class ClientTestCase creates ads_manager_administrator for
         # departement 35, and configures an ADSManager for the city fo Melesse.
-        self.assertEqual([{
+        stats = [{
             'obj': self.ads_manager_administrator_35,
             'ads': {},
             'users': {
                 'now': 1,
             }
-        }], self.dashboards_view.get_stats())
+        }]
+        stats_total = {
+            'ads': {
+                'now': 0,
+                'with_info_now': 0,
+                '3_months': 0,
+                '6_months': 0,
+                '12_months': 0,
+            },
+            'users': {
+                'now': 1,
+                '3_months': 0,
+                '6_months': 0,
+                '12_months': 0,
+            }
+        }
+        self.assertEqual(
+            (stats, stats_total),
+            self.dashboards_view.get_stats()
+        )
 
         self.assertEqual([{
             'obj': self.ads_manager_city35,
@@ -901,7 +920,7 @@ class TestDashboardsViews(ClientTestCase):
             ads.creation_date = creation_date
             ads.save()
 
-        self.assertEqual([{
+        stats = [{
             'obj': self.ads_manager_administrator_35,
             'ads': {
                 'now': 4,
@@ -912,7 +931,27 @@ class TestDashboardsViews(ClientTestCase):
             'users': {
                 'now': 1,
             }
-        }], self.dashboards_view.get_stats())
+        }]
+        stats_total = {
+            'ads': {
+                'now': 4,
+                'with_info_now': 0,
+                '3_months': 3,
+                '6_months': 2,
+                '12_months': 1,
+            },
+            'users': {
+                'now': 1,
+                '3_months': 0,
+                '6_months': 0,
+                '12_months': 0,
+            }
+        }
+
+        self.assertEqual(
+            (stats, stats_total),
+            self.dashboards_view.get_stats()
+        )
 
         self.assertEqual([{
             'obj': self.ads_manager_city35,
@@ -945,7 +984,7 @@ class TestDashboardsViews(ClientTestCase):
             ads_manager_request.created_at = creation_date
             ads_manager_request.save()
 
-        self.assertEqual([{
+        stats = [{
             'obj': self.ads_manager_administrator_35,
             'ads': {},
             'users': {
@@ -954,7 +993,27 @@ class TestDashboardsViews(ClientTestCase):
                 '6_months': 2,
                 '12_months': 1,
             }
-        }], self.dashboards_view.get_stats())
+        }]
+        stats_total = {
+            'ads': {
+                'now': 0,
+                'with_info_now': 0,
+                '3_months': 0,
+                '6_months': 0,
+                '12_months': 0,
+            },
+            'users': {
+                'now': 5,
+                '3_months': 3,
+                '6_months': 2,
+                '12_months': 1,
+            }
+        }
+
+        self.assertEqual(
+            (stats, stats_total),
+            self.dashboards_view.get_stats()
+        )
 
         self.assertEqual([{
             'obj': self.ads_manager_city35,

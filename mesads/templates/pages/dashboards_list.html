@@ -69,6 +69,19 @@
                 <td><small>{{ row.users.12_months|default:"" }}</small></td>
             </tr>
             {% endfor %}
+
+            <tr>
+              <td><strong>TOTAL</strong></td>
+              <td><strong>{{ stats_total.ads.now|default:"" }}</strong></td>
+              <td><small>{{ stats_total.ads.3_months|default:"" }}</small></td>
+              <td><small>{{ stats_total.ads.6_months|default:"" }}</small></td>
+              <td><small>{{ stats_total.ads.12_months|default:"" }}</small></td>
+
+              <td><strong>{{ stats_total.users.now|default:"" }}</strong></td>
+              <td><small>{{ stats_total.users.3_months|default:"" }}</small></td>
+              <td><small>{{ stats_total.users.6_months|default:"" }}</small></td>
+              <td><small>{{ stats_total.users.12_months|default:"" }}</small></td>
+            </tr>
         </tbody>
     </table>
 </div>

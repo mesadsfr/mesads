@@ -8,8 +8,8 @@ from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
-from django.db.models import Count, Q, Value
-from django.db.models.functions import Replace
+from django.db.models import Count, Q, Sum, Value
+from django.db.models.functions import Coalesce, Replace
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
@@ -479,13 +479,20 @@ class DashboardsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['stats'] = self.get_stats()
+        ctx['stats'], ctx['stats_total'] = self.get_stats()
         return ctx
 
     def get_stats(self):
-        """Get a list of ADSManagerAdministrator instances the following statistics:
-            - number of ADS (now, and 3/6/12 months ago)
-            - number of ADSManager accounts (now, and 3/6/12 months ago)
+        """This function returns a tuple of two values:
+
+        * stats: a list of dictionaries containing the following keys:
+            - obj: the ADSManagerAdministrator instance
+            - ads: a dictionary where keys represent the period (now, 3 months
+              ago, 6 months ago, 12 months ago), and values are the number of ADS
+              for this ADSManagerAdministrator
+            - users: a dictionary where keys represent the period (now, 3 months
+              ago, 6 months ago, 12 months ago), and values are the number of
+              accounts who can create ADS for this ADSManagerAdministrator
 
         >>> [
         ...      obj: <ADSManagerAdministrator object>
@@ -502,6 +509,20 @@ class DashboardsView(TemplateView):
         ...          '12_months':
         ...       }
         ...  ]
+
+        * stats_total: a dictionary containing the keys 'ads' and 'users', and
+          the values are dictionaries where keys represent the period, and
+          values are the total number of ADS and users.
+
+        >>> {
+        ...     'ads': {
+        ...         'now': <int, total number of ADS currently registered>,
+        ...         '3_months': <total number of ADS updated less than 3 months ago>,
+        ...         '6_months': <total number of ADS updated less than 6 months ago>,
+        ...         '12_months': <total number of ADS updated less than 12 months ago>,
+        ...     },
+        ...     'users': { ... }
+        ... }
         """
         now = timezone.now()
 
@@ -510,6 +531,11 @@ class DashboardsView(TemplateView):
             'ads': {},
             'users': {}
         })
+
+        stats_total = {
+            'ads': {},
+            'users': {},
+        }
 
         ads_query_now = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
@@ -551,6 +577,8 @@ class DashboardsView(TemplateView):
                 stats[row.prefecture.id]['obj'] = row
                 stats[row.prefecture.id]['ads'][label] = row.ads_count
 
+            stats_total['ads'][label] = query.aggregate(total=Coalesce(Sum('ads_count'), 0))['total']
+
         users_query_now = ADSManagerAdministrator.objects \
             .select_related('prefecture') \
             .filter(adsmanager__adsmanagerrequest__accepted=True) \
@@ -587,8 +615,13 @@ class DashboardsView(TemplateView):
                 stats[row.prefecture.id]['obj'] = row
                 stats[row.prefecture.id]['users'][label] = row.users_count
 
-        # Transform dict to an ordered list
-        return sorted(list(stats.values()), key=lambda stat: stat['obj'].id)
+            stats_total['users'][label] = query.aggregate(total=Coalesce(Sum('users_count'), 0))['total']
+
+        return (
+            # Transform dict to an ordered list
+            sorted(list(stats.values()), key=lambda stat: stat['obj'].id),
+            stats_total
+        )
 
 
 class DashboardsDetailView(DetailView):
