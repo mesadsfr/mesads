@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 class EmailUserManager(UserManager):
     """Custom manager for users, similar to UserManager, but using email only
     for authentication."""
+
     def _create_user(self, username, email, password, **extra_fields):
         """This method is a *copy* of django.contrib.auth.model:UserManager,
         except we only use email for authentication.
@@ -46,7 +47,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     The goal is to remain compatible with django admin, but have email
     authentication instead of username authentication.
     """
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_('email address'), unique=True, error_messages={
+        'unique': 'Un utilisateur avec cet email existe déjà.',
+    })
     objects = EmailUserManager()
 
     first_name = models.CharField(_('first name'), max_length=150, blank=True)
