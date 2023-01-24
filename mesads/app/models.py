@@ -10,6 +10,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.html import mark_safe
 
 import reversion
 
@@ -348,13 +349,42 @@ class ADS(SmartValidationMixin, models.Model):
     immatriculation_plate = models.CharField(
         max_length=128, null=False, blank=True)
 
-    vehicle_compatible_pmr = models.BooleanField(blank=True, null=True)
+    vehicle_compatible_pmr = models.BooleanField(
+        blank=True, null=True,
+        help_text=(
+            "Vous pouvez retrouver cette information sur la mention « J.3 : "
+            "handicap » de la carte grise du véhicule concerné par l'ADS."
+        )
+    )
 
-    eco_vehicle = models.BooleanField(blank=True, null=True)
+    eco_vehicle = models.BooleanField(
+        blank=True, null=True,
+        help_text=mark_safe(
+            "Vous pouvez retrouver cette information sur la mention P.3 de la "
+            "carte grise du véhicule concerné par l'ADS. L'ensemble des "
+            "abréviations est disponible sur legifrance : <a "
+            "href=\"https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044084721\" "
+            "target=\"_blank\">https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044084721</a> "
+        )
+    )
 
-    owner_name = models.CharField(max_length=1024, blank=True, null=False)
+    owner_name = models.CharField(
+        max_length=1024, blank=True, null=False,
+        help_text=(
+            "S'il s'agit d'une personne physique, précisez le nom et le prénom "
+            "du titulaire de l'ADS. S'il s'agit d'une personne morale, indiquez "
+            "sa raison sociale. "
+        )
+    )
 
-    owner_siret = models.CharField(max_length=128, blank=True, null=False)
+    owner_siret = models.CharField(
+        max_length=128,
+        blank=True, null=False,
+        help_text=(
+            "Nous validons ce numéro en consultant les données officielles de "
+            "l'INSEE. Indiquez le numéro de SIRET (14 chiffres) sans espace. "
+        )
+    )
 
     owner_phone = models.CharField(max_length=128, blank=True, null=False)
     owner_mobile = models.CharField(max_length=128, blank=True, null=False)
@@ -437,7 +467,14 @@ class ADSUser(SmartValidationMixin, models.Model):
 
     status = models.CharField(max_length=255, choices=ADS_USER_STATUS, blank=True, null=False)
     name = models.CharField(max_length=1024, blank=True, null=False)
-    siret = models.CharField(max_length=128, blank=True, null=False)
+    siret = models.CharField(
+        max_length=128,
+        blank=True, null=False,
+        help_text=(
+            "Nous validons ce numéro en consultant les données officielles de "
+            "l'INSEE. Indiquez le numéro de SIRET (14 chiffres) sans espace. "
+        )
+    )
     license_number = models.CharField(max_length=64, blank=True, null=True)
 
 
