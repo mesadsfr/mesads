@@ -112,7 +112,7 @@ class AutoDeleteADSUserFormSet(BaseInlineFormSet):
 
 ADSUserFormSet = inlineformset_factory(
     ADS, ADSUser, fields=('status', 'name', 'siret', 'license_number'),
-    can_delete=True, extra=10, max_num=10,
+    can_delete=True, extra=25, max_num=25,
     formset=AutoDeleteADSUserFormSet
 )
 
