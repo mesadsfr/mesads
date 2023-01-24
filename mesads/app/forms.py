@@ -104,7 +104,7 @@ class AutoDeleteADSUserFormSet(BaseInlineFormSet):
         # remove it otherwise errors won't be displayed.
         if not form.is_valid():
             return super()._should_delete_form(form)
-        for key in set(form.fields.keys()) - set(['ads', 'id', 'DELETE']):
+        for key in set(form.fields.keys()) - set(['ads', 'id', 'status', 'DELETE']):
             if form.cleaned_data.get(key):
                 return super()._should_delete_form(form)
         return True
