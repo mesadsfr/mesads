@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.contrib import admin
 
 from reversion.admin import VersionAdmin
@@ -7,6 +9,29 @@ from ..models import (
     ADSLegalFile,
     ADSUser,
 )
+
+
+class ADSPeriodListFilter(admin.SimpleListFilter):
+    """Filter ADS by creation date: before or after 2014/10/01."""
+    title = "Date de création de l'ADS"
+
+    parameter_name = 'ads_period'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('before', 'Avant le 01/10/2014'),
+            ('after', 'Après le 01/10/2014'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'before':
+            return queryset.filter(
+                ads_creation_date__lt=date(2014, 10, 1),
+            )
+        elif self.value() == 'after':
+            return queryset.filter(
+                ads_creation_date__gte=date(2014, 10, 1),
+            )
 
 
 class ADSUserInline(admin.TabularInline):
@@ -60,6 +85,14 @@ class ADSAdmin(VersionAdmin):
     inlines = [
         ADSUserInline,
         ADSLegalFileInline,
+    ]
+
+    list_filter = [
+        ADSPeriodListFilter,
+        'used_by_owner',
+        'adsuser__status',
+        'attribution_type',
+        'accepted_cpam',
     ]
 
     def get_queryset(self, request):
