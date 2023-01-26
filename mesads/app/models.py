@@ -390,7 +390,10 @@ class ADS(SmartValidationMixin, models.Model):
     owner_mobile = models.CharField(max_length=128, blank=True, null=False)
     owner_email = models.CharField(max_length=128, blank=True, null=False)
 
-    used_by_owner = models.BooleanField(blank=True, null=True)
+    used_by_owner = models.BooleanField(
+        blank=True, null=True,
+        verbose_name='ADS exploitée par son titulaire ?'
+    )
 
 
 def get_legal_filename(instance, filename):
@@ -475,7 +478,7 @@ class ADSUser(SmartValidationMixin, models.Model):
             "l'INSEE. Indiquez le numéro de SIRET (14 chiffres) sans espace. "
         )
     )
-    license_number = models.CharField(max_length=64, blank=True, null=True)
+    license_number = models.CharField(max_length=64, blank=True, null=False)
 
 
 class ADSUpdateFile(models.Model):
