@@ -23,6 +23,7 @@ omit = [
     # We should probably keep admin.py in coverage, but since it's only for
     # admins let's avoid over-engineering.
     "*/admin.py",
+    "*/admin/*.py",
     # This file is mostly a copy of django classes, to allow authentication
     # with email. There's no value to add unittests here.
     "mesads/users/models.py",
