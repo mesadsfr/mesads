@@ -146,7 +146,7 @@ Création d'une nouvelle ADS
     {% include 'pages/ads-form_select.html' with x_model="attribution_type" field=form.attribution_type field_errors=form.errors.attribution_type required=form.fields.attribution_type.required readonly=ads_manager.is_locked %}
 
     <!-- Transaction identifier -->
-    {% include 'pages/ads-form_string.html' with x_show="attribution_type == 'paid'" field=form.transaction_identifier field_errors=form.errors.transaction_identifier required=form.fields.transaction_identifier.required readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_string.html' with x_transition=True x_show="attribution_type == 'paid'" field=form.transaction_identifier field_errors=form.errors.transaction_identifier required=form.fields.transaction_identifier.required readonly=ads_manager.is_locked %}
 
     <!-- ADS attribution reason -->
     {% include 'pages/ads-form_string.html' with field=form.attribution_reason field_errors=form.errors.attribution_reason required=form.fields.attribution_reason.required readonly=ads_manager.is_locked %}
