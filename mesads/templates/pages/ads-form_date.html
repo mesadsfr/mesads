@@ -1,6 +1,10 @@
 {% load str_to_date %}
 
-<div class="fr-input-group{% if field_errors %} fr-input-group--error{% endif %}">
+<div
+  class="fr-input-group{% if field_errors %} fr-input-group--error{% endif %}"
+  {% if x_show %}x-show="{{ x_show }}"{% endif %}
+  {% if x_transition %}x-transition{% endif %}
+>
   <label
     class="fr-label"
     for="{{ field.id_for_label }}"

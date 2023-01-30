@@ -1,4 +1,8 @@
-<div class="fr-checkbox-group">
+<div
+    class="fr-checkbox-group"
+    {% if x_show %}x-show="{{ x_show }}"{% endif %}
+    {% if x_transition %}x-transition{% endif %}
+>
     <input
         type="checkbox"
         id="{{ field.id_for_label }}"
