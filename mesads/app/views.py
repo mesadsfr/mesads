@@ -320,8 +320,10 @@ class ADSView(RevisionMixin, UpdateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
 
-        # For EPCI, initialize ADSForm with the parameter epci required to setup
-        # autocompletion for the field ADS.epci_commune.
+        # If manager_id is the primary key of an EPCI, initialize ADSForm with
+        # the parameter "epci" which is required to setup autocompletion for the
+        # field ADS.epci_commune. This field is not displayed if the manager is
+        # a Prefecture or a Commune.
         ads_manager = get_object_or_404(ADSManager, id=self.kwargs['manager_id'])
         if ads_manager.content_type.model_class() is EPCI:
             kwargs['epci'] = ads_manager.content_object
