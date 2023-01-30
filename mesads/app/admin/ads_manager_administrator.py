@@ -21,6 +21,10 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
         req = req.annotate(ads_count=Count('adsmanager__ads'))
         return req
 
+    ordering = (
+        'prefecture__numero',
+    )
+
     list_display = (
         '__str__',
         'display_ads_count',
