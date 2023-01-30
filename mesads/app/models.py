@@ -265,7 +265,10 @@ class ADS(SmartValidationMixin, models.Model):
         verbose_name="Numéro de l'ADS"
     )
     ads_manager = models.ForeignKey(ADSManager, on_delete=models.CASCADE)
-    epci_commune = models.ForeignKey(Commune, on_delete=models.RESTRICT, blank=True, null=True)
+    epci_commune = models.ForeignKey(
+        Commune, on_delete=models.RESTRICT, blank=True, null=True,
+        verbose_name="Commune de l'EPCI concernée par l'ADS",
+    )
 
     creation_date = models.DateField(auto_now_add=True, null=False)
     last_update = models.DateField(auto_now=True, null=False)

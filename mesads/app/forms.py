@@ -86,7 +86,8 @@ class ADSForm(forms.ModelForm):
     epci_commune = forms.ModelChoiceField(
         queryset=None,
         widget=autocomplete.ListSelect2(),
-        label='Commune',
+        label=ADS.epci_commune.field.verbose_name,
+        help_text=ADS.epci_commune.field.help_text,
         required=False,
     )
 

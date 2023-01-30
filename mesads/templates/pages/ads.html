@@ -120,7 +120,8 @@ Création d'une nouvelle ADS
         class="fr-label"
         for="{{ form.epci_commune.id_for_label }}"
       >
-        Commune de l'ADS :
+        {{ form.epci_commune.label }}
+        {% if form.epci_commune.help_text %}<span class="fr-hint-text">{{ form.epci_commune.help_text }}</span>{% endif %}
       </label>
 
       {{ form.epci_commune }}
