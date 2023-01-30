@@ -53,8 +53,15 @@ class ADSManagerAdministratorFilter(admin.SimpleListFilter):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('email', 'admin_roles')
+
+    list_display = (
+        'email',
+        'admin_roles',
+        'is_active',
+    )
+
     list_filter = (
+        'is_active',
         ADSManagerRequestFilter,
         ADSManagerAdministratorFilter,
     )
@@ -68,11 +75,13 @@ class UserAdmin(admin.ModelAdmin):
         'is_active',
         'ads_manager_request_link',
     )
+
     readonly_fields = (
         'date_joined',
         'last_login',
         'ads_manager_request_link',
     )
+
     search_fields = (
         'email',
         'adsmanageradministrator__prefecture__libelle',
