@@ -56,12 +56,6 @@ def validate_no_ads_declared(ads_manager, value):
 class ADSManager(SmartValidationMixin, models.Model):
     """Authority who can register a new ADS. Either a Prefecture, a Commune or
     a EPCI.
-
-    :param administrator: administration responsible to accept or deny ADSManagerRequest related to this object.
-
-    :param content_object: ForeignKey to fradm.models.
-
-    :param no_ads_declared: If True, the ADSManager has declared that it does not manage ADS.
     """
     class Meta:
         verbose_name = 'Gestionnaire ADS'
