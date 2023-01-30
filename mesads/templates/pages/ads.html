@@ -134,49 +134,49 @@ Création d'une nouvelle ADS
     {% endif %}
 
     <!-- ADS number -->
-    {% include 'pages/ads-form_string.html' with field_title="Numéro de l'ADS" field=form.number field_errors=form.errors.number required=form.fields.number.required readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_string.html' with field=form.number field_errors=form.errors.number required=form.fields.number.required readonly=ads_manager.is_locked %}
 
     <!-- ADS creation date -->
-    {% include 'pages/ads-form_date.html' with x_model="ads_creation_date" field_title="Date de création de l'ADS" field=form.ads_creation_date field_errors=form.errors.ads_creation_date required=form.fields.ads_creation_date.required readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_date.html' with x_model="ads_creation_date" field=form.ads_creation_date field_errors=form.errors.ads_creation_date required=form.fields.ads_creation_date.required readonly=ads_manager.is_locked %}
 
     <!-- ADS attribution date -->
-    {% include 'pages/ads-form_date.html' with field_title="Date d'attribution de l'ADS au titulaire actuel" field=form.attribution_date field_errors=form.errors.attribution_date required=form.fields.attribution_date.required readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_date.html' with field=form.attribution_date field_errors=form.errors.attribution_date required=form.fields.attribution_date.required readonly=ads_manager.is_locked %}
 
     <!-- ADS attribution type -->
-    {% include 'pages/ads-form_select.html' with x_model="attribution_type" field_title="Type d'attribution de l'ADS" field=form.attribution_type field_errors=form.errors.attribution_type required=form.fields.attribution_type.required readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_select.html' with x_model="attribution_type" field=form.attribution_type field_errors=form.errors.attribution_type required=form.fields.attribution_type.required readonly=ads_manager.is_locked %}
 
     <!-- Transaction identifier -->
-    {% include 'pages/ads-form_string.html' with x_show="attribution_type == 'paid'" field_title="Numéro d'identification lié au registre des transactions" field=form.transaction_identifier field_errors=form.errors.transaction_identifier required=form.fields.transaction_identifier.required readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_string.html' with x_show="attribution_type == 'paid'" field=form.transaction_identifier field_errors=form.errors.transaction_identifier required=form.fields.transaction_identifier.required readonly=ads_manager.is_locked %}
 
     <!-- ADS attribution reason -->
-    {% include 'pages/ads-form_string.html' with field_title="Raison d'attribution" field=form.attribution_reason field_errors=form.errors.attribution_reason required=form.fields.attribution_reason.required readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_string.html' with field=form.attribution_reason field_errors=form.errors.attribution_reason required=form.fields.attribution_reason.required readonly=ads_manager.is_locked %}
 
     <!-- Accepted by CPAM -->
-    {% include 'pages/ads-form_select.html' with field_title="Véhicule conventionné CPAM ?" field=form.accepted_cpam field_errors=form.errors.accepted_cpam required=form.fields.accepted_cpam.required readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_select.html' with field=form.accepted_cpam field_errors=form.errors.accepted_cpam required=form.fields.accepted_cpam.required readonly=ads_manager.is_locked %}
 
     <!-- Immatriculation plate -->
-    {% include 'pages/ads-form_string.html' with field_title="Plaque d'immatriculation" field=form.immatriculation_plate field_errors=form.errors.immatriculation_plate required=form.fields.immatriculation_plate.required readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_string.html' with field=form.immatriculation_plate field_errors=form.errors.immatriculation_plate required=form.fields.immatriculation_plate.required readonly=ads_manager.is_locked %}
 
     <!-- Compatible PMR ? -->
-    {% include 'pages/ads-form_select.html' with field_title="Véhicule compatible PMR ?" field=form.vehicle_compatible_pmr field_errors=form.errors.vehicle_compatible_pmr required=form.fields.vehicle_compatible_pmr.required readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_select.html' with field=form.vehicle_compatible_pmr field_errors=form.errors.vehicle_compatible_pmr required=form.fields.vehicle_compatible_pmr.required readonly=ads_manager.is_locked %}
 
     <!-- Eco vehicle ? -->
-    {% include 'pages/ads-form_select.html' with field_title="Véhicule électrique ou hybride ?" field=form.eco_vehicle field_errors=form.errors.eco_vehicle required=form.fields.eco_vehicle.required readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_select.html' with field=form.eco_vehicle field_errors=form.errors.eco_vehicle required=form.fields.eco_vehicle.required readonly=ads_manager.is_locked %}
 
     <!-- Owner name -->
-    {% include 'pages/ads-form_string.html' with field_title="Titulaire de l'ADS" field=form.owner_name field_errors=form.errors.owner_name required=form.fields.owner_name.required readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_string.html' with field=form.owner_name field_errors=form.errors.owner_name required=form.fields.owner_name.required readonly=ads_manager.is_locked %}
 
     <!-- Owner SIRET -->
-    {% include 'pages/ads-form_string.html' with field_title="SIRET du titulaire de l'ADS" field=form.owner_siret field_errors=form.errors.owner_siret required=form.fields.owner_siret.required readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_string.html' with field=form.owner_siret field_errors=form.errors.owner_siret required=form.fields.owner_siret.required readonly=ads_manager.is_locked %}
 
     <!-- Owner phone -->
-    {% include 'pages/ads-form_string.html' with field_title="Téléphone fixe du titulaire de l'ADS" field=form.owner_phone field_errors=form.errors.owner_phone required=form.fields.owner_phone.required readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_string.html' with field=form.owner_phone field_errors=form.errors.owner_phone required=form.fields.owner_phone.required readonly=ads_manager.is_locked %}
 
     <!-- Owner mobile -->
-    {% include 'pages/ads-form_string.html' with field_title="Téléphone mobile du titulaire de l'ADS" field=form.owner_mobile field_errors=form.errors.owner_mobile required=form.fields.owner_mobile.required readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_string.html' with field=form.owner_mobile field_errors=form.errors.owner_mobile required=form.fields.owner_mobile.required readonly=ads_manager.is_locked %}
 
     <!-- Owner email -->
-    {% include 'pages/ads-form_string.html' with field_title="Email du titulaire de l'ADS" field=form.owner_email field_errors=form.errors.owner_email required=form.fields.owner_email.required html_type="email" readonly=ads_manager.is_locked %}
+    {% include 'pages/ads-form_string.html' with field=form.owner_email field_errors=form.errors.owner_email required=form.fields.owner_email.required html_type="email" readonly=ads_manager.is_locked %}
 
     <div class="fr-input-group" x-show="!should_display_ads_user" x-transition>
       <hr />
@@ -190,7 +190,7 @@ Création d'une nouvelle ADS
 
     <div class="fr-input-group" x-show="should_display_ads_user" x-transition>
       <!-- Used by owner ? -->
-      {% include 'pages/ads-form_select.html' with x_model="used_by_owner" field_title="ADS exploitée par son titulaire ?" field=form.used_by_owner field_errors=form.errors.used_by_owner required=form.fields.used_by_owner.required readonly=ads_manager.is_locked %}
+      {% include 'pages/ads-form_select.html' with x_model="used_by_owner" field=form.used_by_owner field_errors=form.errors.used_by_owner required=form.fields.used_by_owner.required readonly=ads_manager.is_locked %}
 
       <div x-show="used_by_owner === 'false'" x-transition>
         {{ ads_users_formset.management_form }}
@@ -206,13 +206,13 @@ Création d'une nouvelle ADS
 
               <div class="fr-pl-3w">
                 <!-- User status -->
-                {% include 'pages/ads-form_select.html' with field_title="Statut de l'exploitant de l'ADS" field=ads_user_form.status field_errors=ads_user_form.errors.status required=ads_user_form.fields.status.required readonly=ads_manager.is_locked %}
+                {% include 'pages/ads-form_select.html' with field=ads_user_form.status field_errors=ads_user_form.errors.status required=ads_user_form.fields.status.required readonly=ads_manager.is_locked %}
                 <!-- User name -->
-                {% include 'pages/ads-form_string.html' with field_title="Nom de l'exploitant de l'ADS" field=ads_user_form.name field_errors=ads_user_form.errors.name required=ads_user_form.fields.name.required readonly=ads_manager.is_locked %}
+                {% include 'pages/ads-form_string.html' with field=ads_user_form.name field_errors=ads_user_form.errors.name required=ads_user_form.fields.name.required readonly=ads_manager.is_locked %}
                 <!-- User SIRET -->
-                {% include 'pages/ads-form_string.html' with field_title="SIRET de l'exploitant de l'ADS" field=ads_user_form.siret field_errors=ads_user_form.errors.siret required=ads_user_form.fields.siret.required readonly=ads_manager.is_locked %}
+                {% include 'pages/ads-form_string.html' with field=ads_user_form.siret field_errors=ads_user_form.errors.siret required=ads_user_form.fields.siret.required readonly=ads_manager.is_locked %}
                 <!-- Professional licence number -->
-                {% include 'pages/ads-form_string.html' with field_title="Numéro de la carte professionnelle" field=ads_user_form.license_number field_errors=ads_user_form.errors.license_number required=ads_user_form.fields.license_number.required readonly=ads_manager.is_locked %}
+                {% include 'pages/ads-form_string.html' with field=ads_user_form.license_number field_errors=ads_user_form.errors.license_number required=ads_user_form.fields.license_number.required readonly=ads_manager.is_locked %}
 
               </div>
 

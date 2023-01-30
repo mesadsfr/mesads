@@ -5,7 +5,7 @@
     class="fr-label"
     for="{{ field.id_for_label }}"
   >
-  {{ field_title }}{% if required %}*{% endif %}
+  {{ field.label }}{% if required %}*{% endif %}
   {% if field.help_text %}<span class="fr-hint-text">{{ field.help_text }}</span>{% endif %}
   </label>
 

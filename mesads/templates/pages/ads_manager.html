@@ -63,7 +63,7 @@
 
     {% csrf_token %}
 
-    {% include 'pages/ads-form_bool.html' with field_title="Je déclare que mon administration ne gère aucune ADS" field=edit_form.no_ads_declared field_errors=edit_form.errors.no_ads_declared required=edit_form.fields.no_ads_declared.required %}
+    {% include 'pages/ads-form_bool.html' with field=edit_form.no_ads_declared field_errors=edit_form.errors.no_ads_declared required=edit_form.fields.no_ads_declared.required %}
 
     <div class="fr-col-12 fr-input-group">
       <ul class="fr-btns-group">

@@ -104,6 +104,7 @@ class ADSManager(SmartValidationMixin, models.Model):
     no_ads_declared = models.BooleanField(
         null=False,
         default=False,
+        verbose_name="L'administration ne gère aucune ADS",
         help_text='Cocher cette case si le gestionnaire ne gère aucune ADS.'
     )
 
@@ -231,58 +232,6 @@ def validate_siret(value):
 @reversion.register
 class ADS(SmartValidationMixin, models.Model):
     """Autorisation De Stationnement created by ADSManager.
-
-    :param creation_date: Creation date of the object in database.
-
-    :param last_update: Last modification date of the object in database.
-
-    :param number: ADS number. It is specified by the ADSManager. It is usually
-        a number, but it doesn't have to be.
-
-    :param ads_manager: Administration managing this ADS.
-
-    :param epci_commune: If ads_manager is an EPCI, this is the Commune for
-        which the ADS is registered.
-
-    :param ads_creation_date: Initial creation date of the ADS.
-
-    :param attribution_date: Date when the ADS has been attributed to the
-      current owner.
-
-    :param attribution_type: 'free', 'paid' or 'other' depending on how the
-        current owner obtained the ADS.
-
-    :param transaction_identifier: Identifier of the transaction in the
-        "registre des transactions".
-
-    :param attribution_reason: Explains how the ADS has been attributed when
-        attribution_type is "other".
-
-    :param accepted_cpam: Boolean, if the taxi is "conventionné par l'assurance
-        maladie". NULL if unknown.
-
-    :param immatriculation_plate: Immatriculation plate of the vehicle using
-        the ADS.
-
-    :param vehicle_compatible_pmr: Boolean set to True when the vehicle is
-        compatible with PMR: Personne à Mobilité Réduite. NULL if unknown.
-
-    :param eco_vehicle: Boolean set to True when the vehicle is electric or
-        hybrid. NULL if unknown.
-
-    :param owner_name: Name of the ADS owner. When the owner is a
-        company, name the legal representative of the company.
-
-    :param owner_siret: SIRET of the ADS owner.
-
-    :param owner_phone: Fixed phone of the ADS owner.
-
-    :param owner_mobile: Mobile phone of the ADS owner.
-
-    :param owner_email: Email of the ADS owner.
-
-    :param used_by_owner: True if the ADS is used by the owner. NULL if
-        unknown.
     """
     class Meta:
         verbose_name = 'ADS'
@@ -317,16 +266,25 @@ class ADS(SmartValidationMixin, models.Model):
         except ValidationError:
             raise ValidationError({'number': self.UNIQUE_ERROR_MSG})
 
-    number = models.CharField(max_length=255, null=False, blank=False)
+    number = models.CharField(
+        max_length=255, null=False, blank=False,
+        verbose_name="Numéro de l'ADS"
+    )
     ads_manager = models.ForeignKey(ADSManager, on_delete=models.CASCADE)
     epci_commune = models.ForeignKey(Commune, on_delete=models.RESTRICT, blank=True, null=True)
 
     creation_date = models.DateField(auto_now_add=True, null=False)
     last_update = models.DateField(auto_now=True, null=False)
 
-    ads_creation_date = models.DateField(blank=True, null=True)
+    ads_creation_date = models.DateField(
+        blank=True, null=True,
+        verbose_name="Date de création de l'ADS"
+    )
 
-    attribution_date = models.DateField(blank=True, null=True)
+    attribution_date = models.DateField(
+        blank=True, null=True,
+        verbose_name="Date d'attribution de l'ADS au titulaire actuel"
+    )
 
     ATTRIBUTION_TYPES = [
         ('free', "Gratuitement (délivrée par l'autorité compétente)"),
@@ -335,22 +293,33 @@ class ADS(SmartValidationMixin, models.Model):
     ]
 
     attribution_type = models.CharField(
-        max_length=16, choices=ATTRIBUTION_TYPES, blank=True, null=False)
+        max_length=16, choices=ATTRIBUTION_TYPES, blank=True, null=False,
+        verbose_name="Type d'attribution de l'ADS"
+    )
 
     transaction_identifier = models.CharField(
-        max_length=64, blank=True, null=False
+        max_length=64, blank=True, null=False,
+        verbose_name="Numéro d'identification lié au registre des transactions"
     )
 
     attribution_reason = models.CharField(
-        max_length=4096, blank=True, null=False)
+        max_length=4096, blank=True, null=False,
+        verbose_name="Raison d'attribution"
+    )
 
-    accepted_cpam = models.BooleanField(blank=True, null=True)
+    accepted_cpam = models.BooleanField(
+        blank=True, null=True,
+        verbose_name="Véhicule conventionné CPAM ?"
+    )
 
     immatriculation_plate = models.CharField(
-        max_length=128, null=False, blank=True)
+        max_length=128, null=False, blank=True,
+        verbose_name="Plaque d'immatriculation"
+    )
 
     vehicle_compatible_pmr = models.BooleanField(
         blank=True, null=True,
+        verbose_name="Véhicule compatible PMR ?",
         help_text=(
             "Vous pouvez retrouver cette information sur la mention « J.3 : "
             "handicap » de la carte grise du véhicule concerné par l'ADS."
@@ -359,6 +328,7 @@ class ADS(SmartValidationMixin, models.Model):
 
     eco_vehicle = models.BooleanField(
         blank=True, null=True,
+        verbose_name="Véhicule électrique ou hybride ?",
         help_text=mark_safe(
             "Vous pouvez retrouver cette information sur la mention P.3 de la "
             "carte grise du véhicule concerné par l'ADS. L'ensemble des "
@@ -370,6 +340,7 @@ class ADS(SmartValidationMixin, models.Model):
 
     owner_name = models.CharField(
         max_length=1024, blank=True, null=False,
+        verbose_name="Titulaire de l'ADS",
         help_text=(
             "S'il s'agit d'une personne physique, précisez le nom et le prénom "
             "du titulaire de l'ADS. S'il s'agit d'une personne morale, indiquez "
@@ -380,19 +351,29 @@ class ADS(SmartValidationMixin, models.Model):
     owner_siret = models.CharField(
         max_length=128,
         blank=True, null=False,
+        verbose_name="SIRET du titulaire de l'ADS",
         help_text=(
             "Nous validons ce numéro en consultant les données officielles de "
             "l'INSEE. Indiquez le numéro de SIRET (14 chiffres) sans espace. "
         )
     )
 
-    owner_phone = models.CharField(max_length=128, blank=True, null=False)
-    owner_mobile = models.CharField(max_length=128, blank=True, null=False)
-    owner_email = models.CharField(max_length=128, blank=True, null=False)
+    owner_phone = models.CharField(
+        max_length=128, blank=True, null=False,
+        verbose_name="Téléphone fixe du titulaire de l'ADS"
+    )
+    owner_mobile = models.CharField(
+        max_length=128, blank=True, null=False,
+        verbose_name="Téléphone mobile du titulaire de l'ADS"
+    )
+    owner_email = models.CharField(
+        max_length=128, blank=True, null=False,
+        verbose_name="Email du titulaire de l'ADS"
+    )
 
     used_by_owner = models.BooleanField(
         blank=True, null=True,
-        verbose_name='ADS exploitée par son titulaire ?'
+        verbose_name="ADS exploitée par son titulaire ?"
     )
 
 
@@ -436,19 +417,8 @@ class ADSLegalFile(models.Model):
 class ADSUser(SmartValidationMixin, models.Model):
     """"Exploitant" of an ADS.
 
-    ADS created before 2014 are allowed to be used by another person than it's owner.
-
-    :param status: Status of ADS user.
-
-    :param user_name: Firstname and lastname of the person using the ADS, or
-        "raison sociale".
-
-    :param user_siret: SIRET of the ADS user.
-    :param name: Firstname and lastname of the person using the ADS, or "raison sociale".
-
-    :param siret: SIRET of the ADS user.
-
-    :param license_number: "numéro de la carte professionnelle"
+    For ADS created before Oct 01. 2014, the person exploiting the ADS could be
+    distinct from the ADS owner.
     """
 
     def __str__(self):
@@ -468,32 +438,32 @@ class ADSUser(SmartValidationMixin, models.Model):
         ('autre', 'Autre'),
     ]
 
-    status = models.CharField(max_length=255, choices=ADS_USER_STATUS, blank=True, null=False)
-    name = models.CharField(max_length=1024, blank=True, null=False)
+    status = models.CharField(
+        max_length=255, choices=ADS_USER_STATUS, blank=True, null=False,
+        verbose_name="Statut de l'exploitant de l'ADS"
+    )
+    name = models.CharField(
+        max_length=1024, blank=True, null=False,
+        verbose_name="Nom de l'exploitant de l'ADS"
+    )
     siret = models.CharField(
         max_length=128,
         blank=True, null=False,
+        verbose_name="SIRET de l'exploitant de l'ADS",
         help_text=(
             "Nous validons ce numéro en consultant les données officielles de "
             "l'INSEE. Indiquez le numéro de SIRET (14 chiffres) sans espace. "
         )
     )
-    license_number = models.CharField(max_length=64, blank=True, null=False)
+    license_number = models.CharField(
+        max_length=64, blank=True, null=False,
+        verbose_name="Numéro de la carte professionnelle"
+    )
 
 
 class ADSUpdateFile(models.Model):
     """The Préfecture de Police de Paris has a custom software to manage >20 000
     ADS. To send us updates, they upload a document on a weekly basis.
-
-    :param creation_date: when the file was uploaded.
-
-    :param user: user uploading the document. Should always be the user related to
-        Préfecture de Police de Paris.
-
-    :param update_file: the file containing ADS.
-
-    :param imported: boolean to track if the file has been imported by an
-        asynchronous job.
     """
 
     def __str__(self):
@@ -512,7 +482,9 @@ class ADSUpdateFile(models.Model):
         ])
         return name
 
-    creation_date = models.DateTimeField(auto_now_add=True, null=False)
+    creation_date = models.DateTimeField(
+        auto_now_add=True, null=False,
+        verbose_name="Date de création du fichier")
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
@@ -521,4 +493,7 @@ class ADSUpdateFile(models.Model):
 
     update_file = models.FileField(upload_to=get_update_filename, blank=True)
 
-    imported = models.BooleanField(blank=False, null=False, default=False)
+    imported = models.BooleanField(
+        blank=False, null=False, default=False,
+        verbose_name="Fichier importé dans notre base de données ?"
+    )
