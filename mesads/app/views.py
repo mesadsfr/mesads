@@ -187,6 +187,13 @@ class ADSManagerRequestView(FormView):
                     'user': self.request.user,
                 }
             )
+            email_content_html = render_to_string(
+                'pages/email_ads_manager_request_administrator_content.html', {
+                    'request': self.request,
+                    'ads_manager': form.cleaned_data['ads_manager'],
+                    'user': self.request.user,
+                }
+            )
 
             if form.cleaned_data['ads_manager'].administrator:
                 for administrator_user in form.cleaned_data['ads_manager'].administrator.users.all():
@@ -196,6 +203,7 @@ class ADSManagerRequestView(FormView):
                         settings.MESADS_CONTACT_EMAIL,
                         [administrator_user],
                         fail_silently=True,
+                        html_message=email_content_html,
                     )
 
         return super().form_valid(form)

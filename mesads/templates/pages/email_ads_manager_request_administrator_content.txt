@@ -4,4 +4,4 @@ En tant qu'administrateur, vous avez le pouvoir d'accepter ou de refuser d'accé
 
 Rendez-vous sur MesADS sur {{ request.scheme }}://{{ request.get_host }}{% url 'app.ads-manager-admin.index' %} pour répondre à la demande.
 
-Attention : avant d'accepter une demande, assurez-vous que le demandeur travaille bien pour l'administration renseignée. N'hésitez pas à lui envoyer un email ou un appel téléphonique pour demander confirmation.
+Attention ! Avant d'accepter une demande, assurez-vous que le demandeur travaille bien pour l'administration renseignée. N'hésitez pas à lui envoyer un email ou un appel téléphonique pour demander confirmation.
