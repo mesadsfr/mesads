@@ -43,7 +43,7 @@ class TestADSUpdatesViewSet(ClientTestCase):
         update_file = SimpleUploadedFile(
             name='myfile.pdf',
             content=b'ADS_CONTENT',
-            content_type='applicaiton/pdf'
+            content_type='application/pdf'
         )
         resp = client.post('/api/ads-updates/', {
             'update_file': update_file,
