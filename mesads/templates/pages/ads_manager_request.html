@@ -59,7 +59,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for ads_manager in ads_manager_administrator.adsmanager_set.all  %}
+      {% for ads_manager in ads_manager_administrator.ordered_adsmanager_set  %}
       <tr x-show="displayExtra || {{ forloop.counter0 }} < 5" x-transition>
         <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
         <td>

@@ -149,9 +149,6 @@ class ADSManagerRequestView(FormView):
 
         ctx['ads_managers_administrators'] = ADSManagerAdministrator.objects.select_related(
             'prefecture'
-        ).prefetch_related(
-            'adsmanager_set__content_object',
-            'adsmanager_set__ads_set',
         ).filter(
             users=self.request.user
         ).all()

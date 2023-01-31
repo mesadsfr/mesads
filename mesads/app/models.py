@@ -165,6 +165,13 @@ class ADSManagerAdministrator(models.Model):
         help_text='Nombre de gestionnaires ADS attendus pour cette préfecture.'
     )
 
+    def ordered_adsmanager_set(self):
+        """Function helper to get the adsmanager set order by the administration
+        name."""
+        return self.adsmanager_set \
+            .prefetch_related('content_object', 'ads_set') \
+            .order_by('commune__libelle', 'epci__name', 'prefecture__libelle')
+
 
 def validate_siret(value):
     if not value:
