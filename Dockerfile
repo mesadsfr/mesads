@@ -27,6 +27,10 @@ RUN poetry install
 #
 FROM python-builder AS local
 
+# nodejs is required by mjml
+RUN apt-get update && apt-get install -y \
+  nodejs
+
 RUN pip install \
   uwsgi
 
@@ -39,6 +43,10 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 # Production runner
 #
 FROM python
+
+# nodejs is required by mjml
+RUN apt-get update && apt-get install -y \
+  nodejs
 
 RUN pip install \
     poetry \
