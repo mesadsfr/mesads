@@ -13,7 +13,7 @@ urlpatterns = [
     # Override password_reset to send HTML email
     path('password_reset/', PasswordResetView.as_view(
         form_class=PasswordResetStrictForm,
-        html_email_template_name='registration/html_password_reset_email.html',
+        html_email_template_name='registration/password_reset_email.mjml',
         extra_email_context={'MESADS_CONTACT_EMAIL': settings.MESADS_CONTACT_EMAIL}
     ), name='password_reset'),
 
