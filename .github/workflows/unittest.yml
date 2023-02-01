@@ -23,9 +23,11 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install build tools
         run: |
+          apt-get update && apt-get install -y npm
           curl -sSL https://install.python-poetry.org | python3 -
       - name: Install dependencies
         run: |
+          npm install
           /github/home/.local/bin/poetry install
       - name: Run tests and coverage
         run: |
