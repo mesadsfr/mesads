@@ -109,14 +109,15 @@ class ADSManagerAdminView(RevisionMixin, TemplateView):
         email_subject = render_to_string(
             'pages/email_ads_manager_request_result_subject.txt', {
                 'ads_manager_request': ads_manager_request,
-            }
+            },
+            request=request,
         ).strip()
         email_content = render_to_string(
             'pages/email_ads_manager_request_result_content.txt', {
                 'request': request,
                 'ads_manager_request': ads_manager_request,
-                'MESADS_CONTACT_EMAIL': settings.MESADS_CONTACT_EMAIL,
-            }
+            },
+            request=request,
         )
         send_mail(
             email_subject,
