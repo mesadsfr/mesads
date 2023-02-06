@@ -1,0 +1,30 @@
+{% extends "base_mail.mjml" %}
+{% load abs_activation_uri %}
+
+{% block title %}Activez votre compte Mes ADS{% endblock %}
+
+{% block content %}
+<mj-column>
+  <mj-text>
+    <p>
+      Afin de pouvoir vous connecter sur le compte Mes ADS que vous venez de créer, vous devez activer votre compte en cliquant sur le bouton ci-dessous.
+    </p>
+  </mj-text>
+
+  <mj-button href="{% abs_activation_uri activation_key %}">
+    Activer mon compte Mes ADS
+  </mj-button>
+
+  <mj-text>
+    <p>
+      Pour rappel, votre identifiant Mes ADS est : <strong>{{ user.email }}</strong>
+    </p>
+  </mj-text>
+
+  <mj-text>
+    <p>
+      Si vous n'êtes pas à l'origine de la demande, vous pouvez ignorer cet email.
+    </p>
+  </mj-text>
+</mj-column>
+{% endblock %}

@@ -7,7 +7,7 @@ from .forms import CustomUserForm
 
 class CustomRegistrationView(RegistrationView):
     form_class = CustomUserForm
-    html_email_body_template = 'django_registration/activation_email_body.html'
+    html_email_body_template = 'django_registration/activation_email_body.mjml'
 
     def send_activation_email(self, user):
         """django-registration can only send plain/text activation email. To
