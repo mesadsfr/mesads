@@ -1,0 +1,4 @@
+{% block body %}{% endblock %}
+
+-- 
+Mes ADS est développé par une petite équipe prête à vous aider. Si vous avez un problème, une difficulté ou une suggestion, n'hésitez pas à nous écrire par email à {{ MESADS_CONTACT_EMAIL }}.

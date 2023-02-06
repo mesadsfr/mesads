@@ -1,3 +1,6 @@
+{% extends "base_mail.txt" %}
+
+{% block body %}
 {% if not ads_manager_request.accepted %}
 Votre demande pour gérer les autorisations de stationnement de {{ ads_manager_request.ads_manager.content_object.display_fulltext|safe }} a été refusée.
 
@@ -7,3 +10,4 @@ Votre demande pour gérer les autorisations de stationnement de {{ ads_manager_r
 
 Rendez-vous sur Mes ADS à {{ request.scheme }}://{{ request.get_host }}{% url 'app.ads-manager.detail' manager_id=ads_manager_request.ads_manager.id %} gérer les autorisations de stationnement de votre administration.
 {% endif %}
+{% endblock %}
