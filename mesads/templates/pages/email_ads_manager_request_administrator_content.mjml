@@ -1,0 +1,35 @@
+{% extends "base_mail.mjml" %}
+
+{% block title %}Réinitialisation de votre mot de passe MesADS{% endblock %}
+
+{% block content %}
+<mj-column>
+  <mj-text>
+    <p>
+      L'utilisateur <strong>{{ user.email }}</strong> souhaite obtenir la permission de gérer les autorisations de stationnement de <strong>{{ ads_manager.content_object.display_fulltext|safe }}</strong>.
+    </p>
+  </mj-text>
+
+  <mj-text>
+    <p>
+      En tant qu'administrateur, vous avez le pouvoir d'accepter ou de refuser d'accéder à cette demande en cliquant sur le bouton ci-dessous.
+    </p>
+  </mj-text>
+
+  <mj-button href="{{ request.scheme }}://{{ request.get_host }}{% url 'app.ads-manager-admin.index' %}">
+    Aller sur Mes ADS pour répondre à la demande
+  </mj-button>
+
+  <mj-text font-weight="bold">
+    <p>
+      Attention ! Avant d'accepter une demande, assurez-vous que le demandeur travaille bien pour l'administration renseignée.
+    </p>
+  </mj-text>
+
+  <mj-text font-weight="bold">
+    <p>
+      N'hésitez pas à lui envoyer un email ou un appel téléphonique pour demander confirmation.
+    </p>
+  </mj-text>
+</mj-column>
+{% endblock %}

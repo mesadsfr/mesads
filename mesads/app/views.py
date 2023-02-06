@@ -186,7 +186,7 @@ class ADSManagerRequestView(FormView):
                 }, request=self.request
             )
             email_content_html = render_to_string(
-                'pages/email_ads_manager_request_administrator_content.html', {
+                'pages/email_ads_manager_request_administrator_content.mjml', {
                     'request': self.request,
                     'ads_manager': form.cleaned_data['ads_manager'],
                     'user': self.request.user,
