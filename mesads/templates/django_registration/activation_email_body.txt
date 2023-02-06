@@ -7,3 +7,5 @@ Ce lien est valide pendant {{ expiration_days }} jours.
 Pour rappel, votre identifiant Mes ADS est : <strong>{{ user.email }}</strong>
 
 Si vous n'êtes pas à l'origine de la demande, vous pouvez ignorer cet email.
+
+Mes ADS est développé par une petite équipe prête à vous aider. Si vous avez un problème, une difficulté ou une suggestion, n'hésitez pas à nous écrire par email à {{ MESADS_CONTACT_EMAIL }}.
