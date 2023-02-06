@@ -119,12 +119,20 @@ class ADSManagerAdminView(RevisionMixin, TemplateView):
             },
             request=request,
         )
+        email_content_html = render_to_string(
+            'pages/email_ads_manager_request_result_content.mjml', {
+                'request': request,
+                'ads_manager_request': ads_manager_request,
+            },
+            request=request,
+        )
         send_mail(
             email_subject,
             email_content,
             settings.MESADS_CONTACT_EMAIL,
             [ads_manager_request.user.email],
             fail_silently=True,
+            html_message=email_content_html,
         )
         return redirect(reverse('app.ads-manager-admin.index'))
 

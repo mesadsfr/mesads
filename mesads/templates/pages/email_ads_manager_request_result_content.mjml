@@ -1,0 +1,39 @@
+{% extends "base_mail.mjml" %}
+
+{% block title %}
+{% if ads_manager_request.accepted %}
+Demande Mes ADS acceptée
+{% else %}
+Demande Mes ADS refusée
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if ads_manager_request.accepted %}
+<mj-column>
+  <mj-text>
+    <p>
+      Votre demande pour gérer les autorisations de stationnement de <strong>{{ ads_manager_request.ads_manager.content_object.display_fulltext|safe }}</strong> a été acceptée.
+    </p>
+  </mj-text>
+
+  <mj-button href="{{ request.scheme }}://{{ request.get_host }}{% url 'app.ads-manager.detail' manager_id=ads_manager_request.ads_manager.id %}">
+    Aller sur Mes ADS pour gérer les autorisations de stationnement
+  </mj-button>
+</mj-column>
+{% else %}
+<mj-column>
+  <mj-text>
+    <p>
+      Votre demande pour gérer les autorisations de stationnement de <strong>{{ ads_manager_request.ads_manager.content_object.display_fulltext|safe }}</strong> a été refusée.
+    </p>
+  </mj-text>
+  <mj-text>
+    <p>
+      Si vous pensez qu'il s'agit d'une erreur, veuillez contactez votre préfecture ou notre équipe par email sur <i>{{ MESADS_CONTACT_EMAIL }}</i>
+    </p>
+  </mj-text>
+</mj-column>
+
+{% endif %}
+{% endblock %}
