@@ -1,5 +1,5 @@
 {% if not ads_manager_request.accepted %}
-Demande refusée pour gérer les ADS de {{ ads_manager_request.ads_manager.content_object.display_fulltext }}
+Demande refusée pour gérer les ADS de {{ ads_manager_request.ads_manager.content_object.display_fulltext|safe }}
 {% else %}
-Demande acceptée pour gérer les ADS de {{ ads_manager_request.ads_manager.content_object.display_fulltext }}
+Demande acceptée pour gérer les ADS de {{ ads_manager_request.ads_manager.content_object.display_fulltext|safe }}
 {% endif %}

@@ -1,9 +1,9 @@
 {% if not ads_manager_request.accepted %}
-Votre demande pour gérer les autorisations de stationnement de {{ ads_manager_request.ads_manager.content_object.display_fulltext }} a été refusée.
+Votre demande pour gérer les autorisations de stationnement de {{ ads_manager_request.ads_manager.content_object.display_fulltext|safe }} a été refusée.
 
 Si vous pensez qu'il s'agit d'une erreur, contactez votre préfecture ou notre équipe par email sur {{ MESADS_CONTACT_EMAIL }}.
 {% else %}
-Votre demande pour gérer les autorisations de stationnement de {{ ads_manager_request.ads_manager.content_object.display_fulltext }} a été acceptée.
+Votre demande pour gérer les autorisations de stationnement de {{ ads_manager_request.ads_manager.content_object.display_fulltext|safe }} a été acceptée.
 
 Rendez-vous sur Mes ADS à {{ request.scheme }}://{{ request.get_host }}{% url 'app.ads-manager.detail' manager_id=ads_manager_request.ads_manager.id %} gérer les autorisations de stationnement de votre administration.
 {% endif %}
