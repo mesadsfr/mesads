@@ -176,21 +176,21 @@ class ADSManagerRequestView(FormView):
             email_subject = render_to_string(
                 'pages/email_ads_manager_request_administrator_subject.txt', {
                     'user': self.request.user,
-                }
+                }, request=self.request
             ).strip()
             email_content = render_to_string(
                 'pages/email_ads_manager_request_administrator_content.txt', {
                     'request': self.request,
                     'ads_manager': form.cleaned_data['ads_manager'],
                     'user': self.request.user,
-                }
+                }, request=self.request
             )
             email_content_html = render_to_string(
                 'pages/email_ads_manager_request_administrator_content.html', {
                     'request': self.request,
                     'ads_manager': form.cleaned_data['ads_manager'],
                     'user': self.request.user,
-                }
+                }, request=self.request
             )
 
             if form.cleaned_data['ads_manager'].administrator:
