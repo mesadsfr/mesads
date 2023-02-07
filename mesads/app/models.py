@@ -495,7 +495,7 @@ class ADSUpdateFile(models.Model):
         null=False, blank=False
     )
 
-    update_file = models.FileField(upload_to=get_update_filename, blank=True)
+    update_file = models.FileField(upload_to=get_update_filename, blank=False)
 
     imported = models.BooleanField(
         blank=False, null=False, default=False,
