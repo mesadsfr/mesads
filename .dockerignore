@@ -7,3 +7,7 @@ static
 uploads/
 Makefile
 .env
+.cache
+.DS_Store
+.mypy_cache
+.pytest_cache
