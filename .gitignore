@@ -9,3 +9,5 @@ node_modules
 coverage.xml
 .DS_Store
 dist
+*.cfg
+.s3cfg
