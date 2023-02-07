@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.contrib import admin
+from django.db.models import F
 
 from reversion.admin import VersionAdmin
 
@@ -32,6 +33,25 @@ class ADSPeriodListFilter(admin.SimpleListFilter):
             return queryset.filter(
                 ads_creation_date__gte=date(2014, 10, 1),
             )
+
+
+class ADSInvalidCreationOrAttributionDateListFilter(admin.SimpleListFilter):
+    title = "ADS avec une date de création ultérieure à la date d'attribution"
+
+    parameter_name = "invalid_creation_or_attribution_date"
+
+    def lookups(self, request, model_admin):
+        return (
+            ('yes', 'Oui'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'yes':
+            # Filter ADS with a creation date after the attribution date
+            return queryset.filter(
+                ads_creation_date__gt=F('attribution_date'),
+            )
+        return queryset
 
 
 class ADSUserInline(admin.TabularInline):
@@ -89,6 +109,7 @@ class ADSAdmin(VersionAdmin):
 
     list_filter = [
         ADSPeriodListFilter,
+        ADSInvalidCreationOrAttributionDateListFilter,
         'used_by_owner',
         'adsuser__status',
         'attribution_type',
