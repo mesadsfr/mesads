@@ -260,10 +260,10 @@ class ADS(SmartValidationMixin, models.Model):
 
     UNIQUE_ERROR_MSG = "Une ADS avec ce numéro existe déjà. Supprimez l'ADS existante, ou utilisez un autre numéro."
 
-    def validate_unique(self, exclude=None):
-        """validate_unique() is called when a ModelForm instance calls validate_unique, when the object is updated."""
+    def validate_constraints(self, exclude=None):
+        """This method is called when a ModelForm instance calls full_clean(), when the object is updated."""
         try:
-            return super().validate_unique(exclude=exclude)
+            return super().validate_constraints(exclude=exclude)
         except ValidationError:
             raise ValidationError({'number': self.UNIQUE_ERROR_MSG})
 

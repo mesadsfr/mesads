@@ -415,7 +415,7 @@ class ADSCreateView(ADSView, CreateView):
         ads_manager = ADSManager.objects.get(id=self.kwargs['manager_id'])
         form.instance.ads_manager = ads_manager
 
-        # CreateView doesn't call form.validate_unique(). The try/catch below
+        # CreateView doesn't call validate_constraints(). The try/catch below
         # attemps to save the object. If IntegrityError is returned from
         # database, we return a custom error message for "number".
         try:
