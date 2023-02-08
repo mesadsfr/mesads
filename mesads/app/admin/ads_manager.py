@@ -5,7 +5,13 @@ from django.utils.safestring import mark_safe
 
 from ..models import (
     ADSManager,
+    ADSManagerDecree,
 )
+
+
+class ADSManagerDecreeInline(admin.StackedInline):
+    model = ADSManagerDecree
+    extra = 0
 
 
 @admin.register(ADSManager)
@@ -38,6 +44,10 @@ class ADSManagerAdmin(admin.ModelAdmin):
         'commune__libelle',
         'prefecture__libelle',
         'epci__name',
+    )
+
+    inlines = (
+        ADSManagerDecreeInline,
     )
 
     @admin.display(description='Nombre d\'ADS enregistrées')

@@ -109,6 +109,41 @@ class ADSManager(SmartValidationMixin, models.Model):
     )
 
 
+class ADSManagerDecree(models.Model):
+    """Represents the decree that limits the number of ADS that can be created for aadministration."""
+
+    def __str__(self):
+        return f'Decree for ADSManager {self.ads_manager.id}'
+
+    def get_filename(self, filename):
+        now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+        filename = os.path.basename(filename)
+        name = '/'.join([
+            'ads_managers_decrees',
+            '%s - %s' % (
+                self.ads_manager.id,
+                self.ads_manager.content_object.display_text(),
+            ),
+            f'{now} - {filename}'
+        ])
+        return name
+
+    creation_date = models.DateTimeField(
+        auto_now_add=True, null=False,
+        verbose_name="Date de création du fichier"
+    )
+
+    ads_manager = models.ForeignKey(
+        ADSManager, on_delete=models.CASCADE,
+        null=False, blank=False
+    )
+
+    file = models.FileField(
+        upload_to=get_filename,
+        null=False, blank=False
+    )
+
+
 @reversion.register
 class ADSManagerRequest(models.Model):
     """User request to become ADSManager. Has to be accepted by the
