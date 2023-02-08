@@ -19,3 +19,7 @@ class ADSUpdateFileAdmin(admin.ModelAdmin):
     list_filter = (
         'imported',
     )
+
+    readonly_fields = (
+        'imported',
+    )
