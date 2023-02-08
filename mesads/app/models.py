@@ -238,7 +238,12 @@ class ADS(SmartValidationMixin, models.Model):
         verbose_name = 'ADS'
         verbose_name_plural = 'ADS'
         constraints = [
-            models.UniqueConstraint(fields=['number', 'ads_manager_id'], name='unique_ads_number')
+            # To understand why we do not define violation_error_message here,
+            # see the documentation of the method `unique_error_message`
+            models.UniqueConstraint(
+                fields=['number', 'ads_manager_id'],
+                name='unique_ads_number',
+            ),
         ]
 
     SMART_VALIDATION_WATCHED_FIELDS = {
@@ -260,12 +265,16 @@ class ADS(SmartValidationMixin, models.Model):
 
     UNIQUE_ERROR_MSG = "Une ADS avec ce numéro existe déjà. Supprimez l'ADS existante, ou utilisez un autre numéro."
 
-    def validate_constraints(self, exclude=None):
-        """This method is called when a ModelForm instance calls full_clean(), when the object is updated."""
-        try:
-            return super().validate_constraints(exclude=exclude)
-        except ValidationError:
-            raise ValidationError({'number': self.UNIQUE_ERROR_MSG})
+    def unique_error_message(self, model_class, unique_check):
+        """Constraints can have a custom violation error message set with the
+        parameter `violation_error_message`. However, it appears that this is
+        not possible for UniqueConstraint, which, for backward compatibility
+        reasons (django 4.1), ignore this parameter and instead call
+        unique_error_message.
+
+        See https://github.com/django/django/blob/69069a443a906dd4060a8047e683657d40b4c383/django/db/models/constraints.py#L356
+        """
+        return self.UNIQUE_ERROR_MSG
 
     number = models.CharField(
         max_length=255, null=False, blank=False,
