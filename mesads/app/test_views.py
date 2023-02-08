@@ -463,6 +463,16 @@ class TestADSView(ClientTestCase):
             f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}',
             {
                 'number': other_ads.number,
+
+                'adsuser_set-TOTAL_FORMS': 10,
+                'adsuser_set-INITIAL_FORMS': 0,
+                'adsuser_set-MIN_NUM_FORMS': 0,
+                'adsuser_set-MAX_NUM_FORMS': 10,
+
+                'adslegalfile_set-TOTAL_FORMS': 10,
+                'adslegalfile_set-INITIAL_FORMS': 0,
+                'adslegalfile_set-MIN_NUM_FORMS': 0,
+                'adslegalfile_set-MAX_NUM_FORMS': 10,
             },
         )
         self.assertEqual(resp.status_code, 200)
