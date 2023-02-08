@@ -249,7 +249,7 @@ Création d'une nouvelle ADS
       {{ ads_legal_files_formset.management_form }}
       {% for form in ads_legal_files_formset %}
       <div
-        class="fr-download fr-enlarge-link fr-download--card ads-legal-file-form"
+        class="fr-download fr-download--card ads-legal-file-form"
         x-show="{{ forloop.counter0 }} < numberOfADSLegalFileFormsetToDisplay"
         x-data="{deleteFile: false}"
         x-bind:style="deleteFile ? {'background-color': 'rgb(253,222,222)'} : {'background-color': '#fff'}"
