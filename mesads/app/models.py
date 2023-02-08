@@ -109,6 +109,7 @@ class ADSManager(SmartValidationMixin, models.Model):
     )
 
 
+@cleanup.ignore
 class ADSManagerDecree(models.Model):
     """Represents the decree that limits the number of ADS that can be created for aadministration."""
 
