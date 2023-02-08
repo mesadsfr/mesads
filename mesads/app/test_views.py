@@ -1,4 +1,5 @@
-from datetime import timedelta
+from datetime import date, timedelta
+import html
 
 from django.contrib import messages
 from django.core import mail
@@ -466,6 +467,31 @@ class TestADSView(ClientTestCase):
         )
         self.assertEqual(resp.status_code, 200)
         self.assertIn('Une ADS avec ce numéro existe déjà', resp.content.decode('utf8'))
+
+    def test_update_creation_after_attribution(self):
+        resp = self.ads_manager_city35_client.post(
+            f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}',
+            {
+                'number': self.ads.number,
+                'ads_creation_date': '2015-10-01',
+                'attribution_date': '2010-11-04',
+
+                'adsuser_set-TOTAL_FORMS': 10,
+                'adsuser_set-INITIAL_FORMS': 0,
+                'adsuser_set-MIN_NUM_FORMS': 0,
+                'adsuser_set-MAX_NUM_FORMS': 10,
+
+                'adslegalfile_set-TOTAL_FORMS': 10,
+                'adslegalfile_set-INITIAL_FORMS': 0,
+                'adslegalfile_set-MIN_NUM_FORMS': 0,
+                'adslegalfile_set-MAX_NUM_FORMS': 10,
+            },
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn(
+            html.escape("La date de création de l'ADS doit être antérieure à la date d'attribution."),
+            resp.content.decode('utf8')
+        )
 
     def test_update_ads_user(self):
         """If all the fields of a ADS user are empty, the entry should be

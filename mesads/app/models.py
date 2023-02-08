@@ -10,6 +10,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import F, Q
 from django.utils.html import mark_safe
 
 import reversion
@@ -243,6 +244,14 @@ class ADS(SmartValidationMixin, models.Model):
             models.UniqueConstraint(
                 fields=['number', 'ads_manager_id'],
                 name='unique_ads_number',
+            ),
+
+            models.CheckConstraint(
+                check=Q(ads_creation_date__isnull=True)
+                | Q(attribution_date__isnull=True)
+                | Q(ads_creation_date__lte=F('attribution_date')),
+                name='ads_creation_date_before_attribution_date',
+                violation_error_message="La date de création de l'ADS doit être antérieure à la date d'attribution."
             ),
         ]
 
