@@ -164,7 +164,7 @@
     </ul>
     {% endif %}
 
-    <form class="fr-col-10 fr-col-sm-6 fr-col-md-4" method="post">
+    <form class="fr-mt-2w fr-col-10 fr-col-sm-6 fr-col-md-4" method="post">
       {% if form.non_field_errors %}
         <div class="fr-input-group fr-input-group--error">
           {% for error in form.non_field_errors %}
@@ -179,7 +179,7 @@
 
       {% include 'pages/ads-form_bool.html' with field=edit_form.no_ads_declared field_errors=edit_form.errors.no_ads_declared required=edit_form.fields.no_ads_declared.required %}
 
-      <div class="fr-col-12 fr-input-group">
+      <div class="fr-col-12 fr-input-group fr-mt-2w">
         <ul class="fr-btns-group">
           <li>
             <button type="submit" class="fr-btn">Valider</button>
