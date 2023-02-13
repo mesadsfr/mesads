@@ -270,6 +270,10 @@ class ADSManagerView(ListView, ProcessFormView):
     model = ADS
     paginate_by = 50
 
+    def get(self, request, *args, **kwargs):
+        self.search_form = ADSSearchForm(request.GET)
+        return ListView.get(self, request, *args, **kwargs)
+
     def get_ads_manager(self):
         return ADSManager.objects.get(id=self.kwargs['manager_id'])
 
@@ -283,21 +287,17 @@ class ADSManagerView(ListView, ProcessFormView):
         return redirect('app.ads-manager.detail', manager_id=self.kwargs['manager_id'])
 
     def form_invalid(self, form):
-        return ListView.get(self, self.request, *self.args, **self.kwargs)
-
-    def _get_search_form(self):
-        return ADSSearchForm(self.request.GET)
+        return self.get(self.request, *self.args, **self.kwargs)
 
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.filter(ads_manager__id=self.kwargs['manager_id'])
 
-        form = self._get_search_form()
-        if form.is_valid():
-            if form.cleaned_data['accepted_cpam'] is not None:
-                qs = qs.filter(accepted_cpam=form.cleaned_data['accepted_cpam'])
+        if self.search_form.is_valid():
+            if self.search_form.cleaned_data['accepted_cpam'] is not None:
+                qs = qs.filter(accepted_cpam=self.search_form.cleaned_data['accepted_cpam'])
 
-            q = form.cleaned_data['q']
+            q = self.search_form.cleaned_data['q']
             if q:
                 qs = qs.annotate(
                     clean_immatriculation_plate=Replace('immatriculation_plate', Value('-'), Value(''))
@@ -321,7 +321,14 @@ class ADSManagerView(ListView, ProcessFormView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['search_form'] = self._get_search_form()
+        ctx['search_form'] = self.search_form
+
+        # search_defined is a boolean, set to True of any of the search form
+        # parameter is defined.
+        ctx['search_defined'] = any(
+            (v is not None and v != '' for v in self.search_form.cleaned_data.values())
+        )
+
         ctx['edit_form'] = self.get_form()
         ctx['ads_manager'] = ctx['edit_form'].instance
         return ctx
