@@ -7,6 +7,7 @@ import requests_mock
 
 from .models import (
     ADS, validate_siret, ADSLegalFile, ADSUser, ADSUpdateFile,
+    ADSManagerDecree,
     get_legal_filename,
     validate_no_ads_declared,
 )
@@ -31,6 +32,20 @@ class TestADSManager(ClientTestCase):
             validate_no_ads_declared,
             self.ads_manager_city35,
             True
+        )
+
+
+class TestADSManagerDecree(ClientTestCase):
+    def test_str(self):
+        ads_manager_decree = ADSManagerDecree(ads_manager=self.ads_manager_city35)
+        self.assertIn(str(self.ads_manager_city35.id), str(ads_manager_decree))
+
+    def test_get_filename(self):
+        ads_manager_decree = ADSManagerDecree(ads_manager=self.ads_manager_city35)
+        filename = ads_manager_decree.get_filename('superfile.txt')
+        self.assertIn(
+            f'ads_managers_decrees/{self.ads_manager_city35.id} - commune de Melesse/',
+            filename
         )
 
 

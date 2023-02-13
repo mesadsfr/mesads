@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import timedelta
 import html
 
 from django.contrib import messages
