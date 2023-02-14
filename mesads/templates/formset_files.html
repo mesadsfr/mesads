@@ -11,7 +11,7 @@
         return -1;
     }
 
-    const get_x_data = () => {
+    function x_data() {
         return {
             numberOfFormsToDisplay: (() => {
                 const allForms = [...document.getElementsByClassName('formset-file')];
@@ -26,12 +26,12 @@
                 return firstFilled + 1;
             })(),
         };
-    };
+    }
 </script>
 
 <div
     class="fr-input-group"
-    x-data="get_x_data()"
+    x-data="x_data()"
 >
     {{ formset.management_form }}
 
@@ -71,6 +71,7 @@
                     name="{{ form.DELETE.html_name }}"
                     id="{{ form.file.id_for_label }}-clear_id"
                     x-model="deleteFile"
+                    {% if disabled %}disabled{% endif %}
                 />
 
                 <label
@@ -121,6 +122,7 @@
         class="fr-btn fr-btn--sm fr-icon-add-circle-line fr-btn--icon-left fr-btn--secondary"
         x-on:click="numberOfFormsToDisplay++"
         x-show="numberOfFormsToDisplay < {{ formset.extra }}"
+        {% if disabled %}disabled{% endif %}
     >
         Ajouter un autre document
     </button>
