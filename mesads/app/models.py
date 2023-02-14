@@ -367,7 +367,8 @@ class ADS(SmartValidationMixin, models.Model):
 
     transaction_identifier = models.CharField(
         max_length=64, blank=True, null=False,
-        verbose_name="Numéro d'identification lié au registre des transactions"
+        verbose_name="Numéro d'identification lié au registre des transactions",
+        help_text="Ne renseignez ce numéro que dans le cas où, au sein de votre commune, vous tenez un registre relatif à l'ensemble des transactions officielles. Si vous ne tenez pas un tel registre, il n'est pas nécessaire de renseigner ce champ."
     )
 
     attribution_reason = models.CharField(
