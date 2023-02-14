@@ -48,6 +48,24 @@ class TestADSManagerDecree(ClientTestCase):
             filename
         )
 
+    def test_exists_in_storage(self):
+        ads_legal_file = ADSManagerDecree(
+            ads_manager=self.ads_manager_city35,
+            file=SimpleUploadedFile('file.pdf', b'File content')
+        )
+        self.assertFalse(ads_legal_file.exists_in_storage())
+
+    def test_human_filename(self):
+        ads_manager_decree = ADSManagerDecree(
+            ads_manager=self.ads_manager_city35,
+            file=SimpleUploadedFile(
+                'temp',
+                b'File content'
+            )
+        )
+        ads_manager_decree.file.name = ads_manager_decree.get_filename('whatever.pdf')
+        self.assertEqual(ads_manager_decree.human_filename(), 'whatever.pdf')
+
 
 class TestADSManagerRequest(ClientTestCase):
     def test_str(self):

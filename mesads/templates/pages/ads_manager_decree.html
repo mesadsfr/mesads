@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Décret de {{ ads_manager.content_object.display_text }}{% endblock %}
+
+{% block body %}
+
+<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
+        </li>
+        <li>
+            <a class="fr-breadcrumb__link" aria-current="page">Décret limitant le nombre d'ADS</a>
+        </li>
+      </ol>
+
+    </div>
+  </nav>
+
+<h1>Décret de {{ ads_manager.content_object.display_fulltext }}</h1>
+
+<div class="fr-col-12 fr-col-sm-8 fr-col-md-6">
+    <p>
+        Vous avez la possibilité d'insérer l'arrêté délimitant le nombre d'ADS au sein de votre administration.
+    </p>
+
+    <p>
+        Si vous ne disposez pas de cet élément, nous vous invitons à vous rapprocher de votre référent auprès de la préfecture qui doit disposer d'un exemplaire.
+    </p>
+
+    <form
+        method="post"
+        enctype="multipart/form-data"
+    >
+        {% csrf_token %}
+
+        <hr />
+        {% include 'formset_files.html' with formset=formset %}
+        <hr />
+        <button type="submit" class="fr-btn">Valider le formulaire</button>
+    </form>
+</div>
+
+{% endblock %}

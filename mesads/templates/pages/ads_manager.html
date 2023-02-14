@@ -22,7 +22,11 @@
 
 <h1>ADS de {{ ads_manager.content_object.display_fulltext }}</h1>
 
+
 {% if not ads_manager.is_locked and not ads_manager.no_ads_declared %}
+<p>
+  📜️ <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads-manager.decree.detail' manager_id=ads_manager.id %}">Arrêté délimitant le nombre d'ADS</a>
+</p>
 <p>
   ✍️ <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads.create' manager_id=ads_manager.id %}">Créer une nouvelle ADS</a>
 </p>
@@ -164,7 +168,7 @@
     </ul>
     {% endif %}
 
-    <form class="fr-mt-2w fr-col-10 fr-col-sm-6 fr-col-md-4" method="post">
+    <form class="fr-mt-2w fr-mb-2w fr-col-10 fr-col-sm-6 fr-col-md-4" method="post">
       {% if form.non_field_errors %}
         <div class="fr-input-group fr-input-group--error">
           {% for error in form.non_field_errors %}

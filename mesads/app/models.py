@@ -129,6 +129,16 @@ class ADSManagerDecree(models.Model):
         ])
         return name
 
+    def human_filename(self):
+        """Reverse of get_legal_filename."""
+        basename = os.path.basename(self.file.name)
+        return ' '.join(basename.split('-')[3:])[1:]
+
+    def exists_in_storage(self):
+        """Returns False if file has been removed from storage, either manually
+        or after a database restore."""
+        return self.file.storage.exists(self.file.name)
+
     creation_date = models.DateTimeField(
         auto_now_add=True, null=False,
         verbose_name="Date de création du fichier"

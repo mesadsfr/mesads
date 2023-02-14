@@ -16,6 +16,7 @@ urlpatterns = [
     path('admin_gestion', ads_manager_administrator_required(views.ADSManagerAdminView.as_view()), name='app.ads-manager-admin.index'),
     path('gestion', login_required(views.ADSManagerRequestView.as_view()), name='app.ads-manager.index'),
     path('gestion/<int:manager_id>/', ads_manager_required(views.ADSManagerView.as_view()), name='app.ads-manager.detail'),
+    path('gestion/<int:manager_id>/arrete', ads_manager_required(views.ads_manager_decree_view), name='app.ads-manager.decree.detail'),
     path('gestion/<int:manager_id>/ads/<int:ads_id>', ads_manager_required(views.ADSView.as_view()), name='app.ads.detail'),
     path('gestion/<int:manager_id>/ads/<int:ads_id>/delete', ads_manager_required(views.ADSDeleteView.as_view()), name='app.ads.delete'),
     path('gestion/<int:manager_id>/ads/', ads_manager_required(views.ADSCreateView.as_view()), name='app.ads.create'),

@@ -11,7 +11,7 @@ from django.db import IntegrityError, transaction
 from django.db.models import Count, Q, Sum, Value
 from django.db.models.functions import Coalesce, Replace
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.urls import reverse, reverse_lazy
@@ -25,12 +25,13 @@ from reversion.views import RevisionMixin
 from mesads.fradm.models import EPCI
 
 from .forms import (
+    ADSForm,
     ADSLegalFileFormSet,
-    ADSManagerForm,
+    ADSManagerDecreeFormSet,
     ADSManagerEditForm,
+    ADSManagerForm,
     ADSSearchForm,
     ADSUserFormSet,
-    ADSForm,
 )
 from .models import (
     ADS,
@@ -384,6 +385,23 @@ class ADSView(RevisionMixin, UpdateView):
             ads_legal_files_formset.save()
             return resp
         return super().form_invalid(form)
+
+
+def ads_manager_decree_view(request, manager_id):
+    ads_manager = get_object_or_404(ADSManager, id=manager_id)
+
+    if request.method == 'POST':
+        formset = ADSManagerDecreeFormSet(request.POST, request.FILES, instance=ads_manager)
+        if formset.is_valid():
+            formset.save()
+            return redirect('app.ads-manager.decree.detail', manager_id=manager_id)
+    else:
+        formset = ADSManagerDecreeFormSet(instance=ads_manager)
+
+    return render(request, 'pages/ads_manager_decree.html', context={
+        'ads_manager': ads_manager,
+        'formset': formset,
+    })
 
 
 class ADSDeleteView(DeleteView):

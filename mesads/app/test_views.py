@@ -1067,3 +1067,57 @@ class TestFAQView(ClientTestCase):
     def test_get(self):
         resp = self.client.get('/faq')
         self.assertEqual(resp.status_code, 200)
+
+
+class TestADSManagerDecreeView(ClientTestCase):
+    def test_permissions(self):
+        for client_name, client, expected_status in (
+            ('anonymous', self.anonymous_client, 302),
+            ('auth', self.auth_client, 404),
+            ('ads_manager 35', self.ads_manager_city35_client, 200),
+            ('ads_manager_admin 35', self.ads_manager_administrator_35_client, 200),
+        ):
+            with self.subTest(client_name=client_name, expected_status=expected_status):
+                resp = client.get(f'/gestion/{self.ads_manager_city35.id}/arrete')
+                self.assertEqual(resp.status_code, expected_status)
+
+    def test_get_404(self):
+        resp = self.ads_manager_city35_client.get('/gestion/99999/arrete')
+        self.assertEqual(resp.status_code, 404)
+
+    def test_get(self):
+        resp = self.ads_manager_city35_client.get(
+            f'/gestion/{self.ads_manager_city35.id}/arrete'
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn(self.ads_manager_city35.content_object.libelle, resp.content.decode('utf8'))
+
+    def test_post(self):
+        file1 = SimpleUploadedFile(
+            name='myfile.pdf',
+            content=b'First file',
+            content_type='application/pdf'
+        )
+        file2 = SimpleUploadedFile(
+            name='myfile2.pdf',
+            content=b'Second file',
+            content_type='application/pdf'
+        )
+
+        resp = self.ads_manager_city35_client.post(
+            f'/gestion/{self.ads_manager_city35.id}/arrete',
+            {
+                'adsmanagerdecree_set-TOTAL_FORMS': 5,
+                'adsmanagerdecree_set-INITIAL_FORMS': 0,
+                'adsmanagerdecree_set-MIN_NUM_FORMS': 0,
+                'adsmanagerdecree_set-MAX_NUM_FORMS': 5,
+                'adsmanagerdecree_set-0-file': file1,
+                'adsmanagerdecree_set-1-file': file2,
+            }
+        )
+        self.assertEqual(resp.status_code, 302)
+
+        ads_manager_decrees = self.ads_manager_city35.adsmanagerdecree_set.all()
+        self.assertEqual(len(ads_manager_decrees), 2)
+        self.assertEqual(ads_manager_decrees[0].file.read(), b'First file')
+        self.assertEqual(ads_manager_decrees[1].file.read(), b'Second file')

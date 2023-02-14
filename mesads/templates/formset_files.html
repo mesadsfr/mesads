@@ -1,0 +1,127 @@
+{% comment %}Render a formset to upload one or several files.{% endcomment %}
+
+<script type="text/javascript">
+    // Workaround, because array.findLastIndex is only available for firefox>104
+    function findLastIndex(arr, func) {
+        for (i = arr.length; i > 0; --i) {
+            if (func(arr[i - 1])) {
+                return i - 1;
+            }
+        }
+        return -1;
+    }
+
+    const get_x_data = () => {
+        return {
+            numberOfFormsToDisplay: (() => {
+                const allForms = [...document.getElementsByClassName('formset-file')];
+                // list of booleans with one entry per form, true if the form is empty, false is the form is filled or has an error
+                const filled = allForms.map((e) => !!(e.querySelector('input[type="hidden"]') || e.querySelector('p.fr-error-text')));
+                // Index of the first filled form
+                const firstFilled = findLastIndex(filled, (e) => e === true);
+                // All the forms are empty, display one form
+                if (firstFilled < 0) {
+                    return 1;
+                }
+                return firstFilled + 1;
+            })(),
+        };
+    };
+</script>
+
+<div
+    class="fr-input-group"
+    x-data="get_x_data()"
+>
+    {{ formset.management_form }}
+
+    {% for form in formset %}
+        <div
+            class="fr-download fr-download--card formset-file"
+            x-show="{{ forloop.counter0 }} < numberOfFormsToDisplay"
+            x-data="{deleteFile: false}"
+            x-bind:style="deleteFile ? {'background-color': 'rgb(253,222,222)'} : {'background-color': '#fff'}"
+            x-transition
+        >
+        {% comment %}Existing document {% endcomment %}
+        {% if form.instance.file %}
+            {{ form.id.as_hidden }}
+            {{ form.file.as_hidden }}
+
+            <p>
+                <a class="fr-download__link" {% if form.instance.exists_in_storage %}href="{{ form.instance.file.url }}" target="_blank"{% endif %}>
+                {{ form.instance.human_filename }}
+
+                <span class="fr-download__detail">
+                {% if form.instance.exists_in_storage %}
+                    {{ form.instance.file.size|filesizeformat }}
+                {% else %}
+                    Le fichier n'est plus accessible
+                {% endif %}
+                </span>
+                </a>
+            </p>
+            <p class="fr-download__desc">
+                Le document a été envoyé le {{ form.instance.creation_date|date:"d/m/Y" }}.
+            </p>
+            <p class="fr-download__desc">
+                <input
+                    class="fr-hidden"
+                    type="checkbox"
+                    name="{{ form.DELETE.html_name }}"
+                    id="{{ form.file.id_for_label }}-clear_id"
+                    x-model="deleteFile"
+                />
+
+                <label
+                    class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-delete-line fr-btn--icon-left"
+                    for="{{ form.file.id_for_label }}-clear_id"
+                    x-show="!deleteFile"
+                >
+                    Supprimer le document
+                </label>
+
+                <label
+                    class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-download-line fr-btn--icon-left"
+                    for="{{ form.file.id_for_label }}-clear_id"
+                    x-show="deleteFile"
+                >
+                    Annuler la suppression
+                </label>
+            </p>
+        {% comment %}New document {% endcomment %}
+        {% else %}
+            <div class="fr-upload-group">
+                <label class="fr-label" for="file-upload">
+                    <strong>Nouveau document</strong>
+                    <span class="fr-hint-text">Taille maximale : 10 Mo. Format préféré : pdf.</span>
+                </label>
+                <input class="fr-upload" type="file" id="{{ form.file.id_for_label }}" name="{{ form.file.html_name }}">
+            </div>
+        {% endif %}
+
+        {% comment %}Form errors {% endcomment %}
+        {% for error in form.errors.file %}
+            <p class="fr-error-text">
+            {{ error }}
+            </p>
+        {% endfor %}
+
+        </div>
+    {% endfor %}
+
+    {% for error in formset.non_form_errors %}
+        <p class="fr-error-text">
+            {{ error }}
+        </p>
+    {% endfor %}
+
+    <button
+        type="button"
+        class="fr-btn fr-btn--sm fr-icon-add-circle-line fr-btn--icon-left fr-btn--secondary"
+        x-on:click="numberOfFormsToDisplay++"
+        x-show="numberOfFormsToDisplay < {{ formset.extra }}"
+    >
+        Ajouter un autre document
+    </button>
+</div>

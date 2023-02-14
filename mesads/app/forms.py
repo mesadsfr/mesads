@@ -8,7 +8,13 @@ from dal import autocomplete
 from mesads.fradm.forms import FrenchAdministrationForm
 from mesads.fradm.models import Commune
 
-from .models import ADS, ADSLegalFile, ADSManager, ADSUser
+from .models import (
+    ADS,
+    ADSLegalFile,
+    ADSManager,
+    ADSManagerDecree,
+    ADSUser,
+)
 
 
 class ADSManagerForm(FrenchAdministrationForm):
@@ -141,3 +147,9 @@ class ADSSearchForm(forms.Form):
         ),
         required=False
     )
+
+
+ADSManagerDecreeFormSet = inlineformset_factory(
+    ADSManager, ADSManagerDecree, fields=('file',),
+    can_delete=True, extra=5, max_num=5
+)
