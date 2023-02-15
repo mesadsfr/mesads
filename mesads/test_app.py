@@ -1,13 +1,25 @@
+import io
 import unittest
 
+from django.conf import settings
 from django.core.management import call_command
 
 
 class TestMigrationsApplied(unittest.TestCase):
 
     def test_migrations(self):
-        command = ['makemigrations', '--check', '--dry-run']
-        import io
+        """The goal of this unittest is to ensure that all migrations have been applied.
+
+        Unfortunately, a migration file is missing in django_cron (see
+        https://github.com/Tivix/django-cron/pull/224) so `makemigrations`
+        always generates a migration file for this application.
+
+        To solve this problem, we only check if migrations are missing for our
+        applications.
+        """
+        our_apps = [app.split('.')[-1] for app in settings.INSTALLED_APPS if 'mesads' in app]
+
+        command = ['makemigrations', '--check', '--dry-run', *our_apps]
 
         with io.StringIO() as out:
             try:
