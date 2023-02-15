@@ -13,4 +13,5 @@ class TestMigrationsApplied(unittest.TestCase):
             try:
                 call_command(*command, stdout=out)
             except SystemExit:
-                self.fail(f"Missing migrations. Run `python manage.py makemigrations` and commit the new migration files.")
+                out.seek(0)
+                self.fail(f"Missing migrations. Run `python manage.py makemigrations` and commit the new migration files. Output was:\n{out.read()}")
