@@ -427,6 +427,11 @@ class ADS(SmartValidationMixin, models.Model):
         )
     )
 
+    owner_license_number = models.CharField(
+        max_length=64, blank=True, null=False,
+        verbose_name="Numéro de la carte professionnelle du titulaire"
+    )
+
     owner_phone = models.CharField(
         max_length=128, blank=True, null=False,
         verbose_name="Téléphone fixe du titulaire de l'ADS"

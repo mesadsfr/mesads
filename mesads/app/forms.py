@@ -78,6 +78,7 @@ class ADSForm(forms.ModelForm):
             'owner_mobile',
             'owner_email',
             'used_by_owner',
+            'owner_license_number',
         )
 
     def __init__(self, epci=None, *args, **kwargs):

@@ -180,6 +180,11 @@ Création d'une nouvelle ADS
       <!-- Used by owner ? -->
       {% include 'pages/ads-form_select.html' with x_model="used_by_owner" field=form.used_by_owner field_errors=form.errors.used_by_owner required=form.fields.used_by_owner.required readonly=ads_manager.is_locked %}
 
+      <!-- Owner licence number -->
+      <div x-show="used_by_owner === 'true'" x-transition>
+      {% include 'pages/ads-form_string.html' with field=form.owner_license_number field_errors=form.errors.owner_license_number required=form.fields.owner_license_number.required readonly=ads_manager.is_locked %}
+      </div>
+
       <div x-show="used_by_owner === 'false'" x-transition>
         {{ ads_users_formset.management_form }}
 
