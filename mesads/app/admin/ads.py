@@ -45,8 +45,8 @@ class ADSUsersCount(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         return (
             ('none', 'Aucun exploitant'),
-            ('one', 'Un exploitant'),
-            ('two', 'Deux exploitants'),
+            ('one_plus', '>=1 exploitants'),
+            ('two_plus', '>=2 exploitants'),
             ('five_plus', '>=5 exploitants'),
             ('ten_plus', '>=10 exploitants'),
         )
@@ -54,13 +54,15 @@ class ADSUsersCount(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         queryset = queryset.annotate(ads_users_count=Count('adsuser'))
         filters = {
-            'none': lambda: queryset.filter(ads_users_count=0),
-            'one': lambda: queryset.filter(ads_users_count=1),
-            'two': lambda: queryset.filter(ads_users_count=2),
-            'five_plus': lambda: queryset.filter(ads_users_count__gte=5),
-            'ten_plus': lambda: queryset.filter(ads_users_count__gte=10),
+            'one_plus': 1,
+            'two_plus': 2,
+            'five_plus': 5,
+            'ten_plus': 10,
         }
-        return filters.get(self.value(), lambda: queryset)()
+        filter_param = filters.get(self.value())
+        if filter_param is None:
+            return queryset
+        return queryset.filter(ads_users_count__gte=filter_param)
 
 
 class ADSUserInline(admin.TabularInline):
