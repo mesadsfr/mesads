@@ -23,6 +23,14 @@ class TestCommuneAutocompleteView(ClientTestCase):
             sum(1 for entry in self.COMMUNES if 'paris' in entry[2].lower())
         )
 
+        # Accents should be ignored
+        resp = self.auth_client.get('/fradm/commune/autocomplete?q=parìs')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            len(resp.json()['results']),
+            sum(1 for entry in self.COMMUNES if 'paris' in entry[2].lower())
+        )
+
         resp = self.auth_client.get('/fradm/commune/autocomplete?q=97')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(
@@ -68,6 +76,14 @@ class TestEPCIAutocompleteView(ClientTestCase):
             sum(1 for entry in self.EPCI if 'roissy' in entry[2].lower())
         )
 
+        # Accents should be ignored
+        resp = self.auth_client.get('/fradm/epci/autocomplete?q=RÔISSY')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            len(resp.json()['results']),
+            sum(1 for entry in self.EPCI if 'roissy' in entry[2].lower())
+        )
+
 
 class TestPrefectureAutocompleteView(ClientTestCase):
     def test_get_queryset_anonymous(self):
@@ -85,6 +101,14 @@ class TestPrefectureAutocompleteView(ClientTestCase):
         self.assertEqual(len(resp.json()['results']), 0)
 
         resp = self.auth_client.get('/fradm/prefecture/autocomplete?q=paris')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            len(resp.json()['results']),
+            sum(1 for entry in self.PREFECTURES if 'paris' in entry[1].lower())
+        )
+
+        # Accents should be ignored
+        resp = self.auth_client.get('/fradm/prefecture/autocomplete?q=pàrìs')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(
             len(resp.json()['results']),

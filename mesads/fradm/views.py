@@ -1,3 +1,4 @@
+from django.contrib.postgres.lookups import Unaccent
 from django.db.models.functions import Lower
 
 from dal import autocomplete
@@ -9,6 +10,7 @@ class CommuneAutocompleteView(autocomplete.Select2QuerySetView):
     """This view is called by routes /commune/autocomplete and
     /commune/<departement>/autocomplete, so kwargs['departement'] is optional.
     """
+
     def get_queryset(self):
         if not self.request.user.is_authenticated:
             return Commune.objects.none()
@@ -29,8 +31,8 @@ class CommuneAutocompleteView(autocomplete.Select2QuerySetView):
 
             qs = Commune.objects.raw('''
                 SELECT * FROM ''' + Commune.objects.model._meta.db_table + '''
-                WHERE REGEXP_REPLACE(departement || libelle, '[^\\w]', '', 'g')
-                ILIKE '%%' || REGEXP_REPLACE(%s, '[^\\w]', '', 'g') || '%%'
+                WHERE REGEXP_REPLACE(UNACCENT(departement || libelle), '[^\\w]', '', 'g')
+                ILIKE '%%' || REGEXP_REPLACE(UNACCENT(%s), '[^\\w]', '', 'g') || '%%'
                 ''' + departement_filter + '''
                 ORDER BY id
             ''', [self.q])
@@ -49,10 +51,10 @@ class EPCIAutocompleteView(autocomplete.Select2QuerySetView):
         if not self.request.user.is_authenticated:
             return EPCI.objects.none()
 
-        qs = EPCI.objects.all()
+        qs = EPCI.objects.annotate(unaccent_name=Unaccent('name')).all()
 
         if self.q:
-            qs = qs.filter(name__icontains=self.q)
+            qs = qs.filter(unaccent_name__icontains=self.q)
 
         return qs.order_by('id')
 
@@ -65,8 +67,8 @@ class PrefectureAutocompleteView(autocomplete.Select2QuerySetView):
         if self.q:
             qs = Prefecture.objects.raw('''
                 SELECT * FROM ''' + Prefecture.objects.model._meta.db_table + '''
-                WHERE REGEXP_REPLACE(numero || libelle, '[^\\w]', '', 'g')
-                ILIKE '%%' || REGEXP_REPLACE(%s, '[^\\w]', '', 'g') || '%%'
+                WHERE REGEXP_REPLACE(UNACCENT(numero || libelle), '[^\\w]', '', 'g')
+                ILIKE '%%' || REGEXP_REPLACE(UNACCENT(%s), '[^\\w]', '', 'g') || '%%'
                 ORDER BY id
             ''', (self.q,))
             return qs
