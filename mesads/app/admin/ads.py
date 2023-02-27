@@ -1,7 +1,7 @@
 from datetime import date
 
 from django.contrib import admin
-from django.db.models import F
+from django.db.models import Count
 from django.utils.safestring import mark_safe
 
 from reversion.admin import VersionAdmin
@@ -34,6 +34,33 @@ class ADSPeriodListFilter(admin.SimpleListFilter):
             return queryset.filter(
                 ads_creation_date__gte=date(2014, 10, 1),
             )
+
+
+class ADSUsersCount(admin.SimpleListFilter):
+    """Filter ADS by number of ADSUsers."""
+    title = "Nombre d'exploitants"
+
+    parameter_name = 'ads_users_count'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('none', 'Aucun exploitant'),
+            ('one', 'Un exploitant'),
+            ('two', 'Deux exploitants'),
+            ('five_plus', '>=5 exploitants'),
+            ('ten_plus', '>=10 exploitants'),
+        )
+
+    def queryset(self, request, queryset):
+        queryset = queryset.annotate(ads_users_count=Count('adsuser'))
+        filters = {
+            'none': lambda: queryset.filter(ads_users_count=0),
+            'one': lambda: queryset.filter(ads_users_count=1),
+            'two': lambda: queryset.filter(ads_users_count=2),
+            'five_plus': lambda: queryset.filter(ads_users_count__gte=5),
+            'ten_plus': lambda: queryset.filter(ads_users_count__gte=10),
+        }
+        return filters.get(self.value(), lambda: queryset)()
 
 
 class ADSUserInline(admin.TabularInline):
@@ -138,6 +165,7 @@ class ADSAdmin(VersionAdmin):
         ADSPeriodListFilter,
         'used_by_owner',
         'adsuser__status',
+        ADSUsersCount,
         'attribution_type',
         'accepted_cpam',
     ]
