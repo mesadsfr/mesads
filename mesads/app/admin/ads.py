@@ -2,6 +2,7 @@ from datetime import date
 
 from django.contrib import admin
 from django.db.models import F
+from django.utils.safestring import mark_safe
 
 from reversion.admin import VersionAdmin
 
@@ -49,10 +50,54 @@ class ADSLegalFileInline(admin.StackedInline):
 
 @admin.register(ADS)
 class ADSAdmin(VersionAdmin):
+    @admin.display(description='Préfecture')
+    def prefecture(self, ads):
+        return ads.ads_manager.administrator.prefecture.libelle
 
     @admin.display(description='Administration')
     def administration(self, ads):
-        return ads.ads_manager.content_object.display_text()
+        s = ads.ads_manager.content_object.display_text()
+        # Capitalize first letter. No-op if string is empty.
+        return s[0:1].upper() + s[1:]
+
+    @admin.display(description="Exploitants")
+    def ads_users(self, ads):
+        """It is not easy to customize django administration. To override the
+        results table, we need to:
+
+        - override django/contrib/admin/templates/admin/change_list.html (which
+          renders change_list_results.html)
+        - or override
+          django.contrib.admin.templatetags.admin_list.change_list_results
+          (which renders change_list_results.html)
+
+        Instead, we do the following. It is not ideal, but it works.
+        """
+        ads_users = ads.adsuser_set.all()
+        if not ads_users:
+            return '-'
+
+        content = ''
+        for ads_user in ads_users:
+            content += f'''
+                <tr>
+                    <td>{ads_user.status}</td>
+                    <td>{ads_user.name}</td>
+                    <td>{ads_user.siret}</td>
+                    <td>{ads_user.license_number}</td>
+                </tr>
+            '''
+        return mark_safe(f'''
+        <table>
+            <tr>
+                <th>Statut</th>
+                <th>Nom</th>
+                <th>SIRET</th>
+                <th>Carte pro</th>
+            </tr>
+            {content}
+        </table>
+        ''')
 
     def has_change_permission(self, request, obj=None):
         if obj and obj.ads_manager.is_locked:
@@ -65,12 +110,13 @@ class ADSAdmin(VersionAdmin):
         return True
 
     list_display = (
-        'administration',
         'number',
-        'ads_creation_date',
-        'attribution_date',
-        'immatriculation_plate',
+        'administration',
+        'prefecture',
         'owner_name',
+        admin.display(description='Carte pro. tit.')(lambda ads: ads.owner_license_number or '-'),
+        admin.display(description='Exploitée par titulaire ?', boolean=True)(lambda ads: ads.used_by_owner),
+        'ads_users',
     )
 
     search_fields = (
@@ -100,4 +146,6 @@ class ADSAdmin(VersionAdmin):
         req = super().get_queryset(request)
         req = req.prefetch_related('ads_manager__content_type')
         req = req.prefetch_related('ads_manager__content_object')
+        req = req.prefetch_related('ads_manager__administrator__prefecture')
+        req = req.prefetch_related('adsuser_set')
         return req
