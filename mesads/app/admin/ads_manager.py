@@ -31,12 +31,14 @@ class ADSManagerAdmin(admin.ModelAdmin):
         'administration',
         'no_ads_declared',
         'is_locked',
+        'ads_manager_requests_link',
         'ads_link',
     )
 
     readonly_fields = (
         'administrator',
         'administration',
+        'ads_manager_requests_link',
         'ads_link',
     )
 
@@ -71,6 +73,35 @@ class ADSManagerAdmin(admin.ModelAdmin):
         load_ads_managers. It should not be possible to create or delete them
         from the admin."""
         return False
+
+    @admin.display(description='Demandes pour gérer les ADS de ce gestionnaire')
+    def ads_manager_requests_link(self, obj):
+        url = reverse('admin:app_adsmanagerrequest_changelist') + '?ads_manager=' + str(obj.id)
+
+        accepted = obj.adsmanagerrequest_set.filter(accepted=True).count()
+        pending = obj.adsmanagerrequest_set.filter(accepted=None).count()
+        refused = obj.adsmanagerrequest_set.filter(accepted=False).count()
+        return mark_safe(
+            f'''<a href="{url}">Voir les {accepted + pending + refused} demandes</a>
+            <table>
+                <tr>
+                    <th>Statut</th>
+                    <th>Nombre</th>
+                </tr>
+                <tr>
+                    <td>⏰ En attente</td>
+                    <td>{pending}</td>
+                </tr>
+                <tr>
+                    <td>✅ Acceptées</td>
+                    <td>{accepted}</td>
+                </tr>
+                <tr>
+                    <td>❌ Refusées</td>
+                    <td>{refused}</td>
+                </tr>
+            </table>
+        ''')
 
     @admin.display(description='Liste des ADS du gestionnaire')
     def ads_link(self, obj):
