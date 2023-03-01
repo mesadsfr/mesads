@@ -26,6 +26,10 @@ class ADSManagerAdmin(admin.ModelAdmin):
         'display_ads_count',
     )
 
+    ordering = (
+        'commune__libelle',
+    )
+
     fields = (
         'administrator',
         'administration',
