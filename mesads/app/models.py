@@ -470,6 +470,10 @@ def get_legal_filename(instance, filename):
 @cleanup.ignore
 @reversion.register
 class ADSLegalFile(models.Model):
+    class Meta:
+        verbose_name = "Arrêté portant sur l'attribution de l'ADS"
+        verbose_name_plural = "Arrêtés portant sur l'attribution de l'ADS"
+
     def __str__(self):
         return f'Legal file {self.file.url} for ADS {self.ads.id}'
 
