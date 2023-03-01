@@ -541,6 +541,9 @@ class ADSUpdateFile(models.Model):
     """The Préfecture de Police de Paris has a custom software to manage >20 000
     ADS. To send us updates, they upload a document on a weekly basis.
     """
+    class Meta:
+        verbose_name = 'Fichier de mise à jour d\'ADS'
+        verbose_name_plural = 'Fichiers de mise à jour d\'ADS'
 
     def __str__(self):
         return f'Update file from user {self.user.id} on {self.creation_date}, imported={self.imported}'
