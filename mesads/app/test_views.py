@@ -478,6 +478,30 @@ class TestADSView(ClientTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertIn('Une ADS avec ce numéro existe déjà', resp.content.decode('utf8'))
 
+    def test_strip_ads_charfields(self):
+        """Empty string fields should be stripped automatically."""
+        resp = self.ads_manager_city35_client.post(
+            f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}',
+            {
+                'number': self.ads.id,
+                'owner_name': '  Jean Jaques   ',
+                'owner_email': '-',
+                'adsuser_set-TOTAL_FORMS': 10,
+                'adsuser_set-INITIAL_FORMS': 0,
+                'adsuser_set-MIN_NUM_FORMS': 0,
+                'adsuser_set-MAX_NUM_FORMS': 10,
+
+                'adslegalfile_set-TOTAL_FORMS': 10,
+                'adslegalfile_set-INITIAL_FORMS': 0,
+                'adslegalfile_set-MIN_NUM_FORMS': 0,
+                'adslegalfile_set-MAX_NUM_FORMS': 10,
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.ads.refresh_from_db()
+        self.assertEqual(self.ads.owner_name, 'Jean Jaques')
+        self.assertEqual(self.ads.owner_email, '')  # dash should be removed
+
     def test_update_creation_after_attribution(self):
         resp = self.ads_manager_city35_client.post(
             f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}',
@@ -536,6 +560,69 @@ class TestADSView(ClientTestCase):
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(ADSUser.objects.count(), 1)
         self.assertEqual(ADSUser.objects.get().name, 'Henri')
+
+    def test_strip_ads_user_charfields(self):
+        """If all the fields of a ADS user are empty, the entry should be
+        removed."""
+        ads_user = ADSUser.objects.create(
+            ads=self.ads,
+            status='autre',
+            name='Paul',
+            siret='12312312312312'
+        )
+
+        # Fields should be changed during this POST, since the values are not empty
+        resp = self.ads_manager_city35_client.post(
+            f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}',
+            {
+                'number': self.ads.id,
+                'adsuser_set-TOTAL_FORMS': 10,
+                'adsuser_set-INITIAL_FORMS': 1,
+                'adsuser_set-MIN_NUM_FORMS': 0,
+                'adsuser_set-MAX_NUM_FORMS': 10,
+                'adsuser_set-0-id': ads_user.id,
+                'adsuser_set-0-status': '',
+                'adsuser_set-0-name': 'Paul',
+                'adsuser_set-0-siret': '12312312312312',
+
+                'adslegalfile_set-TOTAL_FORMS': 10,
+                'adslegalfile_set-INITIAL_FORMS': 0,
+                'adslegalfile_set-MIN_NUM_FORMS': 0,
+                'adslegalfile_set-MAX_NUM_FORMS': 10,
+            },
+        )
+
+        self.assertEqual(resp.status_code, 302)
+        ads_user.refresh_from_db()
+        self.assertEqual(ads_user.name, 'Paul')
+        self.assertEqual(ads_user.siret, '12312312312312')
+
+        # However now they should be stripped
+        resp = self.ads_manager_city35_client.post(
+            f'/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}',
+            {
+                'number': self.ads.id,
+                'adsuser_set-TOTAL_FORMS': 10,
+                'adsuser_set-INITIAL_FORMS': 1,
+                'adsuser_set-MIN_NUM_FORMS': 0,
+                'adsuser_set-MAX_NUM_FORMS': 10,
+                'adsuser_set-0-id': ads_user.id,
+                'adsuser_set-0-status': '',
+                'adsuser_set-0-name': '  Paul  ',
+                'adsuser_set-0-siret': '-',
+
+                'adslegalfile_set-TOTAL_FORMS': 10,
+                'adslegalfile_set-INITIAL_FORMS': 0,
+                'adslegalfile_set-MIN_NUM_FORMS': 0,
+                'adslegalfile_set-MAX_NUM_FORMS': 10,
+            },
+        )
+
+        self.assertEqual(resp.status_code, 302)
+        ads_user.refresh_from_db()
+        # Fields should not have been changed during the previous POST
+        self.assertEqual(ads_user.name, 'Paul')
+        self.assertEqual(ads_user.siret, '')
 
     def test_update_ads_legal_file(self):
         legal_file = ADSLegalFile.objects.create(
