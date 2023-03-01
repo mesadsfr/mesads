@@ -168,6 +168,8 @@ class ADSManagerRequest(models.Model):
         unique_together = (
             ('user', 'ads_manager'),
         )
+        verbose_name = 'Demande pour devenir gestionnaire ADS'
+        verbose_name_plural = 'Demandes pour devenir gestionnaire ADS'
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
