@@ -47,6 +47,27 @@ class SmartValidationMixin:
                     })
 
 
+class CharFieldsStripperMixin:
+    """Strip all char fields."""
+
+    def clean(self, *args, **kwargs):
+        for field in self._meta.fields:
+            if isinstance(field, models.CharField):
+                value = getattr(self, field.name)
+                # Usually our CharFields are not nullable, but make sure we
+                # don't attempt to strip None.
+                if value is not None:
+                    stripped = self.strip(value)
+                    setattr(self, field.name, stripped)
+        return super().clean(*args, **kwargs)
+
+    def strip(self, value):
+        value = value.strip()
+        if value == '-':
+            value = ''
+        return value
+
+
 def validate_no_ads_declared(ads_manager, value):
     if ads_manager.ads_set.count() > 0 and value:
         raise ValidationError(
@@ -280,7 +301,7 @@ def validate_siret(value):
 
 
 @reversion.register
-class ADS(SmartValidationMixin, models.Model):
+class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
     """Autorisation De Stationnement created by ADSManager.
     """
     class Meta:
@@ -494,7 +515,7 @@ class ADSLegalFile(models.Model):
 
 
 @reversion.register
-class ADSUser(SmartValidationMixin, models.Model):
+class ADSUser(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
     """"Exploitant" of an ADS.
 
     For ADS created before Oct 01. 2014, the person exploiting the ADS could be
