@@ -31,6 +31,7 @@ class ADSManagerAdmin(admin.ModelAdmin):
         'administration',
         'no_ads_declared',
         'is_locked',
+        'ads_manager_administrator_users_link',
         'ads_manager_requests_link',
         'ads_link',
     )
@@ -38,6 +39,7 @@ class ADSManagerAdmin(admin.ModelAdmin):
     readonly_fields = (
         'administrator',
         'administration',
+        'ads_manager_administrator_users_link',
         'ads_manager_requests_link',
         'ads_link',
     )
@@ -74,15 +76,37 @@ class ADSManagerAdmin(admin.ModelAdmin):
         from the admin."""
         return False
 
+    @admin.display(description='Utilisateurs ayant un accès préfecture sur ce gestionnaire')
+    def ads_manager_administrator_users_link(self, obj):
+        url = reverse('admin:users_user_changelist') + f'?adsmanageradministrator={obj.administrator.id}'
+        count_staff = obj.administrator.users.filter(is_staff=True).count()
+        count_not_staff = obj.administrator.users.filter(is_staff=False).count()
+        return mark_safe(f'''
+            <a href="{url}">Voir les {count_staff + count_not_staff} utilisateurs</a>
+            <table>
+                <tr>
+                    <th>Statut</th>
+                    <th>Nombre</th>
+                </tr>
+                <tr>
+                    <td>Équipe MesADS</td>
+                    <td>{count_staff}</td>
+                </tr>
+                <tr>
+                    <td>Utilisateurs non privilégiés</td>
+                    <td>{count_not_staff}</td>
+                </tr>
+            </table>
+        ''')
+
     @admin.display(description='Demandes pour gérer les ADS de ce gestionnaire')
     def ads_manager_requests_link(self, obj):
-        url = reverse('admin:app_adsmanagerrequest_changelist') + '?ads_manager=' + str(obj.id)
-
+        url = reverse('admin:app_adsmanagerrequest_changelist') + f'?ads_manager={obj.id}'
         accepted = obj.adsmanagerrequest_set.filter(accepted=True).count()
         pending = obj.adsmanagerrequest_set.filter(accepted=None).count()
         refused = obj.adsmanagerrequest_set.filter(accepted=False).count()
-        return mark_safe(
-            f'''<a href="{url}">Voir les {accepted + pending + refused} demandes</a>
+        return mark_safe(f'''
+            <a href="{url}">Voir les {accepted + pending + refused} demandes</a>
             <table>
                 <tr>
                     <th>Statut</th>
@@ -105,5 +129,5 @@ class ADSManagerAdmin(admin.ModelAdmin):
 
     @admin.display(description='Liste des ADS du gestionnaire')
     def ads_link(self, obj):
-        ads_url = reverse('admin:app_ads_changelist') + '?ads_manager=' + str(obj.id)
-        return mark_safe(f'<a href="{ads_url}">Voir les {obj.ads_count} ADS</a>')
+        url = reverse('admin:app_ads_changelist') + f'?ads_manager={obj.id}'
+        return mark_safe(f'<a href="{url}">Voir les {obj.ads_count} ADS</a>')
