@@ -378,7 +378,7 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
     )
 
     ATTRIBUTION_TYPES = [
-        ('free', "Gratuitement (délivrée par l'autorité compétente)"),
+        ('free', "Délivrée par l'autorité compétente"),
         ('paid', "Cession à titre onéreux"),
         ('other', "Autre"),
     ]
