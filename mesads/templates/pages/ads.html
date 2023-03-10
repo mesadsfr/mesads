@@ -59,12 +59,17 @@ Création d'une nouvelle ADS
   const get_x_data = () => ({
       ads_creation_date: '{{ form.ads_creation_date.value|str_to_date|date:"Y-m-d"|default:"" }}',
 
-      // If the creation date is filled and is before 2014-10-01, it is a "new ADS" and we should not display the ADSUser form
-      get should_display_ads_user() {
+      get ads_before_2014() {
         return this.ads_creation_date === '' || (new Date(this.ads_creation_date) - new Date('2014-10-01') < 0);
       },
 
       used_by_owner: '{% if form.used_by_owner.value is True %}true{% elif form.used_by_owner.value is False %}false{% else %}unknown{% endif %}',
+
+      // The field "owner_license_number" should always be displayed for new ADS. For old ADS, it should only be displayed if the field "used_by_owner" is set to "true"
+      get should_display_owner_license_number() {
+        return !this.ads_before_2014|| this.used_by_owner === 'true';
+      },
+
       attribution_type: '{{ form.attribution_type.value }}',
       numberOfADSUsersFormsetToDisplay: (() => {
         // All forms
@@ -166,7 +171,21 @@ Création d'une nouvelle ADS
     <!-- Owner email -->
     {% include 'pages/ads-form_string.html' with field=form.owner_email field_errors=form.errors.owner_email required=form.fields.owner_email.required html_type="email" readonly=ads_manager.is_locked %}
 
-    <div class="fr-input-group" x-show="!should_display_ads_user" x-transition>
+    <!-- Used by owner ? -->
+    <template x-if="ads_before_2014">
+      <div x-show="ads_before_2014" x-transition class="fr-input-group">
+        {% include 'pages/ads-form_select.html' with x_model="used_by_owner" field=form.used_by_owner field_errors=form.errors.used_by_owner required=form.fields.used_by_owner.required readonly=ads_manager.is_locked %}
+      </div>
+    </template>
+
+    <!-- Owner licence number -->
+    <template x-if="should_display_owner_license_number">
+      <div x-show="should_display_owner_license_number" x-transition class="fr-input-group">
+      {% include 'pages/ads-form_string.html' with field=form.owner_license_number field_errors=form.errors.owner_license_number required=form.fields.owner_license_number.required readonly=ads_manager.is_locked %}
+      </div>
+    </template>
+
+    <div class="fr-input-group" x-show="!ads_before_2014" x-transition>
       <hr />
       <span class="fr-hint-text">
         Le titulaire d'une autorisation de stationnement délivrée avant le 01 Octobre 2014 a la faculté de présenter un successeur à l'autorité administrative compétente. Celle-ci peut ensuite autoriser le transfert de l'ADS à titre onéreux si les conditions de durée minimale d'exploitation sont respectées.
@@ -176,17 +195,7 @@ Création d'une nouvelle ADS
       </span>
     </div>
 
-    <div class="fr-input-group" x-show="should_display_ads_user" x-transition>
-      <!-- Used by owner ? -->
-      {% include 'pages/ads-form_select.html' with x_model="used_by_owner" field=form.used_by_owner field_errors=form.errors.used_by_owner required=form.fields.used_by_owner.required readonly=ads_manager.is_locked %}
-
-      <!-- Owner licence number -->
-      <template x-if="used_by_owner === 'true'">
-        <div x-show="used_by_owner === 'true'" x-transition>
-        {% include 'pages/ads-form_string.html' with field=form.owner_license_number field_errors=form.errors.owner_license_number required=form.fields.owner_license_number.required readonly=ads_manager.is_locked %}
-        </div>
-      </template>
-
+    <div class="fr-input-group" x-show="ads_before_2014" x-transition>
       <div x-show="used_by_owner === 'false'" x-transition>
         {{ ads_users_formset.management_form }}
 
