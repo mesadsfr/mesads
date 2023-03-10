@@ -181,9 +181,11 @@ Création d'une nouvelle ADS
       {% include 'pages/ads-form_select.html' with x_model="used_by_owner" field=form.used_by_owner field_errors=form.errors.used_by_owner required=form.fields.used_by_owner.required readonly=ads_manager.is_locked %}
 
       <!-- Owner licence number -->
-      <div x-show="used_by_owner === 'true'" x-transition>
-      {% include 'pages/ads-form_string.html' with field=form.owner_license_number field_errors=form.errors.owner_license_number required=form.fields.owner_license_number.required readonly=ads_manager.is_locked %}
-      </div>
+      <template x-if="used_by_owner === 'true'">
+        <div x-show="used_by_owner === 'true'" x-transition>
+        {% include 'pages/ads-form_string.html' with field=form.owner_license_number field_errors=form.errors.owner_license_number required=form.fields.owner_license_number.required readonly=ads_manager.is_locked %}
+        </div>
+      </template>
 
       <div x-show="used_by_owner === 'false'" x-transition>
         {{ ads_users_formset.management_form }}
@@ -194,25 +196,27 @@ Création d'une nouvelle ADS
             class="fr-form-group ads-user-form"
             x-transition
           >
-            <fieldset class="fr-fieldset">
-                <legend class="fr-fieldset__legend">{{ forloop.counter }}<sup>{% if forloop.counter == 1 %}er{% else %}e{% endif %}</sup> exploitant taxi</legend>
+            <template x-if="used_by_owner === 'false'">
+              <fieldset class="fr-fieldset">
+                  <legend class="fr-fieldset__legend">{{ forloop.counter }}<sup>{% if forloop.counter == 1 %}er{% else %}e{% endif %}</sup> exploitant taxi</legend>
 
-              <div class="fr-pl-3w">
-                <!-- User status -->
-                {% include 'pages/ads-form_select.html' with field=ads_user_form.status field_errors=ads_user_form.errors.status required=ads_user_form.fields.status.required readonly=ads_manager.is_locked %}
-                <!-- User name -->
-                {% include 'pages/ads-form_string.html' with field=ads_user_form.name field_errors=ads_user_form.errors.name required=ads_user_form.fields.name.required readonly=ads_manager.is_locked %}
-                <!-- User SIRET -->
-                {% include 'pages/ads-form_string.html' with field=ads_user_form.siret field_errors=ads_user_form.errors.siret required=ads_user_form.fields.siret.required readonly=ads_manager.is_locked %}
-                <!-- Professional licence number -->
-                {% include 'pages/ads-form_string.html' with field=ads_user_form.license_number field_errors=ads_user_form.errors.license_number required=ads_user_form.fields.license_number.required readonly=ads_manager.is_locked %}
+                <div class="fr-pl-3w">
+                  <!-- User status -->
+                  {% include 'pages/ads-form_select.html' with field=ads_user_form.status field_errors=ads_user_form.errors.status required=ads_user_form.fields.status.required readonly=ads_manager.is_locked %}
+                  <!-- User name -->
+                  {% include 'pages/ads-form_string.html' with field=ads_user_form.name field_errors=ads_user_form.errors.name required=ads_user_form.fields.name.required readonly=ads_manager.is_locked %}
+                  <!-- User SIRET -->
+                  {% include 'pages/ads-form_string.html' with field=ads_user_form.siret field_errors=ads_user_form.errors.siret required=ads_user_form.fields.siret.required readonly=ads_manager.is_locked %}
+                  <!-- Professional licence number -->
+                  {% include 'pages/ads-form_string.html' with field=ads_user_form.license_number field_errors=ads_user_form.errors.license_number required=ads_user_form.fields.license_number.required readonly=ads_manager.is_locked %}
+                </div>
 
-              </div>
+              </fieldset>
+            </template>
 
-              {% for hidden_field in ads_user_form.hidden_fields %}
-                {{ hidden_field }}
-              {% endfor %}
-            </fieldset>
+            {% for hidden_field in ads_user_form.hidden_fields %}
+              {{ hidden_field }}
+            {% endfor %}
           </div>
         {% endfor %}
 
