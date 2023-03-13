@@ -397,7 +397,8 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
 
     attribution_reason = models.CharField(
         max_length=4096, blank=True, null=False,
-        verbose_name="Raison d'attribution"
+        verbose_name="Raison d'attribution",
+        help_text="Ce champ est optionnel. Il peut être utilisé pour préciser les raisons de l'attribution de l'ADS au titulaire actuel. Par exemple : « changement du gérant de la société », « achat », …"
     )
 
     accepted_cpam = models.BooleanField(
