@@ -60,7 +60,8 @@ Création d'une nouvelle ADS
       ads_creation_date: '{{ form.ads_creation_date.value|str_to_date|date:"Y-m-d"|default:"" }}',
 
       get ads_before_2014() {
-        return this.ads_creation_date === '' || (new Date(this.ads_creation_date) - new Date('2014-10-01') < 0);
+        const creation_date = new Date(this.ads_creation_date);
+        return (creation_date - new Date('2014-10-01')) < 0;
       },
 
       used_by_owner: '{% if form.used_by_owner.value is True %}true{% elif form.used_by_owner.value is False %}false{% else %}unknown{% endif %}',
@@ -132,17 +133,21 @@ Création d'une nouvelle ADS
     <!-- ADS creation date -->
     {% include 'pages/ads-form_date.html' with x_model="ads_creation_date" field=form.ads_creation_date field_errors=form.errors.ads_creation_date required=form.fields.ads_creation_date.required readonly=ads_manager.is_locked %}
 
-    <!-- ADS attribution date -->
-    {% include 'pages/ads-form_date.html' with field=form.attribution_date field_errors=form.errors.attribution_date required=form.fields.attribution_date.required readonly=ads_manager.is_locked %}
+    <template x-if="ads_before_2014">
+      <div x-show="ads_before_2014" x-transition class="fr-input-group">
+        <!-- ADS attribution date -->
+        {% include 'pages/ads-form_date.html' with field=form.attribution_date field_errors=form.errors.attribution_date required=form.fields.attribution_date.required readonly=ads_manager.is_locked %}
 
-    <!-- ADS attribution type -->
-    {% include 'pages/ads-form_select.html' with x_model="attribution_type" field=form.attribution_type field_errors=form.errors.attribution_type required=form.fields.attribution_type.required readonly=ads_manager.is_locked %}
+        <!-- ADS attribution type -->
+        {% include 'pages/ads-form_select.html' with x_model="attribution_type" field=form.attribution_type field_errors=form.errors.attribution_type required=form.fields.attribution_type.required readonly=ads_manager.is_locked %}
 
-    <!-- Transaction identifier -->
-    {% include 'pages/ads-form_string.html' with x_transition=True x_show="attribution_type == 'paid'" field=form.transaction_identifier field_errors=form.errors.transaction_identifier required=form.fields.transaction_identifier.required readonly=ads_manager.is_locked %}
+        <!-- Transaction identifier -->
+        {% include 'pages/ads-form_string.html' with x_transition=True x_show="attribution_type == 'paid'" field=form.transaction_identifier field_errors=form.errors.transaction_identifier required=form.fields.transaction_identifier.required readonly=ads_manager.is_locked %}
 
-    <!-- ADS attribution reason -->
-    {% include 'pages/ads-form_string.html' with field=form.attribution_reason field_errors=form.errors.attribution_reason required=form.fields.attribution_reason.required readonly=ads_manager.is_locked %}
+        <!-- ADS attribution reason -->
+        {% include 'pages/ads-form_string.html' with field=form.attribution_reason field_errors=form.errors.attribution_reason required=form.fields.attribution_reason.required readonly=ads_manager.is_locked %}
+      </div>
+    </template>
 
     <!-- Accepted by CPAM -->
     {% include 'pages/ads-form_select.html' with field=form.accepted_cpam field_errors=form.errors.accepted_cpam required=form.fields.accepted_cpam.required readonly=ads_manager.is_locked %}
