@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ENV_FILE=$(realpath $(dirname $0)/../.env)
+ENV_FILE=$(realpath $(dirname $0)/../.prod.env)
 S3CFG_FILE=$(realpath $(dirname $0)/../.s3cfg)
 REQUIRED_VARS=(AWS_S3_ENDPOINT_URL AWS_S3_ACCESS_KEY_ID AWS_S3_SECRET_ACCESS_KEY AWS_STORAGE_BUCKET_NAME)
 

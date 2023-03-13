@@ -1,4 +1,5 @@
 *.csv
+*.sql
 .cache
 .git
 __pycache__
@@ -6,7 +7,7 @@ node_modules/
 static
 uploads/
 Makefile
-.env
+*.env
 .cache
 .DS_Store
 .mypy_cache

@@ -1,4 +1,5 @@
-.env
+*.env
+*.sql
 *.csv
 .cache
 /static
