@@ -374,7 +374,8 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
 
     attribution_date = models.DateField(
         blank=True, null=True,
-        verbose_name="Date d'attribution de l'ADS au titulaire actuel"
+        verbose_name="Date d'attribution de l'ADS au titulaire actuel",
+        help_text="Laissez ce champ vide si le titulaire n'a pas changé depuis la création de l'ADS."
     )
 
     ATTRIBUTION_TYPES = [
