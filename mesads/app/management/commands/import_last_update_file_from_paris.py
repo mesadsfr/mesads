@@ -1,4 +1,5 @@
 import csv
+from datetime import date, datetime
 import re
 import sys
 
@@ -87,6 +88,20 @@ class Command(BaseCommand):
         else:
             ads = ADS(ads_manager=ads_manager, number=row['numero_ads'])
             is_new = True
+
+        # The file contains a field to store the attribution date, but not the
+        # creation date. For new ADS, since we know the attribution date is
+        # always the same as the creation date, we store the value in
+        # ADS.ads_creation_date and leave ADS.attribution_date empty. For old
+        # ADS, we leave ADS.ads_creation_date empty and we use the value in
+        # ADS.attribution_date.
+        attribution_date = datetime.strptime(row['date_attribution'], '%Y-%m-%d').date()
+        if attribution_date >= date(2014, 10, 1):  # New ADS
+            ads.ads_creation_date = attribution_date
+            ads.attribution_date = None
+        else:  # Old ADS
+            ads.ads_creation_date = None
+            ads.attribution_date = attribution_date
 
         if row['type_ads'] not in (
             'Payante',
