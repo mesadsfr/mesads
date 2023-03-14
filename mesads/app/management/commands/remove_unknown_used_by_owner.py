@@ -19,5 +19,3 @@ class Command(BaseCommand):
         for ads in ADS.objects.prefetch_related('adsuser_set').filter(ads_creation_date__gte=date(2014, 10, 1)).filter(~Q(used_by_owner=None)):
             ads.used_by_owner = None
             ads.save()
-
-        breakpoint()
