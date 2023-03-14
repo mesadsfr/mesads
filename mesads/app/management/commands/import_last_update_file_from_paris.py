@@ -89,19 +89,22 @@ class Command(BaseCommand):
             ads = ADS(ads_manager=ads_manager, number=row['numero_ads'])
             is_new = True
 
-        # The file contains a field to store the attribution date, but not the
-        # creation date. For new ADS, since we know the attribution date is
-        # always the same as the creation date, we store the value in
-        # ADS.ads_creation_date and leave ADS.attribution_date empty. For old
-        # ADS, we leave ADS.ads_creation_date empty and we use the value in
+        # The CSV file sent by Paris contains a field with the attribution date,
+        # but not the creation date.
+        # For new ADS, since the ADS user is always the owner, we store the
+        # field value in ADS.ads_creation_date, and leave ADS.attribution_date
+        # empty.
+        # For old ADS, we leave ADS.ads_creation_date empty (since the CSV
+        # doesn't have the info) and we use the field value in
         # ADS.attribution_date.
         attribution_date = datetime.strptime(row['date_attribution'], '%Y-%m-%d').date()
-        if attribution_date >= date(2014, 10, 1):  # New ADS
-            ads.ads_creation_date = attribution_date
-            ads.attribution_date = None
-        else:  # Old ADS
+        is_old_ads = attribution_date < date(2014, 10, 1)
+        if is_old_ads:
             ads.ads_creation_date = None
             ads.attribution_date = attribution_date
+        else:
+            ads.ads_creation_date = attribution_date
+            ads.attribution_date = None
 
         if row['type_ads'] not in (
             'Payante',
@@ -116,15 +119,21 @@ class Command(BaseCommand):
             ads.vehicle_compatible_pmr = True
         else:
             ads.vehicle_compatible_pmr = None
-            if row['type_ads'] == 'Payante':
-                ads.attribution_type = 'paid'
-            elif row['type_ads'] in ('Gratuite cessible', 'Gratuite non cessible'):
-                ads.attribution_type = 'free'
+            if is_old_ads:
+                if row['type_ads'] == 'Payante':
+                    ads.attribution_type = 'paid'
+                elif row['type_ads'] in ('Gratuite cessible', 'Gratuite non cessible'):
+                    ads.attribution_type = 'free'
+                else:
+                    ads.attribution_type = ''
+                    ads.attribution_reason = ''
+                if row['type_ads'] == 'Relais':
+                    ads.attribution_reason = 'Relais'
+            # New ADS can't be attributed.
             else:
                 ads.attribution_type = ''
                 ads.attribution_reason = ''
-            if row['type_ads'] == 'Relais':
-                ads.attribution_reason = 'Relais'
+                ads.transaction_identifier = ''
 
         ads.immatriculation_plate = row['immatriculation']
 
