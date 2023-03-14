@@ -22,4 +22,5 @@ class ADSUpdateFileAdmin(admin.ModelAdmin):
 
     readonly_fields = (
         'imported',
+        'import_output',
     )

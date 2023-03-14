@@ -10,6 +10,19 @@ from mesads.app.models import ADS, ADSManager, ADSUpdateFile
 from mesads.fradm.models import Prefecture
 
 
+class Logger:
+    def __init__(self):
+        self.history = []
+
+    def log(self, level, msg):
+        self.history.append(msg)
+        # Avoid storing too many messages in memory.
+        if len(self.history) > 100:
+            self.history = self.history[-100:]
+
+        sys.stdout.write(level(f'{msg}\n'))
+
+
 class Command(BaseCommand):
     help = (
         "Every week, the Préfecture de Police de Paris publishes a CSV file with "
@@ -17,17 +30,16 @@ class Command(BaseCommand):
         "been already imported."
     )
 
-    def _log(self, level, msg):
-        sys.stdout.write(level(f'{msg}\n'))
-
     def handle(self, **opts):
+        logger = Logger()
+
         ads_update_file = ADSUpdateFile.objects.order_by('-id').first()
         if not ads_update_file:
-            self._log(self.style.SUCCESS, 'No file found, skip')
+            logger.log(self.style.SUCCESS, 'No file found, skip')
             return
 
         if ads_update_file.imported:
-            self._log(self.style.SUCCESS, f'ADSUpdateFile {ads_update_file.id} ({ads_update_file.update_file.name}) has already been imported, skip')
+            logger.log(self.style.SUCCESS, f'ADSUpdateFile {ads_update_file.id} ({ads_update_file.update_file.name}) has already been imported, skip')
             return
 
         ads_manager = ADSManager.objects.filter(
@@ -38,12 +50,12 @@ class Command(BaseCommand):
         try:
             # Remove ADSManager lock, otherwise ADS.save() will fail
             ads_manager.is_locked = False
-            self.do_import(ads_update_file, ads_manager)
+            self.do_import(ads_update_file, ads_manager, logger)
         finally:
             ads_manager.is_locked = True
 
-    def do_import(self, ads_update_file, ads_manager):
-        self._log(self.style.SUCCESS, f'Currently {ads_manager.ads_set.count()} ADS for Paris')
+    def do_import(self, ads_update_file, ads_manager, logger):
+        logger.log(self.style.SUCCESS, f'Currently {ads_manager.ads_set.count()} ADS for Paris')
 
         all_paris_ads = {
             ads.number: ads
@@ -64,15 +76,16 @@ class Command(BaseCommand):
             else:
                 update_count += 1
 
-        self._log(self.style.SUCCESS, f'{new_count} new ADS imported, {update_count} ADS updated')
+        logger.log(self.style.SUCCESS, f'{new_count} new ADS imported, {update_count} ADS updated')
         delete_count = 0
         for ads in all_paris_ads.values():
             if not getattr(ads, '_HAS_BEEN_UPDATED', False):
                 delete_count += 1
                 ads.delete()
-        self._log(self.style.SUCCESS, f'{delete_count} ADS deleted')
+        logger.log(self.style.SUCCESS, f'{delete_count} ADS deleted')
 
         ads_update_file.imported = True
+        ads_update_file.import_output = '\n'.join(logger.history)
         ads_update_file.save()
 
     def import_ads(self, ads_manager, all_paris_ads, row):

@@ -603,3 +603,8 @@ class ADSUpdateFile(models.Model):
         blank=False, null=False, default=False,
         verbose_name="Fichier importé dans notre base de données ?"
     )
+
+    import_output = models.TextField(
+        blank=True, null=False,
+        verbose_name="Output du script d'import du fichier"
+    )
