@@ -15,6 +15,7 @@ from .models import (
     ADSManagerDecree,
     ADSUser,
 )
+from .widgets import BooleanSelect
 
 
 class ADSManagerForm(FrenchAdministrationForm):
@@ -80,6 +81,13 @@ class ADSForm(forms.ModelForm):
             'used_by_owner',
             'owner_license_number',
         )
+        widgets = {
+            # used_by_owner has null=True because the field is not set for new
+            # ADS, but we don't want to allow null values for old ADS. Use a
+            # BooleanSelect instead of the default NullBooleanSelect.
+            # Note, we could use a checkbox instead of a select.
+            'used_by_owner': BooleanSelect(),
+        }
 
     def __init__(self, epci=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
