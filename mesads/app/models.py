@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 import logging
 import os
 import re
@@ -322,6 +322,20 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
                 name='ads_creation_date_before_attribution_date',
                 violation_error_message="La date de création de l'ADS doit être antérieure à la date d'attribution."
             ),
+
+            # In SQL, comparing a date with NULL is always NULL so we need to check for NULL before comparing with a date.
+            models.CheckConstraint(
+                check=(
+                    # New ADS, attribution date should be null
+                    Q(ads_creation_date__isnull=False, ads_creation_date__gte=date(2014, 10, 1), attribution_date__isnull=True)
+                    # - Old ADS, created before 2014-10-01, attribution date can be set or not
+                    | Q(ads_creation_date__isnull=False, ads_creation_date__lt=date(2014, 10, 1))
+                    # - Unknown creation date, we allow attribution date to be set or not to avoid blocking the creation when we don't know the creation date
+                    | Q(ads_creation_date__isnull=True)
+                ),
+                name='attribution_date_null_for_new_ads',
+                violation_error_message="La date d'attribution ne peut être renseignée que pour les ADS créées avant le 1er octobre 2014."
+            )
         ]
 
     SMART_VALIDATION_WATCHED_FIELDS = {

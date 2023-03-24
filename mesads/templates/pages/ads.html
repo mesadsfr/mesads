@@ -64,6 +64,11 @@ Création d'une nouvelle ADS
         return (creation_date - new Date('2014-10-01')) < 0;
       },
 
+      // The field "attribution_date" should only be displayed for old ADS, or if the creation date is not set
+      get should_display_attribution_date() {
+        return !this.ads_creation_date || this.ads_before_2014;
+      },
+
       used_by_owner: '{% if form.used_by_owner.value is True %}true{% elif form.used_by_owner.value is False %}false{% else %}unknown{% endif %}',
 
       // The field "owner_license_number" should always be displayed for new ADS. For old ADS, it should only be displayed if the field "used_by_owner" is set to "true"
@@ -133,11 +138,15 @@ Création d'une nouvelle ADS
     <!-- ADS creation date -->
     {% include 'pages/ads-form_date.html' with x_model="ads_creation_date" field=form.ads_creation_date field_errors=form.errors.ads_creation_date required=form.fields.ads_creation_date.required readonly=ads_manager.is_locked %}
 
+    <!-- ADS attribution date -->
+    <template x-if="should_display_attribution_date">
+      <div x-show="should_display_attribution_date" x-transition class="fr-input-group">
+        {% include 'pages/ads-form_date.html' with field=form.attribution_date field_errors=form.errors.attribution_date required=form.fields.attribution_date.required readonly=ads_manager.is_locked %}
+      </div>
+    </template>
+
     <template x-if="ads_before_2014">
       <div x-show="ads_before_2014" x-transition class="fr-input-group">
-        <!-- ADS attribution date -->
-        {% include 'pages/ads-form_date.html' with field=form.attribution_date field_errors=form.errors.attribution_date required=form.fields.attribution_date.required readonly=ads_manager.is_locked %}
-
         <!-- ADS attribution type -->
         {% include 'pages/ads-form_select.html' with x_model="attribution_type" field=form.attribution_type field_errors=form.errors.attribution_type required=form.fields.attribution_type.required readonly=ads_manager.is_locked %}
 
