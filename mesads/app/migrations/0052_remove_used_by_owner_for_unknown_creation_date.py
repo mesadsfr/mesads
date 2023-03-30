@@ -3,7 +3,7 @@
 from django.db import migrations
 
 
-def delete_attribution_date_for_new_ads(apps, schema_editor):
+def delete_used_by_owner(apps, schema_editor):
     ADS = apps.get_model('app', 'ADS')
     for ads in ADS.objects.filter(ads_creation_date__isnull=True, used_by_owner__isnull=False):
         ads.used_by_owner = None
@@ -17,5 +17,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(delete_attribution_date_for_new_ads),
+        migrations.RunPython(delete_used_by_owner),
     ]
