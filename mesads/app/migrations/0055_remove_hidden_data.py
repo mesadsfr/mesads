@@ -58,5 +58,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(fix_data_from_hidden_forms, lambda *args, **kwargs: None),
+        migrations.RunPython(fix_data_from_hidden_forms),
     ]
