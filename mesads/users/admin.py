@@ -55,6 +55,7 @@ class ADSManagerAdministratorFilter(admin.SimpleListFilter):
 class UserAdmin(admin.ModelAdmin):
 
     list_display = (
+        'date_joined',
         'email',
         'admin_roles',
         'is_active',
