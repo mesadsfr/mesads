@@ -323,35 +323,92 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
                 violation_error_message="La date de création de l'ADS doit être antérieure à la date d'attribution."
             ),
 
-            # Note: In SQL, comparing a date with NULL is always NULL so we need
+            #
+            # !!! Note !!! In SQL, comparing a date with NULL is always NULL so we need
+            #
             # to check for NULL before comparing with a date.
             # That's why the constraints below always check date__isnull before date__gte or date__lt.
+            #
 
+            # Check attribution date:
+            # - For new ASD, attribution date should be null
+            # - For old ADS, attribution date can be set or not
+            # - For unknown creation date, we allow attribution date to be set or not to avoid blocking the creation when we don't know the creation date
             models.CheckConstraint(
                 check=(
-                    # New ADS, attribution date should be null
                     Q(ads_creation_date__isnull=False, ads_creation_date__gte=date(2014, 10, 1), attribution_date__isnull=True)
-                    # - Old ADS, created before 2014-10-01, attribution date can be set or not
                     | Q(ads_creation_date__isnull=False, ads_creation_date__lt=date(2014, 10, 1))
-                    # - Unknown creation date, we allow attribution date to be set or not to avoid blocking the creation when we don't know the creation date
                     | Q(ads_creation_date__isnull=True)
                 ),
                 name='attribution_date_null_for_new_ads',
                 violation_error_message="La date d'attribution ne peut être renseignée que pour les ADS créées avant le 1er octobre 2014."
             ),
 
+            # Check used_by_owner:
+            # - For new ADS, used_by_owner should always be null
+            # - For old ADS, used_by_owner can be set or not
+            # - For ADS with an unknown creation date, used_by_owner should be null
             models.CheckConstraint(
                 check=(
-                    # For new ADS, used_by_owner should always be null
                     Q(ads_creation_date__isnull=False, ads_creation_date__gte=date(2014, 10, 1), used_by_owner__isnull=True)
-                    # For old ADS, used_by_owner can be set or not
                     | Q(ads_creation_date__isnull=False, ads_creation_date__lt=date(2014, 10, 1))
-                    # For ADS with an unknown creation date, used_by_owner should be null
                     | Q(ads_creation_date__isnull=True, used_by_owner__isnull=True)
                 ),
                 name='used_by_owner_null_for_new_ads',
                 violation_error_message="Le champ 'ADS exploitée par son titulaire' ne peut être renseigné que pour les ADS créées avant le 1er octobre 2014."
             ),
+
+            # Check attribution_type:
+            # - For new ADS, attribution_type should always be empty
+            # - For old ADS, attribution_type can be set or not
+            # - For ADS with an unknown creation date, attribution_type should be empty
+            models.CheckConstraint(
+                check=(
+                    Q(ads_creation_date__isnull=False, ads_creation_date__gte=date(2014, 10, 1), attribution_type='')
+                    | Q(ads_creation_date__isnull=False, ads_creation_date__lt=date(2014, 10, 1))
+                    | Q(ads_creation_date__isnull=True, attribution_type='')
+                ),
+                name='attribution_type_empty_for_new_ads',
+                violation_error_message="Le champ 'Type d\'attribution de l\'ADS' ne peut être renseigné que pour les ADS créées avant le 1er octobre 2014."
+            ),
+
+            # Check transaction_identifier: the field can only be set if attribution_type is "paid"
+            models.CheckConstraint(
+                check=(
+                    Q(attribution_type='paid')
+                    | Q(~Q(attribution_type='paid'), transaction_identifier='')
+                ),
+                name='transaction_identifier_empty_for_non_paid_ads',
+                violation_error_message="Le champ 'Numéro d\'identification lié au registre des transactions' ne peut être renseigné que pour les ADS dont le type d'attribution est 'Cession à titre onéreux'."
+            ),
+
+            # Check attribution_reason:
+            # - For new ADS, attribution_reason should always be empty
+            # - For old ADS, attribution_reason can be set or not
+            # - For ADS with an unknown creation date, attribution_reason should be empty
+            models.CheckConstraint(
+                check=(
+                    Q(ads_creation_date__isnull=False, ads_creation_date__gte=date(2014, 10, 1), attribution_reason='')
+                    | Q(ads_creation_date__isnull=False, ads_creation_date__lt=date(2014, 10, 1))
+                    | Q(ads_creation_date__isnull=True, attribution_reason='')
+                ),
+                name='attribution_reason_empty_for_new_ads',
+                violation_error_message="Le champ 'Raison d\'attribution' ne peut être renseigné que pour les ADS créées avant le 1er octobre 2014."
+            ),
+
+            # Check owner_license_number
+            # - For new ADS, owner_license_number can be set or not
+            # - Otherwise, owner_license_number can only be set if used_by_owner is true
+            models.CheckConstraint(
+                check=(
+                    Q(ads_creation_date__isnull=False, ads_creation_date__gte=date(2014, 10, 1))
+                    | Q(used_by_owner__isnull=True, owner_license_number='')
+                    | Q(used_by_owner__isnull=False, used_by_owner=False, owner_license_number='')
+                    | Q(used_by_owner__isnull=False, used_by_owner=True)
+                ),
+                name='owner_license_number_empty_if_not_used_by_owner',
+                violation_error_message="Le champ 'Numéro de la carte professionnelle du titulaire' doit être vide si l'ADS n'est pas exploitée par son titulaire.",
+            )
         ]
 
     SMART_VALIDATION_WATCHED_FIELDS = {
