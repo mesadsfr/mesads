@@ -323,7 +323,10 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
                 violation_error_message="La date de création de l'ADS doit être antérieure à la date d'attribution."
             ),
 
-            # In SQL, comparing a date with NULL is always NULL so we need to check for NULL before comparing with a date.
+            # Note: In SQL, comparing a date with NULL is always NULL so we need
+            # to check for NULL before comparing with a date.
+            # That's why the constraints below always check date__isnull before date__gte or date__lt.
+
             models.CheckConstraint(
                 check=(
                     # New ADS, attribution date should be null
@@ -335,7 +338,20 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
                 ),
                 name='attribution_date_null_for_new_ads',
                 violation_error_message="La date d'attribution ne peut être renseignée que pour les ADS créées avant le 1er octobre 2014."
-            )
+            ),
+
+            models.CheckConstraint(
+                check=(
+                    # For new ADS, used_by_owner should always be null
+                    Q(ads_creation_date__isnull=False, ads_creation_date__gte=date(2014, 10, 1), used_by_owner__isnull=True)
+                    # For old ADS, used_by_owner can be set or not
+                    | Q(ads_creation_date__isnull=False, ads_creation_date__lt=date(2014, 10, 1))
+                    # For ADS with an unknown creation date, used_by_owner should be null
+                    | Q(ads_creation_date__isnull=True, used_by_owner__isnull=True)
+                ),
+                name='used_by_owner_null_for_new_ads',
+                violation_error_message="Le champ 'ADS exploitée par son titulaire' ne peut être renseigné que pour les ADS créées avant le 1er octobre 2014."
+            ),
         ]
 
     SMART_VALIDATION_WATCHED_FIELDS = {
