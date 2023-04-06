@@ -46,10 +46,43 @@ Pour importer les données initiales (respectez l'ordre) :
 # python manage.py load_ads_managers
 ```
 
-Si vous souhaitez importer les données de l'Ille et Vilaine stockées sur demarches-simplfiees :
+Pour importer les données de prod créez un fichier .local.env avec:
+
+```
+LOCAL_DATABASE=mesads
+
+SUPERUSER_USERNAME=root@root.com
+SUPERUSER_PASSWORD=password
+
+# Paris, Ille-et-Villaine, Hérault
+DEFAULT_ADS_MANAGER_ADMINISTRATOR="94 54 53"
+
+# Melesse, Aast
+DEFAULT_ADS_MANAGER="51431 62957"%
+```
+
+Puis créez un fichier .prod.env avec:
+
+```
+DATA_FILE=mesads.sql
+DB_USER=<prod user>
+DB_PASSWORD=<prod password>
+DB_HOST=<prod host>
+DB_PORT=<prod port>
+DB_NAME=<prod db name>
+
+INSEE_TOKEN=<prod INSEE API token>
+
+AWS_S3_ENDPOINT_URL=<prod AWS S3 credentials>
+AWS_S3_ACCESS_KEY_ID=<prod AWS S3 credentials>
+AWS_S3_SECRET_ACCESS_KEY=<prod AWS S3 credentials>
+AWS_STORAGE_BUCKET_NAME=<prod AWS S3 credentials>
+```
+
+Enfin, lancez le script:
 
 ```bash
-# python manage.py load_ads_from_ille_et_vilaine --auth-token=xxx
+# ./scripts/restore-prod-db-local.sh
 ```
 
 # Ressources
