@@ -108,6 +108,7 @@ INSTALLED_APPS = [
 
 CRON_CLASSES = [
     'mesads.app.crons.ImportDataForParis',
+    'mesads.app.crons.DetectDataInconsistencies',
 ]
 
 AUTH_USER_MODEL = 'users.User'
