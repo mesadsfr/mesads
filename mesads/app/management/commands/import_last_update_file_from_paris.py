@@ -94,13 +94,13 @@ class Command(BaseCommand):
             return None
 
         ads = all_paris_ads.get(row['numero_ads'], None)
-        is_new = False
+        is_new_object = False
         # Mark the object as updated, so that we can delete the ones that are not in the file
         if ads:
             ads._HAS_BEEN_UPDATED = True
         else:
             ads = ADS(ads_manager=ads_manager, number=row['numero_ads'])
-            is_new = True
+            is_new_object = True
 
         # The CSV file sent by Paris contains a field with the attribution date,
         # but not the creation date.
@@ -111,8 +111,7 @@ class Command(BaseCommand):
         # doesn't have the info) and we use the field value in
         # ADS.attribution_date.
         attribution_date = datetime.strptime(row['date_attribution'], '%Y-%m-%d').date()
-        is_old_ads = attribution_date < date(2014, 10, 1)
-        if is_old_ads:
+        if attribution_date < date(2014, 10, 1):
             ads.ads_creation_date = None
             ads.attribution_date = attribution_date
         else:
@@ -132,7 +131,12 @@ class Command(BaseCommand):
             ads.vehicle_compatible_pmr = True
         else:
             ads.vehicle_compatible_pmr = None
-            if is_old_ads:
+            # New ADS always have empty attribution type, reason and identifier.
+            if not ads.ads_creation_date or ads.ads_creation_date >= date(2014, 10, 1):
+                ads.attribution_type = ''
+                ads.attribution_reason = ''
+                ads.transaction_identifier = ''
+            else:
                 if row['type_ads'] == 'Payante':
                     ads.attribution_type = 'paid'
                 elif row['type_ads'] in ('Gratuite cessible', 'Gratuite non cessible'):
@@ -142,11 +146,6 @@ class Command(BaseCommand):
                     ads.attribution_reason = ''
                 if row['type_ads'] == 'Relais':
                     ads.attribution_reason = 'Relais'
-            # New ADS can't be attributed.
-            else:
-                ads.attribution_type = ''
-                ads.attribution_reason = ''
-                ads.transaction_identifier = ''
 
         ads.immatriculation_plate = row['immatriculation']
 
@@ -174,4 +173,4 @@ class Command(BaseCommand):
             ads.owner_email = row['adr_mail_titulaire']
 
         ads.save()
-        return is_new
+        return is_new_object
