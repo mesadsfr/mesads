@@ -246,8 +246,6 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 EMAIL_USE_TLS = parse_env_bool('EMAIL_USE_TLS', False)
 
 # Add configuration below to log SQL queries to console
-LOGGING_ENABLED = False
-
 if parse_env_bool('LOGGING_ENABLED', False):
     LOGGING = {
         'version': 1,
