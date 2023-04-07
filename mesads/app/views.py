@@ -1,10 +1,13 @@
+from datetime import date, datetime, timedelta
 import collections
 import csv
-from datetime import timedelta
+
+from docxtpl import DocxTemplate
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.postgres.aggregates import ArrayAgg
+from django.contrib.staticfiles import finders
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
@@ -12,9 +15,10 @@ from django.db.models import Count, Q, Sum, Value
 from django.db.models.functions import Coalesce, Replace
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.defaultfilters import date as date_template_filter
 from django.template.loader import render_to_string
-from django.utils import timezone
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.views.generic import UpdateView, TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, FormView, ProcessFormView
@@ -25,6 +29,7 @@ from reversion.views import RevisionMixin
 from mesads.fradm.models import EPCI
 
 from .forms import (
+    ADSDecreeForm,
     ADSForm,
     ADSLegalFileFormSet,
     ADSManagerDecreeFormSet,
@@ -388,6 +393,7 @@ class ADSView(RevisionMixin, UpdateView):
 
 
 def ads_manager_decree_view(request, manager_id):
+    """Decree limiting the number of ADS for an ADSManager."""
     ads_manager = get_object_or_404(ADSManager, id=manager_id)
 
     if request.method == 'POST':
@@ -837,3 +843,65 @@ class FAQView(TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx['faq_sections'] = self.faq_sections
         return ctx
+
+
+class ADSDecreeView(FormView):
+    """Decree for ADS creation."""
+    template_name = 'pages/ads_decree.html'
+    form_class = ADSDecreeForm
+
+    def get_ads(self):
+        return get_object_or_404(
+            ADS,
+            id=self.kwargs['ads_id'],
+            ads_manager_id=self.kwargs['manager_id']
+        )
+
+    def get_initial(self):
+        initial = super().get_initial()
+        ads = self.get_ads()
+        now = datetime.now()
+
+        ads_user = ads.adsuser_set.first()
+        initial.update({
+            'decree_creation_date': now.strftime('%Y-%m-%d'),
+            'decree_commune': ads.ads_manager.content_object.display_fulltext(),
+            'ads_owner': ads.owner_name,
+            # We generate a .docx file that can be edited by the user if there
+            # are mot than one ads user.
+            'tenant_ads_user': ads_user.name if ads_user else '',
+            # New ADS have a validity of 5 years
+            'ads_end_date': now.replace(year=now.year + 5).strftime('%Y-%m-%d'),
+            'ads_number': ads.number,
+            'immatriculation_plate': ads.immatriculation_plate,
+        })
+        return initial
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['ads'] = self.get_ads()
+        return ctx
+
+    def form_valid(self, form):
+        path = finders.find('template-arrete-municipal.docx')
+        decree = DocxTemplate(path)
+
+        # DocxTemplate uses jinja2 to render the template. To render dates, we
+        # could use {{ date.strftime(...)}} but the month would be in English.
+        # Use the django date template filter to use correct format.
+        form.cleaned_data.update({
+            k + '_str': date_template_filter(v, 'd F Y')
+            for k, v in form.cleaned_data.items()
+            if isinstance(v, date)
+        })
+        decree.render(form.cleaned_data)
+
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats',
+            headers={
+                'Content-Disposition': 'attachment; filename="decret.docx"'
+            }
+        )
+
+        decree.save(response)
+        return response

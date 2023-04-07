@@ -25,6 +25,18 @@
   </div>
 </nav>
 
+
+{% if ads%}
+<ul class="fr-mb-3w fr-btns-group fr-btns-group--inline">
+  <li>
+    📜&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads.decree' manager_id=ads_manager.id ads_id=ads.id %}">
+      Générer un arrêté municipal pour cette ADS
+    </a>
+  </li>
+</ul>
+{% endif %}
+
+
 <h1>
 {% if ads %}
 ADS numéro {{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})

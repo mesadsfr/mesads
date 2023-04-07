@@ -1,4 +1,8 @@
+from datetime import datetime
+import re
+
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django import forms
 from django.forms import BaseInlineFormSet, inlineformset_factory
 from django.urls import reverse
@@ -162,3 +166,125 @@ ADSManagerDecreeFormSet = inlineformset_factory(
     ADSManager, ADSManagerDecree, fields=('file',),
     can_delete=True, extra=5, max_num=5
 )
+
+
+class ADSDecreeForm(forms.Form):
+    """Form to generate "arrêté portant sur l'attribution de l'ADS"."""
+
+    def _validate_decree_number(self, value):
+        """The number of an "arrêté municipal" is formed like 0000/2022. I'm not
+        sure the first part always contains four digits (for numbers < 1000
+        and >= 10 000), so we accept any number of digits for this part."""
+        if value and not re.match(r'\d+/\d{4}$', value):
+            raise ValidationError('Le champ doit être sous la forme 0000/%s' % datetime.now().strftime('%Y'))
+        return value
+
+    ###
+    # General decree information
+    ###
+    def clean_decree_number(self):
+        return self._validate_decree_number(self.cleaned_data['decree_number'])
+
+    def clean_decree_limiting_ads_number(self):
+        return self._validate_decree_number(self.cleaned_data['decree_limiting_ads_number'])
+
+    decree_number = forms.CharField(
+        label="Numéro de l'arrêté concerné",
+        help_text="Au format 0000/" + datetime.now().strftime('%Y'),
+        required=True
+    )
+    decree_creation_date = forms.DateField(
+        label="Date de saisie de l'arrêté municipal",
+        required=True,
+    )
+    decree_commune = forms.CharField(
+        label="Commune concernée par l'arrêté municipal",
+        required=True
+    )
+    decree_limiting_ads_number = forms.CharField(
+        label="Numéro de l'arrêté municipal portant la limitation du nombre d'ADS sur la commune",
+        help_text="Au format 0000/" + datetime.now().strftime('%Y'),
+        required=True
+    )
+    decree_limiting_ads_date = forms.DateField(
+        label="Date de saisie de l'arrêté municipal portant la limitation du nombre d'ADS sur la commune",
+        required=True
+    )
+
+    ###
+    # ADS Owner
+    ###
+    ads_owner = forms.CharField(
+        label="Titulaire de l'ADS",
+        required=False
+    )
+    ads_owner_rcs = forms.CharField(
+        label="Numéro RCS de la société, titulaire de l'ADS",
+        help_text="(SIREN + Mention RCS + Ville)",
+        required=False,
+    )
+
+    ###
+    # ADS Rental - Location Gérance
+    ###
+    tenant_legal_representative = forms.CharField(
+        label="Identité du réprésentant légal de la société",
+        required=False
+    )
+    tenant_signature_date = forms.CharField(
+        label="Date de la signature du contrat de locataire-gérant",
+        help_text="Laissez ce champ vide si l'ADS n'est pas concernée par une location gérance",
+        required=False
+    )
+    tenant_ads_user = forms.CharField(
+        label="Identité de l'exploitant de l'ADS",
+        required=False
+    )
+
+    ###
+    # ADS Information
+    ###
+    ads_end_date = forms.DateField(
+        label="Date de fin de l'ADS délivré",
+        required=True
+    )
+    ads_number = forms.CharField(
+        label="Numéro de l'ADS attribué",
+        required=True
+    )
+
+    ###
+    # Vehicle Information
+    ###
+    def clean_previous_decree_number(self):
+        return self._validate_decree_number(self.cleaned_data['previous_decree_number'])
+
+    def clean_decree_number_taxi_activity(self):
+        return self._validate_decree_number(self.cleaned_data['decree_number_taxi_activity'])
+
+    vehicle_brand = forms.CharField(
+        label="Marque du véhicule concerné par l'ADS",
+        required=True
+    )
+    vehicle_model = forms.CharField(
+        label="Modèle du véhicule concerné par l'ADS",
+        required=True
+    )
+    immatriculation_plate = forms.CharField(
+        label="Numéro d'immatriculation du véhicule concerné par l'ADS",
+        required=True
+    )
+    previous_decree_number = forms.CharField(
+        label="Numéro de l'arrêté concerné précédent celui en cours de promulgation",
+        help_text="Au format 0000/" + datetime.now().strftime('%Y'),
+        required=False
+    )
+    previous_decree_date = forms.DateField(
+        label="Date de saisie de l'arrêté municipal précédent celui en cours de promulgation",
+        required=True
+    )
+    decree_number_taxi_activity = forms.CharField(
+        label="Numéro de l'arrêté préfectoral local relatif à l'activité de taxi",
+        help_text="Au format 0000/" + datetime.now().strftime('%Y'),
+        required=True
+    )

@@ -27,6 +27,10 @@ RUN poetry install
 #
 FROM python-builder AS local
 
+# pandoc is required by pypandoc
+RUN apt-get update && apt-get install -y \
+  pandoc
+
 # nodejs is required by mjml
 RUN apt-get update && apt-get install -y \
   nodejs
@@ -44,9 +48,14 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 #
 FROM python
 
+# pandoc is required by pypandoc
+RUN apt-get update && apt-get install -y \
+  pandoc
+
 # nodejs is required by mjml
 RUN apt-get update && apt-get install -y \
   nodejs
+
 
 RUN pip install \
     poetry \

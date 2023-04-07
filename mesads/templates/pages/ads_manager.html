@@ -25,10 +25,10 @@
 
 {% if not ads_manager.is_locked and not ads_manager.no_ads_declared %}
 <p>
-  📜️ <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads-manager.decree.detail' manager_id=ads_manager.id %}">Arrêté délimitant le nombre d'ADS</a>
+  📜️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads-manager.decree.detail' manager_id=ads_manager.id %}">Arrêté délimitant le nombre d'ADS</a>
 </p>
 <p>
-  ✍️ <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads.create' manager_id=ads_manager.id %}">Créer une nouvelle ADS</a>
+  ✍️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads.create' manager_id=ads_manager.id %}">Créer une nouvelle ADS</a>
 </p>
 {% endif %}
 
@@ -42,13 +42,13 @@
       x-show="! displayFilters"
       x-on:click="displayFilters = true"
       class="fr-link fr-icon-arrow-right-line fr-link--icon-right">
-        🔎 Rechercher une ADS
+        🔎&nbsp;Rechercher une ADS
     </button>
     <button
       x-show="displayFilters"
       x-on:click="displayFilters = false"
       class="fr-link fr-icon-arrow-down-line fr-link--icon-right">
-        🔎 Rechercher une ADS
+        🔎&nbsp;Rechercher une ADS
     </button>
   </p>
 
