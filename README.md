@@ -31,6 +31,8 @@ $> make shell
 
 Le serveur est disponible sur http://localhost:9400
 
+## Depuis une base de données vierge
+
 Pour passer les migrations de la base de données, exécutez depuis le container :
 
 ```bash
@@ -45,6 +47,8 @@ Pour importer les données initiales (respectez l'ordre) :
 # python manage.py load_prefectures
 # python manage.py load_ads_managers
 ```
+
+## Depuis les données de production
 
 Pour importer les données de prod créez un fichier .local.env avec:
 
@@ -82,8 +86,19 @@ AWS_STORAGE_BUCKET_NAME=<prod AWS S3 credentials>
 Enfin, lancez le script:
 
 ```bash
-# ./scripts/restore-prod-db-local.sh
+$> ./scripts/restore-prod-db-local.sh
 ```
+
+## Accéder à la production
+
+Certaines commandes, par exemple `import_last_update_file_from_paris`, nécessitent d'accéder aux fichiers sur S3. Le moyen le plus simple est d'utiliser le S3 de production.
+
+```bash
+$> set -a
+$> source .prod.env
+$> python manage.py import_last_update_file_from_paris
+```
+
 
 # Ressources
 
