@@ -10,8 +10,10 @@ LOCAL_ENV_FILE=$(dirname $0)/../.local.env
 
 echo "==> Retrieve data from production database"
 if [[ -f "$DATA_FILE" ]]; then
-  echo "File $DATA_FILE already exists. Re-use it."
-else
+  read -r -p "File $DATA_FILE already exists. Force redownload? [Y/n]" REUSE
+fi
+
+if [[ "${REUSE:-y}" =~ ^[yY]$ ]]; then
     docker run --rm -ti postgres pg_dump -x "postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}" > "$DATA_FILE"
 fi
 
