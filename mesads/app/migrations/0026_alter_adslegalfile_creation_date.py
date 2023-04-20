@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0025_alter_adslegalfile_creation_date'),
+        ("app", "0025_alter_adslegalfile_creation_date"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='adslegalfile',
-            name='creation_date',
+            model_name="adslegalfile",
+            name="creation_date",
             field=models.DateField(auto_now_add=True),
         ),
     ]

@@ -4,25 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0015_remove_ads_owner_firstname_remove_ads_owner_lastname'),
+        ("app", "0015_remove_ads_owner_firstname_remove_ads_owner_lastname"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ads',
-            name='owner_email',
+            model_name="ads",
+            name="owner_email",
             field=models.CharField(blank=True, max_length=128),
         ),
         migrations.AddField(
-            model_name='ads',
-            name='owner_mobile',
+            model_name="ads",
+            name="owner_mobile",
             field=models.CharField(blank=True, max_length=128),
         ),
         migrations.AddField(
-            model_name='ads',
-            name='owner_phone',
+            model_name="ads",
+            name="owner_phone",
             field=models.CharField(blank=True, max_length=128),
         ),
     ]

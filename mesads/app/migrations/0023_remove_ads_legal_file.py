@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0022_migrate_to_adslegalfile'),
+        ("app", "0022_migrate_to_adslegalfile"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='ads',
-            name='legal_file',
+            model_name="ads",
+            name="legal_file",
         ),
     ]

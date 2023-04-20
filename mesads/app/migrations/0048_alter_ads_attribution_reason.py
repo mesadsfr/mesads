@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0047_alter_ads_attribution_date'),
+        ("app", "0047_alter_ads_attribution_date"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ads',
-            name='attribution_reason',
-            field=models.CharField(blank=True, help_text="Ce champ est optionnel. Il peut être utilisé pour préciser les raisons de l'attribution de l'ADS au titulaire actuel. Par exemple : « changement du gérant de la société », « achat », …", max_length=4096, verbose_name="Raison d'attribution"),
+            model_name="ads",
+            name="attribution_reason",
+            field=models.CharField(
+                blank=True,
+                help_text="Ce champ est optionnel. Il peut être utilisé pour préciser les raisons de l'attribution de l'ADS au titulaire actuel. Par exemple : « changement du gérant de la société », « achat », …",
+                max_length=4096,
+                verbose_name="Raison d'attribution",
+            ),
         ),
     ]

@@ -17,5 +17,8 @@ def str_to_date(value, format="%Y-%m-%d"):
     """
     try:
         return datetime.strptime(value, format).date()
-    except (TypeError, ValueError):  # TypeError if value is already a date, ValueError if wrong format
+    except (
+        TypeError,
+        ValueError,
+    ):  # TypeError if value is already a date, ValueError if wrong format
         return value

@@ -26,7 +26,9 @@ class EmailUserManager(UserManager):
         # Lookup the real model class from the global app registry so this
         # manager method can be used in migrations. This is fine because
         # managers are by definition working on the real model.
-        GlobalUserModel = apps.get_model(self.model._meta.app_label, self.model._meta.object_name)  # noqa
+        GlobalUserModel = apps.get_model(
+            self.model._meta.app_label, self.model._meta.object_name
+        )  # noqa
         user = self.model(email=email, **extra_fields)
         user.password = make_password(password)
         user.save(using=self._db)
@@ -36,7 +38,9 @@ class EmailUserManager(UserManager):
         return super().create_user(None, email=email, password=password, **extra_fields)
 
     def create_superuser(self, email, password=None, **extra_fields):
-        return super().create_superuser(None, email=email, password=password, **extra_fields)
+        return super().create_superuser(
+            None, email=email, password=password, **extra_fields
+        )
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -47,35 +51,40 @@ class User(AbstractBaseUser, PermissionsMixin):
     The goal is to remain compatible with django admin, but have email
     authentication instead of username authentication.
     """
-    email = models.EmailField(_('email address'), unique=True, error_messages={
-        'unique': 'Un utilisateur avec cet email existe déjà.',
-    })
+
+    email = models.EmailField(
+        _("email address"),
+        unique=True,
+        error_messages={
+            "unique": "Un utilisateur avec cet email existe déjà.",
+        },
+    )
     objects = EmailUserManager()
 
-    first_name = models.CharField(_('first name'), max_length=150, blank=True)
-    last_name = models.CharField(_('last name'), max_length=150, blank=True)
+    first_name = models.CharField(_("first name"), max_length=150, blank=True)
+    last_name = models.CharField(_("last name"), max_length=150, blank=True)
     is_staff = models.BooleanField(
-        _('staff status'),
+        _("staff status"),
         default=False,
-        help_text=_('Designates whether the user can log into this admin site.'),
+        help_text=_("Designates whether the user can log into this admin site."),
     )
     is_active = models.BooleanField(
-        _('active'),
+        _("active"),
         default=True,
         help_text=_(
-            'Designates whether this user should be treated as active. '
-            'Unselect this instead of deleting accounts.'
+            "Designates whether this user should be treated as active. "
+            "Unselect this instead of deleting accounts."
         ),
     )
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
 
-    EMAIL_FIELD = 'email'
-    USERNAME_FIELD = 'email'
+    EMAIL_FIELD = "email"
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     class Meta:
-        verbose_name = _('user')
-        verbose_name_plural = _('users')
+        verbose_name = _("user")
+        verbose_name_plural = _("users")
 
     def clean(self):
         ret = super().clean()
@@ -86,7 +95,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         Return the first_name plus the last_name, with a space in between.
         """
-        full_name = '%s %s' % (self.first_name, self.last_name)
+        full_name = "%s %s" % (self.first_name, self.last_name)
         return full_name.strip()
 
     def get_short_name(self):

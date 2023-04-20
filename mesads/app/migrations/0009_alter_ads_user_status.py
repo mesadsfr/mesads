@@ -4,7 +4,7 @@ from django.db import migrations, models
 
 
 def rename_locataire_gerant(apps, old_value, new_value):
-    ADS = apps.get_model('app', 'ADS')
+    ADS = apps.get_model("app", "ADS")
     for ads in ADS.objects.filter(user_status=old_value):
         ads.user_status = new_value
         ads.save()
@@ -12,24 +12,33 @@ def rename_locataire_gerant(apps, old_value, new_value):
 
 def upgrade_user_status(apps, schema_editor):
     """User status "locataire_gerance" has been renamed to "locataire_gerant"."""
-    return rename_locataire_gerant(apps, 'locataire_gerance', 'locataire_gerant')
+    return rename_locataire_gerant(apps, "locataire_gerance", "locataire_gerant")
 
 
 def downgrade_user_status(apps, schema_editor):
-    return rename_locataire_gerant(apps, 'locataire_gerant', 'locataire_gerance')
+    return rename_locataire_gerant(apps, "locataire_gerant", "locataire_gerance")
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0008_ads_transaction_identifier'),
+        ("app", "0008_ads_transaction_identifier"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ads',
-            name='user_status',
-            field=models.CharField(blank=True, choices=[('titulaire_exploitant', 'Titulaire exploitant'), ('cooperateur', 'Locataire coopérateur'), ('locataire_gerant', 'Locataire gérant'), ('salarie', 'Salarié'), ('autre', 'Autre')], max_length=255),
+            model_name="ads",
+            name="user_status",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("titulaire_exploitant", "Titulaire exploitant"),
+                    ("cooperateur", "Locataire coopérateur"),
+                    ("locataire_gerant", "Locataire gérant"),
+                    ("salarie", "Salarié"),
+                    ("autre", "Autre"),
+                ],
+                max_length=255,
+            ),
         ),
         migrations.RunPython(upgrade_user_status, downgrade_user_status),
     ]

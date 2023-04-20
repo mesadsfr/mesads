@@ -5,16 +5,20 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fradm', '0001_initial'),
-        ('app', '0026_alter_adslegalfile_creation_date'),
+        ("fradm", "0001_initial"),
+        ("app", "0026_alter_adslegalfile_creation_date"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ads',
-            name='epci_commune',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.RESTRICT, to='fradm.commune'),
+            model_name="ads",
+            name="epci_commune",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.RESTRICT,
+                to="fradm.commune",
+            ),
         ),
     ]

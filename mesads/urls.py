@@ -9,13 +9,12 @@ import debug_toolbar
 
 
 urlpatterns = [
-    path('api/', include('mesads.api.urls')),
-    path('auth/', include('mesads.users.urls')),
-    path('fradm/', include('mesads.fradm.urls')),
-    path('admin/', admin.site.urls),
-    path('', include('mesads.app.urls')),
-
-    path('__debug__/', include(debug_toolbar.urls)),
+    path("api/", include("mesads.api.urls")),
+    path("auth/", include("mesads.users.urls")),
+    path("fradm/", include("mesads.fradm.urls")),
+    path("admin/", admin.site.urls),
+    path("", include("mesads.app.urls")),
+    path("__debug__/", include(debug_toolbar.urls)),
 ]
 
 if settings.DEBUG:

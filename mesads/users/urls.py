@@ -7,21 +7,26 @@ from .views import CustomRegistrationView
 
 
 urlpatterns = [
-    path('register/', CustomRegistrationView.as_view(), name='django_registration_register'),
-    path('', include('django_registration.backends.activation.urls')),
-
+    path(
+        "register/",
+        CustomRegistrationView.as_view(),
+        name="django_registration_register",
+    ),
+    path("", include("django_registration.backends.activation.urls")),
     # Override password_reset to send HTML email
-    path('password_reset/', PasswordResetView.as_view(
-        form_class=PasswordResetStrictForm,
-        email_template_name="registration/password_reset_email.txt",
-        html_email_template_name='registration/password_reset_email.mjml',
-        extra_email_context={'MESADS_CONTACT_EMAIL': settings.MESADS_CONTACT_EMAIL}
-    ), name='password_reset'),
-
+    path(
+        "password_reset/",
+        PasswordResetView.as_view(
+            form_class=PasswordResetStrictForm,
+            email_template_name="registration/password_reset_email.txt",
+            html_email_template_name="registration/password_reset_email.mjml",
+            extra_email_context={"MESADS_CONTACT_EMAIL": settings.MESADS_CONTACT_EMAIL},
+        ),
+        name="password_reset",
+    ),
     # By default, /auth/login displays the login form to authenticated users,
     # and also a permission error message if ?next is set. Override to force
     # redirect to ?next or to LOGIN_REDIRECT_URL.
-    path('login/', LoginView.as_view(redirect_authenticated_user=True)),
-
-    path('', include('django.contrib.auth.urls')),
+    path("login/", LoginView.as_view(redirect_authenticated_user=True)),
+    path("", include("django.contrib.auth.urls")),
 ]

@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0029_alter_adsuser_license_number'),
+        ("app", "0029_alter_adsuser_license_number"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ads',
-            name='owner_siret',
+            model_name="ads",
+            name="owner_siret",
             field=models.CharField(blank=True, max_length=128),
         ),
         migrations.AlterField(
-            model_name='adsuser',
-            name='siret',
+            model_name="adsuser",
+            name="siret",
             field=models.CharField(blank=True, max_length=128),
         ),
     ]

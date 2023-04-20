@@ -4,12 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fradm', '0001_initial'),
+        ("fradm", "0001_initial"),
     ]
 
     # Raw SQL operation to create the extension unaccent
-    operations = [
-        migrations.RunSQL('CREATE EXTENSION IF NOT EXISTS UNACCENT')
-    ]
+    operations = [migrations.RunSQL("CREATE EXTENSION IF NOT EXISTS UNACCENT")]

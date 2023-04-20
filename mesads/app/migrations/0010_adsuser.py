@@ -6,26 +6,52 @@ import mesads.app.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0009_alter_ads_user_status'),
+        ("app", "0009_alter_ads_user_status"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ADSUser',
+            name="ADSUser",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(blank=True, choices=[
-                    ('titulaire_exploitant', 'Titulaire exploitant'),
-                    ('cooperateur', 'Locataire coopérateur'),
-                    ('locataire_gerant', 'Locataire gérant'),
-                    ('salarie', 'Salarié'),
-                    ('autre', 'Autre')
-                ], max_length=255)),
-                ('name', models.CharField(blank=True, max_length=1024)),
-                ('siret', models.CharField(blank=True, max_length=128, validators=[mesads.app.models.validate_siret])),
-                ('ads', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='app.ads')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("titulaire_exploitant", "Titulaire exploitant"),
+                            ("cooperateur", "Locataire coopérateur"),
+                            ("locataire_gerant", "Locataire gérant"),
+                            ("salarie", "Salarié"),
+                            ("autre", "Autre"),
+                        ],
+                        max_length=255,
+                    ),
+                ),
+                ("name", models.CharField(blank=True, max_length=1024)),
+                (
+                    "siret",
+                    models.CharField(
+                        blank=True,
+                        max_length=128,
+                        validators=[mesads.app.models.validate_siret],
+                    ),
+                ),
+                (
+                    "ads",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="app.ads"
+                    ),
+                ),
             ],
         ),
     ]

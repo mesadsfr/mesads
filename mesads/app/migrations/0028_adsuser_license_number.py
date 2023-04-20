@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0027_ads_epci_commune'),
+        ("app", "0027_ads_epci_commune"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='adsuser',
-            name='license_number',
+            model_name="adsuser",
+            name="license_number",
             field=models.CharField(blank=True, max_length=16, null=True),
         ),
     ]

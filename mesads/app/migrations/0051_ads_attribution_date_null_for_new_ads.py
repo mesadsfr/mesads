@@ -5,14 +5,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0050_remove_attribution_date_for_new_ads'),
+        ("app", "0050_remove_attribution_date_for_new_ads"),
     ]
 
     operations = [
         migrations.AddConstraint(
-            model_name='ads',
-            constraint=models.CheckConstraint(check=models.Q(models.Q(('ads_creation_date__gte', datetime.date(2014, 10, 1)), ('ads_creation_date__isnull', False), ('attribution_date__isnull', True)), models.Q(('ads_creation_date__isnull', False), ('ads_creation_date__lt', datetime.date(2014, 10, 1))), ('ads_creation_date__isnull', True), _connector='OR'), name='attribution_date_null_for_new_ads', violation_error_message="La date d'attribution ne peut être renseignée que pour les ADS créées avant le 1er octobre 2014."),
+            model_name="ads",
+            constraint=models.CheckConstraint(
+                check=models.Q(
+                    models.Q(
+                        ("ads_creation_date__gte", datetime.date(2014, 10, 1)),
+                        ("ads_creation_date__isnull", False),
+                        ("attribution_date__isnull", True),
+                    ),
+                    models.Q(
+                        ("ads_creation_date__isnull", False),
+                        ("ads_creation_date__lt", datetime.date(2014, 10, 1)),
+                    ),
+                    ("ads_creation_date__isnull", True),
+                    _connector="OR",
+                ),
+                name="attribution_date_null_for_new_ads",
+                violation_error_message="La date d'attribution ne peut être renseignée que pour les ADS créées avant le 1er octobre 2014.",
+            ),
         ),
     ]

@@ -24,9 +24,9 @@ def parse_env_bool(key, default):
 
     if value is None:
         return default
-    elif value.lower() in ('yes', 'true', '1', 't'):
+    elif value.lower() in ("yes", "true", "1", "t"):
         return True
-    elif value.lower() in ('no', 'false', '0', 'f', ''):
+    elif value.lower() in ("no", "false", "0", "f", ""):
         return False
 
     raise ValueError(f'Invalid boolean value "{value}" for environment variable {key}')
@@ -37,41 +37,38 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = parse_env_bool('DEBUG', True)
+DEBUG = parse_env_bool("DEBUG", True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 if DEBUG:
     SECRET_KEY = os.getenv(
-        'SECRET_KEY',
-        'django-insecure-#tx=c!1uiqr9*e^cz%u2_!7$rl$c4$sg!=m!n$5llbhnxebj@$'
+        "SECRET_KEY",
+        "django-insecure-#tx=c!1uiqr9*e^cz%u2_!7$rl$c4$sg!=m!n$5llbhnxebj@$",
     )
 else:
     # SECRET_KEY is mandatory when DEBUG is False
-    SECRET_KEY = os.environ['SECRET_KEY']
+    SECRET_KEY = os.environ["SECRET_KEY"]
     # Initialize sentry only in production
-    if os.environ.get('SENTRY_DSN'):
+    if os.environ.get("SENTRY_DSN"):
         sentry_sdk.init(
-            dsn=os.environ['SENTRY_DSN'],
+            dsn=os.environ["SENTRY_DSN"],
             integrations=[DjangoIntegration()],
             traces_sample_rate=0,
             send_default_pii=True,
         )
 
 # Upload to S3 in production, or if S3 is defined in debug mode
-if not DEBUG or os.environ.get('AWS_S3_ENDPOINT_URL'):
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    AWS_S3_ENDPOINT_URL = os.environ['AWS_S3_ENDPOINT_URL']
-    AWS_S3_ACCESS_KEY_ID = os.environ['AWS_S3_ACCESS_KEY_ID']
-    AWS_S3_SECRET_ACCESS_KEY = os.environ['AWS_S3_SECRET_ACCESS_KEY']
-    AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+if not DEBUG or os.environ.get("AWS_S3_ENDPOINT_URL"):
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    AWS_S3_ENDPOINT_URL = os.environ["AWS_S3_ENDPOINT_URL"]
+    AWS_S3_ACCESS_KEY_ID = os.environ["AWS_S3_ACCESS_KEY_ID"]
+    AWS_S3_SECRET_ACCESS_KEY = os.environ["AWS_S3_SECRET_ACCESS_KEY"]
+    AWS_STORAGE_BUCKET_NAME = os.environ["AWS_STORAGE_BUCKET_NAME"]
 
 
-ALLOWED_HOSTS = [
-    part for part in os.getenv('ALLOWED_HOSTS', '').split(';')
-    if part
-]
+ALLOWED_HOSTS = [part for part in os.getenv("ALLOWED_HOSTS", "").split(";") if part]
 
 # Application definition
 
@@ -79,86 +76,82 @@ INSTALLED_APPS = [
     # According to django-autocomplete-light documentation, DAL moduels must be
     # installed before django.contrib.admin.
     # See: https://django-autocomplete-light.readthedocs.io/en/master/install.html
-    'dal',
-    'dal_select2',
-    'dal_queryset_sequence',
-
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    'django_cron',
-
-    'debug_toolbar',
-    'django_registration',
-    'reversion',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'django_cleanup.apps.CleanupConfig',
-    'mjml',
-
-    'mesads.app',
-    'mesads.users',
-    'mesads.fradm',
-    'mesads.api',
+    "dal",
+    "dal_select2",
+    "dal_queryset_sequence",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django_cron",
+    "debug_toolbar",
+    "django_registration",
+    "reversion",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "django_cleanup.apps.CleanupConfig",
+    "mjml",
+    "mesads.app",
+    "mesads.users",
+    "mesads.fradm",
+    "mesads.api",
 ]
 
 CRON_CLASSES = [
-    'mesads.app.crons.ImportDataForParis',
-    'mesads.app.crons.DetectDataInconsistencies',
+    "mesads.app.crons.ImportDataForParis",
+    "mesads.app.crons.DetectDataInconsistencies",
 ]
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = "users.User"
 
 MIDDLEWARE = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'mesads.urls'
+ROOT_URLCONF = "mesads.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            BASE_DIR / 'mesads/templates',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [
+            BASE_DIR / "mesads/templates",
         ],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'mesads.app.context_processors.mesads_settings'
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "mesads.app.context_processors.mesads_settings",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'mesads.wsgi.application'
+WSGI_APPLICATION = "mesads.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'mesads'),
-        'HOST': os.getenv('DB_HOST', 'db'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-        'USER': os.getenv('DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'mesads'),
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME", "mesads"),
+        "HOST": os.getenv("DB_HOST", "db"),
+        "PORT": os.getenv("DB_PORT", "5432"),
+        "USER": os.getenv("DB_USER", "postgres"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "mesads"),
     }
 }
 
@@ -168,16 +161,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -185,9 +178,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'fr-FR'
+LANGUAGE_CODE = "fr-FR"
 
-TIME_ZONE = 'Europe/Paris'
+TIME_ZONE = "Europe/Paris"
 
 USE_I18N = True
 
@@ -199,74 +192,74 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_URL = '/auth/login/'
+LOGIN_URL = "/auth/login/"
 
 # Static configuration
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_ROOT = BASE_DIR / "static"
 
 STATICFILES_DIRS = [
-    ('', BASE_DIR / 'mesads/static'),
-    ('@gouvfr', BASE_DIR / 'node_modules/@gouvfr/dsfr/dist/'),
-    ('alpinejs', BASE_DIR / 'node_modules/alpinejs/dist/'),
-    ('leaflet', BASE_DIR / 'node_modules/leaflet/dist/'),
+    ("", BASE_DIR / "mesads/static"),
+    ("@gouvfr", BASE_DIR / "node_modules/@gouvfr/dsfr/dist/"),
+    ("alpinejs", BASE_DIR / "node_modules/alpinejs/dist/"),
+    ("leaflet", BASE_DIR / "node_modules/leaflet/dist/"),
 ]
 
-MEDIA_ROOT = BASE_DIR / 'uploads'
-MEDIA_URL = '/uploads/'
+MEDIA_ROOT = BASE_DIR / "uploads"
+MEDIA_URL = "/uploads/"
 
 # Redirect to / after login/logout
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
 # Setup INTERNAL_IPS for django-debug-toolbar.
 if DEBUG:
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-    INTERNAL_IPS = [ip[:-1] + '1' for ip in ips] + ['127.0.0.1', '10.0.2.2']
+    INTERNAL_IPS = [ip[:-1] + "1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
 
 # Upload files to S3: https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
 # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-MESADS_CONTACT_EMAIL = 'equipe@mesads.beta.gouv.fr'
+MESADS_CONTACT_EMAIL = "equipe@mesads.beta.gouv.fr"
 
 DEFAULT_FROM_EMAIL = MESADS_CONTACT_EMAIL
 SERVER_EMAIL = MESADS_CONTACT_EMAIL
 
 
-EMAIL_HOST = os.getenv('EMAIL_HOST', 'maildev')
-EMAIL_PORT = os.getenv('EMAIL_PORT', 25)
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-EMAIL_USE_TLS = parse_env_bool('EMAIL_USE_TLS', False)
+EMAIL_HOST = os.getenv("EMAIL_HOST", "maildev")
+EMAIL_PORT = os.getenv("EMAIL_PORT", 25)
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = parse_env_bool("EMAIL_USE_TLS", False)
 
 # Add configuration below to log SQL queries to console
-if parse_env_bool('LOGGING_ENABLED', False):
+if parse_env_bool("LOGGING_ENABLED", False):
     LOGGING = {
-        'version': 1,
-        'filters': {
-            'require_debug_true': {
-                '()': 'django.utils.log.RequireDebugTrue',
+        "version": 1,
+        "filters": {
+            "require_debug_true": {
+                "()": "django.utils.log.RequireDebugTrue",
             }
         },
-        'handlers': {
-            'console': {
-                'level': 'DEBUG',
-                'filters': ['require_debug_true'],
-                'class': 'logging.StreamHandler',
+        "handlers": {
+            "console": {
+                "level": "DEBUG",
+                "filters": ["require_debug_true"],
+                "class": "logging.StreamHandler",
             }
         },
-        'loggers': {
-            'django.db.backends': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
+        "loggers": {
+            "django.db.backends": {
+                "level": "DEBUG",
+                "handlers": ["console"],
             }
-        }
+        },
     }
 
 # django-registration: maximum number of days to activate the account
@@ -277,22 +270,22 @@ ACCOUNT_ACTIVATION_DAYS = 14
 # http://localhost:9400/admin/app/adsmanageradministrator/<id>/change/ because
 # too many form values are provided.
 # We set a large value to avoid the issue.
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 2 ** 16
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 2**16
 
-INSEE_TOKEN = os.getenv('INSEE_TOKEN')
+INSEE_TOKEN = os.getenv("INSEE_TOKEN")
 
 # Enable pagination, which is disabled by default.
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
     ],
 }
 
-MESADS_CRISP_WEBSITE_ID = os.environ.get('CRISP_WEBSITE_ID')
-MESADS_SENTRY_JS_URL = os.environ.get('SENTRY_JS_URL')
+MESADS_CRISP_WEBSITE_ID = os.environ.get("CRISP_WEBSITE_ID")
+MESADS_SENTRY_JS_URL = os.environ.get("SENTRY_JS_URL")
 
-MJML_EXEC_CMD = BASE_DIR / 'node_modules/.bin/mjml'
+MJML_EXEC_CMD = BASE_DIR / "node_modules/.bin/mjml"

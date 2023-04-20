@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0033_remove_ads_ads_type'),
+        ("app", "0033_remove_ads_ads_type"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='adsmanageradministrator',
-            name='expected_ads_count',
-            field=models.PositiveIntegerField(blank=True, help_text='Nombre de gestionnaires ADS attendus pour cette préfecture.', null=True),
+            model_name="adsmanageradministrator",
+            name="expected_ads_count",
+            field=models.PositiveIntegerField(
+                blank=True,
+                help_text="Nombre de gestionnaires ADS attendus pour cette préfecture.",
+                null=True,
+            ),
         ),
     ]

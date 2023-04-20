@@ -5,26 +5,28 @@ from django.db.models import Count
 
 
 def upgrade_migration(apps, schema_editor):
-    ADS = apps.get_model('app', 'ADS')
-    ADSUser = apps.get_model('app', 'ADSUser')
+    ADS = apps.get_model("app", "ADS")
+    ADSUser = apps.get_model("app", "ADSUser")
     ADSUser.objects.all().delete()
-    for ads in ADS.objects.exclude(user_name='', user_siret=''):
+    for ads in ADS.objects.exclude(user_name="", user_siret=""):
         ads_user = ADSUser.objects.create(
-            ads=ads,
-            status=ads.user_status,
-            name=ads.user_name,
-            siret=ads.user_siret
+            ads=ads, status=ads.user_status, name=ads.user_name, siret=ads.user_siret
         )
         ads_user.save()
 
 
 def downgrade_migration(apps, schema_editor):
-    ADSUser = apps.get_model('app', 'ADSUser')
+    ADSUser = apps.get_model("app", "ADSUser")
 
-    count = ADSUser.objects.values('ads_id').annotate(count=Count('id')).filter(count__gt=1).count()
+    count = (
+        ADSUser.objects.values("ads_id")
+        .annotate(count=Count("id"))
+        .filter(count__gt=1)
+        .count()
+    )
     if count:
         raise ValueError(
-            'Impossible to run this downgrade migration because at least one ADS has more than one entry in ADSUser.'
+            "Impossible to run this downgrade migration because at least one ADS has more than one entry in ADSUser."
         )
 
     for ads_user in ADSUser.objects.all():
@@ -35,9 +37,8 @@ def downgrade_migration(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0010_adsuser'),
+        ("app", "0010_adsuser"),
     ]
 
     operations = [

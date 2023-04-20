@@ -17,39 +17,39 @@ class ReadOnlyModelAdmin(admin.ModelAdmin):
 @admin.register(Commune)
 class CommuneAdmin(ReadOnlyModelAdmin):
     list_display = (
-        'insee',
-        'libelle',
+        "insee",
+        "libelle",
     )
 
     search_fields = (
-        'insee__istartswith',
-        'libelle',
+        "insee__istartswith",
+        "libelle",
     )
 
 
 @admin.register(Prefecture)
 class PrefectureAdmin(ReadOnlyModelAdmin):
     list_display = (
-        'numero',
-        'libelle',
+        "numero",
+        "libelle",
     )
 
     search_fields = (
-        'numero__iexact',
-        'libelle',
+        "numero__iexact",
+        "libelle",
     )
 
 
 @admin.register(EPCI)
 class EPCIAdmin(ReadOnlyModelAdmin):
     list_display = (
-        'siren',
-        'departement',
-        'name',
+        "siren",
+        "departement",
+        "name",
     )
 
     search_fields = (
-        'siren__startswith',
-        'departement__istartswith',
-        'name',
+        "siren__startswith",
+        "departement__istartswith",
+        "name",
     )

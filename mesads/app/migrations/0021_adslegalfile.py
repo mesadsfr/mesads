@@ -6,18 +6,33 @@ import mesads.app.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0020_adsupdatefile'),
+        ("app", "0020_adsupdatefile"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ADSLegalFile',
+            name="ADSLegalFile",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(upload_to=mesads.app.models.get_legal_filename)),
-                ('ads', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='app.ads')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "file",
+                    models.FileField(upload_to=mesads.app.models.get_legal_filename),
+                ),
+                (
+                    "ads",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="app.ads"
+                    ),
+                ),
             ],
         ),
     ]

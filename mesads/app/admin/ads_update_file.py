@@ -7,20 +7,17 @@ from ..models import (
 
 @admin.register(ADSUpdateFile)
 class ADSUpdateFileAdmin(admin.ModelAdmin):
-
-    ordering = ('-creation_date',)
+    ordering = ("-creation_date",)
 
     list_display = (
-        'creation_date',
-        'user',
-        'imported',
+        "creation_date",
+        "user",
+        "imported",
     )
 
-    list_filter = (
-        'imported',
-    )
+    list_filter = ("imported",)
 
     readonly_fields = (
-        'imported',
-        'import_output',
+        "imported",
+        "import_output",
     )

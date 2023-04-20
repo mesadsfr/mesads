@@ -16,45 +16,39 @@ class ADSManagerAdministratorUsersInline(admin.TabularInline):
 class ADSManagerAdministratorAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         req = super().get_queryset(request)
-        req = req.select_related('prefecture')
-        req = req.prefetch_related('adsmanager_set')
-        req = req.annotate(ads_count=Count('adsmanager__ads'))
+        req = req.select_related("prefecture")
+        req = req.prefetch_related("adsmanager_set")
+        req = req.annotate(ads_count=Count("adsmanager__ads"))
         return req
 
-    ordering = (
-        'prefecture__numero',
-    )
+    ordering = ("prefecture__numero",)
 
     list_display = (
-        '__str__',
-        'display_ads_count',
-        'expected_ads_count',
+        "__str__",
+        "display_ads_count",
+        "expected_ads_count",
     )
 
-    inlines = (
-        ADSManagerAdministratorUsersInline,
-    )
+    inlines = (ADSManagerAdministratorUsersInline,)
 
     fields = (
-        'prefecture',
-        'expected_ads_count',
-        'ads_managers_link',
-        'display_ads_count',
+        "prefecture",
+        "expected_ads_count",
+        "ads_managers_link",
+        "display_ads_count",
     )
 
     readonly_fields = (
-        'prefecture',
-        'ads_managers_link',
-        'display_ads_count',
+        "prefecture",
+        "ads_managers_link",
+        "display_ads_count",
     )
 
-    search_fields = (
-        'prefecture__libelle',
-    )
+    search_fields = ("prefecture__libelle",)
 
-    @admin.display(description='Nombre d\'ADS enregistrées')
+    @admin.display(description="Nombre d'ADS enregistrées")
     def display_ads_count(self, ads_manager_administrator):
-        return ads_manager_administrator.ads_count or '-'
+        return ads_manager_administrator.ads_count or "-"
 
     def has_add_permission(self, request, obj=None):
         """Added by command load_ads_managers."""
@@ -66,5 +60,9 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
 
     @admin.display(description="Liste des gestionnaires d'ADS")
     def ads_managers_link(self, obj):
-        ads_managers_url = reverse('admin:app_adsmanager_changelist') + '?administrator=' + str(obj.id)
-        return mark_safe(f'<a href="{ads_managers_url}">Voir les {obj.adsmanager_set.count()} gestionnaires ADS</a>')
+        ads_managers_url = (
+            reverse("admin:app_adsmanager_changelist") + "?administrator=" + str(obj.id)
+        )
+        return mark_safe(
+            f'<a href="{ads_managers_url}">Voir les {obj.adsmanager_set.count()} gestionnaires ADS</a>'
+        )

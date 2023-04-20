@@ -5,20 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('app', '0002_auto_20220117_1803'),
+        ("app", "0002_auto_20220117_1803"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='adsmanagerrequest',
-            name='accepted',
+            model_name="adsmanagerrequest",
+            name="accepted",
             field=models.BooleanField(default=None, null=True),
         ),
         migrations.AlterUniqueTogether(
-            name='adsmanagerrequest',
-            unique_together={('user', 'ads_manager')},
+            name="adsmanagerrequest",
+            unique_together={("user", "ads_manager")},
         ),
     ]

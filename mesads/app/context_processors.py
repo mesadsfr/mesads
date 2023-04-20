@@ -5,5 +5,6 @@ def mesads_settings(request):
     """Expose settings starting with MESADS_ to templates."""
     return {
         key: getattr(settings, key)
-        for key in dir(settings) if key.startswith('MESADS_')
+        for key in dir(settings)
+        if key.startswith("MESADS_")
     }

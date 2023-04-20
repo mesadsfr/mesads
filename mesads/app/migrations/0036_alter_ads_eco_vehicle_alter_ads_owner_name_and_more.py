@@ -4,40 +4,61 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0035_adsmanager_is_locked'),
+        ("app", "0035_adsmanager_is_locked"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ads',
-            name='eco_vehicle',
-            field=models.BooleanField(blank=True, help_text='Vous pouvez retrouver cette information sur la mention P.3 de la carte grise du véhicule concerné par l\'ADS. L\'ensemble des abréviations est disponible sur legifrance : <a href="https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044084721" target="_blank">https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044084721</a> ', null=True),
+            model_name="ads",
+            name="eco_vehicle",
+            field=models.BooleanField(
+                blank=True,
+                help_text='Vous pouvez retrouver cette information sur la mention P.3 de la carte grise du véhicule concerné par l\'ADS. L\'ensemble des abréviations est disponible sur legifrance : <a href="https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044084721" target="_blank">https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044084721</a> ',
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='owner_name',
-            field=models.CharField(blank=True, help_text="S'il s'agit d'une personne physique, précisez le nom et le prénom du titulaire de l'ADS. S'il s'agit d'une personne morale, indiquez sa raison sociale. ", max_length=1024),
+            model_name="ads",
+            name="owner_name",
+            field=models.CharField(
+                blank=True,
+                help_text="S'il s'agit d'une personne physique, précisez le nom et le prénom du titulaire de l'ADS. S'il s'agit d'une personne morale, indiquez sa raison sociale. ",
+                max_length=1024,
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='owner_siret',
-            field=models.CharField(blank=True, help_text="Nous validons ce numéro en consultant les données officielles de l'INSEE. Indiquez le numéro de SIRET (14 chiffres) sans espace. ", max_length=128),
+            model_name="ads",
+            name="owner_siret",
+            field=models.CharField(
+                blank=True,
+                help_text="Nous validons ce numéro en consultant les données officielles de l'INSEE. Indiquez le numéro de SIRET (14 chiffres) sans espace. ",
+                max_length=128,
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='used_by_owner',
-            field=models.BooleanField(blank=True, null=True, verbose_name='ADS exploitée par son titulaire ?'),
+            model_name="ads",
+            name="used_by_owner",
+            field=models.BooleanField(
+                blank=True, null=True, verbose_name="ADS exploitée par son titulaire ?"
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='vehicle_compatible_pmr',
-            field=models.BooleanField(blank=True, help_text="Vous pouvez retrouver cette information sur la mention « J.3 : handicap » de la carte grise du véhicule concerné par l'ADS.", null=True),
+            model_name="ads",
+            name="vehicle_compatible_pmr",
+            field=models.BooleanField(
+                blank=True,
+                help_text="Vous pouvez retrouver cette information sur la mention « J.3 : handicap » de la carte grise du véhicule concerné par l'ADS.",
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='adsuser',
-            name='siret',
-            field=models.CharField(blank=True, help_text="Nous validons ce numéro en consultant les données officielles de l'INSEE. Indiquez le numéro de SIRET (14 chiffres) sans espace. ", max_length=128),
+            model_name="adsuser",
+            name="siret",
+            field=models.CharField(
+                blank=True,
+                help_text="Nous validons ce numéro en consultant les données officielles de l'INSEE. Indiquez le numéro de SIRET (14 chiffres) sans espace. ",
+                max_length=128,
+            ),
         ),
     ]

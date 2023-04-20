@@ -4,22 +4,21 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0011_ads_user_to_separate_table'),
+        ("app", "0011_ads_user_to_separate_table"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='ads',
-            name='user_status',
+            model_name="ads",
+            name="user_status",
         ),
         migrations.RemoveField(
-            model_name='ads',
-            name='user_name',
+            model_name="ads",
+            name="user_name",
         ),
         migrations.RemoveField(
-            model_name='ads',
-            name='user_siret',
+            model_name="ads",
+            name="user_siret",
         ),
     ]

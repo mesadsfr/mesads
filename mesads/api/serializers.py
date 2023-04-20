@@ -9,8 +9,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = (
-            'id',
-            'email',
+            "id",
+            "email",
         )
 
 
@@ -21,8 +21,8 @@ class ADSUpdateFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ADSUpdateFile
         fields = (
-            'id',
-            'creation_date',
-            'user',
-            'update_file',
+            "id",
+            "creation_date",
+            "user",
+            "update_file",
         )

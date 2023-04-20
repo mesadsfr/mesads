@@ -5,15 +5,16 @@ import mesads.app.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0030_alter_ads_owner_siret_alter_adsuser_siret'),
+        ("app", "0030_alter_ads_owner_siret_alter_adsuser_siret"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='adslegalfile',
-            name='file',
-            field=models.FileField(max_length=512, upload_to=mesads.app.models.get_legal_filename),
+            model_name="adslegalfile",
+            name="file",
+            field=models.FileField(
+                max_length=512, upload_to=mesads.app.models.get_legal_filename
+            ),
         ),
     ]

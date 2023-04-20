@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0007_ads_unique_ads_number'),
+        ("app", "0007_ads_unique_ads_number"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ads',
-            name='transaction_identifier',
+            model_name="ads",
+            name="transaction_identifier",
             field=models.CharField(blank=True, max_length=64),
         ),
     ]

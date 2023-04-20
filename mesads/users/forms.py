@@ -13,9 +13,11 @@ class CustomUserForm(RegistrationForm):
 
 class PasswordResetStrictForm(PasswordResetForm):
     def clean_email(self):
-        email = self.cleaned_data['email']
+        email = self.cleaned_data["email"]
 
         if not User.objects.filter(email=email).count():
-            raise ValidationError("L'email est invalide. Aucun compte n'existe avec cet email.")
+            raise ValidationError(
+                "L'email est invalide. Aucun compte n'existe avec cet email."
+            )
 
         return email

@@ -4,18 +4,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0040_ads_ads_creation_date_before_attribution_date'),
+        ("app", "0040_ads_ads_creation_date_before_attribution_date"),
     ]
 
     operations = [
         migrations.RemoveConstraint(
-            model_name='ads',
-            name='ads_creation_date_before_attribution_date',
+            model_name="ads",
+            name="ads_creation_date_before_attribution_date",
         ),
         migrations.AddConstraint(
-            model_name='ads',
-            constraint=models.CheckConstraint(check=models.Q(('ads_creation_date__isnull', True), ('attribution_date__isnull', True), ('ads_creation_date__lte', models.F('attribution_date')), _connector='OR'), name='ads_creation_date_before_attribution_date', violation_error_message="La date de création de l'ADS doit être antérieure à la date d'attribution."),
+            model_name="ads",
+            constraint=models.CheckConstraint(
+                check=models.Q(
+                    ("ads_creation_date__isnull", True),
+                    ("attribution_date__isnull", True),
+                    ("ads_creation_date__lte", models.F("attribution_date")),
+                    _connector="OR",
+                ),
+                name="ads_creation_date_before_attribution_date",
+                violation_error_message="La date de création de l'ADS doit être antérieure à la date d'attribution.",
+            ),
         ),
     ]

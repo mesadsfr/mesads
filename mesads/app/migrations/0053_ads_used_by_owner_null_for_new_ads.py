@@ -5,14 +5,32 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0052_remove_used_by_owner_for_unknown_creation_date'),
+        ("app", "0052_remove_used_by_owner_for_unknown_creation_date"),
     ]
 
     operations = [
         migrations.AddConstraint(
-            model_name='ads',
-            constraint=models.CheckConstraint(check=models.Q(models.Q(('ads_creation_date__gte', datetime.date(2014, 10, 1)), ('ads_creation_date__isnull', False), ('used_by_owner__isnull', True)), models.Q(('ads_creation_date__isnull', False), ('ads_creation_date__lt', datetime.date(2014, 10, 1))), models.Q(('ads_creation_date__isnull', True), ('used_by_owner__isnull', True)), _connector='OR'), name='used_by_owner_null_for_new_ads', violation_error_message="Le champ 'ADS exploitée par son titulaire' ne peut être renseigné que pour les ADS créées avant le 1er octobre 2014."),
+            model_name="ads",
+            constraint=models.CheckConstraint(
+                check=models.Q(
+                    models.Q(
+                        ("ads_creation_date__gte", datetime.date(2014, 10, 1)),
+                        ("ads_creation_date__isnull", False),
+                        ("used_by_owner__isnull", True),
+                    ),
+                    models.Q(
+                        ("ads_creation_date__isnull", False),
+                        ("ads_creation_date__lt", datetime.date(2014, 10, 1)),
+                    ),
+                    models.Q(
+                        ("ads_creation_date__isnull", True),
+                        ("used_by_owner__isnull", True),
+                    ),
+                    _connector="OR",
+                ),
+                name="used_by_owner_null_for_new_ads",
+                violation_error_message="Le champ 'ADS exploitée par son titulaire' ne peut être renseigné que pour les ADS créées avant le 1er octobre 2014.",
+            ),
         ),
     ]

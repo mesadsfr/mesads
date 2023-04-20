@@ -8,24 +8,25 @@ from .models import Commune, EPCI, Prefecture
 
 class FrenchAdministrationForm(forms.Form):
     """Form to select a Commune, EPCI or Prefecture."""
+
     commune = forms.ModelChoiceField(
         queryset=Commune.objects,
-        widget=autocomplete.ListSelect2(url='fradm.autocomplete.commune'),
-        label='Commune',
+        widget=autocomplete.ListSelect2(url="fradm.autocomplete.commune"),
+        label="Commune",
         required=False,
     )
 
     epci = forms.ModelChoiceField(
         queryset=EPCI.objects,
-        widget=autocomplete.ListSelect2(url='fradm.autocomplete.epci'),
+        widget=autocomplete.ListSelect2(url="fradm.autocomplete.epci"),
         required=False,
-        label='EPCI'
+        label="EPCI",
     )
 
     prefecture = forms.ModelChoiceField(
         queryset=Prefecture.objects,
-        widget=autocomplete.ListSelect2(url='fradm.autocomplete.prefecture'),
-        label='Préfecture',
+        widget=autocomplete.ListSelect2(url="fradm.autocomplete.prefecture"),
+        label="Préfecture",
         required=False,
     )
 
@@ -35,9 +36,7 @@ class FrenchAdministrationForm(forms.Form):
 
         if len(not_none) == 0:
             raise ValidationError(
-                'Sélectionnez une commune, une EPCI ou une préfecture'
+                "Sélectionnez une commune, une EPCI ou une préfecture"
             )
         elif len(not_none) > 1:
-            raise ValidationError(
-                'Veuillez sélectionner UN SEUL des champs'
-            )
+            raise ValidationError("Veuillez sélectionner UN SEUL des champs")

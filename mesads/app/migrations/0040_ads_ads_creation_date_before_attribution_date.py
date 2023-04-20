@@ -5,14 +5,24 @@ import django.db.models.expressions
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0039_alter_adsupdatefile_update_file'),
+        ("app", "0039_alter_adsupdatefile_update_file"),
     ]
 
     operations = [
         migrations.AddConstraint(
-            model_name='ads',
-            constraint=models.CheckConstraint(check=models.Q(('ads_creation_date__isnull', True), ('attribution_date__isnull', True), ('ads_creation_date__lte', django.db.models.expressions.F('attribution_date')), _connector='OR'), name='ads_creation_date_before_attribution_date'),
+            model_name="ads",
+            constraint=models.CheckConstraint(
+                check=models.Q(
+                    ("ads_creation_date__isnull", True),
+                    ("attribution_date__isnull", True),
+                    (
+                        "ads_creation_date__lte",
+                        django.db.models.expressions.F("attribution_date"),
+                    ),
+                    _connector="OR",
+                ),
+                name="ads_creation_date_before_attribution_date",
+            ),
         ),
     ]

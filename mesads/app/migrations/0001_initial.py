@@ -7,72 +7,171 @@ import mesads.app.models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('fradm', '0001_initial'),
+        ("fradm", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('contenttypes', '0002_remove_content_type_name'),
+        ("contenttypes", "0002_remove_content_type_name"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ADSManager',
+            name="ADSManager",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('object_id', models.PositiveIntegerField()),
-                ('content_type', models.ForeignKey(limit_choices_to=models.Q(models.Q(('app_label', 'fradm'), ('model', 'commune')), models.Q(('app_label', 'fradm'), ('model', 'epci')), models.Q(('app_label', 'fradm'), ('model', 'prefecture')), _connector='OR'), on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype')),
-                ('users', models.ManyToManyField(to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("object_id", models.PositiveIntegerField()),
+                (
+                    "content_type",
+                    models.ForeignKey(
+                        limit_choices_to=models.Q(
+                            models.Q(("app_label", "fradm"), ("model", "commune")),
+                            models.Q(("app_label", "fradm"), ("model", "epci")),
+                            models.Q(("app_label", "fradm"), ("model", "prefecture")),
+                            _connector="OR",
+                        ),
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="contenttypes.contenttype",
+                    ),
+                ),
+                ("users", models.ManyToManyField(to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'verbose_name': 'Gestionnaire ADS',
-                'verbose_name_plural': 'Gestionnaires ADS',
-                'unique_together': {('content_type', 'object_id')},
+                "verbose_name": "Gestionnaire ADS",
+                "verbose_name_plural": "Gestionnaires ADS",
+                "unique_together": {("content_type", "object_id")},
             },
         ),
         migrations.CreateModel(
-            name='ADSManagerAdministrator',
+            name="ADSManagerAdministrator",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ads_managers', models.ManyToManyField(blank=True, to='app.ADSManager')),
-                ('prefecture', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='fradm.prefecture')),
-                ('users', models.ManyToManyField(blank=True, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "ads_managers",
+                    models.ManyToManyField(blank=True, to="app.ADSManager"),
+                ),
+                (
+                    "prefecture",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="fradm.prefecture",
+                    ),
+                ),
+                (
+                    "users",
+                    models.ManyToManyField(blank=True, to=settings.AUTH_USER_MODEL),
+                ),
             ],
             options={
-                'verbose_name': 'Administrateur des gestionnaires ADS',
-                'verbose_name_plural': 'Administrateurs des gestionnaires ADS',
+                "verbose_name": "Administrateur des gestionnaires ADS",
+                "verbose_name_plural": "Administrateurs des gestionnaires ADS",
             },
         ),
         migrations.CreateModel(
-            name='ADS',
+            name="ADS",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('number', models.CharField(max_length=255)),
-                ('creation_date', models.DateField(auto_now_add=True)),
-                ('last_update', models.DateField(auto_now=True)),
-                ('ads_creation_date', models.DateField(blank=True, null=True)),
-                ('ads_type', models.CharField(blank=True, choices=[('old', 'L\'ADS a été créée avant la loi du 1er Octobre 2014 : "ancienne ADS "'), ('new', 'L\'ADS a été créée après la loi du 1er Octobre 2014 : "nouvelle ADS "')], max_length=16)),
-                ('attribution_date', models.DateField(blank=True, null=True)),
-                ('attribution_type', models.CharField(blank=True, choices=[('free', "Gratuitement (delivrée par l'autorité compétente)"), ('paid', 'Cession àt itre onéreux'), ('other', 'Autre')], max_length=16)),
-                ('attribution_reason', models.CharField(blank=True, max_length=4096)),
-                ('accepted_cpam', models.BooleanField(blank=True, null=True)),
-                ('immatriculation_plate', models.CharField(blank=True, max_length=128)),
-                ('vehicle_compatible_pmr', models.BooleanField(blank=True, null=True)),
-                ('eco_vehicle', models.BooleanField(blank=True, null=True)),
-                ('owner_firstname', models.CharField(blank=True, max_length=1024)),
-                ('owner_lastname', models.CharField(blank=True, max_length=1024)),
-                ('owner_siret', models.CharField(blank=True, max_length=128)),
-                ('used_by_owner', models.BooleanField(blank=True, null=True)),
-                ('user_status', models.CharField(blank=True, choices=[('titulaire_exploitant', 'Titulaire exploitant'), ('cooperateur', 'Coopérateur'), ('locataire_gerance', 'Locataire gérance'), ('autre', 'Autre')], max_length=255)),
-                ('user_name', models.CharField(blank=True, max_length=1024)),
-                ('user_siret', models.CharField(blank=True, max_length=128)),
-                ('legal_file', models.FileField(blank=True, upload_to=mesads.app.models.get_legal_filename)),
-                ('ads_manager', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='app.adsmanager')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("number", models.CharField(max_length=255)),
+                ("creation_date", models.DateField(auto_now_add=True)),
+                ("last_update", models.DateField(auto_now=True)),
+                ("ads_creation_date", models.DateField(blank=True, null=True)),
+                (
+                    "ads_type",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            (
+                                "old",
+                                'L\'ADS a été créée avant la loi du 1er Octobre 2014 : "ancienne ADS "',
+                            ),
+                            (
+                                "new",
+                                'L\'ADS a été créée après la loi du 1er Octobre 2014 : "nouvelle ADS "',
+                            ),
+                        ],
+                        max_length=16,
+                    ),
+                ),
+                ("attribution_date", models.DateField(blank=True, null=True)),
+                (
+                    "attribution_type",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            (
+                                "free",
+                                "Gratuitement (delivrée par l'autorité compétente)",
+                            ),
+                            ("paid", "Cession àt itre onéreux"),
+                            ("other", "Autre"),
+                        ],
+                        max_length=16,
+                    ),
+                ),
+                ("attribution_reason", models.CharField(blank=True, max_length=4096)),
+                ("accepted_cpam", models.BooleanField(blank=True, null=True)),
+                ("immatriculation_plate", models.CharField(blank=True, max_length=128)),
+                ("vehicle_compatible_pmr", models.BooleanField(blank=True, null=True)),
+                ("eco_vehicle", models.BooleanField(blank=True, null=True)),
+                ("owner_firstname", models.CharField(blank=True, max_length=1024)),
+                ("owner_lastname", models.CharField(blank=True, max_length=1024)),
+                ("owner_siret", models.CharField(blank=True, max_length=128)),
+                ("used_by_owner", models.BooleanField(blank=True, null=True)),
+                (
+                    "user_status",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("titulaire_exploitant", "Titulaire exploitant"),
+                            ("cooperateur", "Coopérateur"),
+                            ("locataire_gerance", "Locataire gérance"),
+                            ("autre", "Autre"),
+                        ],
+                        max_length=255,
+                    ),
+                ),
+                ("user_name", models.CharField(blank=True, max_length=1024)),
+                ("user_siret", models.CharField(blank=True, max_length=128)),
+                (
+                    "legal_file",
+                    models.FileField(
+                        blank=True, upload_to=mesads.app.models.get_legal_filename
+                    ),
+                ),
+                (
+                    "ads_manager",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="app.adsmanager"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'ADS',
-                'verbose_name_plural': 'ADS',
+                "verbose_name": "ADS",
+                "verbose_name_plural": "ADS",
             },
         ),
     ]

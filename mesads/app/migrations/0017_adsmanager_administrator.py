@@ -5,15 +5,18 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0016_ads_owner_email_ads_owner_mobile_ads_owner_phone'),
+        ("app", "0016_ads_owner_email_ads_owner_mobile_ads_owner_phone"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='adsmanager',
-            name='administrator',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.RESTRICT, to='app.adsmanageradministrator'),
+            model_name="adsmanager",
+            name="administrator",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.RESTRICT,
+                to="app.adsmanageradministrator",
+            ),
         ),
     ]

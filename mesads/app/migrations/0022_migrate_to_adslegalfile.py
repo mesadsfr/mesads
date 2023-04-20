@@ -5,18 +5,23 @@ from django.db.models import Count
 
 
 def migrate_legal_file(apps, schema_editor):
-    ADS = apps.get_model('app', 'ADS')
-    ADSLegalFile = apps.get_model('app', 'ADSLegalFile')
+    ADS = apps.get_model("app", "ADS")
+    ADSLegalFile = apps.get_model("app", "ADSLegalFile")
 
-    for ads in ADS.objects.exclude(legal_file=''):
+    for ads in ADS.objects.exclude(legal_file=""):
         ADSLegalFile.objects.create(ads=ads, file=ads.legal_file)
 
 
 def revert_migrate_legal_file(apps, schema_editor):
-    ADSLegalFile = apps.get_model('app', 'ADSLegalFile')
+    ADSLegalFile = apps.get_model("app", "ADSLegalFile")
 
-    if ADSLegalFile.objects.annotate(count=Count('ads')).filter(count__gt=1).count() > 0:
-        raise ValueError('Unable to perform backward migration: at least one ADS has more than one legal file')
+    if (
+        ADSLegalFile.objects.annotate(count=Count("ads")).filter(count__gt=1).count()
+        > 0
+    ):
+        raise ValueError(
+            "Unable to perform backward migration: at least one ADS has more than one legal file"
+        )
 
     for legal_file in ADSLegalFile.objects.all():
         legal_file.ads.legal_file = legal_file.file
@@ -24,9 +29,8 @@ def revert_migrate_legal_file(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0021_adslegalfile'),
+        ("app", "0021_adslegalfile"),
     ]
 
     operations = [

@@ -23,8 +23,10 @@ class ClientTestCase(TestCase):
         self.admin_client, self.admin_user = self.create_client(admin=True)
 
     def create_user(self, admin=False):
-        email = '%s@domain.com' % ''.join(random.choice(string.ascii_lowercase) for _ in range(16))
-        clear_password = '1234567890'
+        email = "%s@domain.com" % "".join(
+            random.choice(string.ascii_lowercase) for _ in range(16)
+        )
+        clear_password = "1234567890"
 
         if admin:
             user = User.objects.create_superuser(email=email, password=clear_password)

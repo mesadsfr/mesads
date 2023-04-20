@@ -15,7 +15,7 @@ class CommuneAutocompleteView(autocomplete.Select2QuerySetView):
         if not self.request.user.is_authenticated:
             return Commune.objects.none()
 
-        departement = self.kwargs.get('departement', '').lower()
+        departement = self.kwargs.get("departement", "").lower()
 
         if self.q:
             # For the row with departement=35 and libelle=Melesse, the query
@@ -25,25 +25,32 @@ class CommuneAutocompleteView(autocomplete.Select2QuerySetView):
             # * "35 - melesse"
             # * "35 - mele"
 
-            departement_filter = ''
+            departement_filter = ""
             if departement:
                 departement_filter = f"AND LOWER(departement) = '{departement}'"
 
-            qs = Commune.objects.raw('''
-                SELECT * FROM ''' + Commune.objects.model._meta.db_table + '''
+            qs = Commune.objects.raw(
+                """
+                SELECT * FROM """
+                + Commune.objects.model._meta.db_table
+                + """
                 WHERE REGEXP_REPLACE(UNACCENT(departement || libelle), '[^\\w]', '', 'g')
                 ILIKE '%%' || REGEXP_REPLACE(UNACCENT(%s), '[^\\w]', '', 'g') || '%%'
-                ''' + departement_filter + '''
+                """
+                + departement_filter
+                + """
                 ORDER BY id
-            ''', [self.q])
+            """,
+                [self.q],
+            )
             return qs
 
         qs = Commune.objects
         if departement:
-            qs = qs.annotate(departement_lower=Lower('departement'))
+            qs = qs.annotate(departement_lower=Lower("departement"))
             qs = qs.filter(departement_lower=departement)
 
-        return qs.order_by('id')
+        return qs.order_by("id")
 
 
 class EPCIAutocompleteView(autocomplete.Select2QuerySetView):
@@ -51,12 +58,12 @@ class EPCIAutocompleteView(autocomplete.Select2QuerySetView):
         if not self.request.user.is_authenticated:
             return EPCI.objects.none()
 
-        qs = EPCI.objects.annotate(unaccent_name=Unaccent('name')).all()
+        qs = EPCI.objects.annotate(unaccent_name=Unaccent("name")).all()
 
         if self.q:
             qs = qs.filter(unaccent_name__icontains=self.q)
 
-        return qs.order_by('id')
+        return qs.order_by("id")
 
 
 class PrefectureAutocompleteView(autocomplete.Select2QuerySetView):
@@ -65,13 +72,18 @@ class PrefectureAutocompleteView(autocomplete.Select2QuerySetView):
             return Prefecture.objects.none()
 
         if self.q:
-            qs = Prefecture.objects.raw('''
-                SELECT * FROM ''' + Prefecture.objects.model._meta.db_table + '''
+            qs = Prefecture.objects.raw(
+                """
+                SELECT * FROM """
+                + Prefecture.objects.model._meta.db_table
+                + """
                 WHERE REGEXP_REPLACE(UNACCENT(numero || libelle), '[^\\w]', '', 'g')
                 ILIKE '%%' || REGEXP_REPLACE(UNACCENT(%s), '[^\\w]', '', 'g') || '%%'
                 ORDER BY id
-            ''', (self.q,))
+            """,
+                (self.q,),
+            )
             return qs
 
         qs = Prefecture.objects.all()
-        return qs.order_by('id')
+        return qs.order_by("id")

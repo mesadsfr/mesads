@@ -6,16 +6,18 @@ from django.db import migrations
 
 
 def delete_attribution_date_for_new_ads(apps, schema_editor):
-    ADS = apps.get_model('app', 'ADS')
-    for ads in ADS.objects.filter(attribution_date__isnull=False, ads_creation_date__gte=datetime.date(2014, 10, 1)):
+    ADS = apps.get_model("app", "ADS")
+    for ads in ADS.objects.filter(
+        attribution_date__isnull=False,
+        ads_creation_date__gte=datetime.date(2014, 10, 1),
+    ):
         ads.attribution_date = None
         ads.save()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0049_adsupdatefile_import_output'),
+        ("app", "0049_adsupdatefile_import_output"),
     ]
 
     operations = [

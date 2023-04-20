@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0043_alter_ads_transaction_identifier'),
+        ("app", "0043_alter_ads_transaction_identifier"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ads',
-            name='owner_license_number',
-            field=models.CharField(blank=True, max_length=64, verbose_name='Numéro de la carte professionnelle du titulaire'),
+            model_name="ads",
+            name="owner_license_number",
+            field=models.CharField(
+                blank=True,
+                max_length=64,
+                verbose_name="Numéro de la carte professionnelle du titulaire",
+            ),
         ),
     ]

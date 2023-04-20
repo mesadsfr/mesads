@@ -11,4 +11,6 @@ class BooleanSelect(NullBooleanSelect):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.choices = [(name, label) for name, label in self.choices if name != 'unknown']
+        self.choices = [
+            (name, label) for name, label in self.choices if name != "unknown"
+        ]

@@ -51,61 +51,60 @@ class HTTP500View(TemplateView):
     """The default HTTP/500 handler can't access to context processors and does
     not have access to the variable MESADS_CONTACT_EMAIL.
     """
-    template_name = '500.html'
+
+    template_name = "500.html"
 
 
 class HomepageView(TemplateView):
     """Render template when user is not connected. If user is connected,
     redirect depending on permissions."""
-    template_name = 'pages/homepage.html'
+
+    template_name = "pages/homepage.html"
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_staff:
-            return redirect(reverse('app.dashboards.list'))
+            return redirect(reverse("app.dashboards.list"))
         if len(self.request.user.adsmanageradministrator_set.all()):
-            return redirect(reverse('app.ads-manager-admin.index'))
-        return redirect(reverse('app.ads-manager.index'))
+            return redirect(reverse("app.ads-manager-admin.index"))
+        return redirect(reverse("app.ads-manager.index"))
 
 
 class ADSManagerAdminView(RevisionMixin, TemplateView):
-    template_name = 'pages/ads_manager_admin.html'
+    template_name = "pages/ads_manager_admin.html"
 
     def get_context_data(self, **kwargs):
-        """Populate context with the list of ADSManagerRequest current user can accept.
-        """
+        """Populate context with the list of ADSManagerRequest current user can accept."""
         ctx = super().get_context_data(**kwargs)
-        ctx['ads_manager_requests'] = ADSManagerRequest.objects.select_related(
-            'ads_manager__administrator',
-            'ads_manager__administrator__prefecture',
-            'ads_manager__content_type',
-            'user',
-        ).prefetch_related(
-            'ads_manager__content_object'
-        ).filter(
-            ads_manager__administrator__users__in=[self.request.user]
-        ).order_by('ads_manager__administrator', '-created_at')
+        ctx["ads_manager_requests"] = (
+            ADSManagerRequest.objects.select_related(
+                "ads_manager__administrator",
+                "ads_manager__administrator__prefecture",
+                "ads_manager__content_type",
+                "user",
+            )
+            .prefetch_related("ads_manager__content_object")
+            .filter(ads_manager__administrator__users__in=[self.request.user])
+            .order_by("ads_manager__administrator", "-created_at")
+        )
         return ctx
 
     def post(self, request):
-        request_id = request.POST.get('request_id')
-        action = request.POST.get('action')
+        request_id = request.POST.get("request_id")
+        action = request.POST.get("action")
 
-        if action not in ('accept', 'deny'):
-            raise SuspiciousOperation('Invalid action')
+        if action not in ("accept", "deny"):
+            raise SuspiciousOperation("Invalid action")
 
-        ads_manager_request = get_object_or_404(
-            ADSManagerRequest,
-            id=request_id
-        )
+        ads_manager_request = get_object_or_404(ADSManagerRequest, id=request_id)
 
         # Make sure current user can accept this request
         get_object_or_404(
             ADSManagerAdministrator,
             users__in=[request.user],
-            adsmanager=ads_manager_request.ads_manager
+            adsmanager=ads_manager_request.ads_manager,
         )
 
-        if action == 'accept':
+        if action == "accept":
             ads_manager_request.accepted = True
         else:
             ads_manager_request.accepted = False
@@ -113,22 +112,25 @@ class ADSManagerAdminView(RevisionMixin, TemplateView):
 
         # Send notification to user
         email_subject = render_to_string(
-            'pages/email_ads_manager_request_result_subject.txt', {
-                'ads_manager_request': ads_manager_request,
+            "pages/email_ads_manager_request_result_subject.txt",
+            {
+                "ads_manager_request": ads_manager_request,
             },
             request=request,
         ).strip()
         email_content = render_to_string(
-            'pages/email_ads_manager_request_result_content.txt', {
-                'request': request,
-                'ads_manager_request': ads_manager_request,
+            "pages/email_ads_manager_request_result_content.txt",
+            {
+                "request": request,
+                "ads_manager_request": ads_manager_request,
             },
             request=request,
         )
         email_content_html = render_to_string(
-            'pages/email_ads_manager_request_result_content.mjml', {
-                'request': request,
-                'ads_manager_request': ads_manager_request,
+            "pages/email_ads_manager_request_result_content.mjml",
+            {
+                "request": request,
+                "ads_manager_request": ads_manager_request,
             },
             request=request,
         )
@@ -140,13 +142,13 @@ class ADSManagerAdminView(RevisionMixin, TemplateView):
             fail_silently=True,
             html_message=email_content_html,
         )
-        return redirect(reverse('app.ads-manager-admin.index'))
+        return redirect(reverse("app.ads-manager-admin.index"))
 
 
 class ADSManagerRequestView(FormView):
-    template_name = 'pages/ads_manager_request.html'
+    template_name = "pages/ads_manager_request.html"
     form_class = ADSManagerForm
-    success_url = reverse_lazy('app.ads-manager.index')
+    success_url = reverse_lazy("app.ads-manager.index")
 
     def get_context_data(self, **kwargs):
         """Expose the list of ADSManagerAdministrators for which current user
@@ -157,58 +159,67 @@ class ADSManagerRequestView(FormView):
         of SQL queries generated.
         """
         ctx = super().get_context_data(**kwargs)
-        ctx['user_ads_manager_requests'] = ADSManagerRequest.objects \
-            .filter(user=self.request.user) \
-            .annotate(ads_count=Count('ads_manager__ads')) \
+        ctx["user_ads_manager_requests"] = (
+            ADSManagerRequest.objects.filter(user=self.request.user)
+            .annotate(ads_count=Count("ads_manager__ads"))
             .all()
+        )
 
-        ctx['ads_managers_administrators'] = ADSManagerAdministrator.objects.select_related(
-            'prefecture'
-        ).filter(
-            users=self.request.user
-        ).all()
+        ctx["ads_managers_administrators"] = (
+            ADSManagerAdministrator.objects.select_related("prefecture")
+            .filter(users=self.request.user)
+            .all()
+        )
         return ctx
 
     def form_valid(self, form):
         _, created = ADSManagerRequest.objects.get_or_create(
             user=self.request.user,
-            ads_manager=form.cleaned_data['ads_manager'],
+            ads_manager=form.cleaned_data["ads_manager"],
         )
 
         # Request already exists
         if not created:
             messages.warning(
                 self.request,
-                self.get_message_for_existing_request(form.cleaned_data['ads_manager'])
+                self.get_message_for_existing_request(form.cleaned_data["ads_manager"]),
             )
         # Send notifications to administrators.
         else:
             messages.success(
                 self.request,
-                self.get_message_for_new_request(form.cleaned_data['ads_manager'])
+                self.get_message_for_new_request(form.cleaned_data["ads_manager"]),
             )
             email_subject = render_to_string(
-                'pages/email_ads_manager_request_administrator_subject.txt', {
-                    'user': self.request.user,
-                }, request=self.request
+                "pages/email_ads_manager_request_administrator_subject.txt",
+                {
+                    "user": self.request.user,
+                },
+                request=self.request,
             ).strip()
             email_content = render_to_string(
-                'pages/email_ads_manager_request_administrator_content.txt', {
-                    'request': self.request,
-                    'ads_manager': form.cleaned_data['ads_manager'],
-                    'user': self.request.user,
-                }, request=self.request
+                "pages/email_ads_manager_request_administrator_content.txt",
+                {
+                    "request": self.request,
+                    "ads_manager": form.cleaned_data["ads_manager"],
+                    "user": self.request.user,
+                },
+                request=self.request,
             )
             email_content_html = render_to_string(
-                'pages/email_ads_manager_request_administrator_content.mjml', {
-                    'request': self.request,
-                    'ads_manager': form.cleaned_data['ads_manager'],
-                    'user': self.request.user,
-                }, request=self.request
+                "pages/email_ads_manager_request_administrator_content.mjml",
+                {
+                    "request": self.request,
+                    "ads_manager": form.cleaned_data["ads_manager"],
+                    "user": self.request.user,
+                },
+                request=self.request,
             )
 
-            if form.cleaned_data['ads_manager'].administrator:
-                for administrator_user in form.cleaned_data['ads_manager'].administrator.users.all():
+            if form.cleaned_data["ads_manager"].administrator:
+                for administrator_user in form.cleaned_data[
+                    "ads_manager"
+                ].administrator.users.all():
                     send_mail(
                         email_subject,
                         email_content,
@@ -222,30 +233,30 @@ class ADSManagerRequestView(FormView):
 
     def get_message_for_existing_request(self, ads_manager):
         if not ads_manager.administrator:
-            return '''
+            return """
                 Vous avez déjà effectué une demande pour gérer les ADS de %(administration)s, et notre équipe va y répondre dans les plus brefs délais.<br /><br />
 
                 Si vous n'avez eu aucun retour depuis plusieurs jours, n'hésitez pas à contacter notre équipe par email à <a href="mailto:%(email)s">%(email)s</a> ou via notre module de tchat.
-            ''' % {
-                'email': settings.MESADS_CONTACT_EMAIL,
-                'administration': ads_manager.content_object.display_fulltext(),
+            """ % {
+                "email": settings.MESADS_CONTACT_EMAIL,
+                "administration": ads_manager.content_object.display_fulltext(),
             }
-        return '''
+        return """
             Vous avez déjà effectué une demande pour gérer les ADS de %(administration)s. Cette demande a été envoyée à %(prefecture)s qui devrait y répondre rapidement.<br /><br />
 
             Si vous n'avez eu aucun retour depuis plusieurs jours, n'hésitez pas à nous signaler le problème par email à <a href="mailto:%(email)s">%(email)s</a> ou via notre module de tchat.
             <br /><br />
             Nous pourrons alors valider votre demande manuellement.
-        ''' % {
-            'administration': ads_manager.content_object.display_fulltext(),
-            'prefecture': ads_manager.administrator.prefecture.display_fulltext(),
-            'email': settings.MESADS_CONTACT_EMAIL,
+        """ % {
+            "administration": ads_manager.content_object.display_fulltext(),
+            "prefecture": ads_manager.administrator.prefecture.display_fulltext(),
+            "email": settings.MESADS_CONTACT_EMAIL,
         }
 
     def get_message_for_new_request(self, ads_manager):
         # Request for EPCI or prefectures
         if not ads_manager.administrator:
-            return '''
+            return """
                 Votre demande vient d’être envoyée à notre équipe. Vous recevrez une confirmation de validation de votre
                 accès par mail.<br /><br />
 
@@ -253,11 +264,11 @@ class ADSManagerRequestView(FormView):
                 <a href="mailto:%(email)s">%(email)s</a> ou via notre module de tchat.<br /><br />
 
                 Vous pouvez également demander un accès pour la gestion des ADS d’une autre collectivité.
-            ''' % {
-                'email': settings.MESADS_CONTACT_EMAIL
+            """ % {
+                "email": settings.MESADS_CONTACT_EMAIL
             }
 
-        return '''
+        return """
             Votre demande vient d’être envoyée à %(prefecture)s. Vous recevrez une confirmation de validation de votre
             accès par mail.<br /><br />
 
@@ -265,14 +276,14 @@ class ADSManagerRequestView(FormView):
             contacter par email à <a href="mailto:%(email)s">%(email)s</a> ou via notre module de tchat.<br /><br />
 
             Vous pouvez également demander un accès pour la gestion des ADS d’une autre collectivité.
-        ''' % {
-            'prefecture': ads_manager.administrator.prefecture.display_fulltext(),
-            'email': settings.MESADS_CONTACT_EMAIL
+        """ % {
+            "prefecture": ads_manager.administrator.prefecture.display_fulltext(),
+            "email": settings.MESADS_CONTACT_EMAIL,
         }
 
 
 class ADSManagerView(ListView, ProcessFormView):
-    template_name = 'pages/ads_manager.html'
+    template_name = "pages/ads_manager.html"
     model = ADS
     paginate_by = 50
 
@@ -281,32 +292,38 @@ class ADSManagerView(ListView, ProcessFormView):
         return ListView.get(self, request, *args, **kwargs)
 
     def get_ads_manager(self):
-        return ADSManager.objects.get(id=self.kwargs['manager_id'])
+        return ADSManager.objects.get(id=self.kwargs["manager_id"])
 
     def get_form(self):
-        if self.request.method == 'POST':
-            return ADSManagerEditForm(instance=self.get_ads_manager(), data=self.request.POST)
+        if self.request.method == "POST":
+            return ADSManagerEditForm(
+                instance=self.get_ads_manager(), data=self.request.POST
+            )
         return ADSManagerEditForm(instance=self.get_ads_manager())
 
     def form_valid(self, form):
         form.save()
-        return redirect('app.ads-manager.detail', manager_id=self.kwargs['manager_id'])
+        return redirect("app.ads-manager.detail", manager_id=self.kwargs["manager_id"])
 
     def form_invalid(self, form):
         return self.get(self.request, *self.args, **self.kwargs)
 
     def get_queryset(self):
         qs = super().get_queryset()
-        qs = qs.filter(ads_manager__id=self.kwargs['manager_id'])
+        qs = qs.filter(ads_manager__id=self.kwargs["manager_id"])
 
         if self.search_form.is_valid():
-            if self.search_form.cleaned_data['accepted_cpam'] is not None:
-                qs = qs.filter(accepted_cpam=self.search_form.cleaned_data['accepted_cpam'])
+            if self.search_form.cleaned_data["accepted_cpam"] is not None:
+                qs = qs.filter(
+                    accepted_cpam=self.search_form.cleaned_data["accepted_cpam"]
+                )
 
-            q = self.search_form.cleaned_data['q']
+            q = self.search_form.cleaned_data["q"]
             if q:
                 qs = qs.annotate(
-                    clean_immatriculation_plate=Replace('immatriculation_plate', Value('-'), Value(''))
+                    clean_immatriculation_plate=Replace(
+                        "immatriculation_plate", Value("-"), Value("")
+                    )
                 )
 
                 qs = qs.filter(
@@ -319,29 +336,33 @@ class ADSManagerView(ListView, ProcessFormView):
 
         # Add ordering on the number. CAST is necessary in the case the ADS number is not an integer.
         qs_ordered = qs.extra(
-            select={'ads_number_as_int': "CAST(substring(number FROM '^[0-9]+') AS NUMERIC)"}
+            select={
+                "ads_number_as_int": "CAST(substring(number FROM '^[0-9]+') AS NUMERIC)"
+            }
         )
 
         # First, order by number if it is an integer, then by string.
-        return qs_ordered.annotate(c=Count('id')).order_by('ads_number_as_int', 'number')
+        return qs_ordered.annotate(c=Count("id")).order_by(
+            "ads_number_as_int", "number"
+        )
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['search_form'] = self.search_form
+        ctx["search_form"] = self.search_form
 
         # search_defined is a boolean, set to True of any of the search form
         # parameter is defined.
-        ctx['search_defined'] = any(
-            (v is not None and v != '' for v in self.search_form.cleaned_data.values())
+        ctx["search_defined"] = any(
+            (v is not None and v != "" for v in self.search_form.cleaned_data.values())
         )
 
-        ctx['edit_form'] = self.get_form()
-        ctx['ads_manager'] = ctx['edit_form'].instance
+        ctx["edit_form"] = self.get_form()
+        ctx["ads_manager"] = ctx["edit_form"].instance
         return ctx
 
 
 class ADSView(RevisionMixin, UpdateView):
-    template_name = 'pages/ads.html'
+    template_name = "pages/ads.html"
     form_class = ADSForm
 
     def get_form_kwargs(self):
@@ -351,36 +372,43 @@ class ADSView(RevisionMixin, UpdateView):
         # the parameter "epci" which is required to setup autocompletion for the
         # field ADS.epci_commune. This field is not displayed if the manager is
         # a Prefecture or a Commune.
-        ads_manager = get_object_or_404(ADSManager, id=self.kwargs['manager_id'])
+        ads_manager = get_object_or_404(ADSManager, id=self.kwargs["manager_id"])
         if ads_manager.content_type.model_class() is EPCI:
-            kwargs['epci'] = ads_manager.content_object
+            kwargs["epci"] = ads_manager.content_object
 
         return kwargs
 
     def get_success_url(self):
-        return reverse('app.ads-manager.detail', kwargs={
-            'manager_id': self.kwargs['manager_id'],
-        })
+        return reverse(
+            "app.ads-manager.detail",
+            kwargs={
+                "manager_id": self.kwargs["manager_id"],
+            },
+        )
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['ads_manager'] = ADSManager.objects.get(id=self.kwargs['manager_id'])
+        ctx["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
 
         if self.request.POST:
-            ctx['ads_users_formset'] = ADSUserFormSet(self.request.POST, instance=self.object)
-            ctx['ads_legal_files_formset'] = ADSLegalFileFormSet(self.request.POST, self.request.FILES, instance=self.object)
+            ctx["ads_users_formset"] = ADSUserFormSet(
+                self.request.POST, instance=self.object
+            )
+            ctx["ads_legal_files_formset"] = ADSLegalFileFormSet(
+                self.request.POST, self.request.FILES, instance=self.object
+            )
         else:
-            ctx['ads_users_formset'] = ADSUserFormSet(instance=self.object)
-            ctx['ads_legal_files_formset'] = ADSLegalFileFormSet(instance=self.object)
+            ctx["ads_users_formset"] = ADSUserFormSet(instance=self.object)
+            ctx["ads_legal_files_formset"] = ADSLegalFileFormSet(instance=self.object)
         return ctx
 
     def get_object(self, queryset=None):
-        return get_object_or_404(ADS, id=self.kwargs['ads_id'])
+        return get_object_or_404(ADS, id=self.kwargs["ads_id"])
 
     def form_valid(self, form):
         ctx = self.get_context_data()
-        ads_users_formset = ctx['ads_users_formset']
-        ads_legal_files_formset = ctx['ads_legal_files_formset']
+        ads_users_formset = ctx["ads_users_formset"]
+        ads_legal_files_formset = ctx["ads_legal_files_formset"]
 
         if ads_users_formset.is_valid() and ads_legal_files_formset.is_valid():
             resp = super().form_valid(form)
@@ -396,38 +424,46 @@ def ads_manager_decree_view(request, manager_id):
     """Decree limiting the number of ADS for an ADSManager."""
     ads_manager = get_object_or_404(ADSManager, id=manager_id)
 
-    if request.method == 'POST':
-        formset = ADSManagerDecreeFormSet(request.POST, request.FILES, instance=ads_manager)
+    if request.method == "POST":
+        formset = ADSManagerDecreeFormSet(
+            request.POST, request.FILES, instance=ads_manager
+        )
         if formset.is_valid():
             formset.save()
-            return redirect('app.ads-manager.decree.detail', manager_id=manager_id)
+            return redirect("app.ads-manager.decree.detail", manager_id=manager_id)
     else:
         formset = ADSManagerDecreeFormSet(instance=ads_manager)
 
-    return render(request, 'pages/ads_manager_decree.html', context={
-        'ads_manager': ads_manager,
-        'formset': formset,
-    })
+    return render(
+        request,
+        "pages/ads_manager_decree.html",
+        context={
+            "ads_manager": ads_manager,
+            "formset": formset,
+        },
+    )
 
 
 class ADSDeleteView(DeleteView):
-    template_name = 'pages/ads_confirm_delete.html'
+    template_name = "pages/ads_confirm_delete.html"
     model = ADS
-    pk_url_kwarg = 'ads_id'
+    pk_url_kwarg = "ads_id"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['ads_manager'] = ADSManager.objects.get(id=self.kwargs['manager_id'])
+        ctx["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
         return ctx
 
     def get_success_url(self):
-        return reverse('app.ads-manager.detail', kwargs={
-            'manager_id': self.kwargs['manager_id'],
-        })
+        return reverse(
+            "app.ads-manager.detail",
+            kwargs={
+                "manager_id": self.kwargs["manager_id"],
+            },
+        )
 
 
 class ADSCreateView(ADSView, CreateView):
-
     def dispatch(self, request, manager_id):
         """If the ADSManager has the flag no_ads_declared to True, it is
         imposisble to create ADS for it."""
@@ -438,12 +474,15 @@ class ADSCreateView(ADSView, CreateView):
         return None
 
     def get_success_url(self):
-        return reverse('app.ads-manager.detail', kwargs={
-            'manager_id': self.kwargs['manager_id'],
-        })
+        return reverse(
+            "app.ads-manager.detail",
+            kwargs={
+                "manager_id": self.kwargs["manager_id"],
+            },
+        )
 
     def form_valid(self, form):
-        ads_manager = ADSManager.objects.get(id=self.kwargs['manager_id'])
+        ads_manager = ADSManager.objects.get(id=self.kwargs["manager_id"])
         form.instance.ads_manager = ads_manager
 
         # CreateView doesn't call validate_constraints(). The try/catch below
@@ -453,80 +492,97 @@ class ADSCreateView(ADSView, CreateView):
             with transaction.atomic():
                 return super().form_valid(form)
         except IntegrityError:
-            form.add_error('number', ADS.UNIQUE_ERROR_MSG)
+            form.add_error("number", ADS.UNIQUE_ERROR_MSG)
             return super().form_invalid(form)
 
 
 def prefecture_export_ads(request, ads_manager_administrator):
     prefecture = ads_manager_administrator.prefecture
     response = HttpResponse(
-        content_type='text/csv',
+        content_type="text/csv",
         headers={
-            'Content-Disposition': 'attachment; filename="ADS_prefecture_%s.csv"' % prefecture.numero
+            "Content-Disposition": 'attachment; filename="ADS_prefecture_%s.csv"'
+            % prefecture.numero
         },
     )
 
     def display_bool(value):
         if value is None:
-            return ''
-        return 'oui' if value else 'non'
+            return ""
+        return "oui" if value else "non"
 
     fields = [
-        ('Administration', lambda ads: ads.ads_manager.content_object.display_text()),
-        ('Numéro', lambda ads: ads.number),
-        ('Date de création', lambda ads: ads.ads_creation_date),
+        ("Administration", lambda ads: ads.ads_manager.content_object.display_text()),
+        ("Numéro", lambda ads: ads.number),
+        ("Date de création", lambda ads: ads.ads_creation_date),
         ("Date d'attribution au titulaire actuel", lambda ads: ads.attribution_date),
-        ("Type d'attribution", lambda ads: ads.attribution_type and dict(ADS.attribution_type.field.choices)[ads.attribution_type]),
+        (
+            "Type d'attribution",
+            lambda ads: ads.attribution_type
+            and dict(ADS.attribution_type.field.choices)[ads.attribution_type],
+        ),
         ("Raison de l'attribution", lambda ads: ads.attribution_reason),
         ("Conventionné CPAM ?", lambda ads: display_bool(ads.accepted_cpam)),
         ("Plaque d'immatriculation", lambda ads: ads.immatriculation_plate),
-        ("Véhicule compatible PMR ?", lambda ads: display_bool(ads.vehicle_compatible_pmr)),
+        (
+            "Véhicule compatible PMR ?",
+            lambda ads: display_bool(ads.vehicle_compatible_pmr),
+        ),
         ("Véhicule électrique ou hybride ?", lambda ads: display_bool(ads.eco_vehicle)),
         ("Nom du titulaire", lambda ads: ads.owner_name),
         ("SIRET titulaire", lambda ads: ads.owner_siret),
-        ("ADS exploitée par le titulaire ?", lambda ads: display_bool(ads.used_by_owner)),
-        ("Statuts des exploitants (un par ligne)", lambda ads: '\n'.join([
-            dict(ADSUser.status.field.choices)[status] if status else ''
-            for status in ads.ads_users_status
-        ])),
-        ("Noms des exploitants (un par ligne)", lambda ads: '\n'.join([
-            name or '' for name in ads.ads_users_names
-        ])),
-        ("SIRET des exploitants (un par ligne)", lambda ads: '\n'.join([
-            siret or '' for siret in ads.ads_users_sirets
-        ])),
+        (
+            "ADS exploitée par le titulaire ?",
+            lambda ads: display_bool(ads.used_by_owner),
+        ),
+        (
+            "Statuts des exploitants (un par ligne)",
+            lambda ads: "\n".join(
+                [
+                    dict(ADSUser.status.field.choices)[status] if status else ""
+                    for status in ads.ads_users_status
+                ]
+            ),
+        ),
+        (
+            "Noms des exploitants (un par ligne)",
+            lambda ads: "\n".join([name or "" for name in ads.ads_users_names]),
+        ),
+        (
+            "SIRET des exploitants (un par ligne)",
+            lambda ads: "\n".join([siret or "" for siret in ads.ads_users_sirets]),
+        ),
     ]
 
     writer = csv.DictWriter(response, fieldnames=[field[0] for field in fields])
 
     writer.writeheader()
 
-    for ads in ADS.objects.select_related(
-        'ads_manager__administrator__prefecture',
-    ).prefetch_related(
-        'ads_manager__content_object',
-    ).filter(
-        ads_manager__administrator=ads_manager_administrator
-    ).annotate(
-        ads_users_status=ArrayAgg('adsuser__status'),
-        ads_users_names=ArrayAgg('adsuser__name'),
-        ads_users_sirets=ArrayAgg('adsuser__siret'),
+    for ads in (
+        ADS.objects.select_related(
+            "ads_manager__administrator__prefecture",
+        )
+        .prefetch_related(
+            "ads_manager__content_object",
+        )
+        .filter(ads_manager__administrator=ads_manager_administrator)
+        .annotate(
+            ads_users_status=ArrayAgg("adsuser__status"),
+            ads_users_names=ArrayAgg("adsuser__name"),
+            ads_users_sirets=ArrayAgg("adsuser__siret"),
+        )
     ):
-        writer.writerow({
-            field[0]: field[1](ads)
-            for field in fields
-        })
+        writer.writerow({field[0]: field[1](ads) for field in fields})
 
     return response
 
 
 class DashboardsView(TemplateView):
-
-    template_name = 'pages/dashboards_list.html'
+    template_name = "pages/dashboards_list.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['stats'], ctx['stats_total'] = self.get_stats()
+        ctx["stats"], ctx["stats_total"] = self.get_stats()
         return ctx
 
     def get_stats(self):
@@ -573,225 +629,258 @@ class DashboardsView(TemplateView):
         """
         now = timezone.now()
 
-        stats = collections.defaultdict(lambda: {
-            'obj': None,
-            'ads': {},
-            'users': {}
-        })
+        stats = collections.defaultdict(lambda: {"obj": None, "ads": {}, "users": {}})
 
         stats_total = {
-            'ads': {},
-            'users': {},
+            "ads": {},
+            "users": {},
         }
 
-        ads_query_now = ADSManagerAdministrator.objects \
-            .select_related('prefecture') \
-            .annotate(ads_count=Count('adsmanager__ads')) \
+        ads_query_now = (
+            ADSManagerAdministrator.objects.select_related("prefecture")
+            .annotate(ads_count=Count("adsmanager__ads"))
             .filter(ads_count__gt=0)
+        )
 
         # All ADSManagerAdministrator, with the count of ADS with at least one of the contact fields filled.
-        ads_with_info_query_now = ADSManagerAdministrator.objects \
-            .select_related('prefecture') \
-            .annotate(ads_count=Count(
-                'adsmanager__ads',
-                filter=~Q(adsmanager__ads__owner_email='') | ~Q(adsmanager__ads__owner_mobile='') | ~Q(adsmanager__ads__owner_phone='')
-            )) \
+        ads_with_info_query_now = (
+            ADSManagerAdministrator.objects.select_related("prefecture")
+            .annotate(
+                ads_count=Count(
+                    "adsmanager__ads",
+                    filter=~Q(adsmanager__ads__owner_email="")
+                    | ~Q(adsmanager__ads__owner_mobile="")
+                    | ~Q(adsmanager__ads__owner_phone=""),
+                )
+            )
             .filter(ads_count__gt=0)
+        )
 
-        ads_query_3_months = ADSManagerAdministrator.objects \
-            .select_related('prefecture') \
-            .filter(adsmanager__ads__creation_date__lte=now - timedelta(weeks=4 * 3)) \
-            .annotate(ads_count=Count('adsmanager__ads'))
+        ads_query_3_months = (
+            ADSManagerAdministrator.objects.select_related("prefecture")
+            .filter(adsmanager__ads__creation_date__lte=now - timedelta(weeks=4 * 3))
+            .annotate(ads_count=Count("adsmanager__ads"))
+        )
 
-        ads_query_6_months = ADSManagerAdministrator.objects \
-            .select_related('prefecture') \
-            .filter(adsmanager__ads__creation_date__lte=now - timedelta(weeks=4 * 6)) \
-            .annotate(ads_count=Count('adsmanager__ads'))
+        ads_query_6_months = (
+            ADSManagerAdministrator.objects.select_related("prefecture")
+            .filter(adsmanager__ads__creation_date__lte=now - timedelta(weeks=4 * 6))
+            .annotate(ads_count=Count("adsmanager__ads"))
+        )
 
-        ads_query_12_months = ADSManagerAdministrator.objects \
-            .select_related('prefecture') \
-            .filter(adsmanager__ads__creation_date__lte=now - timedelta(weeks=4 * 12)) \
-            .annotate(ads_count=Count('adsmanager__ads'))
+        ads_query_12_months = (
+            ADSManagerAdministrator.objects.select_related("prefecture")
+            .filter(adsmanager__ads__creation_date__lte=now - timedelta(weeks=4 * 12))
+            .annotate(ads_count=Count("adsmanager__ads"))
+        )
 
-        for (label, query) in (
-            ('now', ads_query_now),
-            ('with_info_now', ads_with_info_query_now),
-            ('3_months', ads_query_3_months),
-            ('6_months', ads_query_6_months),
-            ('12_months', ads_query_12_months),
+        for label, query in (
+            ("now", ads_query_now),
+            ("with_info_now", ads_with_info_query_now),
+            ("3_months", ads_query_3_months),
+            ("6_months", ads_query_6_months),
+            ("12_months", ads_query_12_months),
         ):
             for row in query:
-                stats[row.prefecture.id]['obj'] = row
-                stats[row.prefecture.id]['ads'][label] = row.ads_count
+                stats[row.prefecture.id]["obj"] = row
+                stats[row.prefecture.id]["ads"][label] = row.ads_count
 
-            stats_total['ads'][label] = query.aggregate(total=Coalesce(Sum('ads_count'), 0))['total']
+            stats_total["ads"][label] = query.aggregate(
+                total=Coalesce(Sum("ads_count"), 0)
+            )["total"]
 
-        users_query_now = ADSManagerAdministrator.objects \
-            .select_related('prefecture') \
-            .filter(adsmanager__adsmanagerrequest__accepted=True) \
-            .annotate(users_count=Count('id'))
+        users_query_now = (
+            ADSManagerAdministrator.objects.select_related("prefecture")
+            .filter(adsmanager__adsmanagerrequest__accepted=True)
+            .annotate(users_count=Count("id"))
+        )
 
-        users_query_3_months = ADSManagerAdministrator.objects \
-            .select_related('prefecture') \
+        users_query_3_months = (
+            ADSManagerAdministrator.objects.select_related("prefecture")
             .filter(
                 adsmanager__adsmanagerrequest__accepted=True,
-                adsmanager__adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 3)
-            ).annotate(users_count=Count('id'))
+                adsmanager__adsmanagerrequest__created_at__lte=now
+                - timedelta(weeks=4 * 3),
+            )
+            .annotate(users_count=Count("id"))
+        )
 
-        users_query_6_months = ADSManagerAdministrator.objects \
-            .select_related('prefecture') \
+        users_query_6_months = (
+            ADSManagerAdministrator.objects.select_related("prefecture")
             .filter(
                 adsmanager__adsmanagerrequest__accepted=True,
-                adsmanager__adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 6)
-            ).annotate(users_count=Count('id'))
+                adsmanager__adsmanagerrequest__created_at__lte=now
+                - timedelta(weeks=4 * 6),
+            )
+            .annotate(users_count=Count("id"))
+        )
 
-        users_query_12_months = ADSManagerAdministrator.objects \
-            .select_related('prefecture') \
+        users_query_12_months = (
+            ADSManagerAdministrator.objects.select_related("prefecture")
             .filter(
                 adsmanager__adsmanagerrequest__accepted=True,
-                adsmanager__adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 12)
-            ).annotate(users_count=Count('id'))
+                adsmanager__adsmanagerrequest__created_at__lte=now
+                - timedelta(weeks=4 * 12),
+            )
+            .annotate(users_count=Count("id"))
+        )
 
-        for (label, query) in (
-            ('now', users_query_now),
-            ('3_months', users_query_3_months),
-            ('6_months', users_query_6_months),
-            ('12_months', users_query_12_months),
+        for label, query in (
+            ("now", users_query_now),
+            ("3_months", users_query_3_months),
+            ("6_months", users_query_6_months),
+            ("12_months", users_query_12_months),
         ):
             for row in query.all():
-                stats[row.prefecture.id]['obj'] = row
-                stats[row.prefecture.id]['users'][label] = row.users_count
+                stats[row.prefecture.id]["obj"] = row
+                stats[row.prefecture.id]["users"][label] = row.users_count
 
-            stats_total['users'][label] = query.aggregate(total=Coalesce(Sum('users_count'), 0))['total']
+            stats_total["users"][label] = query.aggregate(
+                total=Coalesce(Sum("users_count"), 0)
+            )["total"]
 
         return (
             # Transform dict to an ordered list
-            sorted(list(stats.values()), key=lambda stat: stat['obj'].id),
-            stats_total
+            sorted(list(stats.values()), key=lambda stat: stat["obj"].id),
+            stats_total,
         )
 
 
 class DashboardsDetailView(DetailView):
-    template_name = 'pages/dashboards_detail.html'
+    template_name = "pages/dashboards_detail.html"
     model = ADSManagerAdministrator
-    pk_url_kwarg = 'ads_manager_administrator_id'
+    pk_url_kwarg = "ads_manager_administrator_id"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['stats'] = self.get_stats()
+        ctx["stats"] = self.get_stats()
         return ctx
 
     def get_stats(self):
         stats = {}
 
-        stats = collections.defaultdict(lambda: {
-            'obj': None,
-            'ads': {},
-            'users': {}
-        })
+        stats = collections.defaultdict(lambda: {"obj": None, "ads": {}, "users": {}})
 
         now = timezone.now()
 
-        ads_query_now = ADSManager.objects \
-            .prefetch_related('content_type', 'content_object') \
-            .filter(
-                administrator=self.object
-            ).annotate(ads_count=Count('ads')) \
+        ads_query_now = (
+            ADSManager.objects.prefetch_related("content_type", "content_object")
+            .filter(administrator=self.object)
+            .annotate(ads_count=Count("ads"))
             .filter(ads_count__gt=0)
+        )
 
         # All ADSManager, with the count of ADS with at least one of the contact fields filled.
-        ads_with_info_query_now = ADSManager.objects \
-            .prefetch_related('content_type', 'content_object') \
-            .filter(
-                administrator=self.object
-            ).annotate(ads_count=Count('ads', filter=~Q(ads__owner_email='') | ~Q(ads__owner_mobile='') | ~Q(ads__owner_phone=''))) \
+        ads_with_info_query_now = (
+            ADSManager.objects.prefetch_related("content_type", "content_object")
+            .filter(administrator=self.object)
+            .annotate(
+                ads_count=Count(
+                    "ads",
+                    filter=~Q(ads__owner_email="")
+                    | ~Q(ads__owner_mobile="")
+                    | ~Q(ads__owner_phone=""),
+                )
+            )
             .filter(ads_count__gt=0)
+        )
 
-        ads_query_3_months = ADSManager.objects \
-            .prefetch_related('content_type', 'content_object') \
+        ads_query_3_months = (
+            ADSManager.objects.prefetch_related("content_type", "content_object")
             .filter(
                 administrator=self.object,
-                ads__creation_date__lte=now - timedelta(weeks=4 * 3)
-            ).annotate(ads_count=Count('ads'))
+                ads__creation_date__lte=now - timedelta(weeks=4 * 3),
+            )
+            .annotate(ads_count=Count("ads"))
+        )
 
-        ads_query_6_months = ADSManager.objects \
-            .prefetch_related('content_type', 'content_object') \
+        ads_query_6_months = (
+            ADSManager.objects.prefetch_related("content_type", "content_object")
             .filter(
                 administrator=self.object,
-                ads__creation_date__lte=now - timedelta(weeks=4 * 6)
-            ).annotate(ads_count=Count('ads'))
+                ads__creation_date__lte=now - timedelta(weeks=4 * 6),
+            )
+            .annotate(ads_count=Count("ads"))
+        )
 
-        ads_query_12_months = ADSManager.objects \
-            .prefetch_related('content_type', 'content_object') \
+        ads_query_12_months = (
+            ADSManager.objects.prefetch_related("content_type", "content_object")
             .filter(
                 administrator=self.object,
-                ads__creation_date__lte=now - timedelta(weeks=4 * 12)
-            ).annotate(ads_count=Count('ads'))
+                ads__creation_date__lte=now - timedelta(weeks=4 * 12),
+            )
+            .annotate(ads_count=Count("ads"))
+        )
 
-        for (label, query) in (
-            ('now', ads_query_now),
-            ('with_info_now', ads_with_info_query_now),
-            ('3_months', ads_query_3_months),
-            ('6_months', ads_query_6_months),
-            ('12_months', ads_query_12_months),
+        for label, query in (
+            ("now", ads_query_now),
+            ("with_info_now", ads_with_info_query_now),
+            ("3_months", ads_query_3_months),
+            ("6_months", ads_query_6_months),
+            ("12_months", ads_query_12_months),
         ):
             for row in query:
-                stats[row.id]['obj'] = row
-                stats[row.id]['ads'][label] = row.ads_count
+                stats[row.id]["obj"] = row
+                stats[row.id]["ads"][label] = row.ads_count
 
-        users_query_now = ADSManager.objects \
-            .prefetch_related('content_type', 'content_object') \
-            .filter(
-                administrator=self.object,
-                adsmanagerrequest__accepted=True
-            ).annotate(users_count=Count('id'))
+        users_query_now = (
+            ADSManager.objects.prefetch_related("content_type", "content_object")
+            .filter(administrator=self.object, adsmanagerrequest__accepted=True)
+            .annotate(users_count=Count("id"))
+        )
 
-        users_query_3_months = ADSManager.objects \
-            .prefetch_related('content_type', 'content_object') \
+        users_query_3_months = (
+            ADSManager.objects.prefetch_related("content_type", "content_object")
             .filter(
                 administrator=self.object,
                 adsmanagerrequest__accepted=True,
                 adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 3),
-            ).annotate(users_count=Count('id'))
+            )
+            .annotate(users_count=Count("id"))
+        )
 
-        users_query_6_months = ADSManager.objects \
-            .prefetch_related('content_type', 'content_object') \
+        users_query_6_months = (
+            ADSManager.objects.prefetch_related("content_type", "content_object")
             .filter(
                 administrator=self.object,
                 adsmanagerrequest__accepted=True,
                 adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 6),
-            ).annotate(users_count=Count('id'))
+            )
+            .annotate(users_count=Count("id"))
+        )
 
-        users_query_12_months = ADSManager.objects \
-            .prefetch_related('content_type', 'content_object') \
+        users_query_12_months = (
+            ADSManager.objects.prefetch_related("content_type", "content_object")
             .filter(
                 administrator=self.object,
                 adsmanagerrequest__accepted=True,
                 adsmanagerrequest__created_at__lte=now - timedelta(weeks=4 * 12),
-            ).annotate(users_count=Count('id'))
+            )
+            .annotate(users_count=Count("id"))
+        )
 
-        for (label, query) in (
-            ('now', users_query_now),
-            ('3_months', users_query_3_months),
-            ('6_months', users_query_6_months),
-            ('12_months', users_query_12_months),
+        for label, query in (
+            ("now", users_query_now),
+            ("3_months", users_query_3_months),
+            ("6_months", users_query_6_months),
+            ("12_months", users_query_12_months),
         ):
             for row in query.all():
-                stats[row.id]['obj'] = row
-                stats[row.id]['users'][label] = row.users_count
+                stats[row.id]["obj"] = row
+                stats[row.id]["users"][label] = row.users_count
 
-        return sorted(list(stats.values()), key=lambda stat: stat['obj'].id)
+        return sorted(list(stats.values()), key=lambda stat: stat["obj"].id)
 
 
 class FAQView(TemplateView):
-    template_name = 'pages/faq.html'
+    template_name = "pages/faq.html"
     faq_sections = [
         {
             "title": "Gestion du compte",
             "subitems": [
                 {
                     "title": "Comment créer un compte ?",
-                    "template": "pages/faq/account_create.html"
+                    "template": "pages/faq/account_create.html",
                 },
                 {
                     "title": "Je ne reçois pas l'e-mail de validation",
@@ -836,25 +925,24 @@ class FAQView(TemplateView):
         {
             "title": "Problème technique, remarque, question",
             "template": "pages/faq/contact.html",
-        }
+        },
     ]
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['faq_sections'] = self.faq_sections
+        ctx["faq_sections"] = self.faq_sections
         return ctx
 
 
 class ADSDecreeView(FormView):
     """Decree for ADS creation."""
-    template_name = 'pages/ads_decree.html'
+
+    template_name = "pages/ads_decree.html"
     form_class = ADSDecreeForm
 
     def get_ads(self):
         return get_object_or_404(
-            ADS,
-            id=self.kwargs['ads_id'],
-            ads_manager_id=self.kwargs['manager_id']
+            ADS, id=self.kwargs["ads_id"], ads_manager_id=self.kwargs["manager_id"]
         )
 
     def get_initial(self):
@@ -863,44 +951,46 @@ class ADSDecreeView(FormView):
         now = datetime.now()
 
         ads_user = ads.adsuser_set.first()
-        initial.update({
-            'decree_creation_date': now.strftime('%Y-%m-%d'),
-            'decree_commune': ads.ads_manager.content_object.display_fulltext(),
-            'ads_owner': ads.owner_name,
-            # We generate a .docx file that can be edited by the user if there
-            # are mot than one ads user.
-            'tenant_ads_user': ads_user.name if ads_user else '',
-            # New ADS have a validity of 5 years
-            'ads_end_date': now.replace(year=now.year + 5).strftime('%Y-%m-%d'),
-            'ads_number': ads.number,
-            'immatriculation_plate': ads.immatriculation_plate,
-        })
+        initial.update(
+            {
+                "decree_creation_date": now.strftime("%Y-%m-%d"),
+                "decree_commune": ads.ads_manager.content_object.display_fulltext(),
+                "ads_owner": ads.owner_name,
+                # We generate a .docx file that can be edited by the user if there
+                # are mot than one ads user.
+                "tenant_ads_user": ads_user.name if ads_user else "",
+                # New ADS have a validity of 5 years
+                "ads_end_date": now.replace(year=now.year + 5).strftime("%Y-%m-%d"),
+                "ads_number": ads.number,
+                "immatriculation_plate": ads.immatriculation_plate,
+            }
+        )
         return initial
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['ads'] = self.get_ads()
+        ctx["ads"] = self.get_ads()
         return ctx
 
     def form_valid(self, form):
-        path = finders.find('template-arrete-municipal.docx')
+        path = finders.find("template-arrete-municipal.docx")
         decree = DocxTemplate(path)
 
         # DocxTemplate uses jinja2 to render the template. To render dates, we
         # could use {{ date.strftime(...)}} but the month would be in English.
         # Use the django date template filter to use correct format.
-        form.cleaned_data.update({
-            k + '_str': date_template_filter(v, 'd F Y')
-            for k, v in form.cleaned_data.items()
-            if isinstance(v, date)
-        })
+        form.cleaned_data.update(
+            {
+                k + "_str": date_template_filter(v, "d F Y")
+                for k, v in form.cleaned_data.items()
+                if isinstance(v, date)
+            }
+        )
         decree.render(form.cleaned_data)
 
         response = HttpResponse(
-            content_type='application/vnd.openxmlformats',
-            headers={
-                'Content-Disposition': 'attachment; filename="decret.docx"'
-            }
+            content_type="application/vnd.openxmlformats",
+            headers={"Content-Disposition": 'attachment; filename="decret.docx"'},
         )
 
         decree.save(response)

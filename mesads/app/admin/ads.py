@@ -15,22 +15,23 @@ from ..models import (
 
 class ADSPeriodListFilter(admin.SimpleListFilter):
     """Filter ADS by creation date: before or after 2014/10/01."""
+
     title = "Date de création de l'ADS"
 
-    parameter_name = 'ads_period'
+    parameter_name = "ads_period"
 
     def lookups(self, request, model_admin):
         return (
-            ('before', 'Avant le 01/10/2014'),
-            ('after', 'Après le 01/10/2014'),
+            ("before", "Avant le 01/10/2014"),
+            ("after", "Après le 01/10/2014"),
         )
 
     def queryset(self, request, queryset):
-        if self.value() == 'before':
+        if self.value() == "before":
             return queryset.filter(
                 ads_creation_date__lt=date(2014, 10, 1),
             )
-        elif self.value() == 'after':
+        elif self.value() == "after":
             return queryset.filter(
                 ads_creation_date__gte=date(2014, 10, 1),
             )
@@ -38,26 +39,27 @@ class ADSPeriodListFilter(admin.SimpleListFilter):
 
 class ADSUsersCount(admin.SimpleListFilter):
     """Filter ADS by number of ADSUsers."""
+
     title = "Nombre d'exploitants"
 
-    parameter_name = 'ads_users_count'
+    parameter_name = "ads_users_count"
 
     def lookups(self, request, model_admin):
         return (
-            ('none', 'Aucun exploitant'),
-            ('one_plus', '>=1 exploitants'),
-            ('two_plus', '>=2 exploitants'),
-            ('five_plus', '>=5 exploitants'),
-            ('ten_plus', '>=10 exploitants'),
+            ("none", "Aucun exploitant"),
+            ("one_plus", ">=1 exploitants"),
+            ("two_plus", ">=2 exploitants"),
+            ("five_plus", ">=5 exploitants"),
+            ("ten_plus", ">=10 exploitants"),
         )
 
     def queryset(self, request, queryset):
-        queryset = queryset.annotate(ads_users_count=Count('adsuser'))
+        queryset = queryset.annotate(ads_users_count=Count("adsuser"))
         filters = {
-            'one_plus': 1,
-            'two_plus': 2,
-            'five_plus': 5,
-            'ten_plus': 10,
+            "one_plus": 1,
+            "two_plus": 2,
+            "five_plus": 5,
+            "ten_plus": 10,
         }
         filter_param = filters.get(self.value())
         if filter_param is None:
@@ -68,8 +70,8 @@ class ADSUsersCount(admin.SimpleListFilter):
 class ADSUserInline(admin.TabularInline):
     model = ADSUser
     extra = 0
-    verbose_name = 'Exploitant de l\'ADS'
-    verbose_name_plural = 'Exploitants de l\'ADS'
+    verbose_name = "Exploitant de l'ADS"
+    verbose_name_plural = "Exploitants de l'ADS"
 
 
 class ADSLegalFileInline(admin.StackedInline):
@@ -79,11 +81,11 @@ class ADSLegalFileInline(admin.StackedInline):
 
 @admin.register(ADS)
 class ADSAdmin(VersionAdmin):
-    @admin.display(description='Préfecture')
+    @admin.display(description="Préfecture")
     def prefecture(self, ads):
         return ads.ads_manager.administrator.prefecture.libelle
 
-    @admin.display(description='Administration')
+    @admin.display(description="Administration")
     def administration(self, ads):
         s = ads.ads_manager.content_object.display_text()
         # Capitalize first letter. No-op if string is empty.
@@ -104,19 +106,20 @@ class ADSAdmin(VersionAdmin):
         """
         ads_users = ads.adsuser_set.all()
         if not ads_users:
-            return '-'
+            return "-"
 
-        content = ''
+        content = ""
         for ads_user in ads_users:
-            content += f'''
+            content += f"""
                 <tr>
                     <td>{ads_user.status}</td>
                     <td>{ads_user.name}</td>
                     <td>{ads_user.siret}</td>
                     <td>{ads_user.license_number}</td>
                 </tr>
-            '''
-        return mark_safe(f'''
+            """
+        return mark_safe(
+            f"""
         <table>
             <tr>
                 <th>Statut</th>
@@ -126,7 +129,8 @@ class ADSAdmin(VersionAdmin):
             </tr>
             {content}
         </table>
-        ''')
+        """
+        )
 
     def has_change_permission(self, request, obj=None):
         if obj and obj.ads_manager.is_locked:
@@ -139,27 +143,29 @@ class ADSAdmin(VersionAdmin):
         return True
 
     list_display = (
-        'number',
-        'administration',
-        'prefecture',
-        'owner_name',
-        'owner_siret',
-
+        "number",
+        "administration",
+        "prefecture",
+        "owner_name",
+        "owner_siret",
         # Rewrite titles to limit the width of the column.
-        admin.display(description='Carte pro. tit.')(lambda ads: ads.owner_license_number or '-'),
-        admin.display(description='Exploitée par titulaire ?', boolean=True)(lambda ads: ads.used_by_owner),
-
-        'ads_users',
+        admin.display(description="Carte pro. tit.")(
+            lambda ads: ads.owner_license_number or "-"
+        ),
+        admin.display(description="Exploitée par titulaire ?", boolean=True)(
+            lambda ads: ads.used_by_owner
+        ),
+        "ads_users",
     )
 
     search_fields = (
-        'immatriculation_plate__iexact',
-        'number__istartswith',
+        "immatriculation_plate__iexact",
+        "number__istartswith",
     )
 
     autocomplete_fields = (
-        'ads_manager',
-        'epci_commune',
+        "ads_manager",
+        "epci_commune",
     )
 
     inlines = [
@@ -169,17 +175,17 @@ class ADSAdmin(VersionAdmin):
 
     list_filter = [
         ADSPeriodListFilter,
-        'used_by_owner',
-        'adsuser__status',
+        "used_by_owner",
+        "adsuser__status",
         ADSUsersCount,
-        'attribution_type',
-        'accepted_cpam',
+        "attribution_type",
+        "accepted_cpam",
     ]
 
     def get_queryset(self, request):
         req = super().get_queryset(request)
-        req = req.prefetch_related('ads_manager__content_type')
-        req = req.prefetch_related('ads_manager__content_object')
-        req = req.prefetch_related('ads_manager__administrator__prefecture')
-        req = req.prefetch_related('adsuser_set')
+        req = req.prefetch_related("ads_manager__content_type")
+        req = req.prefetch_related("ads_manager__content_object")
+        req = req.prefetch_related("ads_manager__administrator__prefecture")
+        req = req.prefetch_related("adsuser_set")
         return req

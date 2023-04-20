@@ -5,126 +5,217 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fradm', '0001_initial'),
-        ('app', '0037_alter_adsuser_license_number'),
+        ("fradm", "0001_initial"),
+        ("app", "0037_alter_adsuser_license_number"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ads',
-            name='accepted_cpam',
-            field=models.BooleanField(blank=True, null=True, verbose_name='Véhicule conventionné CPAM ?'),
+            model_name="ads",
+            name="accepted_cpam",
+            field=models.BooleanField(
+                blank=True, null=True, verbose_name="Véhicule conventionné CPAM ?"
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='ads_creation_date',
-            field=models.DateField(blank=True, null=True, verbose_name="Date de création de l'ADS"),
+            model_name="ads",
+            name="ads_creation_date",
+            field=models.DateField(
+                blank=True, null=True, verbose_name="Date de création de l'ADS"
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='attribution_date',
-            field=models.DateField(blank=True, null=True, verbose_name="Date d'attribution de l'ADS au titulaire actuel"),
+            model_name="ads",
+            name="attribution_date",
+            field=models.DateField(
+                blank=True,
+                null=True,
+                verbose_name="Date d'attribution de l'ADS au titulaire actuel",
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='attribution_reason',
-            field=models.CharField(blank=True, max_length=4096, verbose_name="Raison d'attribution"),
+            model_name="ads",
+            name="attribution_reason",
+            field=models.CharField(
+                blank=True, max_length=4096, verbose_name="Raison d'attribution"
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='attribution_type',
-            field=models.CharField(blank=True, choices=[('free', "Gratuitement (délivrée par l'autorité compétente)"), ('paid', 'Cession à titre onéreux'), ('other', 'Autre')], max_length=16, verbose_name="Type d'attribution de l'ADS"),
+            model_name="ads",
+            name="attribution_type",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("free", "Gratuitement (délivrée par l'autorité compétente)"),
+                    ("paid", "Cession à titre onéreux"),
+                    ("other", "Autre"),
+                ],
+                max_length=16,
+                verbose_name="Type d'attribution de l'ADS",
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='eco_vehicle',
-            field=models.BooleanField(blank=True, help_text='Vous pouvez retrouver cette information sur la mention P.3 de la carte grise du véhicule concerné par l\'ADS. L\'ensemble des abréviations est disponible sur legifrance : <a href="https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044084721" target="_blank">https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044084721</a> ', null=True, verbose_name='Véhicule électrique ou hybride ?'),
+            model_name="ads",
+            name="eco_vehicle",
+            field=models.BooleanField(
+                blank=True,
+                help_text='Vous pouvez retrouver cette information sur la mention P.3 de la carte grise du véhicule concerné par l\'ADS. L\'ensemble des abréviations est disponible sur legifrance : <a href="https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044084721" target="_blank">https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044084721</a> ',
+                null=True,
+                verbose_name="Véhicule électrique ou hybride ?",
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='epci_commune',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.RESTRICT, to='fradm.commune', verbose_name="Commune de l'EPCI concernée par l'ADS"),
+            model_name="ads",
+            name="epci_commune",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.RESTRICT,
+                to="fradm.commune",
+                verbose_name="Commune de l'EPCI concernée par l'ADS",
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='immatriculation_plate',
-            field=models.CharField(blank=True, max_length=128, verbose_name="Plaque d'immatriculation"),
+            model_name="ads",
+            name="immatriculation_plate",
+            field=models.CharField(
+                blank=True, max_length=128, verbose_name="Plaque d'immatriculation"
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='number',
+            model_name="ads",
+            name="number",
             field=models.CharField(max_length=255, verbose_name="Numéro de l'ADS"),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='owner_email',
-            field=models.CharField(blank=True, max_length=128, verbose_name="Email du titulaire de l'ADS"),
+            model_name="ads",
+            name="owner_email",
+            field=models.CharField(
+                blank=True, max_length=128, verbose_name="Email du titulaire de l'ADS"
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='owner_mobile',
-            field=models.CharField(blank=True, max_length=128, verbose_name="Téléphone mobile du titulaire de l'ADS"),
+            model_name="ads",
+            name="owner_mobile",
+            field=models.CharField(
+                blank=True,
+                max_length=128,
+                verbose_name="Téléphone mobile du titulaire de l'ADS",
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='owner_name',
-            field=models.CharField(blank=True, help_text="S'il s'agit d'une personne physique, précisez le nom et le prénom du titulaire de l'ADS. S'il s'agit d'une personne morale, indiquez sa raison sociale. ", max_length=1024, verbose_name="Titulaire de l'ADS"),
+            model_name="ads",
+            name="owner_name",
+            field=models.CharField(
+                blank=True,
+                help_text="S'il s'agit d'une personne physique, précisez le nom et le prénom du titulaire de l'ADS. S'il s'agit d'une personne morale, indiquez sa raison sociale. ",
+                max_length=1024,
+                verbose_name="Titulaire de l'ADS",
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='owner_phone',
-            field=models.CharField(blank=True, max_length=128, verbose_name="Téléphone fixe du titulaire de l'ADS"),
+            model_name="ads",
+            name="owner_phone",
+            field=models.CharField(
+                blank=True,
+                max_length=128,
+                verbose_name="Téléphone fixe du titulaire de l'ADS",
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='owner_siret',
-            field=models.CharField(blank=True, help_text="Nous validons ce numéro en consultant les données officielles de l'INSEE. Indiquez le numéro de SIRET (14 chiffres) sans espace. ", max_length=128, verbose_name="SIRET du titulaire de l'ADS"),
+            model_name="ads",
+            name="owner_siret",
+            field=models.CharField(
+                blank=True,
+                help_text="Nous validons ce numéro en consultant les données officielles de l'INSEE. Indiquez le numéro de SIRET (14 chiffres) sans espace. ",
+                max_length=128,
+                verbose_name="SIRET du titulaire de l'ADS",
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='transaction_identifier',
-            field=models.CharField(blank=True, max_length=64, verbose_name="Numéro d'identification lié au registre des transactions"),
+            model_name="ads",
+            name="transaction_identifier",
+            field=models.CharField(
+                blank=True,
+                max_length=64,
+                verbose_name="Numéro d'identification lié au registre des transactions",
+            ),
         ),
         migrations.AlterField(
-            model_name='ads',
-            name='vehicle_compatible_pmr',
-            field=models.BooleanField(blank=True, help_text="Vous pouvez retrouver cette information sur la mention « J.3 : handicap » de la carte grise du véhicule concerné par l'ADS.", null=True, verbose_name='Véhicule compatible PMR ?'),
+            model_name="ads",
+            name="vehicle_compatible_pmr",
+            field=models.BooleanField(
+                blank=True,
+                help_text="Vous pouvez retrouver cette information sur la mention « J.3 : handicap » de la carte grise du véhicule concerné par l'ADS.",
+                null=True,
+                verbose_name="Véhicule compatible PMR ?",
+            ),
         ),
         migrations.AlterField(
-            model_name='adsmanager',
-            name='no_ads_declared',
-            field=models.BooleanField(default=False, help_text='Cocher cette case si le gestionnaire ne gère aucune ADS.', verbose_name="L'administration ne gère aucune ADS"),
+            model_name="adsmanager",
+            name="no_ads_declared",
+            field=models.BooleanField(
+                default=False,
+                help_text="Cocher cette case si le gestionnaire ne gère aucune ADS.",
+                verbose_name="L'administration ne gère aucune ADS",
+            ),
         ),
         migrations.AlterField(
-            model_name='adsupdatefile',
-            name='creation_date',
-            field=models.DateTimeField(auto_now_add=True, verbose_name='Date de création du fichier'),
+            model_name="adsupdatefile",
+            name="creation_date",
+            field=models.DateTimeField(
+                auto_now_add=True, verbose_name="Date de création du fichier"
+            ),
         ),
         migrations.AlterField(
-            model_name='adsupdatefile',
-            name='imported',
-            field=models.BooleanField(default=False, verbose_name='Fichier importé dans notre base de données ?'),
+            model_name="adsupdatefile",
+            name="imported",
+            field=models.BooleanField(
+                default=False,
+                verbose_name="Fichier importé dans notre base de données ?",
+            ),
         ),
         migrations.AlterField(
-            model_name='adsuser',
-            name='license_number',
-            field=models.CharField(blank=True, max_length=64, verbose_name='Numéro de la carte professionnelle'),
+            model_name="adsuser",
+            name="license_number",
+            field=models.CharField(
+                blank=True,
+                max_length=64,
+                verbose_name="Numéro de la carte professionnelle",
+            ),
         ),
         migrations.AlterField(
-            model_name='adsuser',
-            name='name',
-            field=models.CharField(blank=True, max_length=1024, verbose_name="Nom de l'exploitant de l'ADS"),
+            model_name="adsuser",
+            name="name",
+            field=models.CharField(
+                blank=True, max_length=1024, verbose_name="Nom de l'exploitant de l'ADS"
+            ),
         ),
         migrations.AlterField(
-            model_name='adsuser',
-            name='siret',
-            field=models.CharField(blank=True, help_text="Nous validons ce numéro en consultant les données officielles de l'INSEE. Indiquez le numéro de SIRET (14 chiffres) sans espace. ", max_length=128, verbose_name="SIRET de l'exploitant de l'ADS"),
+            model_name="adsuser",
+            name="siret",
+            field=models.CharField(
+                blank=True,
+                help_text="Nous validons ce numéro en consultant les données officielles de l'INSEE. Indiquez le numéro de SIRET (14 chiffres) sans espace. ",
+                max_length=128,
+                verbose_name="SIRET de l'exploitant de l'ADS",
+            ),
         ),
         migrations.AlterField(
-            model_name='adsuser',
-            name='status',
-            field=models.CharField(blank=True, choices=[('titulaire_exploitant', 'Titulaire exploitant'), ('cooperateur', 'Locataire coopérateur'), ('locataire_gerant', 'Locataire gérant'), ('salarie', 'Salarié'), ('autre', 'Autre')], max_length=255, verbose_name="Statut de l'exploitant de l'ADS"),
+            model_name="adsuser",
+            name="status",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("titulaire_exploitant", "Titulaire exploitant"),
+                    ("cooperateur", "Locataire coopérateur"),
+                    ("locataire_gerant", "Locataire gérant"),
+                    ("salarie", "Salarié"),
+                    ("autre", "Autre"),
+                ],
+                max_length=255,
+                verbose_name="Statut de l'exploitant de l'ADS",
+            ),
         ),
     ]

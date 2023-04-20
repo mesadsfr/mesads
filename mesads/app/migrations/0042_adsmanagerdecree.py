@@ -6,19 +6,41 @@ import mesads.app.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0041_remove_ads_ads_creation_date_before_attribution_date_and_more'),
+        ("app", "0041_remove_ads_ads_creation_date_before_attribution_date_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ADSManagerDecree',
+            name="ADSManagerDecree",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('creation_date', models.DateTimeField(auto_now_add=True, verbose_name='Date de création du fichier')),
-                ('file', models.FileField(upload_to=mesads.app.models.ADSManagerDecree.get_filename)),
-                ('ads_manager', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='app.adsmanager')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "creation_date",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="Date de création du fichier"
+                    ),
+                ),
+                (
+                    "file",
+                    models.FileField(
+                        upload_to=mesads.app.models.ADSManagerDecree.get_filename
+                    ),
+                ),
+                (
+                    "ads_manager",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="app.adsmanager"
+                    ),
+                ),
             ],
         ),
     ]

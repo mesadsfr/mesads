@@ -4,7 +4,7 @@ from django.db import migrations, models
 
 
 def copy_ads_creation_date(apps, schema_editor):
-    ADSLegalFile = apps.get_model('app', 'ADSLegalFile')
+    ADSLegalFile = apps.get_model("app", "ADSLegalFile")
 
     for ads_legal_file in ADSLegalFile.objects.all():
         ads_legal_file.creation_date = ads_legal_file.ads.creation_date
@@ -16,15 +16,14 @@ def do_nothing(*args, **kwargs):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0024_adslegalfile_creation_date'),
+        ("app", "0024_adslegalfile_creation_date"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='adslegalfile',
-            name='creation_date',
+            model_name="adslegalfile",
+            name="creation_date",
             field=models.DateField(),
         ),
         migrations.RunPython(copy_ads_creation_date, do_nothing),

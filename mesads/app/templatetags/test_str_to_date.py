@@ -9,4 +9,4 @@ class TestStrToDate(TestCase):
     def test_str_to_date(self):
         today = date.today()
         self.assertIs(str_to_date(today), today)
-        self.assertEqual(str_to_date(today.strftime('%Y-%m-%d')), today)
+        self.assertEqual(str_to_date(today.strftime("%Y-%m-%d")), today)

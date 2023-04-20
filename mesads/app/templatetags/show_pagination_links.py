@@ -17,7 +17,7 @@ class Page:
     number: int = None
 
 
-@register.inclusion_tag('pagination_links.html')
+@register.inclusion_tag("pagination_links.html")
 def show_pagination_links(page_obj):
     """Links to render pagination.
 
@@ -71,5 +71,5 @@ def show_pagination_links(page_obj):
         pages.append(Page(is_last=True, number=page_obj.paginator.num_pages))
 
     return {
-        'pages': pages,
+        "pages": pages,
     }

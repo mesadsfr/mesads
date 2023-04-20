@@ -4,45 +4,67 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Prefecture',
+            name="Prefecture",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('numero', models.CharField(max_length=16, unique=True)),
-                ('libelle', models.CharField(max_length=255, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("numero", models.CharField(max_length=16, unique=True)),
+                ("libelle", models.CharField(max_length=255, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='EPCI',
+            name="EPCI",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('siren', models.CharField(max_length=64, unique=True)),
-                ('departement', models.CharField(max_length=16)),
-                ('name', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("siren", models.CharField(max_length=64, unique=True)),
+                ("departement", models.CharField(max_length=16)),
+                ("name", models.CharField(max_length=255)),
             ],
             options={
-                'verbose_name': 'EPCI',
-                'verbose_name_plural': 'EPCI',
-                'unique_together': {('departement', 'name')},
+                "verbose_name": "EPCI",
+                "verbose_name_plural": "EPCI",
+                "unique_together": {("departement", "name")},
             },
         ),
         migrations.CreateModel(
-            name='Commune',
+            name="Commune",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('insee', models.CharField(max_length=16, unique=True)),
-                ('departement', models.CharField(max_length=16)),
-                ('libelle', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("insee", models.CharField(max_length=16, unique=True)),
+                ("departement", models.CharField(max_length=16)),
+                ("libelle", models.CharField(max_length=255)),
             ],
             options={
-                'unique_together': {('departement', 'libelle')},
+                "unique_together": {("departement", "libelle")},
             },
         ),
     ]

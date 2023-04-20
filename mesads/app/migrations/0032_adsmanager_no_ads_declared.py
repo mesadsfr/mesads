@@ -4,15 +4,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0031_alter_adslegalfile_file'),
+        ("app", "0031_alter_adslegalfile_file"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='adsmanager',
-            name='no_ads_declared',
-            field=models.BooleanField(default=False, help_text='Cocher cette case si le gestionnaire ne gère aucune ADS.'),
+            model_name="adsmanager",
+            name="no_ads_declared",
+            field=models.BooleanField(
+                default=False,
+                help_text="Cocher cette case si le gestionnaire ne gère aucune ADS.",
+            ),
         ),
     ]

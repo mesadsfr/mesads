@@ -4,14 +4,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0006_auto_20220425_1813'),
+        ("app", "0006_auto_20220425_1813"),
     ]
 
     operations = [
         migrations.AddConstraint(
-            model_name='ads',
-            constraint=models.UniqueConstraint(fields=('number', 'ads_manager_id'), name='unique_ads_number'),
+            model_name="ads",
+            constraint=models.UniqueConstraint(
+                fields=("number", "ads_manager_id"), name="unique_ads_number"
+            ),
         ),
     ]

@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0012_remove_ads_user_name_remove_ads_user_siret'),
+        ("app", "0012_remove_ads_user_name_remove_ads_user_siret"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ads',
-            name='owner_name',
+            model_name="ads",
+            name="owner_name",
             field=models.CharField(blank=True, max_length=1024),
         ),
     ]
