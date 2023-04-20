@@ -629,8 +629,11 @@ class ADSUser(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
     ]
 
     status = models.CharField(
-        max_length=255, choices=ADS_USER_STATUS, blank=True, null=False,
-        verbose_name="Statut de l'exploitant de l'ADS"
+        max_length=255,
+        choices=ADS_USER_STATUS,
+        blank=True,
+        null=False,
+        verbose_name="Modalité d'exploitation de l'ADS",
     )
     name = models.CharField(
         max_length=1024, blank=True, null=False,
