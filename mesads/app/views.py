@@ -24,12 +24,16 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, FormView, ProcessFormView
 from django.views.generic.list import ListView
 
+from formtools.wizard.views import CookieWizardView
+
 from reversion.views import RevisionMixin
 
 from mesads.fradm.models import EPCI
 
 from .forms import (
-    ADSDecreeForm,
+    ADSDecreeForm1,
+    ADSDecreeForm2,
+    ADSDecreeForm3,
     ADSForm,
     ADSLegalFileFormSet,
     ADSManagerDecreeFormSet,
@@ -934,27 +938,66 @@ class FAQView(TemplateView):
         return ctx
 
 
-class ADSDecreeView(FormView):
+class CustomCookieWizardView(CookieWizardView):
+    def render_done(self, form, **kwargs):
+        """The custom method render_done is call at the final step of the
+        wizard. The base class resets the storage, which prevents to edit the
+        form to regenerate the decree. We override the method to prevent the
+        storage from being reset."""
+        storage_reset = self.storage.reset
+        self.storage.reset = lambda: None
+        resp = super().render_done(form, **kwargs)
+        self.storage.reset = storage_reset
+        return resp
+
+
+class ADSDecreeView(CustomCookieWizardView):
     """Decree for ADS creation."""
-
     template_name = "pages/ads_decree.html"
-    form_class = ADSDecreeForm
+    form_list = (ADSDecreeForm1, ADSDecreeForm2, ADSDecreeForm3,)
 
-    def get_ads(self):
-        return get_object_or_404(
-            ADS, id=self.kwargs["ads_id"], ads_manager_id=self.kwargs["manager_id"]
-        )
+    def get_prefix(self, request, *args, **kwargs):
+        """By default, WizardView uses the class name as a prefix. If the user
+        opens several tabs at the same time, the storage is shared and weird
+        behavior can happen.
 
-    def get_initial(self):
-        initial = super().get_initial()
+        For example:
+
+        * tab 1: from the page to create a decree for an ADS, go to second step
+        * tab 2: from the page to create a decree for another ADS, go to second step
+        * tab 2: refresh the page to go back to first step
+        * tab 1: go to third step
+
+        If the prefix is shared, an error will be raised because the form data
+        have been deleted when the user refreshed the page in tab 2."""
+        prefix = super().get_prefix(request, *args, **kwargs)
+        return f'{prefix}_{kwargs["ads_id"]}'
+
+    def get_form_kwargs(self, step=None):
+        """Instantiate ADSDecreeForm1 with the value of the previous form, to
+        set the correct choices of the select field."""
+        ret = super().get_form_kwargs(step=step)
+        if step == '1':
+            return {
+                'is_old_ads': self.get_cleaned_data_for_step('0').get('is_old_ads')
+            }
+        return ret
+
+    def get_form_initial(self, step):
+        """Set fields defaults."""
+        ret = super().get_form_initial(step)
         ads = self.get_ads()
-        now = datetime.now()
 
-        ads_user = ads.adsuser_set.first()
-        initial.update(
-            {
+        if step == '0':
+            ret.update({
+                'is_old_ads': ads.ads_creation_date and ads.ads_creation_date <= date(2014, 10, 1),
+            })
+        elif step == '2':
+            now = datetime.now()
+            ads_user = ads.adsuser_set.first()
+            ret.update({
                 "decree_creation_date": now.strftime("%Y-%m-%d"),
-                "decree_commune": ads.ads_manager.content_object.display_fulltext(),
+                "decree_commune": ads.ads_manager.content_object.libelle,
                 "ads_owner": ads.owner_name,
                 # We generate a .docx file that can be edited by the user if there
                 # are mot than one ads user.
@@ -963,30 +1006,42 @@ class ADSDecreeView(FormView):
                 "ads_end_date": now.replace(year=now.year + 5).strftime("%Y-%m-%d"),
                 "ads_number": ads.number,
                 "immatriculation_plate": ads.immatriculation_plate,
-            }
+            })
+        return ret
+
+
+    def get_ads(self):
+        return get_object_or_404(
+            ADS, id=self.kwargs["ads_id"], ads_manager_id=self.kwargs["manager_id"]
         )
-        return initial
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["ads"] = self.get_ads()
         return ctx
 
-    def form_valid(self, form):
+    def done(self, form_list, **kwargs):
         path = finders.find("template-arrete-municipal.docx")
         decree = DocxTemplate(path)
+
+        cleaned_data = self.get_all_cleaned_data()
 
         # DocxTemplate uses jinja2 to render the template. To render dates, we
         # could use {{ date.strftime(...)}} but the month would be in English.
         # Use the django date template filter to use correct format.
-        form.cleaned_data.update(
+        cleaned_data.update(
             {
                 k + "_str": date_template_filter(v, "d F Y")
-                for k, v in form.cleaned_data.items()
+                for k, v in cleaned_data.items()
                 if isinstance(v, date)
             }
         )
-        decree.render(form.cleaned_data)
+
+        # Prefix the commune name with "la commune d'" or "la commune de "
+        decree_commune = cleaned_data["decree_commune"]
+        cleaned_data["decree_commune_fulltext"] = "d'%s" % decree_commune if decree_commune[:1] in ("aeiouy") else "de %s" % decree_commune
+
+        decree.render(cleaned_data)
 
         response = HttpResponse(
             content_type="application/vnd.openxmlformats",

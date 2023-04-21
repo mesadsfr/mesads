@@ -400,6 +400,21 @@ django = ">=3.2.4"
 sqlparse = ">=0.2"
 
 [[package]]
+name = "django-formtools"
+version = "2.4"
+description = "A set of high-level abstractions for Django forms"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "django-formtools-2.4.tar.gz", hash = "sha256:deb932be55b1d9419e37dc4d65dfbfeb8d307b71c8c11fd52f159aba5fc0deed"},
+    {file = "django_formtools-2.4-py3-none-any.whl", hash = "sha256:f5f32f62ec8192cd1bc55bd929ca7dff5a5f2addf9027db95a5906ecfaa64836"},
+]
+
+[package.dependencies]
+Django = ">=2.2"
+
+[[package]]
 name = "django-mjml"
 version = "1.0"
 description = "Use MJML in Django templates"
@@ -1289,4 +1304,4 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2f9dfb26e24d9cc656fd1ca7b1ca3e5bf563d0cea89e2dd3c2723a3b65310fe3"
+content-hash = "2f6dd4bc0cdb8224ca81b74dceb245a6b31cb0ced9760908aec78511c9043988"

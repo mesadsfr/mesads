@@ -23,7 +23,29 @@
   </div>
 </nav>
 
-<form class="fr-col-12 fr-col-sm-8 fr-col-md-6" method="post" enctype="multipart/form-data">
+<form class="fr-col-12 fr-col-sm-12 fr-col-md-8" method="post" enctype="multipart/form-data">
+  <div class="fr-stepper">
+    <h2 class="fr-stepper__title">
+      <span class="fr-stepper__state">Étape {{ wizard.steps.index|add:1 }} sur {{ wizard.steps.count }}</span>
+      {% for form in view.form_list.values %}
+        {% if forloop.counter0 == wizard.steps.index %}
+          {{ form.STEP_TITLE }}
+        {% endif %}
+      {% endfor %}
+    </h2>
+    <div class="fr-stepper__steps" data-fr-current-step="{{ wizard.steps.index|add:1 }}" data-fr-steps="{{ wizard.steps.count }}"></div>
+    <p class="fr-stepper__details">
+      <span class="fr-text--bold">Étape suivante :</span>
+      {% for form in view.form_list.values %}
+        {% if forloop.counter0 == wizard.steps.index|add:1 %}
+          {{ form.STEP_TITLE }}
+        {% endif %}
+      {% endfor %}
+    </p>
+  </div>
+
+  {{ wizard.management_form }}
+
   {% if form.non_field_errors %}
     <div class="fr-input-group fr-input-group--error">
       {% for error in form.non_field_errors %}
@@ -37,37 +59,51 @@
 
   {% csrf_token %}
 
-  <!-- General decree information -->
-  {% include 'pages/ads-form_string.html' with field_title=form.decree_number.label field_description=form.decree_number.help_text field=form.decree_number field_errors=form.errors.decree_number required=form.fields.decree_number.required %}
-  {% include 'pages/ads-form_date.html' with field_title=form.decree_creation_date.label field_description=form.decree_number_date.help_text field=form.decree_creation_date field_errors=form.errors.decree_creation_date required=form.fields.decree_creation_date.required %}
-  {% include 'pages/ads-form_string.html' with field_title=form.decree_commune.label default_value=ads.ads_manager.display_text field_description=form.decree_commune.help_text field=form.decree_commune field_errors=form.errors.decree_commune required=form.fields.decree_commune.required %}
-  {% include 'pages/ads-form_string.html' with field_title=form.decree_limiting_ads_number.label field_description=form.decree_limiting_ads_number.help_text field=form.decree_limiting_ads_number field_errors=form.errors.decree_limiting_ads_number required=form.fields.decree_limiting_ads_number.required %}
-  {% include 'pages/ads-form_date.html' with field_title=form.decree_limiting_ads_date.label field_description=form.decree_number_date.help_text field=form.decree_limiting_ads_date field_errors=form.errors.decree_limiting_ads_date required=form.fields.decree_limiting_ads_date.required %}
+  {% if wizard.steps.index == 0 %}
+    {% include 'pages/ads-form_select.html' with field_title=form.is_old_ads.label field_description=form.is_old_ads.help_text field=form.is_old_ads field_errors=form.errors.is_old_ads required=form.fields.is_old_ads.required %}
+  {% elif wizard.steps.index == 1 %}
+    {% include 'pages/ads-form_select.html' with field_title=form.decree_creation_reason.label field_description=form.decree_creation_reason.help_text field=form.decree_creation_reason field_errors=form.errors.decree_creation_reason required=form.fields.decree_creation_reason.required %}
+  {% else %}
+    <!-- General decree information -->
+    {% include 'pages/ads-form_string.html' with field_title=form.decree_number.label field_description=form.decree_number.help_text field=form.decree_number field_errors=form.errors.decree_number required=form.fields.decree_number.required %}
+    {% include 'pages/ads-form_date.html' with field_title=form.decree_creation_date.label field_description=form.decree_number_date.help_text field=form.decree_creation_date field_errors=form.errors.decree_creation_date required=form.fields.decree_creation_date.required %}
+    {% include 'pages/ads-form_string.html' with field_title=form.decree_commune.label default_value=ads.ads_manager.display_text field_description=form.decree_commune.help_text field=form.decree_commune field_errors=form.errors.decree_commune required=form.fields.decree_commune.required %}
+    {% include 'pages/ads-form_string.html' with field_title=form.decree_limiting_ads_number.label field_description=form.decree_limiting_ads_number.help_text field=form.decree_limiting_ads_number field_errors=form.errors.decree_limiting_ads_number required=form.fields.decree_limiting_ads_number.required %}
+    {% include 'pages/ads-form_date.html' with field_title=form.decree_limiting_ads_date.label field_description=form.decree_number_date.help_text field=form.decree_limiting_ads_date field_errors=form.errors.decree_limiting_ads_date required=form.fields.decree_limiting_ads_date.required %}
 
-  <!-- ADS owner -->
-  {% include 'pages/ads-form_string.html' with field_title=form.ads_owner.label field_description=form.ads_owner.help_text field=form.ads_owner field_errors=form.errors.ads_owner required=form.fields.ads_owner.required %}
-  {% include 'pages/ads-form_string.html' with field_title=form.ads_owner_rcs.label field_description=form.ads_owner_rcs.help_text field=form.ads_owner_rcs field_errors=form.errors.ads_owner_rcs required=form.fields.ads_owner_rcs.required %}
+    <!-- ADS owner -->
+    {% include 'pages/ads-form_string.html' with field_title=form.ads_owner.label field_description=form.ads_owner.help_text field=form.ads_owner field_errors=form.errors.ads_owner required=form.fields.ads_owner.required %}
+    {% include 'pages/ads-form_string.html' with field_title=form.ads_owner_rcs.label field_description=form.ads_owner_rcs.help_text field=form.ads_owner_rcs field_errors=form.errors.ads_owner_rcs required=form.fields.ads_owner_rcs.required %}
 
-  <!-- ADS Location-Gérance -->
-  {% include 'pages/ads-form_string.html' with field_title=form.tenant_legal_representative.label field_description=form.tenant_legal_representative.help_text field=form.tenant_legal_representative field_errors=form.errors.tenant_legal_representative required=form.fields.tenant_legal_representative.required %}
-  {% include 'pages/ads-form_date.html' with field_title=form.tenant_signature_date.label field_description=form.tenant_signature_date.help_text field=form.tenant_signature_date field_errors=form.errors.tenant_signature_date required=form.fields.tenant_signature_date.required %}
-  {% include 'pages/ads-form_string.html' with field_title=form.tenant_ads_user.label field_description=form.tenant_ads_user.help_text field=form.tenant_ads_user field_errors=form.errors.tenant_ads_user required=form.fields.tenant_ads_user.required %}
+    <!-- ADS Location-Gérance -->
+    {% include 'pages/ads-form_string.html' with field_title=form.tenant_legal_representative.label field_description=form.tenant_legal_representative.help_text field=form.tenant_legal_representative field_errors=form.errors.tenant_legal_representative required=form.fields.tenant_legal_representative.required %}
+    {% include 'pages/ads-form_date.html' with field_title=form.tenant_signature_date.label field_description=form.tenant_signature_date.help_text field=form.tenant_signature_date field_errors=form.errors.tenant_signature_date required=form.fields.tenant_signature_date.required %}
+    {% include 'pages/ads-form_string.html' with field_title=form.tenant_ads_user.label field_description=form.tenant_ads_user.help_text field=form.tenant_ads_user field_errors=form.errors.tenant_ads_user required=form.fields.tenant_ads_user.required %}
 
-  <!-- ADS Information -->
-  {% include 'pages/ads-form_date.html' with field_title=form.ads_end_date.label field_description=form.decree_number_date.help_text field=form.ads_end_date field_errors=form.errors.ads_end_date required=form.fields.ads_end_date.required %}
-  {% include 'pages/ads-form_string.html' with field_title=form.ads_number.label field_description=form.ads_number.help_text field=form.ads_number field_errors=form.errors.ads_number required=form.fields.ads_number.required %}
+    <!-- ADS Information -->
+    {% include 'pages/ads-form_date.html' with field_title=form.ads_end_date.label field_description=form.decree_number_date.help_text field=form.ads_end_date field_errors=form.errors.ads_end_date required=form.fields.ads_end_date.required %}
+    {% include 'pages/ads-form_string.html' with field_title=form.ads_number.label field_description=form.ads_number.help_text field=form.ads_number field_errors=form.errors.ads_number required=form.fields.ads_number.required %}
 
-  <!-- Vehicle information -->
-  {% include 'pages/ads-form_string.html' with field_title=form.vehicle_brand.label field_description=form.vehicle_brand.help_text field=form.vehicle_brand field_errors=form.errors.vehicle_brand required=form.fields.vehicle_brand.required %}
-  {% include 'pages/ads-form_string.html' with field_title=form.vehicle_model.label field_description=form.vehicle_model.help_text field=form.vehicle_model field_errors=form.errors.vehicle_model required=form.fields.vehicle_model.required %}
-  {% include 'pages/ads-form_string.html' with field_title=form.immatriculation_plate.label field_description=form.immatriculation_plate.help_text field=form.immatriculation_plate field_errors=form.errors.immatriculation_plate required=form.fields.immatriculation_plate.required %}
-  {% include 'pages/ads-form_string.html' with field_title=form.previous_decree_number.label field_description=form.previous_decree_number.help_text field=form.previous_decree_number field_errors=form.errors.previous_decree_number required=form.fields.previous_decree_number.required %}
-  {% include 'pages/ads-form_date.html' with field_title=form.previous_decree_date.label field_description=form.decree_number_date.help_text field=form.previous_decree_date field_errors=form.errors.previous_decree_date required=form.fields.previous_decree_date.required %}
-  {% include 'pages/ads-form_string.html' with field_title=form.decree_number_taxi_activity.label field_description=form.decree_number_taxi_activity.help_text field=form.decree_number_taxi_activity field_errors=form.errors.decree_number_taxi_activity required=form.fields.decree_number_taxi_activity.required %}
+    <!-- Vehicle information -->
+    {% include 'pages/ads-form_string.html' with field_title=form.vehicle_brand.label field_description=form.vehicle_brand.help_text field=form.vehicle_brand field_errors=form.errors.vehicle_brand required=form.fields.vehicle_brand.required %}
+    {% include 'pages/ads-form_string.html' with field_title=form.vehicle_model.label field_description=form.vehicle_model.help_text field=form.vehicle_model field_errors=form.errors.vehicle_model required=form.fields.vehicle_model.required %}
+    {% include 'pages/ads-form_string.html' with field_title=form.immatriculation_plate.label field_description=form.immatriculation_plate.help_text field=form.immatriculation_plate field_errors=form.errors.immatriculation_plate required=form.fields.immatriculation_plate.required %}
+    {% include 'pages/ads-form_string.html' with field_title=form.previous_decree_number.label field_description=form.previous_decree_number.help_text field=form.previous_decree_number field_errors=form.errors.previous_decree_number required=form.fields.previous_decree_number.required %}
+    {% include 'pages/ads-form_date.html' with field_title=form.previous_decree_date.label field_description=form.decree_number_date.help_text field=form.previous_decree_date field_errors=form.errors.previous_decree_date required=form.fields.previous_decree_date.required %}
+    {% include 'pages/ads-form_string.html' with field_title=form.decree_number_taxi_activity.label field_description=form.decree_number_taxi_activity.help_text field=form.decree_number_taxi_activity field_errors=form.errors.decree_number_taxi_activity required=form.fields.decree_number_taxi_activity.required %}
+  {% endif %}
 
 
-  <!-- Submit buttons -->
-  <button type="submit" class="fr-btn">Générer l'arrêté municipal</button>
+  <!-- Submit button -->
+  {% if wizard.steps.next %}
+    <button type="submit" class="fr-btn">Étape suivante</button>
+  {% else %}
+    <button type="submit" class="fr-btn">Générer l'arrêté municipal</button>
+  {% endif %}
+
+  {% if wizard.steps.prev %}
+  <button name="wizard_goto_step" class="fr-btn fr-btn--tertiary-no-outline" type="submit" value="{{ wizard.steps.prev }}">Étape précédente</button>
+  {% endif %}
 </form>
 
 {% endblock %}

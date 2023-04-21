@@ -167,8 +167,45 @@ ADSManagerDecreeFormSet = inlineformset_factory(
 )
 
 
-class ADSDecreeForm(forms.Form):
+class ADSDecreeForm1(forms.Form):
+    STEP_TITLE = "Modèle de l'arrêté"
+
+    is_old_ads = forms.BooleanField(
+        label="Le modèle d'arrêté que vous souhaitez générer concerne-t-il une ADS antérieure au 1er Octobre 2014 ?",
+        required=False,
+        widget=BooleanSelect()
+    )
+
+
+class ADSDecreeForm2(forms.Form):
+    STEP_TITLE = "Motif d'émission de l'arrêté"
+
+    def __init__(self, is_old_ads, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["decree_creation_reason"].choices = self.CHOICES_REASON_OLD_ADS if is_old_ads else self.CHOICES_REASON_NEW_ADS
+
+    CHOICES_REASON_OLD_ADS = (
+        ('rental', "Passage de l'ADS en location gérance ou changement de locataire-gérant"),
+        ('change_owner', "Changement de titulaire de l'ADS"),
+        ('change_vehicle', "Changement du véhicule associé à l'ADS"),
+    )
+
+    CHOICES_REASON_NEW_ADS = (
+        ('renew', "Renouvellement d'une ADS"),
+        ('create', "Création d'une ADS"),
+        ('change_vehicle', "Changement de véhicule associé à l'ADS"),
+    )
+
+    decree_creation_reason = forms.ChoiceField(
+        label='Pour quel motif voulez-vous émettre un arrêté ?',
+        required=False,
+    )
+
+
+class ADSDecreeForm3(forms.Form):
     """Form to generate "arrêté portant sur l'attribution de l'ADS"."""
+
+    STEP_TITLE = "Informations générales"
 
     def _validate_decree_number(self, value):
         """The number of an "arrêté municipal" is formed like 0000/2022. I'm not
@@ -217,15 +254,15 @@ class ADSDecreeForm(forms.Form):
     ###
     # ADS Owner
     ###
-    ads_owner = forms.CharField(label="Titulaire de l'ADS", required=False)
+    ads_owner = forms.CharField(label="Titulaire de l'ADS", required=True)
     ads_owner_rcs = forms.CharField(
         label="Numéro RCS de la société, titulaire de l'ADS",
         help_text="(SIREN + Mention RCS + Ville)",
-        required=False,
+        required=True,
     )
 
     ###
-    # ADS Rental - Location Gérance
+    # ADS Leasing - Location Gérance
     ###
     tenant_legal_representative = forms.CharField(
         label="Identité du réprésentant légal de la société", required=False
@@ -236,7 +273,9 @@ class ADSDecreeForm(forms.Form):
         required=False,
     )
     tenant_ads_user = forms.CharField(
-        label="Identité de l'exploitant de l'ADS", required=False
+        label="Identité de l'exploitant de l'ADS",
+        help_text="Laissez ce champ vide si l'ADS n'est pas concernée par une location gérance",
+        required=False,
     )
 
     ###
@@ -267,15 +306,39 @@ class ADSDecreeForm(forms.Form):
     )
     previous_decree_number = forms.CharField(
         label="Numéro de l'arrêté concerné précédent celui en cours de promulgation",
-        help_text="Au format 0000/" + datetime.now().strftime("%Y"),
+        help_text=f"Au format 0000/ {datetime.now().strftime('%Y')}. Laissez ce champ vide si l'ADS ne concerne pas un renouvellement, une cession ou un changement de véhicule",
         required=False,
     )
     previous_decree_date = forms.DateField(
         label="Date de saisie de l'arrêté municipal précédent celui en cours de promulgation",
-        required=True,
+        help_text="Laissez ce champ vide si l'ADS ne concerne pas un renouvellement, une cession ou un changement de véhicule",
+        required=False,
     )
     decree_number_taxi_activity = forms.CharField(
         label="Numéro de l'arrêté préfectoral local relatif à l'activité de taxi",
         help_text="Au format 0000/" + datetime.now().strftime("%Y"),
         required=True,
     )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Declare the fields that have mutual dependencies: if one of them is filled, the others must be filled too.
+        deps = [
+            {
+                "previous_decree_number": "Veuillez saisir le numéro de l'arrêté municipal précédent celui en cours de promulgation",
+                "previous_decree_date": "Veuillez saisir la date de l'arrêté municipal précédent celui en cours de promulgation",
+            },
+            {
+                "tenant_ads_user": "Veuillez saisir l'identité de l'exploitant de l'ADS",
+                "tenant_signature_date": "Veuillez saisir la date de signature du contrat de locataire-gérant",
+            },
+        ]
+
+        for dep in deps:
+            if any(cleaned_data[key] for key in dep.keys()):
+                for key in dep.keys():
+                    if not cleaned_data[key]:
+                        self.add_error(key, dep[key])
+
+        return cleaned_data
