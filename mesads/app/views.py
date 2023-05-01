@@ -939,6 +939,30 @@ class FAQView(TemplateView):
 
 
 class CustomCookieWizardView(CookieWizardView):
+    def get_prefix(self, request, *args, **kwargs):
+        """By default, WizardView uses the class name as a prefix. If the user
+        opens several tabs at the same time, the storage is shared and weird
+        behavior can happen.
+
+        For example:
+
+        * tab 1: from the page to create a decree for an ADS, go to second step
+        * tab 2: from the page to create a decree for another ADS, go to second step
+        * tab 2: refresh the page to go back to first step
+        * tab 1: go to third step
+
+        If the prefix is shared, an error will be raised because the form data
+        have been deleted when the user refreshed the page in tab 2.
+
+        We append the URL parameters to the prefix to avoid this issue most of
+        the time. It is not perfect, but it is better than nothing. If the two
+        tabs edit the same object, the prefix will be the same and the issue
+        will still happen.
+        """
+        prefix = super().get_prefix(request, *args, **kwargs)
+        suffix = '_'.join(str(kwargs[key]) for key in kwargs.keys())
+        return f'{prefix}_{suffix}'
+
     def render_done(self, form, **kwargs):
         """The custom method render_done is call at the final step of the
         wizard. The base class resets the storage, which prevents to edit the
@@ -955,23 +979,6 @@ class ADSDecreeView(CustomCookieWizardView):
     """Decree for ADS creation."""
     template_name = "pages/ads_decree.html"
     form_list = (ADSDecreeForm1, ADSDecreeForm2, ADSDecreeForm3,)
-
-    def get_prefix(self, request, *args, **kwargs):
-        """By default, WizardView uses the class name as a prefix. If the user
-        opens several tabs at the same time, the storage is shared and weird
-        behavior can happen.
-
-        For example:
-
-        * tab 1: from the page to create a decree for an ADS, go to second step
-        * tab 2: from the page to create a decree for another ADS, go to second step
-        * tab 2: refresh the page to go back to first step
-        * tab 1: go to third step
-
-        If the prefix is shared, an error will be raised because the form data
-        have been deleted when the user refreshed the page in tab 2."""
-        prefix = super().get_prefix(request, *args, **kwargs)
-        return f'{prefix}_{kwargs["ads_id"]}'
 
     def get_form_kwargs(self, step=None):
         """Instantiate ADSDecreeForm1 with the value of the previous form, to
