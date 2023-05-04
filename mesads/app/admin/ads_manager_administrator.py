@@ -25,6 +25,7 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
 
     list_display = (
         "__str__",
+        "display_users_count",
         "display_ads_count",
         "expected_ads_count",
     )
@@ -45,6 +46,10 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
     )
 
     search_fields = ("prefecture__libelle",)
+
+    @admin.display(description="Administrateurs (sans staff MesADS)")
+    def display_users_count(self, ads_manager_administrator):
+        return ads_manager_administrator.users.filter(is_staff=False).count() or "-"
 
     @admin.display(description="Nombre d'ADS enregistrées")
     def display_ads_count(self, ads_manager_administrator):
