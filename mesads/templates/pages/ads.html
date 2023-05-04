@@ -87,7 +87,7 @@ Création d'une nouvelle ADS
 
       // The field "owner_license_number" should always be displayed for new ADS. For old ADS, it should only be displayed if the field "used_by_owner" is set to "true"
       get should_display_owner_license_number() {
-        return !this.ads_before_2014|| this.used_by_owner === 'true';
+        return !this.ads_before_2014|| this.used_by_owner === 'true' || this.used_by_owner === 'unknown';
       },
 
       attribution_type: '{{ form.attribution_type.value }}',
