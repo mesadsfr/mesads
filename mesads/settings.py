@@ -10,12 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import logging
 import os
 import socket
 from pathlib import Path
 
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 
 def parse_env_bool(key, default):
@@ -54,10 +56,11 @@ else:
     if os.environ.get("SENTRY_DSN"):
         sentry_sdk.init(
             dsn=os.environ["SENTRY_DSN"],
-            integrations=[DjangoIntegration()],
+            integrations=[DjangoIntegration(), LoggingIntegration(level=logging.ERROR)],
             traces_sample_rate=0,
             send_default_pii=True,
         )
+
 
 # Upload to S3 in production, or if S3 is defined in debug mode
 if not DEBUG or os.environ.get("AWS_S3_ENDPOINT_URL"):
