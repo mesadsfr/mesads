@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -41,8 +42,6 @@ class ADSManagerAdministratorFilter(admin.SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        from django.db.models import Count
-
         queryset = queryset.annotate(
             adsmanageradministrator_count=Count("adsmanageradministrator")
         )
@@ -74,12 +73,14 @@ class UserAdmin(admin.ModelAdmin):
         "is_superuser",
         "is_staff",
         "is_active",
+        "admin_roles_link",
         "ads_manager_request_link",
     )
 
     readonly_fields = (
         "date_joined",
         "last_login",
+        "admin_roles_link",
         "ads_manager_request_link",
     )
 
@@ -97,10 +98,21 @@ class UserAdmin(admin.ModelAdmin):
         roles = user.adsmanageradministrator_set.all()
         return format_html("<br />".join(str(role) for role in roles))
 
+    @admin.display(description="Compte administrateur des gestionnaires")
+    def admin_roles_link(self, obj):
+        ads_manager_request_link = (
+            reverse("admin:app_adsmanageradministrator_changelist")
+            + "?users__in="
+            + str(obj.id)
+        )
+        return mark_safe(
+            f'<a href="{ads_manager_request_link}">Voir les {obj.adsmanageradministrator_set.count()} administrateurs des gestionnaires</a>'
+        )
+
     def has_add_permission(self, request, obj=None):
         return False
 
-    @admin.display(description="Requêtes d'accès pour cet utilisateur")
+    @admin.display(description="Requêtes d'accès gestionnaire de cet utilisateur")
     def ads_manager_request_link(self, obj):
         ads_manager_request_link = (
             reverse("admin:app_adsmanagerrequest_changelist") + "?user=" + str(obj.id)
