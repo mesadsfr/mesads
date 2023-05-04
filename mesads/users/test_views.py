@@ -29,6 +29,20 @@ class TestPasswordResetView(ClientTestCase):
         self.assertIn("invalide", resp.content.decode("utf8"))
         self.assertEqual(len(mail.outbox), 0)
 
+    def test_reset_password_inactive_account(self):
+        user = self.create_user()
+
+        user.obj.is_active = False
+        user.obj.save()
+
+        resp = self.auth_client.post(
+           "/auth/password_reset/", {"email": user.obj.email}
+        )
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("Votre compte est inactif", resp.content.decode("utf8"))
+        self.assertEqual(len(mail.outbox), 0)
+
 
 class TestCustomRegistrationView(ClientTestCase):
     def test_send_activation_email(self):

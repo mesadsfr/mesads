@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.forms import PasswordResetForm
 from django.core.exceptions import ValidationError
 
@@ -15,9 +16,19 @@ class PasswordResetStrictForm(PasswordResetForm):
     def clean_email(self):
         email = self.cleaned_data["email"]
 
-        if not User.objects.filter(email=email).count():
+        user = User.objects.filter(email=email).first()
+
+        if not user:
             raise ValidationError(
                 "L'email est invalide. Aucun compte n'existe avec cet email."
+            )
+        if not user.is_active:
+            raise ValidationError(
+                "Votre compte est inactif, car vous n'avez pas cliqué sur le "
+                "lien de confirmation dans l'email que nous vous avons envoyé. Si "
+                "vous n'avez pas reçu cet email, veuillez vérifier votre dossier "
+                "de courrier indésirable. Si vous ne le trouvez pas, veuillez "
+                f"nous contacter à l'adresse {settings.MESADS_CONTACT_EMAIL}"
             )
 
         return email
