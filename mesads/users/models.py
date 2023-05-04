@@ -3,6 +3,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.core.mail import send_mail
 from django.db import models
+from django.db.models.functions import Lower
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -85,6 +86,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = _("user")
         verbose_name_plural = _("users")
+        constraints = [models.UniqueConstraint(Lower("email"), name="unique_ci_email")]
 
     def clean(self):
         ret = super().clean()
