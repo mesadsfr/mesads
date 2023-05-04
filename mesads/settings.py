@@ -70,6 +70,13 @@ if not DEBUG or os.environ.get("AWS_S3_ENDPOINT_URL"):
 
 ALLOWED_HOSTS = [part for part in os.getenv("ALLOWED_HOSTS", "").split(";") if part]
 
+# In debug, allow any origin for unsafe (POST, PUT, DELETE) requests.
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS = [
+        "https://*.info", "https://*.com", "https://*.fr",
+        "http://*.info", "http://*.com", "http://*.fr",
+    ]
+
 # Application definition
 
 INSTALLED_APPS = [
