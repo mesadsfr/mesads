@@ -53,7 +53,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     authentication instead of username authentication.
     """
 
-    email = models.EmailField(
+    from django.contrib.postgres.fields import CITextField
+    email = CITextField(
         _("email address"),
         unique=True,
         error_messages={
@@ -86,13 +87,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = _("user")
         verbose_name_plural = _("users")
-        constraints = [
-            models.UniqueConstraint(
-                Lower("email"),
-                name="unique_ci_email",
-                violation_error_message="Un utilisateur avec cet email existe déjà.",
-            )
-        ]
+
 
     def clean(self):
         ret = super().clean()
