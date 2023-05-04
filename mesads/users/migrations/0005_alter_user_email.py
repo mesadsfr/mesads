@@ -5,15 +5,19 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0004_remove_user_unique_ci_email_user_unique_ci_email'),
+        ("users", "0004_remove_user_unique_ci_email_user_unique_ci_email"),
     ]
 
     operations = [
+        migrations.RunSQL("CREATE EXTENSION IF NOT EXISTS citext"),
         migrations.AlterField(
-            model_name='user',
-            name='email',
-            field=django.contrib.postgres.fields.citext.CITextField(error_messages={'unique': 'Un utilisateur avec cet email existe déjà.'}, unique=True, verbose_name='email address'),
+            model_name="user",
+            name="email",
+            field=django.contrib.postgres.fields.citext.CITextField(
+                error_messages={"unique": "Un utilisateur avec cet email existe déjà."},
+                unique=True,
+                verbose_name="email address",
+            ),
         ),
     ]
