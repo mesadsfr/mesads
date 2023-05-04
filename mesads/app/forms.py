@@ -173,7 +173,7 @@ class ADSDecreeForm1(forms.Form):
     is_old_ads = forms.BooleanField(
         label="Le modèle d'arrêté que vous souhaitez générer concerne-t-il une ADS antérieure au 1er Octobre 2014 ?",
         required=False,
-        widget=BooleanSelect()
+        widget=BooleanSelect(),
     )
 
 
@@ -182,22 +182,27 @@ class ADSDecreeForm2(forms.Form):
 
     def __init__(self, is_old_ads, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["decree_creation_reason"].choices = self.CHOICES_REASON_OLD_ADS if is_old_ads else self.CHOICES_REASON_NEW_ADS
+        self.fields["decree_creation_reason"].choices = (
+            self.CHOICES_REASON_OLD_ADS if is_old_ads else self.CHOICES_REASON_NEW_ADS
+        )
 
     CHOICES_REASON_OLD_ADS = (
-        ('rental', "Passage de l'ADS en location gérance ou changement de locataire-gérant"),
-        ('change_owner', "Changement de titulaire de l'ADS"),
-        ('change_vehicle', "Changement du véhicule associé à l'ADS"),
+        (
+            "rental",
+            "Passage de l'ADS en location gérance ou changement de locataire-gérant",
+        ),
+        ("change_owner", "Changement de titulaire de l'ADS"),
+        ("change_vehicle", "Changement du véhicule associé à l'ADS"),
     )
 
     CHOICES_REASON_NEW_ADS = (
-        ('renew', "Renouvellement d'une ADS"),
-        ('create', "Création d'une ADS"),
-        ('change_vehicle', "Changement de véhicule associé à l'ADS"),
+        ("renew", "Renouvellement d'une ADS"),
+        ("create", "Création d'une ADS"),
+        ("change_vehicle", "Changement de véhicule associé à l'ADS"),
     )
 
     decree_creation_reason = forms.ChoiceField(
-        label='Pour quel motif voulez-vous émettre un arrêté ?',
+        label="Pour quel motif voulez-vous émettre un arrêté ?",
         required=False,
     )
 

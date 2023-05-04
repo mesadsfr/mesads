@@ -960,8 +960,8 @@ class CustomCookieWizardView(CookieWizardView):
         will still happen.
         """
         prefix = super().get_prefix(request, *args, **kwargs)
-        suffix = '_'.join(str(kwargs[key]) for key in kwargs.keys())
-        return f'{prefix}_{suffix}'
+        suffix = "_".join(str(kwargs[key]) for key in kwargs.keys())
+        return f"{prefix}_{suffix}"
 
     def render_done(self, form, **kwargs):
         """The custom method render_done is call at the final step of the
@@ -977,17 +977,20 @@ class CustomCookieWizardView(CookieWizardView):
 
 class ADSDecreeView(CustomCookieWizardView):
     """Decree for ADS creation."""
+
     template_name = "pages/ads_decree.html"
-    form_list = (ADSDecreeForm1, ADSDecreeForm2, ADSDecreeForm3,)
+    form_list = (
+        ADSDecreeForm1,
+        ADSDecreeForm2,
+        ADSDecreeForm3,
+    )
 
     def get_form_kwargs(self, step=None):
         """Instantiate ADSDecreeForm1 with the value of the previous form, to
         set the correct choices of the select field."""
         ret = super().get_form_kwargs(step=step)
-        if step == '1':
-            return {
-                'is_old_ads': self.get_cleaned_data_for_step('0').get('is_old_ads')
-            }
+        if step == "1":
+            return {"is_old_ads": self.get_cleaned_data_for_step("0").get("is_old_ads")}
         return ret
 
     def get_form_initial(self, step):
@@ -995,27 +998,31 @@ class ADSDecreeView(CustomCookieWizardView):
         ret = super().get_form_initial(step)
         ads = self.get_ads()
 
-        if step == '0':
-            ret.update({
-                'is_old_ads': ads.ads_creation_date and ads.ads_creation_date <= date(2014, 10, 1),
-            })
-        elif step == '2':
+        if step == "0":
+            ret.update(
+                {
+                    "is_old_ads": ads.ads_creation_date
+                    and ads.ads_creation_date <= date(2014, 10, 1),
+                }
+            )
+        elif step == "2":
             now = datetime.now()
             ads_user = ads.adsuser_set.first()
-            ret.update({
-                "decree_creation_date": now.strftime("%Y-%m-%d"),
-                "decree_commune": ads.ads_manager.content_object.libelle,
-                "ads_owner": ads.owner_name,
-                # We generate a .docx file that can be edited by the user if there
-                # are mot than one ads user.
-                "tenant_ads_user": ads_user.name if ads_user else "",
-                # New ADS have a validity of 5 years
-                "ads_end_date": now.replace(year=now.year + 5).strftime("%Y-%m-%d"),
-                "ads_number": ads.number,
-                "immatriculation_plate": ads.immatriculation_plate,
-            })
+            ret.update(
+                {
+                    "decree_creation_date": now.strftime("%Y-%m-%d"),
+                    "decree_commune": ads.ads_manager.content_object.libelle,
+                    "ads_owner": ads.owner_name,
+                    # We generate a .docx file that can be edited by the user if there
+                    # are mot than one ads user.
+                    "tenant_ads_user": ads_user.name if ads_user else "",
+                    # New ADS have a validity of 5 years
+                    "ads_end_date": now.replace(year=now.year + 5).strftime("%Y-%m-%d"),
+                    "ads_number": ads.number,
+                    "immatriculation_plate": ads.immatriculation_plate,
+                }
+            )
         return ret
-
 
     def get_ads(self):
         return get_object_or_404(
@@ -1046,7 +1053,11 @@ class ADSDecreeView(CustomCookieWizardView):
 
         # Prefix the commune name with "la commune d'" or "la commune de "
         decree_commune = cleaned_data["decree_commune"]
-        cleaned_data["decree_commune_fulltext"] = "d'%s" % decree_commune if decree_commune[:1] in ("aeiouy") else "de %s" % decree_commune
+        cleaned_data["decree_commune_fulltext"] = (
+            "d'%s" % decree_commune
+            if decree_commune[:1] in ("aeiouy")
+            else "de %s" % decree_commune
+        )
 
         decree.render(cleaned_data)
 

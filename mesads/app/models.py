@@ -250,12 +250,15 @@ def validate_siret(value):
             headers={"Authorization": f"Bearer {settings.INSEE_TOKEN}"},
             timeout=1,
         )
+
     # INSEE API did not answer fast enough, consider the number is valid
     except requests.exceptions.Timeout:
         logging.exception("Timeout while verifying SIRET validity. Skip validation.")
         return
     except requests.exceptions.RequestException as exc:
-        logging.exception("Unknown error while verifying SIRET validity. Skip validation.")
+        logging.exception(
+            "Unknown error while verifying SIRET validity. Skip validation."
+        )
         return
 
     # Ok

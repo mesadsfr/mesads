@@ -35,9 +35,7 @@ class TestPasswordResetView(ClientTestCase):
         user.obj.is_active = False
         user.obj.save()
 
-        resp = self.auth_client.post(
-           "/auth/password_reset/", {"email": user.obj.email}
-        )
+        resp = self.auth_client.post("/auth/password_reset/", {"email": user.obj.email})
 
         self.assertEqual(resp.status_code, 200)
         self.assertIn("Votre compte est inactif", resp.content.decode("utf8"))
