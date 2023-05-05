@@ -102,8 +102,9 @@ class TestValidateSiret(TestCase):
             self.assertRaises(ValidationError, validate_siret, siret)
 
             # Setup mock to return return timeout: SIRET is not checked
-            m.get(api_url, exc=requests.exceptions.ConnectTimeout)
-            self.assertIsNone(validate_siret(siret))
+            with self.assertLogs(logger="", level="ERROR") as cm:
+                m.get(api_url, exc=requests.exceptions.ConnectTimeout)
+                self.assertIsNone(validate_siret(siret))
 
             # Setup mock to return unexpected response from INSEE api
             m.get(api_url, status_code=500)
