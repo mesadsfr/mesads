@@ -73,6 +73,7 @@ class ADSManagerAdmin(admin.ModelAdmin):
 
     list_display = (
         "administration",
+        "display_ads_manager_request_count",
         "display_ads_count",
     )
 
@@ -108,6 +109,12 @@ class ADSManagerAdmin(admin.ModelAdmin):
     )
 
     inlines = (ADSManagerDecreeInline,)
+
+    @admin.display(description="Gestionnaire configuré ?")
+    def display_ads_manager_request_count(self, ads_manager):
+        if ads_manager.adsmanagerrequest_set.count():
+            return "✅"
+        return "❌"
 
     @admin.display(description="Nombre d'ADS enregistrées")
     def display_ads_count(self, ads_manager):
