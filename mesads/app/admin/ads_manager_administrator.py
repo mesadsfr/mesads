@@ -10,6 +10,7 @@ from ..models import (
 
 class ADSManagerAdministratorUsersInline(admin.TabularInline):
     model = ADSManagerAdministrator.users.through
+    autocomplete_fields = ["user"]
 
 
 @admin.register(ADSManagerAdministrator)
