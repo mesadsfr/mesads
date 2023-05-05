@@ -16,6 +16,19 @@ class ADSManagerRequestAdmin(VersionAdmin):
     list_filter = ("accepted",)
     search_fields = ("user__email__icontains",)
 
+    fields = (
+        "user",
+        "ads_manager",
+        "accepted",
+        "created_at",
+        "last_update_at",
+    )
+
+    readonly_fields = (
+        "created_at",
+        "last_update_at",
+    )
+
     @admin.display(description="Administration")
     def administration(self, ads_manager_request):
         return ads_manager_request.ads_manager.content_object.display_text()

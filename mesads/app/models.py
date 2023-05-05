@@ -196,6 +196,7 @@ class ADSManagerRequest(models.Model):
         blank=False,
     )
     created_at = models.DateTimeField(auto_now_add=True, null=False)
+    last_update_at = models.DateTimeField(auto_now=True, null=True)
     accepted = models.BooleanField(null=True, default=None)
 
 
