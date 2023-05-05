@@ -26,14 +26,38 @@ class ADSCount(admin.SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        queryset = queryset.annotate(ads_count=Count("ads"))
-
         try:
             count_filter = int(self.value())
-        except ValueError:
+        except (ValueError, TypeError):
             return queryset
 
+        queryset = queryset.annotate(ads_count=Count("ads"))
         return queryset.filter(ads_count__gte=count_filter)
+
+
+class ADSManagerRequestCount(admin.SimpleListFilter):
+    """Filter by count of ADSManagerRequest."""
+
+    title = "Nombre de gestionnaires"
+
+    parameter_name = "ads_managers_count"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("no", "Aucun gestionnaire"),
+            ("yes", "Au moins un gestionnaire"),
+        )
+
+    def queryset(self, request, queryset):
+        if not self.value():
+            return queryset
+
+        queryset = queryset.annotate(
+            ads_manager_request_count=Count("adsmanagerrequest")
+        )
+        if self.value() == "yes":
+            return queryset.filter(ads_manager_request_count__gte=1)
+        return queryset.filter(ads_manager_request_count=0)
 
 
 class ADSManagerDecreeInline(admin.StackedInline):
@@ -52,7 +76,10 @@ class ADSManagerAdmin(admin.ModelAdmin):
         "display_ads_count",
     )
 
-    list_filter = (ADSCount,)
+    list_filter = (
+        ADSCount,
+        ADSManagerRequestCount,
+    )
 
     ordering = ("commune__libelle",)
 
