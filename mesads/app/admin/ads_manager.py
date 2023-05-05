@@ -9,6 +9,33 @@ from ..models import (
 )
 
 
+class ADSCount(admin.SimpleListFilter):
+    """Filter by count of ADS."""
+
+    title = "Nombre d'ADS"
+
+    parameter_name = "ads_count"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("1", ">=1 ADS"),
+            ("5", ">=5 ADS"),
+            ("10", ">=10 ADS"),
+            ("50", ">=50 ADS"),
+            ("100", ">=100 ADS"),
+        )
+
+    def queryset(self, request, queryset):
+        queryset = queryset.annotate(ads_count=Count("ads"))
+
+        try:
+            count_filter = int(self.value())
+        except ValueError:
+            return queryset
+
+        return queryset.filter(ads_count__gte=count_filter)
+
+
 class ADSManagerDecreeInline(admin.StackedInline):
     model = ADSManagerDecree
     extra = 0
@@ -24,6 +51,8 @@ class ADSManagerAdmin(admin.ModelAdmin):
         "administration",
         "display_ads_count",
     )
+
+    list_filter = (ADSCount,)
 
     ordering = ("commune__libelle",)
 
