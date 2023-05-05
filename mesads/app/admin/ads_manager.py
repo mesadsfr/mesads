@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
@@ -53,7 +53,9 @@ class ADSManagerRequestCount(admin.SimpleListFilter):
             return queryset
 
         queryset = queryset.annotate(
-            ads_manager_request_count=Count("adsmanagerrequest")
+            ads_manager_request_count=Count(
+                "adsmanagerrequest", filter=Q(adsmanagerrequest__accepted=True)
+            )
         )
         if self.value() == "yes":
             return queryset.filter(ads_manager_request_count__gte=1)
@@ -112,7 +114,7 @@ class ADSManagerAdmin(admin.ModelAdmin):
 
     @admin.display(description="Gestionnaire configuré ?")
     def display_ads_manager_request_count(self, ads_manager):
-        if ads_manager.adsmanagerrequest_set.count():
+        if ads_manager.adsmanagerrequest_set.filter(accepted=True).count():
             return "✅"
         return "❌"
 
