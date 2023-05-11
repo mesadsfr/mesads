@@ -58,7 +58,7 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = "__all__"
-        widgets = {"email": forms.TextInput()}
+        widgets = {"email": forms.TextInput(attrs={"size": 100})}
 
 
 @admin.register(User)
