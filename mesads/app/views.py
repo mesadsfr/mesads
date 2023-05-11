@@ -963,8 +963,30 @@ class CustomCookieWizardView(CookieWizardView):
         suffix = "_".join(str(kwargs[key]) for key in kwargs.keys())
         return f"{prefix}_{suffix}"
 
+    def render_next_step(self, form, **kwargs):
+        """The base class implementation of render_next_step has a bug, with the following scenario.
+
+        Imagine a wizard with 3 steps.
+
+        1. The user is at step 1, selects a field from a list, then goes to step 2
+        2. The step 2 renders a select field with choices computed from the data
+           of step 1. The user selects a value, and goes to step 3.
+        3. The user goes back to step 2, then goes back to step 1.
+        4. Finally, the user selects another value than the first time, and goes
+           to step 2.
+
+        Since the choices of the select field are computed from the data of step
+        1, the choice previously select and stored refers to an invalid choice.
+
+        To fix this issue, we delete the stored data of the next step before
+        going to it.
+        """
+        if self.steps.next in self.storage.data[self.storage.step_data_key]:
+            del self.storage.data[self.storage.step_data_key][self.steps.next]
+        return super().render_next_step(form, **kwargs)
+
     def render_done(self, form, **kwargs):
-        """The custom method render_done is call at the final step of the
+        """The custom method render_done is called at the final step of the
         wizard. The base class resets the storage, which prevents to edit the
         form to regenerate the decree. We override the method to prevent the
         storage from being reset."""
