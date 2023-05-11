@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.db.models import Count
 from django.urls import reverse
@@ -51,8 +52,19 @@ class ADSManagerAdministratorFilter(admin.SimpleListFilter):
             return queryset.filter(adsmanageradministrator_count=0)
 
 
+class UserForm(forms.ModelForm):
+    """Override the default form to add a custom widget to the email field."""
+
+    class Meta:
+        model = User
+        fields = "__all__"
+        widgets = {"email": forms.TextInput()}
+
+
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
+    form = UserForm
+
     list_display = (
         "date_joined",
         "email",
