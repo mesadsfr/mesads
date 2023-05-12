@@ -1229,7 +1229,7 @@ class TestADSDecreeView(ClientTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertIn('data-fr-current-step="1"', resp.content.decode("utf8"))
 
-    def _step_1(self, is_old_ads):
+    def _step_0(self, is_old_ads):
         resp = self.ads_manager_city35_client.post(
             f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
             {
@@ -1241,7 +1241,7 @@ class TestADSDecreeView(ClientTestCase):
         self.assertIn('data-fr-current-step="2"', resp.content.decode("utf8"))
         return resp
 
-    def _step_2(self):
+    def _step_1(self):
         resp = self.ads_manager_city35_client.post(
             f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
             {
@@ -1253,7 +1253,7 @@ class TestADSDecreeView(ClientTestCase):
         self.assertIn('data-fr-current-step="3"', resp.content.decode("utf8"))
         return resp
 
-    def _step_3(self, overrides=None, check_going_to_next_step=True):
+    def _step_2(self, overrides=None, check_going_to_next_step=True):
         params = {
             self.mgt_form_current_step_name: "2",
             "2-decree_number": "0001/2023",
@@ -1285,7 +1285,7 @@ class TestADSDecreeView(ClientTestCase):
             self.assertIn('data-fr-current-step="4"', resp.content.decode("utf8"))
         return resp
 
-    def _step_4(self):
+    def _step_3(self):
         resp = self.ads_manager_city35_client.post(
             f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
             {
@@ -1302,26 +1302,26 @@ class TestADSDecreeView(ClientTestCase):
         return resp
 
     def test_generate_old_ads(self):
-        self._step_1(is_old_ads=True)
+        self._step_0(is_old_ads=True)
+        self._step_1()
         self._step_2()
         self._step_3()
-        self._step_4()
 
     def test_third_step_decree_number_error(self):
-        self._step_1(is_old_ads=True)
-        self._step_2()
+        self._step_0(is_old_ads=True)
+        self._step_1()
         # Invalid decree number
-        resp = self._step_3(
+        resp = self._step_2(
             overrides={"2-decree_number": "abcdef"}, check_going_to_next_step=False
         )
         self.assertIn("fr-input--error", resp.content.decode("utf8"))
 
     def test_third_step_fields_dependencies(self):
         """If previous_decree_number is set, previous_decree_number must be set too"""
-        self._step_1(is_old_ads=True)
-        self._step_2()
+        self._step_0(is_old_ads=True)
+        self._step_1()
         # Invalid decree number
-        resp = self._step_3(
+        resp = self._step_2(
             overrides={
                 "2-previous_decree_number": "0003/2023",
                 "2-previous_decree_date": "",
