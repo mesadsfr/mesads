@@ -961,7 +961,7 @@ class CustomCookieWizardView(CookieWizardView):
         will still happen.
         """
         prefix = super().get_prefix(request, *args, **kwargs)
-        suffix = "_".join(str(kwargs[key]) for key in kwargs.keys())
+        suffix = "_".join(str(kwargs[key]) for key in sorted(kwargs.keys()))
         return f"{prefix}_{suffix}"
 
     def render_next_step(self, form, **kwargs):
@@ -1037,8 +1037,8 @@ class ADSDecreeView(CustomCookieWizardView):
                     "decree_creation_date": now.strftime("%Y-%m-%d"),
                     "decree_commune": ads.ads_manager.content_object.libelle,
                     "ads_owner": ads.owner_name,
-                    # We generate a .docx file that can be edited by the user if there
-                    # are mot than one ads user.
+                    # By default, we only display the first ADSUser. If there
+                    # are more, user can edit the .docx generated manually.
                     "tenant_ads_user": ads_user.name if ads_user else "",
                     # New ADS have a validity of 5 years
                     "ads_end_date": now.replace(year=now.year + 5).strftime("%Y-%m-%d"),

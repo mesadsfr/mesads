@@ -1197,3 +1197,105 @@ class TestADSManagerDecreeView(ClientTestCase):
         self.assertEqual(len(ads_manager_decrees), 2)
         self.assertEqual(ads_manager_decrees[0].file.read(), b"First file")
         self.assertEqual(ads_manager_decrees[1].file.read(), b"Second file")
+
+
+class TestADSDecreeView(ClientTestCase):
+    def setUp(self):
+        super().setUp()
+        self.ads = ADS.objects.create(
+            number="12346", ads_manager=self.ads_manager_city35
+        )
+        self.mgt_form_current_step_name = (
+            f"ads_decree_view_{self.ads.id}_{self.ads_manager_city35.id}-current_step"
+        )
+
+    def test_permissions(self):
+        for client_name, client, expected_status in (
+            ("anonymous", self.anonymous_client, 302),
+            ("auth", self.auth_client, 404),
+            ("ads_manager 35", self.ads_manager_city35_client, 200),
+            ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
+        ):
+            with self.subTest(client_name=client_name, expected_status=expected_status):
+                resp = client.get(
+                    f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete"
+                )
+                self.assertEqual(resp.status_code, expected_status)
+
+    def test_get(self):
+        resp = self.ads_manager_city35_client.get(
+            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('data-fr-current-step="1"', resp.content.decode("utf8"))
+
+    def test_generate_old_ads(self):
+        with self.subTest("First step: select old ADS"):
+            resp = self.ads_manager_city35_client.post(
+                f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
+                {
+                    self.mgt_form_current_step_name: "0",
+                    "0-is_old_ads": True,
+                },
+            )
+            self.assertEqual(resp.status_code, 200)
+            # Ensure we are now on the second step
+            self.assertIn('data-fr-current-step="2"', resp.content.decode("utf8"))
+
+        with self.subTest("Second step: select decree generation reason"):
+            resp = self.ads_manager_city35_client.post(
+                f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
+                {
+                    self.mgt_form_current_step_name: "1",
+                    "1-decree_creation_reason": "rental",
+                },
+            )
+            self.assertEqual(resp.status_code, 200)
+            # Ensure we are now on the third step
+            self.assertIn('data-fr-current-step="3"', resp.content.decode("utf8"))
+
+        with self.subTest("Third step: enter decree information"):
+            resp = self.ads_manager_city35_client.post(
+                f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
+                {
+                    self.mgt_form_current_step_name: "2",
+                    "2-decree_number": "0001/2023",
+                    "2-decree_creation_date": "2023-05-12",
+                    "2-decree_commune": self.ads_manager_city35.content_object.libelle,
+                    "2-decree_limiting_ads_number": "0002/2023",
+                    "2-decree_limiting_ads_date": "1998-05-25",
+                    "2-ads_owner": "Bob Marley",
+                    "2-ads_owner_rcs": "123",
+                    "2-tenant_legal_representative": "Bob Marley",
+                    "2-tenant_signature_date": "2023-06-02",
+                    "2-tenant_ads_user": "Mireille Mathieu",
+                    "2-ads_end_date": "2028-05-12",
+                    "2-ads_number": "1",
+                    "2-vehicle_brand": "Peugeot",
+                    "2-vehicle_model": "208",
+                    "2-immatriculation_plate": "YD-YTA-35",
+                    "2-previous_decree_number": "0003/2023",
+                    "2-previous_decree_date": "2023-06-02",
+                    "2-decree_number_taxi_activity": "0004/2023",
+                },
+            )
+            self.assertEqual(resp.status_code, 200)
+            # Ensure we are now on the fourth step
+            self.assertIn('data-fr-current-step="4"', resp.content.decode("utf8"))
+
+        with self.subTest("Last step: generate the decree"):
+            resp = self.ads_manager_city35_client.post(
+                f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
+                {
+                    self.mgt_form_current_step_name: "3",
+                },
+            )
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(
+                resp.headers["Content-Type"], "application/vnd.openxmlformats"
+            )
+            # .docx documents start with 0x504b0304
+            self.assertEqual(resp.content[0], 0x50)
+            self.assertEqual(resp.content[1], 0x4B)
+            self.assertEqual(resp.content[2], 0x03)
+            self.assertEqual(resp.content[3], 0x04)
