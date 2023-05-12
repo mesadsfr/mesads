@@ -1234,7 +1234,7 @@ class TestADSDecreeView(ClientTestCase):
             f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
             {
                 self.mgt_form_current_step_name: "0",
-                "0-is_old_ads": True,
+                "0-is_old_ads": is_old_ads,
             },
         )
         self.assertEqual(resp.status_code, 200)
