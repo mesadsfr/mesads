@@ -1241,12 +1241,12 @@ class TestADSDecreeView(ClientTestCase):
         self.assertIn('data-fr-current-step="2"', resp.content.decode("utf8"))
         return resp
 
-    def _step_1(self):
+    def _step_1(self, decree_creation_reason="change_vehicle"):
         resp = self.ads_manager_city35_client.post(
             f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
             {
                 self.mgt_form_current_step_name: "1",
-                "1-decree_creation_reason": "rental",
+                "1-decree_creation_reason": decree_creation_reason,
             },
         )
         self.assertEqual(resp.status_code, 200)
@@ -1301,6 +1301,20 @@ class TestADSDecreeView(ClientTestCase):
         self.assertEqual(resp.content[3], 0x04)
         return resp
 
+    def _step_back(self, goto_step):
+        current_step = str(goto_step + 1)
+        goto_step = str(goto_step)
+
+        resp = self.ads_manager_city35_client.post(
+            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
+            {
+                self.mgt_form_current_step_name: current_step,
+                "wizard_goto_step": goto_step,
+            },
+        )
+        self.assertEqual(resp.status_code, 200)
+        return resp
+
     def test_generate_old_ads(self):
         self._step_0(is_old_ads=True)
         self._step_1()
@@ -1329,3 +1343,16 @@ class TestADSDecreeView(ClientTestCase):
             check_going_to_next_step=False,
         )
         self.assertIn("fr-error-text", resp.content.decode("utf8"))
+
+    def test_back_navigation(self):
+        """This tests CustomCookieWizardView.render_next_step: if the user goes
+        to a previous step, storage should be cleared for the next steps to
+        avoid errors when going forward again.
+        """
+        self._step_0(is_old_ads=True)
+        self._step_1(decree_creation_reason="rental")
+        self._step_2()
+        self._step_back(1)
+        self._step_back(0)
+        resp = self._step_0(is_old_ads=False)
+        self.assertNotIn("error", resp.content.decode("utf8"))
