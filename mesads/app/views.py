@@ -34,6 +34,7 @@ from .forms import (
     ADSDecreeForm1,
     ADSDecreeForm2,
     ADSDecreeForm3,
+    ADSDecreeForm4,
     ADSForm,
     ADSLegalFileFormSet,
     ADSManagerDecreeFormSet,
@@ -1005,6 +1006,7 @@ class ADSDecreeView(CustomCookieWizardView):
         ADSDecreeForm1,
         ADSDecreeForm2,
         ADSDecreeForm3,
+        ADSDecreeForm4,
     )
 
     def get_form_kwargs(self, step=None):

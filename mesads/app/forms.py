@@ -347,3 +347,7 @@ class ADSDecreeForm3(forms.Form):
                         self.add_error(key, dep[key])
 
         return cleaned_data
+
+
+class ADSDecreeForm4(forms.Form):
+    STEP_TITLE = "Téléchargement de l'arrêté"

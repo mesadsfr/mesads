@@ -63,7 +63,7 @@
     {% include 'pages/ads-form_select.html' with field_title=form.is_old_ads.label field_description=form.is_old_ads.help_text field=form.is_old_ads field_errors=form.errors.is_old_ads required=form.fields.is_old_ads.required %}
   {% elif wizard.steps.index == 1 %}
     {% include 'pages/ads-form_select.html' with field_title=form.decree_creation_reason.label field_description=form.decree_creation_reason.help_text field=form.decree_creation_reason field_errors=form.errors.decree_creation_reason required=form.fields.decree_creation_reason.required %}
-  {% else %}
+  {% elif wizard.steps.index == 2 %}
     <!-- General decree information -->
     {% include 'pages/ads-form_string.html' with field_title=form.decree_number.label field_description=form.decree_number.help_text field=form.decree_number field_errors=form.errors.decree_number required=form.fields.decree_number.required %}
     {% include 'pages/ads-form_date.html' with field_title=form.decree_creation_date.label field_description=form.decree_number_date.help_text field=form.decree_creation_date field_errors=form.errors.decree_creation_date required=form.fields.decree_creation_date.required %}
@@ -91,6 +91,10 @@
     {% include 'pages/ads-form_string.html' with field_title=form.previous_decree_number.label field_description=form.previous_decree_number.help_text field=form.previous_decree_number field_errors=form.errors.previous_decree_number required=form.fields.previous_decree_number.required %}
     {% include 'pages/ads-form_date.html' with field_title=form.previous_decree_date.label field_description=form.decree_number_date.help_text field=form.previous_decree_date field_errors=form.errors.previous_decree_date required=form.fields.previous_decree_date.required %}
     {% include 'pages/ads-form_string.html' with field_title=form.decree_number_taxi_activity.label field_description=form.decree_number_taxi_activity.help_text field=form.decree_number_taxi_activity field_errors=form.errors.decree_number_taxi_activity required=form.fields.decree_number_taxi_activity.required %}
+  {% else %}
+    <p>
+      Le modèle d'arrêté municipal est prêt à être téléchargé. Vous pouvez cliquer sur le bouton ci-dessous, ou revenir à l'étape précédente afin de changer les paramètres.
+    </p>
   {% endif %}
 
 
@@ -98,7 +102,7 @@
   {% if wizard.steps.next %}
     <button type="submit" class="fr-btn">Étape suivante</button>
   {% else %}
-    <button type="submit" class="fr-btn">Générer l'arrêté municipal</button>
+    <button type="submit" class="fr-btn">Télécharger l'arrêté municipal</button>
   {% endif %}
 
   {% if wizard.steps.prev %}
