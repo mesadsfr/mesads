@@ -132,8 +132,8 @@ ADSUserFormSet = inlineformset_factory(
     ADSUser,
     fields=("status", "name", "siret", "license_number"),
     can_delete=True,
-    extra=25,
-    max_num=25,
+    extra=30,
+    max_num=30,
     formset=AutoDeleteADSUserFormSet,
 )
 
