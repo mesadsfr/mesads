@@ -97,7 +97,6 @@ Création d'une nouvelle ADS
         const ads_user_forms = [...document.getElementsByClassName('ads-user-form')];
         // List, returns true if the form is empty, false otherwise
         const filled  = ads_user_forms.map((e) => !!e.querySelector('input:not([type="hidden"]):not([value=""])'));
-        console.log('ici', filled)
         // Index of the first non-empty form
         const nonEmptyFormIdx = findLastIndex(filled, (e) => e === true);
         // All the forms are empty, display only one blank form
