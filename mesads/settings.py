@@ -80,7 +80,6 @@ if DEBUG:
         "http://*.info", "http://*.com", "http://*.fr",
     ]
 
-# Application definition
 
 INSTALLED_APPS = [
     # According to django-autocomplete-light documentation, DAL moduels must be
@@ -99,6 +98,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "django_registration",
     "reversion",
+    "reversion_compare",
     "rest_framework",
     "rest_framework.authtoken",
     "django_cleanup.apps.CleanupConfig",

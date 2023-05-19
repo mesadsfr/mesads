@@ -58,6 +58,7 @@ django-cron = "^0.6.0"
 django-mjml = "^1.0"
 docxtpl = "^0.16.6"
 django-formtools = "^2.4"
+django-reversion-compare = "^0.16.2"
 
 [tool.poetry.dev-dependencies]
 django-debug-toolbar = "^3.2.2"

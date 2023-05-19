@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.db.models import Count
 from django.utils.safestring import mark_safe
 
-from reversion.admin import VersionAdmin
+from reversion_compare.admin import CompareVersionAdmin
 
 from ..models import (
     ADS,
@@ -80,7 +80,7 @@ class ADSLegalFileInline(admin.StackedInline):
 
 
 @admin.register(ADS)
-class ADSAdmin(VersionAdmin):
+class ADSAdmin(CompareVersionAdmin):
     @admin.display(description="Préfecture")
     def prefecture(self, ads):
         return ads.ads_manager.administrator.prefecture.libelle
