@@ -91,8 +91,7 @@ Création d'une nouvelle ADS
       },
 
       attribution_type: '{{ form.attribution_type.value }}',
-
-      get numberOfADSUsersFormsetToDisplay() {
+      numberOfADSUsersFormsetToDisplay: (() => {
         // All forms
         const ads_user_forms = [...document.getElementsByClassName('ads-user-form')];
         // List, returns true if the form is empty, false otherwise
@@ -103,9 +102,8 @@ Création d'une nouvelle ADS
         if (nonEmptyFormIdx < 0) {
           return 1;
         }
-        return nonEmptyFormIdx + this.extraNumberOfADSUsersFormsetToDisplay + 1;
-      },
-      extraNumberOfADSUsersFormsetToDisplay: 0,
+        return nonEmptyFormIdx + 1;
+      })(),
   });
 </script>
 
@@ -226,51 +224,51 @@ Création d'une nouvelle ADS
     </div>
 
     <div class="fr-input-group" x-show="ads_before_2014" x-transition>
-      <template x-if="used_by_owner === 'false'">
-        <div x-show="used_by_owner === 'false'" x-transition>
-          {{ ads_users_formset.management_form }}
+      <div x-show="used_by_owner === 'false'" x-transition>
+        {{ ads_users_formset.management_form }}
 
-          {% for ads_user_form in ads_users_formset %}
-            <div
-              x-show="{{ forloop.counter0 }} < numberOfADSUsersFormsetToDisplay"
-              class="fr-form-group ads-user-form"
-              x-transition
-            >
-                <fieldset class="fr-fieldset">
-                    <legend class="fr-fieldset__legend">{{ forloop.counter }}<sup>{% if forloop.counter == 1 %}er{% else %}e{% endif %}</sup> exploitant taxi</legend>
-
-                  <div class="fr-pl-3w">
-                    <!-- User status -->
-                    {% include 'pages/ads-form_select.html' with field=ads_user_form.status field_errors=ads_user_form.errors.status required=ads_user_form.fields.status.required readonly=ads_manager.is_locked %}
-                    <!-- User name -->
-                    {% include 'pages/ads-form_string.html' with field=ads_user_form.name field_errors=ads_user_form.errors.name required=ads_user_form.fields.name.required readonly=ads_manager.is_locked %}
-                    <!-- User SIRET -->
-                    {% include 'pages/ads-form_string.html' with field=ads_user_form.siret field_errors=ads_user_form.errors.siret required=ads_user_form.fields.siret.required readonly=ads_manager.is_locked %}
-                    <!-- Professional licence number -->
-                    {% include 'pages/ads-form_string.html' with field=ads_user_form.license_number field_errors=ads_user_form.errors.license_number required=ads_user_form.fields.license_number.required readonly=ads_manager.is_locked %}
-                  </div>
-
-                </fieldset>
-
-              {% for hidden_field in ads_user_form.hidden_fields %}
-                {{ hidden_field }}
-              {% endfor %}
-            </div>
-          {% endfor %}
-
-          <button
-            type="button"
-            id="displayADSUserForm"
-            class="fr-btn fr-btn--sm fr-icon-checkbox-circle-line fr-btn--icon-left fr-btn--secondary"
-            x-on:click="extraNumberOfADSUsersFormsetToDisplay++"
-            x-show="numberOfADSUsersFormsetToDisplay < {{ ads_users_formset.extra }}"
+        {% for ads_user_form in ads_users_formset %}
+          <div
+            x-show="{{ forloop.counter0 }} < numberOfADSUsersFormsetToDisplay"
+            class="fr-form-group ads-user-form"
             x-transition
-            {% if ads_manager.is_locked %}disabled {% endif %}
           >
-              Ajouter un exploitant
-          </button>
-        </div>
-      </template>
+            <template x-if="used_by_owner === 'false'">
+              <fieldset class="fr-fieldset">
+                  <legend class="fr-fieldset__legend">{{ forloop.counter }}<sup>{% if forloop.counter == 1 %}er{% else %}e{% endif %}</sup> exploitant taxi</legend>
+
+                <div class="fr-pl-3w">
+                  <!-- User status -->
+                  {% include 'pages/ads-form_select.html' with field=ads_user_form.status field_errors=ads_user_form.errors.status required=ads_user_form.fields.status.required readonly=ads_manager.is_locked %}
+                  <!-- User name -->
+                  {% include 'pages/ads-form_string.html' with field=ads_user_form.name field_errors=ads_user_form.errors.name required=ads_user_form.fields.name.required readonly=ads_manager.is_locked %}
+                  <!-- User SIRET -->
+                  {% include 'pages/ads-form_string.html' with field=ads_user_form.siret field_errors=ads_user_form.errors.siret required=ads_user_form.fields.siret.required readonly=ads_manager.is_locked %}
+                  <!-- Professional licence number -->
+                  {% include 'pages/ads-form_string.html' with field=ads_user_form.license_number field_errors=ads_user_form.errors.license_number required=ads_user_form.fields.license_number.required readonly=ads_manager.is_locked %}
+                </div>
+
+              </fieldset>
+            </template>
+
+            {% for hidden_field in ads_user_form.hidden_fields %}
+              {{ hidden_field }}
+            {% endfor %}
+          </div>
+        {% endfor %}
+
+        <button
+          type="button"
+          id="displayADSUserForm"
+          class="fr-btn fr-btn--sm fr-icon-checkbox-circle-line fr-btn--icon-left fr-btn--secondary"
+          x-on:click="numberOfADSUsersFormsetToDisplay++"
+          x-show="numberOfADSUsersFormsetToDisplay < {{ ads_users_formset.extra }}"
+          x-transition
+          {% if ads_manager.is_locked %}disabled {% endif %}
+        >
+            Ajouter un exploitant
+        </button>
+      </div>
     </div>
 
     <!-- Legal files -->
