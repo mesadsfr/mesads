@@ -62,6 +62,11 @@ urlpatterns = [
         name="app.ads.decree",
     ),
     path(
+        "gestion/<int:manager_id>/ads/<int:ads_id>/history",
+        ads_manager_required(views.ADSHistoryView.as_view()),
+        name="app.ads.history",
+    ),
+    path(
         "prefectures/<int:prefecture_id>/export",
         ads_manager_administrator_required(views.prefecture_export_ads),
         name="app.exports.prefecture",

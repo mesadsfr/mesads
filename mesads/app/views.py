@@ -45,11 +45,13 @@ from .forms import (
 )
 from .models import (
     ADS,
+    ADSLegalFile,
     ADSManager,
     ADSManagerAdministrator,
     ADSManagerRequest,
     ADSUser,
 )
+from .reversion_diff import ModelHistory
 
 
 class HTTP500View(TemplateView):
@@ -997,6 +999,26 @@ class CustomCookieWizardView(CookieWizardView):
         resp = super().render_done(form, **kwargs)
         self.storage.reset = storage_reset
         return resp
+
+
+class ADSHistoryView(DetailView):
+    template_name = "pages/ads_history.html"
+    model = ADS
+    pk_url_kwarg = "ads_id"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["history"] = ModelHistory(
+            self.object,
+            ignore_fields=[
+                ADS._meta.get_field("ads_manager"),
+                ADS._meta.get_field("creation_date"),
+                ADS._meta.get_field("last_update"),
+                ADSLegalFile._meta.get_field("ads"),
+                ADSUser._meta.get_field("ads"),
+            ],
+        )
+        return ctx
 
 
 class ADSDecreeView(CustomCookieWizardView):

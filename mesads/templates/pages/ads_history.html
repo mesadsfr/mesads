@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Historique de l'ADS {{ ads.id }} {% endblock %}
+
+{% block body %}
+
+{% comment %} {{ ads.number }} {{ ads.ads_manager.content_object.display_fulltext }} {% endcomment %}
+<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.detail' manager_id=ads.ads_manager.id %}">{{ ads.ads_manager.content_object.display_text|capfirst }}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.ads.detail' manager_id=ads.ads_manager.id ads_id=ads.id %}">ADS numéro {{ ads.number }}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Historique des modifications</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+
+{% for revision, objects in history.get_revisions %}
+<div class="fr-table fr-table--bordered">
+    <table>
+        <caption>Changement du {{ revision.date_created|date:"d/m/Y" }} par {{ revision.user.email }}</caption>
+        <thead>
+            <tr>
+                <th>Champ</th>
+                <th>Ancienne valeur</th>
+                <th>Nouvelle valeur</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for cls, objects_ids in objects.items %}
+            {% for object_id, diff in objects_ids.items %}
+                {% if diff.is_new_object %}
+                    {% for field, value in diff.new_fields.items %}
+                    <tr>
+                        <th>{{ field.verbose_name }}</th>
+                        <td></td>
+                        <td>{% include "pages/ads_history/field.html" with field=value %}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    {% for field, values in diff.changed_fields.items %}
+                    <tr>
+                        <th>{{ field.verbose_name }}</th>
+                        <td>{% include "pages/ads_history/field.html" with field=values.0 %}</td>
+                        <td>{% include "pages/ads_history/field.html" with field=values.1 %}</td>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
+
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,231 @@
+"""django-reversion provides a hook to setup a callback when a model is saved to
+store the history of changes in the database.
+
+django-reversion-compare is another package which offers a view in the
+administration to compare two versions of a model. It also includes low-level
+functions to compare two versions of a model, but it doesn't provide a way to
+get the full history of a model.
+
+This file provides a class ModelHistory which takes a model instance as input,
+and returns a list of ModelHistoryRevision objects. Each ModelHistoryRevision
+contains all the changes for a given revision, for the object and all the models
+that have a foreign key to this object.
+"""
+
+from collections import defaultdict
+import functools
+import json
+
+from django.db.models.functions import Cast
+from django.contrib.postgres.fields import JSONField
+
+from reversion.models import Version
+
+
+class Diff:
+    """Computes the differences between the dict `obj` and its previous version.
+    `prev` can be None."""
+
+    def __init__(self, model, data, prev_data, ignore_fields):
+        self.model = model
+        self.model_name = model._meta.model_name
+        self.data = data
+        self.prev_data = prev_data
+        self.ignore_fields = ignore_fields
+        self.changed_fields = {}
+        self.new_fields = {}
+        self.deleted_fields = {}
+        self.is_new_object = not prev_data
+
+        if not self.is_new_object:
+            self._diff()
+        else:
+            self.new_fields = self._exclude_ignored_fields(
+                {
+                    self._resolve_field(key): value
+                    for key, value in data.items()
+                    if value or value is False
+                }
+            )
+
+    def __repr__(self):
+        if self.is_new_object:
+            return f"<Diff is_new_object={self.new_fields}>"
+
+        new = ",".join(str(v) for v in self.new_fields.keys())
+        changed = ",".join(str(v) for v in self.changed_fields.keys())
+        deleted = ",".join(str(v) for v in self.deleted_fields.keys())
+        ret = "<Diff"
+        if new:
+            ret += f" new={new}"
+        if changed:
+            ret += f" changed={changed}"
+        if deleted:
+            ret += f" deleted={deleted}"
+        return ret + ">"
+
+    def _exclude_ignored_fields(self, data):
+        return {
+            key: value for key, value in data.items() if key not in self.ignore_fields
+        }
+
+    @functools.cache
+    def _resolve_field(self, name):
+        return self.model._meta.get_field(name)
+
+    def _diff(self):
+        common_keys = set(self.data.keys()).intersection(set(self.prev_data.keys()))
+        obj_only_keys = set(self.data.keys()).difference(set(self.prev_data.keys()))
+        prev_only_keys = set(self.prev_data.keys()).difference(set(self.data.keys()))
+
+        for key in common_keys:
+            if self.data[key] != self.prev_data[key]:
+                self.changed_fields[self._resolve_field(key)] = (
+                    self.prev_data[key],
+                    self.data[key],
+                )
+
+        for key in obj_only_keys:
+            self.new_fields[self._resolve_field(key)] = self.data[key]
+
+        for key in prev_only_keys:
+            self.deleted_fields[self._resolve_field(key)] = self.prev_data[key]
+
+        self.changed_fields = self._exclude_ignored_fields(self.changed_fields)
+        self.deleted_fields = self._exclude_ignored_fields(self.deleted_fields)
+        self.new_fields = self._exclude_ignored_fields(self.new_fields)
+
+
+class ModelHistory:
+    def __init__(self, instance, ignore_fields=None):
+        self.instance = instance
+        self.ignore_fields = ignore_fields or []
+
+    def _foreign_key_referring_model(self, model):
+        """For a given model, returns all the models that have a foreign key to this
+        model, and the name of the foreign key field.
+
+        For example:
+
+        >>> class Parent(models.Model):
+        ...    pass
+
+        >>> class Child(models.Model):
+        ...    parent = models.ForeignKey(Parent)
+
+        >>> Class Child2(models.Model):
+        ...    daddy = models.ForeignKey(Parent)
+
+        >>> foreign_key_referring_model(Parent)
+        [(Child, 'parent'), (Child2, 'daddy')]
+        """
+        referring_models = []
+        for related_object in model._meta.related_objects:
+            if not related_object.related_model:
+                continue
+            referring_models.append(
+                (related_object.related_model, related_object.field.name)
+            )
+        return referring_models
+
+    def _build_revisions_list(self, obj):
+        """To get the full history of a model, we need to get all the versions for
+        this model, and all the versions for models that have a foreign key to this
+        model.
+
+        This function returns a list of tuples, where each tuple has the following format:
+
+        >>> (revision, {Model: {object_id: version, object_id: version}})
+
+        The first element of the tuple is the revision object.
+
+        The second element is a dict:
+            * the top-level keys are the models that have a change in this revision.
+            * the second-level keys are the object ids of the objects that have a change in this revision.
+            * the values are the version objects for this object id.
+
+        The list is sorted to have the most recent revision first.
+        """
+        revisions = defaultdict(lambda: defaultdict(dict))
+
+        # List all the versions for this object
+        for version in Version.objects.get_for_object(obj):
+            revisions[version.revision][obj._meta.model].update({obj.id: version})
+
+        # List all the versions the models that have a foreign key to this object
+        for model, pk_name in self._foreign_key_referring_model(obj._meta.model):
+            # This query filters all the versions for models that have a foreign key to `obj`.
+            # django-reversion stores the serialized data in a text field. We need to cast it to JSON to filter it.
+            # Also, the serialized data is a list of dictionaries. It seems there is
+            # always only one dictionary in the list, so we don't need to iterate over it and can just use the first.
+            qs = (
+                Version.objects.get_for_model(model)
+                .annotate(json_data=Cast("serialized_data", JSONField()))
+                .filter(**{f"json_data__0__fields__{pk_name}": obj.id})
+            )
+            for row in qs:
+                revisions[row.revision][model].update(
+                    {
+                        row.object_id: row,
+                    }
+                )
+        # Convert defaultdict to dict, and sort the revisions with the most recent first
+        return sorted(
+            [(key, dict(value)) for key, value in revisions.items()],
+            key=lambda x: x[0].id,
+            reverse=True,
+        )
+
+    def _find_first_version_from_revisions_list(self, revisions, search_cls, search_id):
+        """Given a list of revisions returned by `_build_revisions_list`, this
+        function returns the first version of the object with the given id and
+        class."""
+        for _, objects in revisions:
+            for cls, objects_ids in objects.items():
+                if cls == search_cls and search_id in objects_ids:
+                    return objects_ids[search_id]
+        return None
+
+    def _set_diff_in_revisions_list(self, revisions):
+        """Given the list of revisions returned by `_build_revisions_list`, this
+        function replaces every version object with a dict containing the
+        differences with the previous version.
+        """
+        for idx, (_, objects) in enumerate(revisions):
+            for cls, objects_ids in objects.items():
+                for object_id, version in objects_ids.items():
+                    last_version = self._find_first_version_from_revisions_list(
+                        revisions[idx + 1 :], cls, object_id
+                    )
+                    diff = Diff(
+                        model=cls,
+                        data=json.loads(version.serialized_data)[0]["fields"],
+                        prev_data=json.loads(last_version.serialized_data)[0]["fields"]
+                        if last_version
+                        else None,
+                        ignore_fields=self.ignore_fields,
+                    )
+                    objects_ids[object_id] = diff
+        return revisions
+
+    def _remove_empty_revisions(self, revisions):
+        """Given the revisions returned by _set_diff_in_revisions_list, this
+        function removes entries where there are no changes. It can happen when
+        the only fields updated for a revision are ignored fields."""
+        for revision, objects in revisions:
+            for cls, objects_ids in list(objects.items()):
+                for object_id, diff in list(objects_ids.items()):
+                    if not any(
+                        (diff.new_fields, diff.changed_fields, diff.deleted_fields)
+                    ):
+                        del objects_ids[object_id]
+                if not objects_ids:
+                    del objects[cls]
+            if not objects:
+                revisions.remove((revision, objects))
+        return revisions
+
+    def get_revisions(self):
+        revisions = self._build_revisions_list(self.instance)
+        revisions = self._set_diff_in_revisions_list(revisions)
+        return self._remove_empty_revisions(revisions)
