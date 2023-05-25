@@ -517,6 +517,7 @@ def prefecture_export_ads(request, ads_manager_administrator):
         return "oui" if value else "non"
 
     fields = [
+        ("Identifiant unique", lambda ads: ads.id),
         ("Administration", lambda ads: ads.ads_manager.content_object.display_text()),
         ("Numéro", lambda ads: ads.number),
         ("Date de création", lambda ads: ads.ads_creation_date),
