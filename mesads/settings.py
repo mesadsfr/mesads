@@ -26,7 +26,7 @@ def parse_env_bool(key, default):
 
     if value is None:
         return default
-    elif value.lower() in ("yes", "true", "1", "t"):
+    elif value.lower() in ("yes", "true", "1", "t", "y"):
         return True
     elif value.lower() in ("no", "false", "0", "f", ""):
         return False
@@ -76,8 +76,12 @@ ALLOWED_HOSTS = [part for part in os.getenv("ALLOWED_HOSTS", "").split(";") if p
 # In debug, allow any origin for unsafe (POST, PUT, DELETE) requests.
 if DEBUG:
     CSRF_TRUSTED_ORIGINS = [
-        "https://*.info", "https://*.com", "https://*.fr",
-        "http://*.info", "http://*.com", "http://*.fr",
+        "https://*.info",
+        "https://*.com",
+        "https://*.fr",
+        "http://*.info",
+        "http://*.com",
+        "http://*.fr",
     ]
 
 
