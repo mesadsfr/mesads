@@ -671,6 +671,10 @@ class ADSUser(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
     distinct from the ADS owner.
     """
 
+    class Meta:
+        verbose_name = "Exploitant de l'ADS"
+        verbose_name_plural = "Exploitants de l'ADS"
+
     def __str__(self):
         return f"{self.name}"
 

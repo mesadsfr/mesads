@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load meta %}
 {% block title %}Historique de l'ADS {{ ads.id }} {% endblock %}
 
 {% block body %}
@@ -25,41 +26,39 @@
   </nav>
 
 {% for revision, objects in history.get_revisions %}
-<div class="fr-table fr-table--bordered">
-    <table>
-        <caption>Changement du {{ revision.date_created|date:"d/m/Y" }} par {{ revision.user.email }}</caption>
-        <thead>
-            <tr>
-                <th>Champ</th>
-                <th>Ancienne valeur</th>
-                <th>Nouvelle valeur</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for cls, objects_ids in objects.items %}
-            {% for object_id, diff in objects_ids.items %}
-                {% if diff.is_new_object %}
-                    {% for field, value in diff.new_fields.items %}
-                    <tr>
-                        <th>{{ field.verbose_name }}</th>
-                        <td></td>
-                        <td>{{ value }}</td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    {% for field, values in diff.changed_fields.items %}
-                    <tr>
-                        <th>{{ field.verbose_name }}</th>
-                        <td>{{ values.0 }}</td>
-                        <td>{{ values.1 }}</td>
-                    </tr>
-                    {% endfor %}
-                {% endif %}
+    <h3>Changement du {{ revision.date_created|date:"d/m/Y" }} par {{ revision.user.email }}</h3>
 
-            {% endfor %}
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
+    {% for cls, objects_ids in objects.items %}
+    <div class="fr-table fr-table--bordered">
+        <table>
+            <thead>
+                <th class="fr-text--lg" style="text-align:center; background-color:#1b1b35; color:#fff" colspan="2">
+                    {{ cls|meta:"verbose_name" }}
+                </th>
+            </thead>
+            <tbody>
+                {% for object_id, diff in objects_ids.items %}
+                    {% if diff.is_new_object %}
+                        {% for field, value in diff.new_fields.items %}
+                        <tr>
+                            <th>{{ field.verbose_name }}</th>
+                            <td>&rarr; {{ value }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        {% for field, values in diff.changed_fields.items %}
+                        <tr>
+                            <th>{{ field.verbose_name }}</th>
+                            <td>{{ values.0 }} &rarr; {{ values.1 }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %}
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
 {% endfor %}
+
 {% endblock %}
