@@ -149,7 +149,9 @@ class ModelHistory:
         revisions = defaultdict(lambda: defaultdict(dict))
 
         # List all the versions for this object
-        for version in Version.objects.get_for_object(obj):
+        for version in Version.objects.get_for_object(obj).select_related(
+            "revision__user"
+        ):
             revisions[version.revision][obj._meta.model].update({obj.id: version})
 
         # List all the versions the models that have a foreign key to this object
@@ -160,6 +162,7 @@ class ModelHistory:
             # always only one dictionary in the list, so we don't need to iterate over it and can just use the first.
             qs = (
                 Version.objects.get_for_model(model)
+                .select_related("revision")
                 .annotate(json_data=Cast("serialized_data", JSONField()))
                 .filter(**{f"json_data__0__fields__{pk_name}": obj.id})
             )
