@@ -341,9 +341,9 @@ class ADSDecreeForm3(forms.Form):
         ]
 
         for dep in deps:
-            if any(cleaned_data[key] for key in dep.keys()):
+            if any(cleaned_data.get(key) for key in dep.keys()):
                 for key in dep.keys():
-                    if not cleaned_data[key]:
+                    if not cleaned_data.get(key):
                         self.add_error(key, dep[key])
 
         return cleaned_data
