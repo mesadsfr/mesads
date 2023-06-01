@@ -26,7 +26,7 @@
   </nav>
 
 {% for revision, objects in history.get_revisions %}
-    <h3>Changement du {{ revision.date_created|date:"d/m/Y" }} par {{ revision.user.email }}</h3>
+    <h4>Changement du {{ revision.date_created|date:"d/m/Y" }} par {{ revision.user.email }}</h4>
 
     {% for cls, objects_ids in objects.items %}
     <div class="fr-table fr-table--bordered">
@@ -42,18 +42,17 @@
                         {% for field, value in diff.new_fields.items %}
                         <tr>
                             <th>{{ field.verbose_name }}</th>
-                            <td>&rarr; {{ value }}</td>
+                            <td><small>(vide)</small> &rarr; {{ value }}</td>
                         </tr>
                         {% endfor %}
                     {% else %}
                         {% for field, values in diff.changed_fields.items %}
                         <tr>
                             <th>{{ field.verbose_name }}</th>
-                            <td>{{ values.0 }} &rarr; {{ values.1 }}</td>
+                            <td>{% if values.0 %}{{ values.0 }}{% else %}<small>(vide)</small>{% endif %} &rarr; {{ values.1 }}</td>
                         </tr>
                         {% endfor %}
                     {% endif %}
-
                 {% endfor %}
             </tbody>
         </table>
