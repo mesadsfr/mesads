@@ -226,18 +226,19 @@ class ModelHistory:
         """Given the revisions returned by _set_diff_in_revisions_list, this
         function removes entries where there are no changes. It can happen when
         the only fields updated for a revision are ignored fields."""
+        new_revisions = []
         for revision, objects in revisions:
-            for cls, objects_ids in list(objects.items()):
-                for object_id, diff in list(objects_ids.items()):
-                    if not any(
-                        (diff.new_fields, diff.changed_fields, diff.deleted_fields)
-                    ):
-                        del objects_ids[object_id]
-                if not objects_ids:
-                    del objects[cls]
-            if not objects:
-                revisions.remove((revision, objects))
-        return revisions
+            new_objects = {}
+            for cls, objects_ids in objects.items():
+                new_objects_ids = {}
+                for object_id, diff in objects_ids.items():
+                    if any((diff.new_fields, diff.changed_fields, diff.deleted_fields)):
+                        new_objects_ids[object_id] = diff
+                if new_objects_ids:
+                    new_objects[cls] = new_objects_ids
+            if new_objects:
+                new_revisions.append((revision, new_objects))
+        return new_revisions
 
     def get_revisions(self):
         revisions = self._build_revisions_list(self.instance)
