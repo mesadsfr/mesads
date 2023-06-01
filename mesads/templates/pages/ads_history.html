@@ -43,7 +43,7 @@
                     <tr>
                         <th>{{ field.verbose_name }}</th>
                         <td></td>
-                        <td>{% include "pages/ads_history/field.html" with field=value %}</td>
+                        <td>{{ value }}</td>
                     </tr>
                     {% endfor %}
                 {% else %}
