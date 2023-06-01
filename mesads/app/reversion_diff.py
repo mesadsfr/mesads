@@ -21,6 +21,7 @@ from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import FieldDoesNotExist
 from django.db import models
 from django.db.models.functions import Cast
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
 from reversion.models import Version
@@ -268,5 +269,11 @@ class ModelHistory:
 
         if isinstance(field, models.DateField):
             return datetime.datetime.strptime(value, "%Y-%m-%d").date()
+
+        if isinstance(field, models.FileField):
+            maxsize = 64
+            url = field.storage.url(value)
+            name = f"…{value[-maxsize:]}" if len(value) > maxsize + 3 else value
+            return mark_safe(f'<a href="{url}">{name}</a>')
 
         return value
