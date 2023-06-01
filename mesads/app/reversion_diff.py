@@ -274,6 +274,6 @@ class ModelHistory:
             maxsize = 64
             url = field.storage.url(value)
             name = f"…{value[-maxsize:]}" if len(value) > maxsize + 3 else value
-            return mark_safe(f'<a href="{url}">{name}</a>')
+            return mark_safe(f'<a href="{url}" target="_blank">{name}</a>')
 
         return value
