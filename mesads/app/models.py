@@ -655,7 +655,11 @@ class ADSLegalFile(models.Model):
     creation_date = models.DateField(auto_now_add=True, null=False)
 
     file = models.FileField(
-        upload_to=get_legal_filename, blank=False, null=False, max_length=512
+        upload_to=get_legal_filename,
+        blank=False,
+        null=False,
+        max_length=512,
+        verbose_name="Fichier",
     )
 
 

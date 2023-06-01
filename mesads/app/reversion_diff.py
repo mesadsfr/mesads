@@ -13,11 +13,15 @@ that have a foreign key to this object.
 """
 
 from collections import defaultdict
+import datetime
 import functools
 import json
 
-from django.db.models.functions import Cast
 from django.contrib.postgres.fields import JSONField
+from django.core.exceptions import FieldDoesNotExist
+from django.db import models
+from django.db.models.functions import Cast
+from django.utils.translation import gettext as _
 
 from reversion.models import Version
 
@@ -26,8 +30,9 @@ class Diff:
     """Computes the differences between the dict `obj` and its previous version.
     `prev` can be None."""
 
-    def __init__(self, model, data, prev_data, ignore_fields):
+    def __init__(self, model, render_field, data, prev_data, ignore_fields):
         self.model = model
+        self.render_field = render_field
         self.model_name = model._meta.model_name
         self.data = data
         self.prev_data = prev_data
@@ -42,7 +47,7 @@ class Diff:
         else:
             self.new_fields = self._exclude_ignored_fields(
                 {
-                    self._resolve_field(key): value
+                    self._resolve_field(key): self.render_field(self.model, key, value)
                     for key, value in data.items()
                     if value or value is False
                 }
@@ -81,15 +86,19 @@ class Diff:
         for key in common_keys:
             if self.data[key] != self.prev_data[key]:
                 self.changed_fields[self._resolve_field(key)] = (
-                    self.prev_data[key],
-                    self.data[key],
+                    self.render_field(self.model, key, self.prev_data[key]),
+                    self.render_field(self.model, key, self.data[key]),
                 )
 
         for key in obj_only_keys:
-            self.new_fields[self._resolve_field(key)] = self.data[key]
+            self.new_fields[self._resolve_field(key)] = self.render_field(
+                self.model, key, self.data[key]
+            )
 
         for key in prev_only_keys:
-            self.deleted_fields[self._resolve_field(key)] = self.prev_data[key]
+            self.deleted_fields[self._resolve_field(key)] = self.render_field(
+                self.model, key, self.prev_data[key]
+            )
 
         self.changed_fields = self._exclude_ignored_fields(self.changed_fields)
         self.deleted_fields = self._exclude_ignored_fields(self.deleted_fields)
@@ -202,6 +211,7 @@ class ModelHistory:
                     )
                     diff = Diff(
                         model=cls,
+                        render_field=self.render_field,
                         data=json.loads(version.serialized_data)[0]["fields"],
                         prev_data=json.loads(last_version.serialized_data)[0]["fields"]
                         if last_version
@@ -232,3 +242,31 @@ class ModelHistory:
         revisions = self._build_revisions_list(self.instance)
         revisions = self._set_diff_in_revisions_list(revisions)
         return self._remove_empty_revisions(revisions)
+
+    def render_field(self, cls, name, value):
+        """This function can be overridden to customize the way a field is rendered."""
+        if value is None:
+            return ""
+
+        if isinstance(value, bool):
+            return _("Yes") if value else _("No")
+
+        try:
+            field = cls._meta.get_field(name)
+        except FieldDoesNotExist:
+            return value
+
+        if field.choices:
+            return next(
+                (
+                    human_readable
+                    for value, human_readable in field.choices
+                    if value == value
+                ),
+                None,
+            )
+
+        if isinstance(field, models.DateField):
+            return datetime.datetime.strptime(value, "%Y-%m-%d").date()
+
+        return value

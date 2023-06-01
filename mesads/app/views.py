@@ -1015,6 +1015,7 @@ class ADSHistoryView(DetailView):
                 ADS._meta.get_field("creation_date"),
                 ADS._meta.get_field("last_update"),
                 ADSLegalFile._meta.get_field("ads"),
+                ADSLegalFile._meta.get_field("creation_date"),
                 ADSUser._meta.get_field("ads"),
             ],
         )
