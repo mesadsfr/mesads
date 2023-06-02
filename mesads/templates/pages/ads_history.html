@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load meta %}
+{% load selectattr %}
 {% block title %}Historique de l'ADS {{ ads.id }} {% endblock %}
 
 {% block body %}
@@ -29,34 +30,48 @@
     <h4>Changement du {{ revision.date_created|date:"d/m/Y" }} par {{ revision.user.email }}</h4>
 
     {% for cls, objects_ids in objects.items %}
-    <div class="fr-table fr-table--bordered">
-        <table>
-            <thead>
-                <th class="fr-text--lg" style="text-align:center; background-color:#1b1b35; color:#fff" colspan="2">
-                    {{ cls|meta:"verbose_name" }}
-                </th>
-            </thead>
-            <tbody>
-                {% for object_id, diff in objects_ids.items %}
-                    {% if diff.is_new_object %}
-                        {% for field, value in diff.new_fields.items %}
-                        <tr>
-                            <th>{{ field.verbose_name }}</th>
-                            <td><small>(vide)</small> &rarr; {{ value }}</td>
-                        </tr>
-                        {% endfor %}
+      {% for object_id, diff in objects_ids.items %}
+        <div class="fr-table fr-table--bordered">
+            <table>
+                <thead>
+                    {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
+                    <th class="fr-text--lg" style="text-align:center; background-color:#c9191e; color:#fff" colspan="2">
+                        {{ cls|meta:"verbose_name" }} (supprimé)
+                    </th>
                     {% else %}
-                        {% for field, values in diff.changed_fields.items %}
-                        <tr>
-                            <th>{{ field.verbose_name }}</th>
-                            <td>{% if values.0 %}{{ values.0 }}{% else %}<small>(vide)</small>{% endif %} &rarr; {{ values.1 }}</td>
-                        </tr>
-                        {% endfor %}
+                    <th class="fr-text--lg" style="text-align:center; background-color:#1b1b35; color:#fff" colspan="2">
+                        {{ cls|meta:"verbose_name" }}
+                    </th>
                     {% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                        {% if diff.is_new_object %}
+                            {% for field, value in diff.new_fields.items %}
+                            <tr>
+                                <th>{{ field.verbose_name }}</th>
+                                <td><small>(vide)</small> &rarr; {{ value }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            {% for field, values in diff.changed_fields.items %}
+                            <tr>
+                                <th>{{ field.verbose_name }}</th>
+                                {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
+                                  {% if field.name == "deleted_at" %}
+                                    <td>{{ values.1 }}</td>
+                                  {% else %}
+                                    <td style="text-decoration: line-through;">{{ values.1 }}</td>
+                                  {% endif %}
+                                {% else %}
+                                <td>{% if values.0 %}{{ values.0 }}{% else %}<small>(vide)</small>{% endif %} &rarr; {{ values.1 }}</td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
+                </tbody>
+            </table>
+        </div>
+      {% endfor %}
     {% endfor %}
 {% endfor %}
 
