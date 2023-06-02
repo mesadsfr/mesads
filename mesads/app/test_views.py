@@ -1358,3 +1358,30 @@ class TestADSDecreeView(ClientTestCase):
         self._step_back(0)
         resp = self._step_0(is_old_ads=False)
         self.assertNotIn("error", resp.content.decode("utf8"))
+
+
+class TestADSHistoryView(ClientTestCase):
+    def setUp(self):
+        super().setUp()
+        self.ads = ADS.objects.create(
+            number="12346", ads_manager=self.ads_manager_city35
+        )
+
+    def test_permissions(self):
+        for client_name, client, expected_status in (
+            ("anonymous", self.anonymous_client, 302),
+            ("auth", self.auth_client, 404),
+            ("ads_manager 35", self.ads_manager_city35_client, 200),
+            ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
+        ):
+            with self.subTest(client_name=client_name, expected_status=expected_status):
+                resp = client.get(
+                    f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/history"
+                )
+                self.assertEqual(resp.status_code, expected_status)
+
+    def test_get(self):
+        resp = self.ads_manager_city35_client.get(
+            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/history"
+        )
+        self.assertEqual(resp.status_code, 200)
