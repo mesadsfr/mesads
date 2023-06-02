@@ -18,7 +18,6 @@ import functools
 import json
 
 from django.contrib.postgres.fields import JSONField
-from django.core.exceptions import FieldDoesNotExist
 from django.db import models
 from django.db.models.functions import Cast
 from django.utils.safestring import mark_safe
@@ -237,10 +236,7 @@ class ModelHistory:
         if isinstance(value, bool):
             return _("Yes") if value else _("No")
 
-        try:
-            field = cls._meta.get_field(name)
-        except FieldDoesNotExist:
-            return value
+        field = cls._meta.get_field(name)
 
         if field.choices:
             return next(
