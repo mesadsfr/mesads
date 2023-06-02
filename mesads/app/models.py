@@ -11,6 +11,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import F, Q
+from django.utils import timezone
 from django.utils.html import mark_safe
 
 import reversion
@@ -18,6 +19,44 @@ import reversion
 from django_cleanup import cleanup
 
 from mesads.fradm.models import Commune, Prefecture
+
+
+class SoftDeleteManager(models.Manager):
+    """Manager to add a soft delete feature to a model.
+
+    This manager overrides the `get_queryset` method to filter out objects that
+    have a `deleted_at` field set.
+    """
+
+    def get_queryset(self):
+        return super().get_queryset().filter(deleted_at__isnull=True)
+
+
+class SoftDeleteMixin(models.Model):
+    """Mixin to add a soft delete feature to a model.
+
+    This mixin adds a `deleted_at` field to the model, and overrides the
+    `delete` method to set the field to True instead of actually deleting the
+    object.
+    """
+
+    class Meta:
+        abstract = True
+
+    objects = SoftDeleteManager()
+    with_deleted = models.Manager()
+
+    deleted_at = models.DateTimeField(
+        blank=True,
+        null=True,
+        default=None,
+        verbose_name="Date de suppression",
+        help_text="Date de suppression de l'objet. Si cette date est renseignée, l'objet est considéré comme supprimé.",
+    )
+
+    def delete(self, using=None, keep_parents=False):
+        self.deleted_at = timezone.now()
+        self.save()
 
 
 class SmartValidationMixin:
@@ -633,7 +672,10 @@ def get_legal_filename(instance, filename):
 
 @cleanup.ignore
 @reversion.register
-class ADSLegalFile(models.Model):
+class ADSLegalFile(
+    SoftDeleteMixin,
+    models.Model,
+):
     class Meta:
         verbose_name = "Arrêté portant sur l'attribution de l'ADS"
         verbose_name_plural = "Arrêtés portant sur l'attribution de l'ADS"
@@ -664,7 +706,12 @@ class ADSLegalFile(models.Model):
 
 
 @reversion.register
-class ADSUser(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
+class ADSUser(
+    SmartValidationMixin,
+    CharFieldsStripperMixin,
+    SoftDeleteMixin,
+    models.Model,
+):
     """ "Exploitant" of an ADS.
 
     For ADS created before Oct 01. 2014, the person exploiting the ADS could be
