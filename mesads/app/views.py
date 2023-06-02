@@ -413,6 +413,13 @@ class ADSView(RevisionMixin, UpdateView):
     def get_object(self, queryset=None):
         return get_object_or_404(ADS, id=self.kwargs["ads_id"])
 
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            "Le formulaire contient des erreurs. Veuillez les corriger avant de soumettre à nouveau.",
+        )
+        return super().form_invalid(form)
+
     def form_valid(self, form):
         ctx = self.get_context_data()
         ads_users_formset = ctx["ads_users_formset"]
@@ -424,6 +431,7 @@ class ADSView(RevisionMixin, UpdateView):
             ads_users_formset.save()
             ads_legal_files_formset.instance = self.object
             ads_legal_files_formset.save()
+            messages.success(self.request, "Les modifications ont été enregistrées.")
             return resp
         return super().form_invalid(form)
 
