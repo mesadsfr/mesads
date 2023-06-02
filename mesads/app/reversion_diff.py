@@ -13,9 +13,10 @@ that have a foreign key to this object.
 """
 
 from collections import defaultdict
-import datetime
 import functools
 import json
+
+import dateparser
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -249,10 +250,10 @@ class ModelHistory:
             )
 
         if isinstance(field, models.DateTimeField):
-            return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+            return dateparser.parse(value)
 
         if isinstance(field, models.DateField):
-            return datetime.datetime.strptime(value, "%Y-%m-%d").date()
+            return dateparser.parse(value)
 
         if isinstance(field, models.FileField):
             maxsize = 64
