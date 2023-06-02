@@ -248,6 +248,9 @@ class ModelHistory:
                 None,
             )
 
+        if isinstance(field, models.DateTimeField):
+            return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+
         if isinstance(field, models.DateField):
             return datetime.datetime.strptime(value, "%Y-%m-%d").date()
 

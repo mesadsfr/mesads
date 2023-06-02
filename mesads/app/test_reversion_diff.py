@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.utils.translation import gettext as _
@@ -165,8 +167,14 @@ class TestReversionDiff(TestCase):
         )
 
         self.assertEqual(
-            ModelHistory(ADS()).render_field(ADSUser, "fields_does_not_exist", "xxx"),
-            "xxx",
+            ModelHistory(ADS()).render_field(ADS, "ads_creation_date", "2012-12-21"),
+            datetime.date(2012, 12, 21),
+        )
+        self.assertEqual(
+            ModelHistory(ADSLegalFile()).render_field(
+                ADSLegalFile, "deleted_at", "2023-06-02T16:16:48.112"
+            ),
+            datetime.datetime(2023, 6, 2, 16, 16, 48, 112000),
         )
 
         self.assertEqual(
