@@ -387,9 +387,10 @@ class ADSView(RevisionMixin, UpdateView):
 
     def get_success_url(self):
         return reverse(
-            "app.ads-manager.detail",
+            "app.ads.detail",
             kwargs={
                 "manager_id": self.kwargs["manager_id"],
+                "ads_id": self.kwargs["ads_id"],
             },
         )
 
