@@ -253,7 +253,7 @@ class ModelHistory:
             return dateparser.parse(value)
 
         if isinstance(field, models.DateField):
-            return dateparser.parse(value)
+            return dateparser.parse(value).date()
 
         if isinstance(field, models.FileField):
             maxsize = 64
