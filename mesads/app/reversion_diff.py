@@ -29,7 +29,14 @@ from reversion.models import Version
 
 class Diff:
     """Computes the differences between the dict `obj` and its previous version.
-    `prev` can be None."""
+    `prev` can be None.
+
+    If `prev` is None, then `is_new_object` is True, and `new_fields` contains
+    all the fields of `obj`.
+
+    If `prev` is not None, then `is_new_object` is False, and `changed_fields`
+    contains all the fields that have changed.
+    """
 
     def __init__(self, model, render_field, data, prev_data, ignore_fields):
         self.model = model
@@ -40,7 +47,6 @@ class Diff:
         self.ignore_fields = ignore_fields
         self.changed_fields = {}
         self.new_fields = {}
-        self.deleted_fields = {}
         self.is_new_object = not prev_data
 
         if not self.is_new_object:
@@ -58,16 +64,10 @@ class Diff:
         if self.is_new_object:
             return f"<Diff is_new_object={self.new_fields}>"
 
-        new = ",".join(str(v) for v in self.new_fields.keys())
         changed = ",".join(str(v) for v in self.changed_fields.keys())
-        deleted = ",".join(str(v) for v in self.deleted_fields.keys())
         ret = "<Diff"
-        if new:
-            ret += f" new={new}"
         if changed:
             ret += f" changed={changed}"
-        if deleted:
-            ret += f" deleted={deleted}"
         return ret + ">"
 
     def _exclude_ignored_fields(self, data):
@@ -81,8 +81,6 @@ class Diff:
 
     def _diff(self):
         common_keys = set(self.data.keys()).intersection(set(self.prev_data.keys()))
-        obj_only_keys = set(self.data.keys()).difference(set(self.prev_data.keys()))
-        prev_only_keys = set(self.prev_data.keys()).difference(set(self.data.keys()))
 
         for key in common_keys:
             if self.data[key] != self.prev_data[key]:
@@ -91,19 +89,7 @@ class Diff:
                     self.render_field(self.model, key, self.data[key]),
                 )
 
-        for key in obj_only_keys:
-            self.new_fields[self._resolve_field(key)] = self.render_field(
-                self.model, key, self.data[key]
-            )
-
-        for key in prev_only_keys:
-            self.deleted_fields[self._resolve_field(key)] = self.render_field(
-                self.model, key, self.prev_data[key]
-            )
-
         self.changed_fields = self._exclude_ignored_fields(self.changed_fields)
-        self.deleted_fields = self._exclude_ignored_fields(self.deleted_fields)
-        self.new_fields = self._exclude_ignored_fields(self.new_fields)
 
 
 class ModelHistory:
@@ -131,8 +117,6 @@ class ModelHistory:
         """
         referring_models = []
         for related_object in model._meta.related_objects:
-            if not related_object.related_model:
-                continue
             referring_models.append(
                 (related_object.related_model, related_object.field.name)
             )
@@ -179,7 +163,7 @@ class ModelHistory:
             for row in qs:
                 revisions[row.revision][model].update(
                     {
-                        row.object_id: row,
+                        int(row.object_id): row,
                     }
                 )
         # Convert defaultdict to dict, and sort the revisions with the most recent first
@@ -232,7 +216,7 @@ class ModelHistory:
             for cls, objects_ids in objects.items():
                 new_objects_ids = {}
                 for object_id, diff in objects_ids.items():
-                    if any((diff.new_fields, diff.changed_fields, diff.deleted_fields)):
+                    if any((diff.new_fields, diff.changed_fields)):
                         new_objects_ids[object_id] = diff
                 if new_objects_ids:
                     new_objects[cls] = new_objects_ids
