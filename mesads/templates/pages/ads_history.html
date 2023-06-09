@@ -57,13 +57,22 @@
                             <tr>
                                 <th>{{ field.verbose_name }}</th>
                                 {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
+                                  {% comment %}We don't need to line-through the deletion date{% endcomment %}
                                   {% if field.name == "deleted_at" %}
                                     <td>{{ values.1 }}</td>
                                   {% else %}
-                                    <td style="text-decoration: line-through;">{{ values.1 }}</td>
+                                     <td style="text-decoration: line-through;">
+                                      {{ values.0 }}
+                                      {% if values.0 and values.1 %}&rarr;{% endif %}
+                                      {{ values.1 }}
+                                      </td>
                                   {% endif %}
                                 {% else %}
-                                <td>{% if values.0 %}{{ values.0 }}{% else %}<small>(vide)</small>{% endif %} &rarr; {{ values.1 }}</td>
+                                  <td>
+                                    {% if values.0 %}{{ values.0 }}{% else %}<small>(vide)</small>{% endif %}
+                                    &rarr;
+                                    {% if values.1 %}{{ values.1 }}{% else %}<small>(vide)</small>{% endif %}
+                                  </td>
                                 {% endif %}
                             </tr>
                             {% endfor %}
