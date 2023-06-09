@@ -286,8 +286,8 @@ class ADSDecreeForm3(forms.Form):
     ###
     # ADS Information
     ###
-    ads_end_date = forms.DateField(label="Date de fin de l'ADS délivré", required=True)
-    ads_number = forms.CharField(label="Numéro de l'ADS attribué", required=True)
+    ads_end_date = forms.DateField(label="Date de fin de l'ADS délivrée", required=True)
+    ads_number = forms.CharField(label="Numéro de l'ADS attribuée", required=True)
 
     ###
     # Vehicle Information
