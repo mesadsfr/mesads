@@ -5,82 +5,81 @@
 
 {% block body %}
 <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-    <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
-    <div class="fr-collapse" id="breadcrumb-1">
-      <ol class="fr-breadcrumb__list">
-        <li>
-          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
-        </li>
-        <li>
-          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.detail' manager_id=ads.ads_manager.id %}">{{ ads.ads_manager.content_object.display_text|capfirst }}</a>
-        </li>
-        <li>
-          <a class="fr-breadcrumb__link" href="{% url 'app.ads.detail' manager_id=ads.ads_manager.id ads_id=ads.id %}">ADS numéro {{ ads.number }}</a>
-        </li>
-        <li>
-          <a class="fr-breadcrumb__link" aria-current="page">Historique des modifications</a>
-        </li>
-      </ol>
-    </div>
-  </nav>
+  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
+  <div class="fr-collapse" id="breadcrumb-1">
+    <ol class="fr-breadcrumb__list">
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.detail' manager_id=ads.ads_manager.id %}">{{ ads.ads_manager.content_object.display_text|capfirst }}</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'app.ads.detail' manager_id=ads.ads_manager.id ads_id=ads.id %}">ADS numéro {{ ads.number }}</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" aria-current="page">Historique des modifications</a>
+      </li>
+    </ol>
+  </div>
+</nav>
 
 {% for revision, objects in history.get_revisions %}
-    <h4>Changement du {{ revision.date_created|date:"d/m/Y" }} par {{ revision.user.email }}</h4>
+  <h4>Changement du {{ revision.date_created|date:"d/m/Y" }} par {{ revision.user.email }}</h4>
 
-    {% for cls, objects_ids in objects.items %}
-      {% for object_id, diff in objects_ids.items %}
-        <div class="fr-table fr-table--bordered">
-            <table>
-                <thead>
-                    {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
-                    <th class="fr-text--lg" style="text-align:center; background-color:#c9191e; color:#fff" colspan="2">
-                        {{ cls|meta:"verbose_name" }} (supprimé)
-                    </th>
-                    {% else %}
-                    <th class="fr-text--lg" style="text-align:center; background-color:#1b1b35; color:#fff" colspan="2">
-                        {{ cls|meta:"verbose_name" }}
-                    </th>
-                    {% endif %}
-                </thead>
-                <tbody>
-                        {% if diff.is_new_object %}
-                            {% for field, value in diff.new_fields.items %}
-                            <tr>
-                                <th>{{ field.verbose_name }}</th>
-                                <td><small>(vide)</small> &rarr; {{ value }}</td>
-                            </tr>
-                            {% endfor %}
+  {% for cls, objects_ids in objects.items %}
+    {% for object_id, diff in objects_ids.items %}
+      <div class="fr-table fr-table--bordered">
+          <table>
+              <thead>
+                {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
+                <th class="fr-text--lg" style="text-align:center; background-color:#c9191e; color:#fff" colspan="2">
+                  {{ cls|meta:"verbose_name" }} (supprimé)
+                </th>
+                {% else %}
+                <th class="fr-text--lg" style="text-align:center; background-color:#1b1b35; color:#fff" colspan="2">
+                  {{ cls|meta:"verbose_name" }}
+                </th>
+                {% endif %}
+              </thead>
+              <tbody>
+                {% if diff.is_new_object %}
+                    {% for field, value in diff.new_fields.items %}
+                    <tr>
+                      <th>{{ field.verbose_name }}</th>
+                      <td><small>(vide)</small> &rarr; {{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    {% for field, values in diff.changed_fields.items %}
+                    <tr>
+                        <th>{{ field.verbose_name }}</th>
+                        {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
+                          {% comment %}We don't need to line-through the deletion date{% endcomment %}
+                          {% if field.name == "deleted_at" %}
+                            <td>{{ values.1 }}</td>
+                          {% else %}
+                              <td style="text-decoration: line-through;">
+                              {{ values.0 }}
+                              {% if values.0 and values.1 %}&rarr;{% endif %}
+                              {{ values.1 }}
+                              </td>
+                          {% endif %}
                         {% else %}
-                            {% for field, values in diff.changed_fields.items %}
-                            <tr>
-                                <th>{{ field.verbose_name }}</th>
-                                {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
-                                  {% comment %}We don't need to line-through the deletion date{% endcomment %}
-                                  {% if field.name == "deleted_at" %}
-                                    <td>{{ values.1 }}</td>
-                                  {% else %}
-                                     <td style="text-decoration: line-through;">
-                                      {{ values.0 }}
-                                      {% if values.0 and values.1 %}&rarr;{% endif %}
-                                      {{ values.1 }}
-                                      </td>
-                                  {% endif %}
-                                {% else %}
-                                  <td>
-                                    {% if values.0 %}{{ values.0 }}{% else %}<small>(vide)</small>{% endif %}
-                                    &rarr;
-                                    {% if values.1 %}{{ values.1 }}{% else %}<small>(vide)</small>{% endif %}
-                                  </td>
-                                {% endif %}
-                            </tr>
-                            {% endfor %}
+                          <td>
+                            {% if values.0 %}{{ values.0 }}{% else %}<small>(vide)</small>{% endif %}
+                            &rarr;
+                            {% if values.1 %}{{ values.1 }}{% else %}<small>(vide)</small>{% endif %}
+                          </td>
                         {% endif %}
-                </tbody>
-            </table>
-        </div>
-      {% endfor %}
+                    </tr>
+                    {% endfor %}
+                {% endif %}
+              </tbody>
+          </table>
+      </div>
     {% endfor %}
-
+  {% endfor %}
 {% empty %}
 <div class="fr-alert fr-alert--info">
   <h3 class="fr-alert__title">Historique des modifications de l'ADS {{ ads.id }}</h3>
