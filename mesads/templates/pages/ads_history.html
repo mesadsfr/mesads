@@ -43,11 +43,21 @@
                 {% endif %}
               </thead>
               <tbody>
+                {% comment %}
+                  There are two reasons why diff.is_new_object is true:
+                  1/ the object is new
+                  2/ the object has been created before the history feature was implemented
+
+                  In both cases, we don't have the old values (because 1/ it
+                  didn't exist and 2/ we didn't save it) so instead of
+                  displaying "(vide) -> <new value>", we just display the new
+                  value.
+                {% endcomment %}
                 {% if diff.is_new_object %}
                     {% for field, value in diff.new_fields.items %}
                     <tr>
                       <th>{{ field.verbose_name }}</th>
-                      <td><small>(vide)</small> &rarr; {{ value }}</td>
+                      <td>{{ value }}</td>
                     </tr>
                     {% endfor %}
                 {% else %}
@@ -96,7 +106,6 @@
     Si vous modifiez l'ADS et revenez sur cette page, l'historique des modifications sera disponible.
   </p>
 </div>
-
 {% endfor %}
 
 {% endblock %}
