@@ -812,8 +812,10 @@ class TestADSCreateView(ClientTestCase):
             },
         )
         self.assertEqual(resp.status_code, 302)
-        ADS.objects.order_by("-id")[0]
-        self.assertEqual(resp.url, f"/gestion/{self.ads_manager_city35.id}/")
+        ads = ADS.objects.order_by("-id")[0]
+        self.assertEqual(
+            resp.url, f"/gestion/{self.ads_manager_city35.id}/ads/{ads.id}"
+        )
 
     def test_create_duplicate(self):
         """Attempt to create ads with already-existing id."""
@@ -855,8 +857,10 @@ class TestADSCreateView(ClientTestCase):
             },
         )
         self.assertEqual(resp.status_code, 302)
-        ADS.objects.order_by("-id")[0]
-        self.assertEqual(resp.url, f"/gestion/{self.ads_manager_city35.id}/")
+        ads = ADS.objects.order_by("-id")[0]
+        self.assertEqual(
+            resp.url, f"/gestion/{self.ads_manager_city35.id}/ads/{ads.id}"
+        )
 
         self.assertEqual(ADSUser.objects.count(), 1)
         new_ads_user = ADSUser.objects.get()
@@ -889,8 +893,10 @@ class TestADSCreateView(ClientTestCase):
             },
         )
         self.assertEqual(resp.status_code, 302)
-        ADS.objects.order_by("-id")[0]
-        self.assertEqual(resp.url, f"/gestion/{self.ads_manager_city35.id}/")
+        ads = ADS.objects.order_by("-id")[0]
+        self.assertEqual(
+            resp.url, f"/gestion/{self.ads_manager_city35.id}/ads/{ads.id}"
+        )
 
         self.assertEqual(ADSLegalFile.objects.count(), 2)
         legal_files = ADSLegalFile.objects.order_by("id")

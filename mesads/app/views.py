@@ -491,10 +491,8 @@ class ADSCreateView(ADSView, CreateView):
 
     def get_success_url(self):
         return reverse(
-            "app.ads-manager.detail",
-            kwargs={
-                "manager_id": self.kwargs["manager_id"],
-            },
+            "app.ads.detail",
+            kwargs={"manager_id": self.kwargs["manager_id"], "ads_id": self.object.id},
         )
 
     def form_valid(self, form):
