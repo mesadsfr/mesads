@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 {% load meta %}
 {% load selectattr %}
-{% block title %}Historique de l'ADS {{ ads.id }} {% endblock %}
+{% block title %}Historique de l'ADS {{ ads.id }}{% endblock %}
 
 {% block body %}
-
-{% comment %} {{ ads.number }} {{ ads.ads_manager.content_object.display_fulltext }} {% endcomment %}
 <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
     <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
     <div class="fr-collapse" id="breadcrumb-1">
@@ -82,6 +80,24 @@
         </div>
       {% endfor %}
     {% endfor %}
+
+{% empty %}
+<div class="fr-alert fr-alert--info">
+  <h3 class="fr-alert__title">Historique des modifications de l'ADS {{ ads.id }}</h3>
+
+  <p class="fr-mt-2w">
+    Sur cette page, vous trouverez la liste des modifications de l'ADS {{ ads.id }}. Pour chaque modification, vous verrez la date de la modification, l'email de l'utilisateur à l'origine de la modification ainsi que les champs modifiés.
+  </p>
+
+  <p class="fr-mt-2w">
+    Malheureusement, nous n'avons pas trouvé d'historique pour cette ADS. Cela est dû au fait que la fonctionnalité de gestion des modifications n'était pas encore disponible lorsque cette ADS a été créée, ou modifiée pour la dernière fois.
+  </p>
+
+  <p class="fr-mt-2w">
+    Si vous modifiez l'ADS et revenez sur cette page, l'historique des modifications sera disponible.
+  </p>
+</div>
+
 {% endfor %}
 
 {% endblock %}
