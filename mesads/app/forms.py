@@ -237,40 +237,45 @@ class ADSDecreeForm3(forms.Form):
     decree_number = forms.CharField(
         label="Numéro de l'arrêté concerné",
         help_text="Au format 0000/" + datetime.now().strftime("%Y"),
-        required=True,
+        required=False,
     )
     decree_creation_date = forms.DateField(
         label="Date de saisie de l'arrêté municipal",
-        required=True,
+        required=False,
     )
     decree_commune = forms.CharField(
-        label="Commune concernée par l'arrêté municipal", required=True
+        label="Commune concernée par l'arrêté municipal",
+        required=False,
     )
     decree_limiting_ads_number = forms.CharField(
         label="Numéro de l'arrêté municipal portant la limitation du nombre d'ADS sur la commune",
         help_text="Au format 0000/" + datetime.now().strftime("%Y"),
-        required=True,
+        required=False,
     )
     decree_limiting_ads_date = forms.DateField(
         label="Date de saisie de l'arrêté municipal portant la limitation du nombre d'ADS sur la commune",
-        required=True,
+        required=False,
     )
 
     ###
     # ADS Owner
     ###
-    ads_owner = forms.CharField(label="Titulaire de l'ADS", required=True)
+    ads_owner = forms.CharField(
+        label="Titulaire de l'ADS",
+        required=False,
+    )
     ads_owner_rcs = forms.CharField(
         label="Numéro RCS de la société, titulaire de l'ADS",
         help_text="(SIREN + Mention RCS + Ville)",
-        required=True,
+        required=False,
     )
 
     ###
     # ADS Leasing - Location Gérance
     ###
     tenant_legal_representative = forms.CharField(
-        label="Identité du réprésentant légal de la société", required=False
+        label="Identité du réprésentant légal de la société",
+        required=False,
     )
     tenant_signature_date = forms.CharField(
         label="Date de la signature du contrat de locataire-gérant",
@@ -286,8 +291,14 @@ class ADSDecreeForm3(forms.Form):
     ###
     # ADS Information
     ###
-    ads_end_date = forms.DateField(label="Date de fin de l'ADS délivrée", required=True)
-    ads_number = forms.CharField(label="Numéro de l'ADS attribuée", required=True)
+    ads_end_date = forms.DateField(
+        label="Date de fin de l'ADS délivrée",
+        required=False,
+    )
+    ads_number = forms.CharField(
+        label="Numéro de l'ADS attribuée",
+        required=False,
+    )
 
     ###
     # Vehicle Information
@@ -301,13 +312,16 @@ class ADSDecreeForm3(forms.Form):
         )
 
     vehicle_brand = forms.CharField(
-        label="Marque du véhicule concerné par l'ADS", required=True
+        label="Marque du véhicule concerné par l'ADS",
+        required=False,
     )
     vehicle_model = forms.CharField(
-        label="Modèle du véhicule concerné par l'ADS", required=True
+        label="Modèle du véhicule concerné par l'ADS",
+        required=False,
     )
     immatriculation_plate = forms.CharField(
-        label="Numéro d'immatriculation du véhicule concerné par l'ADS", required=True
+        label="Numéro d'immatriculation du véhicule concerné par l'ADS",
+        required=False,
     )
     previous_decree_number = forms.CharField(
         label="Numéro de l'arrêté concerné précédent celui en cours de promulgation",
@@ -322,7 +336,7 @@ class ADSDecreeForm3(forms.Form):
     decree_number_taxi_activity = forms.CharField(
         label="Numéro de l'arrêté préfectoral local relatif à l'activité de taxi",
         help_text="Au format 0000/" + datetime.now().strftime("%Y"),
-        required=True,
+        required=False,
     )
 
     def clean(self):
