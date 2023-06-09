@@ -9,7 +9,7 @@ from mesads.fradm.models import Commune, EPCI, Prefecture
 class Command(BaseCommand):
     help = (
         "Create ADSManager entries for Communes, EPCIs and Prefectures, "
-        "create ADSManagerAdministrator entries and grand them permissions to "
+        "create ADSManagerAdministrator entries and grant them permissions to "
         "ADSManager."
     )
 
