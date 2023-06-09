@@ -117,14 +117,18 @@
 
 
   <!-- Submit button -->
-  {% if wizard.steps.prev %}
-  <button name="wizard_goto_step" class="fr-btn fr-btn--tertiary-no-outline" type="submit" value="{{ wizard.steps.prev }}">Étape précédente</button>
-  {% endif %}
-  {% if wizard.steps.next %}
-    <button type="submit" class="fr-btn">Étape suivante</button>
-  {% else %}
-    <button type="submit" class="fr-btn">Télécharger l'arrêté municipal</button>
-  {% endif %}
+  {% comment %}Set display flex and order because the first submit button is the automatic action triggered when the user presses "enter" in the form.{% endcomment %}
+  <div style="display: flex">
+    {% if wizard.steps.next %}
+      <button style="order: 2" type="submit" class="fr-btn">Étape suivante</button>
+    {% else %}
+      <button style="order: 2" type="submit" class="fr-btn">Télécharger l'arrêté municipal</button>
+    {% endif %}
+
+    {% if wizard.steps.prev %}
+    <button style="order: 1" name="wizard_goto_step" class="fr-btn fr-btn--tertiary-no-outline" type="submit" value="{{ wizard.steps.prev }}">Étape précédente</button>
+    {% endif %}
+  </div>
 
 </form>
 
