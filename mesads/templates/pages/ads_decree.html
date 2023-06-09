@@ -44,6 +44,24 @@
     </p>
   </div>
 
+  {% if wizard.steps.index == 0 %}
+  <div class="fr-alert fr-alert--info fr-mb-3w">
+    <h3 class="fr-alert__title">Information</h3>
+    <p class="fr-mb-1w">
+      Cette fonctionnalité vous permet de générer un document comportant
+      l'ensemble des mentions qui doivent figurer dans un arrêté relatif à une
+      ADS. Il vous appartient de vérifier et d'éventuellement modifier ces
+      mentions, avant d'éditer le document en vue de sa signature et de sa
+      notification.
+    </p>
+    <p>
+      Une fois l'arrêté signé, il conviendra de le notifier à son bénéficiaire,
+      d'en adresser une copie à la préfecture, et de l'enregistrer sur notre
+      site.
+    </p>
+  </div>
+  {% endif %}
+
   {{ wizard.management_form }}
 
   {% if form.non_field_errors %}
