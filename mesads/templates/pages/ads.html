@@ -34,13 +34,11 @@
     </a>
   </p>
   {% endif %}
-  {% if user.is_staff %}
   <p>
     🕰️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads.history' manager_id=ads_manager.id ads_id=ads.id %}">
       Voir l'historique des modifications
     </a>
   </p>
-  {% endif %}
 {% endif %}
 
 
