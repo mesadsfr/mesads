@@ -18,7 +18,7 @@
       {% if ads %}
         <a class="fr-breadcrumb__link" aria-current="page">ADS numéro {{ ads.number }}</a>
       {% else %}
-        <a class="fr-breadcrumb__link" aria-current="page">Création d'une nouvelle ADS</a>
+        <a class="fr-breadcrumb__link" aria-current="page">Enregistrement d'une ADS</a>
       {% endif %}
       </li>
     </ol>
@@ -46,7 +46,7 @@
 {% if ads %}
 ADS numéro {{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})
 {% else %}
-Création d'une nouvelle ADS
+Enregistrement d'une ADS
 {% endif %}
 </h1>
 
