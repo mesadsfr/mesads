@@ -27,11 +27,13 @@
 
 
 {% if ads %}
-<p>
-  📜&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads.decree' manager_id=ads_manager.id ads_id=ads.id %}">
-    Générer un arrêté municipal pour cette ADS
-  </a>
-</p>
+  {% if ads_manager.content_type.name == 'commune' %}
+  <p>
+    📜&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads.decree' manager_id=ads_manager.id ads_id=ads.id %}">
+      Générer un arrêté municipal pour cette ADS
+    </a>
+  </p>
+  {% endif %}
 <p>
   🕰️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads.history' manager_id=ads_manager.id ads_id=ads.id %}">
     Voir l'historique des modifications
