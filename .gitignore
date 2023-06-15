@@ -12,3 +12,4 @@ coverage.xml
 dist
 *.cfg
 .s3cfg
+~*.docx
