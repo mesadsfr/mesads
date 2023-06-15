@@ -4,7 +4,7 @@
 FROM node AS node-builder
 
 WORKDIR /app
-COPY package.json package-lock.json /app
+COPY package.json package-lock.json /app/
 RUN npm install
 
 #
@@ -34,7 +34,7 @@ RUN apt-get update && apt-get install -y \
 RUN pip install \
   uwsgi
 
-COPY --from=node-builder /app/node_modules /app
+COPY --from=node-builder /app/node_modules /app/
 
 ENTRYPOINT ["poetry", "run"]
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
