@@ -181,3 +181,36 @@ class TestReversionDiff(TestCase):
             ModelHistory(ADSLegalFile()).render_field(ADSLegalFile, "file", "xxx"),
             '<a href="/uploads/xxx" target="_blank">xxx</a>',
         )
+
+    def test_diff_removed_field(self):
+        """When a field has been removed from the model but it is still
+        referenced in the history, it should not be displayed."""
+        # New object, because the old object is empty
+        diff = Diff(
+            ADS,
+            lambda cls, name, value: value,
+            {"number": "213", "removed_field": "whatever"},
+            None,
+            [],
+        )
+        self.assertEqual(
+            diff.new_fields,
+            {
+                ADS._meta.get_field("number"): "213",
+            },
+        )
+
+        # New revision of an existing object
+        diff = Diff(
+            ADS,
+            lambda cls, name, value: value,
+            {"number": "213", "removed_field": "new value"},
+            {"number": "111", "removed_field": "old value"},
+            [],
+        )
+        self.assertEqual(
+            diff.changed_fields,
+            {
+                ADS._meta.get_field("number"): ("111", "213"),
+            },
+        )

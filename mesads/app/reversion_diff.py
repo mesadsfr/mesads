@@ -19,6 +19,7 @@ import json
 import dateparser
 
 from django.contrib.postgres.fields import JSONField
+from django.core.exceptions import FieldDoesNotExist
 from django.db import models
 from django.db.models.functions import Cast
 from django.utils.safestring import mark_safe
@@ -56,7 +57,7 @@ class Diff:
                 {
                     self._resolve_field(key): self.render_field(self.model, key, value)
                     for key, value in data.items()
-                    if value or value is False
+                    if self._resolve_field(key) and (value or value is False)
                 }
             )
 
@@ -77,14 +78,21 @@ class Diff:
 
     @functools.cache
     def _resolve_field(self, name):
-        return self.model._meta.get_field(name)
+        try:
+            return self.model._meta.get_field(name)
+        except FieldDoesNotExist:
+            return None
 
     def _diff(self):
         common_keys = set(self.data.keys()).intersection(set(self.prev_data.keys()))
 
         for key in common_keys:
             if self.data[key] != self.prev_data[key]:
-                self.changed_fields[self._resolve_field(key)] = (
+                field = self._resolve_field(key)
+                if not field:
+                    continue
+
+                self.changed_fields[field] = (
                     self.render_field(self.model, key, self.prev_data[key]),
                     self.render_field(self.model, key, self.data[key]),
                 )
