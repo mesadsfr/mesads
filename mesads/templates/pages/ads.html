@@ -154,6 +154,13 @@ Enregistrement d'une ADS
 
     <!-- ADS creation date -->
     {% include 'pages/ads-form_date.html' with x_model="ads_creation_date" field=form.ads_creation_date field_errors=form.errors.ads_creation_date required=form.fields.ads_creation_date.required readonly=ads_manager.is_locked %}
+    
+    <!-- ADS renew date -->
+    <template x-if="!ads_before_2014">
+      <div x-show="!ads_before_2014" x-transition class="fr-input-group">
+        {% include 'pages/ads-form_date.html' with field=form.ads_renew_date field_errors=form.errors.ads_renew_date required=form.fields.ads_renew_date.required readonly=ads_manager.is_locked %}
+      </div>
+    </template>
 
     <!-- ADS attribution date -->
     <template x-if="should_display_attribution_date">

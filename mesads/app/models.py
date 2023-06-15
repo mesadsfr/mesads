@@ -368,7 +368,7 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
             # That's why the constraints below always check date__isnull before date__gte or date__lt.
             #
             # Check attribution date:
-            # - For new ASD, attribution date should be null
+            # - For new ADS, attribution date should be null
             # - For old ADS, attribution date can be set or not
             # - For unknown creation date, we allow attribution date to be set or not to avoid blocking the creation when we don't know the creation date
             models.CheckConstraint(
@@ -476,6 +476,33 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
                 name="owner_license_number_empty_if_not_used_by_owner",
                 violation_error_message="Le champ 'Numéro de la carte professionnelle du titulaire' doit être vide si l'ADS n'est pas exploitée par son titulaire.",
             ),
+            # Check renewal date nullable:
+            # - For new ADS, renew date can be set or not
+            # - For old ADS, renew date must always be empty
+            # - For unknown creation date, we allow attribution date to be set or not to avoid blocking the creation when we don't know the creation date
+            models.CheckConstraint(
+                check=(
+                    Q(
+                        ads_creation_date__isnull=False,
+                        ads_creation_date__gte=date(2014, 10, 1),
+                    )
+                    | Q(
+                        ads_creation_date__isnull=False,
+                        ads_creation_date__lt=date(2014, 10, 1),
+                        ads_renew_date__isnull=True,
+                    )
+                    | Q(ads_creation_date__isnull=True, ads_renew_date__isnull=True)
+                ),
+                name="renew_date_null_for_old_ads",
+                violation_error_message="La date de renouvellement ne peut être renseignée que pour les ADS créées après le 1er octobre 2014.",
+            ),
+            # Check renewal date content: if set, renewal date must be after the creation date
+            models.CheckConstraint(
+                check=Q(ads_renew_date__isnull=True)
+                | Q(ads_renew_date__gte=F("ads_creation_date")),
+                name="renew_date_after_creation_date",
+                violation_error_message="La date de renouvellement de l'ADS doit être postérieure à la date de création.",
+            ),
         ]
 
     SMART_VALIDATION_WATCHED_FIELDS = {
@@ -536,6 +563,12 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
         null=True,
         verbose_name="Date de création de l'ADS",
         help_text="Indiquer la date à laquelle l’ADS a été attribuée au titulaire pour la première fois.",
+    )
+    ads_renew_date = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name="Date du dernier renouvellement de l'ADS",
+        help_text="Les ADS créées depuis le 1er octobre 2014 sont valables 5 ans et doivent être renouvelées.",
     )
 
     attribution_date = models.DateField(
