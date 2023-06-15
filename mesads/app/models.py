@@ -513,7 +513,11 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
         return self.UNIQUE_ERROR_MSG
 
     number = models.CharField(
-        max_length=255, null=False, blank=False, verbose_name="Numéro de l'ADS"
+        max_length=255,
+        null=False,
+        blank=False,
+        verbose_name="Numéro de l'ADS",
+        help_text="Le numéro est librement fixé par chaque autorité compétente en fonction de son organisation interne.",
     )
     ads_manager = models.ForeignKey(ADSManager, on_delete=models.CASCADE)
     epci_commune = models.ForeignKey(
