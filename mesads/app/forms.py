@@ -258,6 +258,11 @@ class ADSDecreeForm3(forms.Form):
         label="Commune concernée par l'arrêté municipal",
         required=False,
     )
+    administrative_court = forms.CharField(
+        label="Tribunal administratif compétent",
+        help_text="Indiquer le nom de la ville du Tribunal",
+        required=False,
+    )
     decree_limiting_ads_number = forms.CharField(
         label="Numéro de l'arrêté municipal portant la limitation du nombre d'ADS sur la commune",
         help_text="Au format 0000/" + datetime.now().strftime("%Y"),
