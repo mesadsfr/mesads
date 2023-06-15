@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load str_to_date %}
 
-{% block title %}Gestion des ADS{% endblock %}
+{% block title %}{{ ads_manager.content_object.display_text|capfirst }} - Gestion des ADS{% endblock %}
 
 {% block body %}
 <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
