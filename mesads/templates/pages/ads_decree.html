@@ -99,7 +99,10 @@
     {% include 'pages/ads-form_string.html' with field_title=form.tenant_ads_user.label field_description=form.tenant_ads_user.help_text field=form.tenant_ads_user field_errors=form.errors.tenant_ads_user required=form.fields.tenant_ads_user.required %}
 
     <!-- ADS Information -->
-    {% include 'pages/ads-form_date.html' with field_title=form.ads_end_date.label field_description=form.decree_number_date.help_text field=form.ads_end_date field_errors=form.errors.ads_end_date required=form.fields.ads_end_date.required %}
+    {% if not form.is_old_ads %}
+      {% include 'pages/ads-form_date.html' with field_title=form.ads_end_date.label field_description=form.decree_number_date.help_text field=form.ads_end_date field_errors=form.errors.ads_end_date required=form.fields.ads_end_date.required %}
+    {% endif %}
+
     {% include 'pages/ads-form_string.html' with field_title=form.ads_number.label field_description=form.ads_number.help_text field=form.ads_number field_errors=form.errors.ads_number required=form.fields.ads_number.required %}
 
     <!-- Vehicle information -->

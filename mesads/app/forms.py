@@ -182,6 +182,7 @@ class ADSDecreeForm2(forms.Form):
 
     def __init__(self, is_old_ads, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.is_old_ads = is_old_ads
         self.fields["decree_creation_reason"].choices = (
             self.CHOICES_REASON_OLD_ADS if is_old_ads else self.CHOICES_REASON_NEW_ADS
         )
@@ -209,6 +210,16 @@ class ADSDecreeForm2(forms.Form):
 
 class ADSDecreeForm3(forms.Form):
     """Form to generate "arrêté portant sur l'attribution de l'ADS"."""
+
+    def __init__(self, is_old_ads, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.is_old_ads = is_old_ads
+        if not is_old_ads:
+            self.fields["ads_end_date"] = forms.DateField(
+                label="Date de fin de l'ADS délivrée",
+                help_text="Les ADS créées après le 1er octobre 2014 ont une durée de validité de 5 ans à compter de la date de création",
+                required=False,
+            )
 
     STEP_TITLE = "Informations générales"
 
@@ -291,10 +302,6 @@ class ADSDecreeForm3(forms.Form):
     ###
     # ADS Information
     ###
-    ads_end_date = forms.DateField(
-        label="Date de fin de l'ADS délivrée",
-        required=False,
-    )
     ads_number = forms.CharField(
         label="Numéro de l'ADS attribuée",
         required=False,

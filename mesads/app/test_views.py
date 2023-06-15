@@ -1329,6 +1329,12 @@ class TestADSDecreeView(ClientTestCase):
         self._step_2()
         self._step_3()
 
+    def test_generate_new_ads(self):
+        self._step_0(is_old_ads=False)
+        self._step_1()
+        self._step_2()
+        self._step_3()
+
     def test_third_step_decree_number_error(self):
         self._step_0(is_old_ads=True)
         self._step_1()

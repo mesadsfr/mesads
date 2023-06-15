@@ -1044,7 +1044,7 @@ class ADSDecreeView(CustomCookieWizardView):
         """Instantiate ADSDecreeForm1 with the value of the previous form, to
         set the correct choices of the select field."""
         ret = super().get_form_kwargs(step=step)
-        if step == "1":
+        if step in ("1", "2"):
             return {"is_old_ads": self.get_cleaned_data_for_step("0").get("is_old_ads")}
         return ret
 
