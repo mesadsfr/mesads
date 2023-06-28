@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@gouvfr/dsfr": "^1.5.1",
+    "@gouvfr/dsfr": "^1.9.3",
     "alpinejs": "^3.10.3",
     "leaflet": "^1.9.3",
     "mjml": "^4.13.0"
