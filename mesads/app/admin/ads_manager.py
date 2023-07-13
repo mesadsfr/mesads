@@ -121,6 +121,8 @@ class ADSManagerAdmin(admin.ModelAdmin):
     @admin.display(description="Nombre d'ADS enregistrées")
     def display_ads_count(self, ads_manager):
         """Render a dash if ads_count is zero to improve readability."""
+        if ads_manager.no_ads_declared:
+            return "L'administration ne gère pas d'ADS"
         return ads_manager.ads_count or "-"
 
     def get_queryset(self, request):
