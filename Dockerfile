@@ -46,12 +46,12 @@ FROM python
 
 # nodejs is required by mjml
 RUN apt-get update && apt-get install -y \
-  nodejs
-
+  nodejs \
+  npm
 
 RUN pip install \
-    poetry \
-    uwsgi
+  poetry \
+  uwsgi
 
 WORKDIR /app
 
@@ -62,6 +62,7 @@ COPY --from=node-builder /app/node_modules /app/node_modules
 COPY --from=python-builder /venv /venv
 
 RUN poetry run python manage.py collectstatic
+RUN npm run build
 
 EXPOSE 8000
 
@@ -77,13 +78,13 @@ ENTRYPOINT ["poetry", "run"]
 # --ignore-sigpipe, --ignore-write-errors, --disable-write-exceptions: don't report WriteError to sentry when client disconnects before the response is sent
 # --cron: every hour, call python manage.py runcrons
 CMD python manage.py makemigrations && python manage.py migrate && \
-    uwsgi --enable-threads -H \$\(VIRTUAL_ENV\) \
-      --http :8000 \
-      --module mesads.wsgi \
-      -M -p $(nproc) \
-      -R 100 \
-      --static-map /static=/app/static \
-      --limit-post=10000000 \
-      --http-manage-expect \
-      --ignore-sigpipe --ignore-write-errors --disable-write-exception \
-      --cron='0 -1 -1 -1 -1 poetry run python /app/manage.py runcrons'
+  uwsgi --enable-threads -H \$\(VIRTUAL_ENV\) \
+  --http :8000 \
+  --module mesads.wsgi \
+  -M -p $(nproc) \
+  -R 100 \
+  --static-map /static=/app/static \
+  --limit-post=10000000 \
+  --http-manage-expect \
+  --ignore-sigpipe --ignore-write-errors --disable-write-exception \
+  --cron='0 -1 -1 -1 -1 poetry run python /app/manage.py runcrons'
