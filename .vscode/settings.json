@@ -1,18 +1,23 @@
 {
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
-    "python.testing.pytestArgs": [
-        "-v",
-        "--cov=mesads/",
-        "--cov-report=xml",
-        "--pdb"
-    ],
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter",
-        "editor.formatOnSave": true
-    },
-    "[django-html]": {
-        "editor.formatOnSave": false
-    },
-    "python.formatting.provider": "none"
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": [
+    "-v",
+    "--cov=mesads/",
+    "--cov-report=xml",
+    "--pdb"
+  ],
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true
+  },
+  "[django-html]": {
+    "editor.formatOnSave": false
+  },
+  "python.formatting.provider": "none",
+  // idk why, but this is needed otherwise vscode believes .js files in the templates/ directory as django-html files
+  "files.associations": {
+    "*.js": "javascript",
+    "*.ts": "typescript"
+  }
 }
