@@ -4,7 +4,7 @@
 {% block title %}Dashboards d'administration{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'leaflet/leaflet.css' %}" />
+<link rel="stylesheet" href="../../../../node_modules/leaflet/dist/leaflet.css" />
 {% endblock %}
 
 {% block body %}
@@ -96,7 +96,7 @@
 {% endblock %}
 
 {% block endbody %}
-<script src="{% static 'leaflet/leaflet.js' %}"></script>
+<script src="../../../../node_modules/leaflet/dist/leaflet.js"></script>
 <script>
 var map = L.map('map', {zoomControl: false}).setView([46.2276, 2.2137], 6);
 
