@@ -2,7 +2,21 @@
   "dependencies": {
     "@gouvfr/dsfr": "^1.5.1",
     "alpinejs": "^3.10.3",
+    "jquery": "^3.7.0",
     "leaflet": "^1.9.3",
     "mjml": "^4.13.0"
+  },
+  "scripts": {
+    "dev": "webpack watch --mode=development",
+    "build": "webpack --mode=production --progress"
+  },
+  "devDependencies": {
+    "css-loader": "^6.8.1",
+    "html-bundler-webpack-plugin": "^2.1.1",
+    "sass": "^1.64.0",
+    "sass-loader": "^13.3.2",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.1.6",
+    "webpack-cli": "^5.1.4"
   }
 }

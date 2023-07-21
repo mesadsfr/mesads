@@ -137,7 +137,8 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            BASE_DIR / "mesads/templates",
+            BASE_DIR / "dist_webpack",
+            BASE_DIR / "mesads/templates/django",
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -220,6 +221,7 @@ STATIC_ROOT = BASE_DIR / "static"
 
 STATICFILES_DIRS = [
     ("", BASE_DIR / "mesads/static"),
+    ("", BASE_DIR / "dist_webpack"),
     ("@gouvfr", BASE_DIR / "node_modules/@gouvfr/dsfr/dist/"),
     ("alpinejs", BASE_DIR / "node_modules/alpinejs/dist/"),
     ("leaflet", BASE_DIR / "node_modules/leaflet/dist/"),

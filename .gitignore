@@ -13,3 +13,4 @@ dist
 *.cfg
 .s3cfg
 ~*.docx
+dist_webpack
