@@ -55,43 +55,34 @@ module.exports = (env, argv) => {
           use: "ts-loader",
           exclude: /node_modules/,
         },
-        //// styles
-        //{
-        //  test: /\.(css|sass|scss)$/,
-        //  use: ['css-loader', 'sass-loader'],
-        //},
-        //// fonts (load from `fonts` or `node_modules` directory only)
-        //{
-        //  test: /[\\/]fonts|node_modules[\\/].+(woff(2)?|ttf|otf|eot|svg)$/,
-        //  type: 'asset/resource',
-        //  generator: {
-        //    // group fonts by name
-        //    filename: (pathData) => `assets/fonts/${path.basename(path.dirname(pathData.filename))}/[name][ext][query]`,
-        //  },
-        //},
-        //// images (load from `images` directory only)
-        //{
-        //  test: /[\\/]images[\\/].+(png|jpe?g|svg|webp|ico)$/,
-        //  oneOf: [
-        //    // inline image using `?inline` query
-        //    {
-        //      resourceQuery: /inline/,
-        //      type: 'asset/inline',
-        //    },
-        //    // auto inline by image size
-        //    {
-        //      type: 'asset',
-        //      parser: {
-        //        dataUrlCondition: {
-        //          maxSize: 1024,
-        //        },
-        //      },
-        //      generator: {
-        //        filename: 'assets/img/[name].[hash:8][ext]',
-        //      },
-        //    },
-        //  ],
-        //},
+        // styles
+        {
+          test: /\.(css|sass|scss)$/,
+          use: ["css-loader", "sass-loader"],
+        },
+        // images (load from `images` directory only)
+        {
+          test: /[\\/]images[\\/].+(png|jpe?g|svg|webp|ico)$/,
+          oneOf: [
+            // inline image using `?inline` query
+            {
+              resourceQuery: /inline/,
+              type: "asset/inline",
+            },
+            // auto inline by image size
+            {
+              type: "asset",
+              parser: {
+                dataUrlCondition: {
+                  maxSize: 1024,
+                },
+              },
+              generator: {
+                filename: "assets/img/[name].[hash:8][ext]",
+              },
+            },
+          ],
+        },
       ],
     },
 
