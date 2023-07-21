@@ -29,6 +29,7 @@ jobs:
         run: |
           npm install
           /github/home/.local/bin/poetry install
+          npm run build
       - name: Run tests and coverage
         run: |
           /github/home/.local/bin/poetry run coverage run --source=. manage.py test
