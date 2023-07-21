@@ -13,3 +13,4 @@ Makefile
 .mypy_cache
 .pytest_cache
 .s3cfg
+dist_webpack
