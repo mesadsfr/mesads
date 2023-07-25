@@ -25,10 +25,10 @@ Alpine.data("get_x_data", () => ({
 
   get ads_before_2014() {
     const creation_date = new Date(this.ads_creation_date);
-    if (creation_date >= new Date("2014-10-01")) {
-      return false;
+    if (creation_date < new Date("2014-10-01")) {
+      return true;
     }
-    return true;
+    return false;
   },
 
   // The field "attribution_date" should only be displayed for old ADS, or if the creation date is not set
