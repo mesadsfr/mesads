@@ -11,6 +11,7 @@
     "build": "webpack --mode=production --progress"
   },
   "devDependencies": {
+    "@types/alpinejs": "^3.7.2",
     "@types/leaflet": "^1.9.3",
     "css-loader": "^6.8.1",
     "html-bundler-webpack-plugin": "^2.1.1",
