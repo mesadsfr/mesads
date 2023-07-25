@@ -1,4 +1,7 @@
 import Alpine from "alpinejs";
+import SetupFormsetFiles from "../formset_files";
+
+SetupFormsetFiles();
 
 // array.findLastIndex is only available for firefox>104
 function findLastIndex(arr: any[], func: (e: any) => boolean) {

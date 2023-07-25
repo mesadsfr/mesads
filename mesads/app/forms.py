@@ -140,7 +140,11 @@ ADSUserFormSet = inlineformset_factory(
 
 
 ADSLegalFileFormSet = inlineformset_factory(
-    ADS, ADSLegalFile, fields=("file",), can_delete=True, extra=25, max_num=25
+    ADS,
+    ADSLegalFile,
+    fields=("file",),
+    can_delete=True,
+    extra=0,
 )
 
 
@@ -164,7 +168,11 @@ class ADSSearchForm(forms.Form):
 
 
 ADSManagerDecreeFormSet = inlineformset_factory(
-    ADSManager, ADSManagerDecree, fields=("file",), can_delete=True, extra=5, max_num=5
+    ADSManager,
+    ADSManagerDecree,
+    fields=("file",),
+    can_delete=True,
+    extra=0,
 )
 
 
