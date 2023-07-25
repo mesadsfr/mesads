@@ -62,54 +62,6 @@ Enregistrement d'une ADS
 </div>
 {% endif %}
 
-<script type="text/javascript">
-  // array.findLastIndex is only available for firefox>104
-  function findLastIndex(arr, func) {
-    for (i = arr.length; i > 0; --i) {
-      if (func(arr[i - 1])) {
-        return i - 1;
-      }
-    }
-    return -1;
-  }
-
-  const get_x_data = () => ({
-      ads_creation_date: '{{ form.ads_creation_date.value|str_to_date|date:"Y-m-d"|default:"" }}',
-
-      get ads_before_2014() {
-        const creation_date = new Date(this.ads_creation_date);
-        return (creation_date - new Date('2014-10-01')) < 0;
-      },
-
-      // The field "attribution_date" should only be displayed for old ADS, or if the creation date is not set
-      get should_display_attribution_date() {
-        return !this.ads_creation_date || this.ads_before_2014;
-      },
-
-      used_by_owner: '{% if form.used_by_owner.value is True %}true{% elif form.used_by_owner.value is False %}false{% else %}unknown{% endif %}',
-
-      // The field "owner_license_number" should always be displayed for new ADS. For old ADS, it should only be displayed if the field "used_by_owner" is set to "true"
-      get should_display_owner_license_number() {
-        return !this.ads_before_2014|| this.used_by_owner === 'true' || this.used_by_owner === 'unknown';
-      },
-
-      attribution_type: '{{ form.attribution_type.value }}',
-      numberOfADSUsersFormsetToDisplay: (() => {
-        // All forms
-        const ads_user_forms = [...document.getElementsByClassName('ads-user-form')];
-        // List, returns true if the form is empty, false otherwise
-        const filled  = ads_user_forms.map((e) => !!e.querySelector('input:not([type="hidden"]):not([value=""])'));
-        // Index of the first non-empty form
-        const nonEmptyFormIdx = findLastIndex(filled, (e) => e === true);
-        // All the forms are empty, display only one blank form
-        if (nonEmptyFormIdx < 0) {
-          return 1;
-        }
-        return nonEmptyFormIdx + 1;
-      })(),
-  });
-</script>
-
 <div
   class="fr-grid-row"
   x-data="get_x_data()"
@@ -318,6 +270,13 @@ Enregistrement d'une ADS
   </form>
 </div>
 
+<script id="data" type="application/json">
+{
+  "ads_creation_date": "{{ form.ads_creation_date.value|str_to_date|date:"Y-m-d"|default:"" }}",
+  "used_by_owner": "{% if form.used_by_owner.value is True %}true{% elif form.used_by_owner.value is False %}false{% else %}unknown{% endif %}",
+  "attribution_type": "{{ form.attribution_type.value }}"
+}
+</script>
 <script src="./ads.ts"></script>
 {% endblock %}
 
