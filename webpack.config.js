@@ -33,7 +33,7 @@ module.exports = (env, argv) => {
 
     plugins: [
       new HtmlBundlerPlugin({
-        verbose: "auto", // output information about the process to console in development mode only
+        verbose: false, // output information about the process to console in development mode only
         entry: path.join(__dirname, "mesads/templates/webpack"),
 
         js: {
