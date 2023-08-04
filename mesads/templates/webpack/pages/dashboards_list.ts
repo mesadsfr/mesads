@@ -26,10 +26,10 @@ class InfoBox extends L.Control {
 
   constructor() {
     super({ position: "topright" });
+    this._div = L.DomUtil.create("div", "leaflet-info");
   }
 
   onAdd = () => {
-    this._div = L.DomUtil.create("div", "leaflet-info");
     this.update(null);
     return this._div;
   };
@@ -92,7 +92,7 @@ function displayStatsMap(data: APIResponse) {
       .sort((a, b) => a - b)
       .reverse();
     const key = rsorted.find((e) => pct_filled - e >= 0);
-    return colors.get(key);
+    return colors.get(key || 0);
   };
 
   const info = new InfoBox().addTo(map);
@@ -101,8 +101,8 @@ function displayStatsMap(data: APIResponse) {
     style: (feature) => {
       return {
         fillColor: getFillColor(
-          feature.properties.ads_count,
-          feature.properties.expected_ads_count
+          feature?.properties.ads_count,
+          feature?.properties.expected_ads_count
         ),
         fillOpacity: 0.5,
         color: "#777",
