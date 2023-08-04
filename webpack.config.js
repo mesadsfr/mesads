@@ -24,6 +24,7 @@ module.exports = (env, argv) => {
         // "@styles": path.join(WebpackTemplatesDir, "assets/styles/"),
         // "@scripts": path.join(WebpackTemplatesDir, "assets/scripts/"),
       },
+      extensions: [".js", ".jsx", ".ts", ".tsx"],
     },
 
     watchOptions: {
