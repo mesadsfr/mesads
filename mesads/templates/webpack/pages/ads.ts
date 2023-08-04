@@ -53,23 +53,38 @@ Alpine.data("get_x_data", () => ({
   },
 
   attribution_type: data.attribution_type,
-  numberOfADSUsersFormsetToDisplay: (() => {
-    // All forms
-    const ads_user_forms = Array.from(
-      document.getElementsByClassName("ads-user-form")
-    );
-    // List, returns true if the form is empty, false otherwise
-    const filled = ads_user_forms.map(
-      (e) => !!e.querySelector('input:not([type="hidden"]):not([value=""])')
-    );
-    // Index of the first non-empty form
-    const nonEmptyFormIdx = findLastIndex(filled, (e) => e === true);
-    // All the forms are empty, display only one blank form
-    if (nonEmptyFormIdx < 0) {
-      return 1;
-    }
-    return nonEmptyFormIdx + 1;
-  })(),
+
+  extraADSUserForms: 0,
 }));
+
+Alpine.directive("add-ads-user-button", (el, { expression }, { evaluate }) => {
+  el.addEventListener("click", () => {
+    const form = document.getElementById("ads-users");
+    if (!form) {
+      throw new Error("ads-users div not found");
+    }
+
+    // Retrieve the value of the "extraADSUserForms" x-data attribute
+    const extra = evaluate("extraADSUserForms") as number;
+
+    // For each entry, replace the string __prefix__ present in the id and name by the form index.
+    el.parentElement
+      ?.querySelectorAll(".fr-form-group")
+      .forEach((value, index) => {
+        const div = value as HTMLDivElement;
+
+        div.querySelectorAll("input").forEach((input) => {
+          input.id = input.id.replace(/__prefix__/g, index.toString());
+          input.name = input.name.replace(/__prefix__/, index.toString());
+        });
+      });
+
+    // Update the hidden field TOTAL_FORMS to let Django know how many forms to process
+    const totalInput = Array.from(
+      form.querySelectorAll("input[type=hidden]")
+    ).find((form) => form.id.match(/TOTAL_FORMS/)) as HTMLInputElement;
+    totalInput.value = (parseInt(totalInput.value, 10) + 1).toString();
+  });
+});
 
 Alpine.start();
