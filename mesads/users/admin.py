@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib import admin
+from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html
@@ -52,7 +54,7 @@ class ADSManagerAdministratorFilter(admin.SimpleListFilter):
             return queryset.filter(adsmanageradministrator_count=0)
 
 
-class UserForm(forms.ModelForm):
+class UserForm(UserChangeForm):
     """Override the default form to add a custom widget to the email field."""
 
     class Meta:
@@ -62,7 +64,7 @@ class UserForm(forms.ModelForm):
 
 
 @admin.register(User)
-class UserAdmin(admin.ModelAdmin):
+class UserAdmin(BaseUserAdmin):
     form = UserForm
 
     list_display = (
@@ -78,8 +80,13 @@ class UserAdmin(admin.ModelAdmin):
         ADSManagerAdministratorFilter,
     )
 
+    fieldsets = []
+
+    ordering = ("email",)
+
     fields = (
         "email",
+        "password",
         "date_joined",
         "last_login",
         "is_superuser",
