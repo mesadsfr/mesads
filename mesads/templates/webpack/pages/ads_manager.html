@@ -189,7 +189,7 @@
           <h3 class="fr-accordion__title">
               <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-115">Votre administration ne gère aucune ADS</button>
           </h3>
-          <div class="fr-collapse" id="accordion-115">
+          <div class="{% if not ads_manager.no_ads_declared %}fr-collapse {% endif %}" id="accordion-115">
             <form method="post">
               {% csrf_token %}
               {% include 'pages/ads-form_bool.html' with field=edit_form.no_ads_declared field_errors=edit_form.errors.no_ads_declared required=edit_form.fields.no_ads_declared.required %}
@@ -208,7 +208,7 @@
           <h3 class="fr-accordion__title">
               <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-116">La gestion des ADS de votre administration est déléguée à un EPCI</button>
           </h3>
-          <div class="fr-collapse" id="accordion-116">
+          <div class="{% if not ads_manager.epci_delegate %}fr-collapse {% endif %}" id="accordion-116">
             <form method="post" class="fr-col-12 fr-col-sm-6">
               {% csrf_token %}
 
