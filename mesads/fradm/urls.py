@@ -20,6 +20,11 @@ urlpatterns = [
         name="fradm.autocomplete.epci",
     ),
     path(
+        "epci/<str:departement>/autocomplete",
+        views.EPCIAutocompleteView.as_view(),
+        name="fradm.autocomplete.epci",
+    ),
+    path(
         "prefecture/autocomplete",
         views.PrefectureAutocompleteView.as_view(),
         name="fradm.autocomplete.prefecture",

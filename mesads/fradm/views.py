@@ -60,6 +60,12 @@ class EPCIAutocompleteView(autocomplete.Select2QuerySetView):
 
         qs = EPCI.objects.annotate(unaccent_name=Unaccent("name")).all()
 
+        departement = self.kwargs.get("departement", "").lower()
+
+        if departement:
+            qs = qs.annotate(departement_lower=Lower("departement"))
+            qs = qs.filter(departement_lower=departement)
+
         if self.q:
             qs = qs.filter(unaccent_name__icontains=self.q)
 
