@@ -90,11 +90,14 @@ class ADSManagerAdmin(admin.ModelAdmin):
         "administrator",
         "administration",
         "no_ads_declared",
+        "epci_delegate",
         "is_locked",
         "ads_manager_administrator_users_link",
         "ads_manager_requests_link",
         "ads_link",
     )
+
+    autocomplete_fields = ("epci_delegate",)
 
     readonly_fields = (
         "administrator",
