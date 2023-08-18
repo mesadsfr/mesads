@@ -35,6 +35,14 @@ class TestADSManager(ClientTestCase):
             ValidationError, validate_no_ads_declared, self.ads_manager_city35, True
         )
 
+    def test_no_ads_declared_and_epci_delegate(self):
+        """Make sure only no_ads_declared or epci_delegate is set, not both"""
+        self.ads_manager_city35.no_ads_declared = True
+        self.ads_manager_city35.epci_delegate = self.fixtures_epci[0]
+        self.assertRaises(
+            ValidationError, validate_no_ads_declared, self.ads_manager_city35, True
+        )
+
 
 class TestADSManagerDecree(ClientTestCase):
     def test_str(self):
