@@ -84,6 +84,14 @@ class TestEPCIAutocompleteView(ClientTestCase):
             sum(1 for entry in self.EPCI if "roissy" in entry[2].lower()),
         )
 
+        # Filter by departement
+        resp = self.auth_client.get("/fradm/epci/01/autocomplete")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            len(resp.json()["results"]),
+            len([True for id, departement, name in self.EPCI if departement == "01"]),
+        )
+
 
 class TestPrefectureAutocompleteView(ClientTestCase):
     def test_get_queryset_anonymous(self):

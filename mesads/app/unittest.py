@@ -14,7 +14,7 @@ class ClientTestCase(BaseClientTestCase):
 
         * ads_manager_city35_client: ADSManager of the city of Melesse (which belongs to the
                                      prefecture 35 - Ille-et-Vilaine)
-        * asd_manager_administrator_pref35_client = ADSManagerAdministrator of the Prefecture of 35 - Ille-et-Vilaine
+        * ads_manager_administrator_35_client = ADSManagerAdministrator of the Prefecture of 35 - Ille-et-Vilaine
         """
         super().setUp()
 
@@ -76,10 +76,12 @@ class ClientTestCase(BaseClientTestCase):
         # Also create a ADSManagerAdministrator entry
         # Also, for each commune of the prefecture, configures
         for prefecture in self.fixtures_prefectures:
-            ADSManager.objects.create(content_object=prefecture)
+            ads_manager = ADSManager.objects.create(content_object=prefecture)
             ads_manager_administrator = ADSManagerAdministrator.objects.create(
                 prefecture=prefecture
             )
+            ads_manager.administrator = ads_manager_administrator
+            ads_manager.save()
 
             for commune in self.fixtures_communes:
                 if commune.departement == prefecture.numero:

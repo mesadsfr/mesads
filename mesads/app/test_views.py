@@ -2,6 +2,7 @@ from datetime import timedelta
 import html
 
 from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
 from django.core import mail
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -14,6 +15,7 @@ from mesads.fradm.models import Commune, EPCI, Prefecture
 from .models import (
     ADS,
     ADSLegalFile,
+    ADSManager,
     ADSManagerRequest,
     ADSUser,
     validate_siret,
@@ -248,6 +250,20 @@ class TestADSManagerView(ClientTestCase):
         )
         self.assertIn(
             self.ads_manager_city35.content_object.libelle, resp.content.decode("utf8")
+        )
+
+        prefecture = Prefecture.objects.filter(numero="35").get()
+        ads_manager = ADSManager.objects.filter(
+            content_type=ContentType.objects.get_for_model(prefecture),
+            object_id=prefecture.id,
+        ).get()
+
+        resp = self.ads_manager_administrator_35_client.get(
+            f"/gestion/{ads_manager.id}/"
+        )
+        self.assertIn(
+            self.ads_manager_administrator_35.prefecture.libelle,
+            resp.content.decode("utf8"),
         )
 
     def test_filters(self):
