@@ -111,6 +111,10 @@ def validate_no_ads_declared(ads_manager, value):
         raise ValidationError(
             "Impossible de déclarer que le gestionnaire ne gère aucune ADS, puisque des ADS sont déjà déclarées."
         )
+    if ads_manager.no_ads_declared and ads_manager.epci_delegate:
+        raise ValidationError(
+            "Impossible de déclarer que le gestionnaire ne gère aucune ADS en même temps qu'un EPCI gestionnaire des ADS."
+        )
 
 
 class ADSManager(SmartValidationMixin, models.Model):
