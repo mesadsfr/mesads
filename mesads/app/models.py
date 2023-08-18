@@ -18,7 +18,7 @@ import reversion
 
 from django_cleanup import cleanup
 
-from mesads.fradm.models import Commune, Prefecture
+from mesads.fradm.models import Commune, EPCI, Prefecture
 
 
 class SoftDeleteManager(models.Manager):
@@ -129,6 +129,7 @@ class ADSManager(SmartValidationMixin, models.Model):
 
     SMART_VALIDATION_WATCHED_FIELDS = {
         "no_ads_declared": validate_no_ads_declared,
+        "epci_delegate": validate_no_ads_declared,
     }
 
     def __str__(self):
@@ -158,7 +159,16 @@ class ADSManager(SmartValidationMixin, models.Model):
         null=False,
         default=False,
         verbose_name="L'administration ne gère aucune ADS",
-        help_text="Cocher cette case si le gestionnaire ne gère aucune ADS.",
+        help_text="Cochez cette case si le gestionnaire ne gère aucune ADS.",
+    )
+
+    epci_delegate = models.ForeignKey(
+        EPCI,
+        on_delete=models.RESTRICT,
+        blank=True,
+        null=True,
+        verbose_name="EPCI gestionnaire des ADS",
+        help_text="Si la gestion des ADS de votre administration est déléguée à un EPCI, sélectionnez-le ici.",
     )
 
     is_locked = models.BooleanField(

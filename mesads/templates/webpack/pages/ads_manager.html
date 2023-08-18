@@ -140,58 +140,113 @@
   {% show_pagination_links page_obj %}
 </div>
 
-{% comment %}
-  If there is no ADS to display
-{% endcomment %}
+{% comment %}No ADS registered for this ADSManager{% endcomment %}
 {% else %}
   {% if ads_manager.is_locked %}
-  <p>
-    Les ADS de votre administration sont importées automatiquement par notre équipe, mais aucune n'est actuellement enregistrée.
-  </p>
+  <div class="fr-alert fr-alert--info fr-mt-2w">
+    <h3 class="fr-alert__title">Aucune ADS enregistrée</h3>
+    <p>Les ADS de votre administration sont importées automatiquement par notre équipe, mais aucune n'est actuellement enregistrée.</p>
+  </div>
   {% else %}
     {% if ads_manager.no_ads_declared %}
-    <p>
-      Vous avez déclaré que votre administration ne gère aucune ADS.
-    </p>
-
-    <p>
-      S'il s'agit d'une erreur, ou si votre administration est dorénavant gestionnaire d'ADS, il vous suffit de décocher la case ci-dessous.
-    </p>
+      <div class="fr-alert fr-alert--info fr-mt-2w">
+        <h3 class="fr-alert__title">Aucune ADS enregistrée</h3>
+        <p>Vous avez déclaré que votre administration ne gère aucune ADS. Si il s'agit d'une erreur, ou si votre administration est dorénavant gestionnaire d'ADS, décochez la case du menu ci-dessous.</p>
+      </div>
+    {% elif ads_manager.epci_delegate %}
+      <div class="fr-alert fr-alert--info fr-mt-2w">
+        <h3 class="fr-alert__title">Aucune ADS enregistrée</h3>
+        <p>La gestion des ADS de votre administration est déléguée à l'EPCI <strong>{{ ads_manager.epci_delegate }}</strong></p>
+      </div>
     {% else %}
-    <p>
-      Aucune ADS n'est actuellement enregistrée pour votre administration. Vous pouvez :
-    </p>
+      <div class="fr-alert fr-alert--warning fr-mt-2w">
+        <h3 class="fr-alert__title">Aucune ADS enregistrée</h3>
+        <p>
+          Aucune ADS n'est actuellement enregistrée pour votre administration. Vous pouvez :
+        </p>
 
-    <ul>
-      <li>En créer une nouvelle en cliquant sur le lien ci-dessus.</li>
-      <li>Ou utiliser le formulaire ci-dessous pour déclarer que votre administration ne gère aucune ADS.</li>
-    </ul>
+        <ul>
+          <li>Enregistrer une nouvelle ADS en utilisant le lien ci-dessus</li>
+          <li><strong>ou</strong> déclarer que votre administration ne gère aucune ADS avec le formulaire ci-dessous</li>
+          <li><strong>ou</strong> utiliser le formulaire ci-dessous si la gestion des ADS de votre administration est déléguée à une EPCI</li>
+        </ul>
+      </div>
     {% endif %}
 
-    <form class="fr-mt-2w fr-mb-2w fr-col-10 fr-col-sm-6 fr-col-md-4" method="post">
-      {% if form.non_field_errors %}
-        <div class="fr-input-group fr-input-group--error">
-          {% for error in form.non_field_errors %}
-          <p class="fr-error-text">
-            {{ error }}
-          </p>
-          {% endfor %}
-        </div>
-      {% endif %}
 
-      {% csrf_token %}
-
-      {% include 'pages/ads-form_bool.html' with field=edit_form.no_ads_declared field_errors=edit_form.errors.no_ads_declared required=edit_form.fields.no_ads_declared.required %}
-
-      <div class="fr-col-12 fr-input-group fr-mt-2w">
-        <ul class="fr-btns-group">
-          <li>
-            <button type="submit" class="fr-btn">Valider</button>
-          </li>
+    {% if form.non_field_errors %}
+      <div class="fr-input-group fr-input-group--error">
+        {% for error in form.non_field_errors %}
+        <p class="fr-error-text">
+          {{ error }}
+        </p>
+        {% endfor %}
       </div>
-    </form>
+    {% endif %}
+
+    <div class="fr-accordions-group fr-mt-2w">
+      <section class="fr-accordion">
+          <h3 class="fr-accordion__title">
+              <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-115">Votre administration ne gère aucune ADS</button>
+          </h3>
+          <div class="fr-collapse" id="accordion-115">
+            <form method="post">
+              {% csrf_token %}
+              {% include 'pages/ads-form_bool.html' with field=edit_form.no_ads_declared field_errors=edit_form.errors.no_ads_declared required=edit_form.fields.no_ads_declared.required %}
+
+              <div class="fr-col-3 fr-input-group fr-mt-2w">
+                <ul class="fr-btns-group">
+                  <li>
+                    <button type="submit" class="fr-btn">Valider</button>
+                  </li>
+                </ul>
+              </div>
+            </form>
+          </div>
+      </section>
+      <section class="fr-accordion">
+          <h3 class="fr-accordion__title">
+              <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-116">La gestion des ADS de votre administration est déléguée à un EPCI</button>
+          </h3>
+          <div class="fr-collapse" id="accordion-116">
+            <form method="post" class="fr-col-12 fr-col-sm-6">
+              {% csrf_token %}
+
+              <div class="fr-select-group{% if edit_form.errors.epci_delegate %} fr-select-group--error{% endif %}">
+                <label
+                  class="fr-label"
+                  for="{{ edit_form.epci_delegate.id_for_label }}"
+                >
+                  {{ edit_form.epci_delegate.label }}
+                  {% if edit_form.epci_delegate.help_text %}<span class="fr-hint-text">{{ edit_form.epci_delegate.help_text }}</span>{% endif %}
+                </label>
+
+                {{ edit_form.epci_delegate }}
+
+                {% for error in edit_form.epci_delegate.errors %}
+                <p class="fr-error-text">
+                  {{ error }}
+                </p>
+                {% endfor %}
+              </div>
+
+              <div class="fr-col-3 fr-input-group fr-mt-2w">
+                <ul class="fr-btns-group">
+                  <li>
+                    <button type="submit" class="fr-btn">Valider</button>
+                  </li>
+                </ul>
+              </div>
+            </form>
+          </div>
+      </section>
+    </div>
   {% endif %}
 {% endif %}
 
 <script src="ads_manager.ts"></script>
+{% endblock %}
+
+{% block endbody %}
+{{ edit_form.media }}
 {% endblock %}

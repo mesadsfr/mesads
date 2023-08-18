@@ -5,12 +5,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django import forms
 from django.forms import BaseInlineFormSet, inlineformset_factory
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 from dal import autocomplete
 
 from mesads.fradm.forms import FrenchAdministrationForm
-from mesads.fradm.models import Commune
+from mesads.fradm.models import Commune, EPCI
 
 from .models import (
     ADS,
@@ -47,7 +47,18 @@ class ADSManagerForm(FrenchAdministrationForm):
 class ADSManagerEditForm(forms.ModelForm):
     class Meta:
         model = ADSManager
-        fields = ("no_ads_declared",)
+        fields = (
+            "no_ads_declared",
+            "epci_delegate",
+        )
+
+    epci_delegate = forms.ModelChoiceField(
+        queryset=EPCI.objects,
+        widget=autocomplete.ListSelect2(url=reverse_lazy("fradm.autocomplete.epci")),
+        label=ADSManager.epci_delegate.field.verbose_name,
+        help_text=ADSManager.epci_delegate.field.help_text,
+        required=False,
+    )
 
 
 class ADSForm(forms.ModelForm):
