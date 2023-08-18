@@ -56,7 +56,7 @@ class TestReversionDiff(TestCase):
 
         self.assertEqual(len(revisions), 2)
 
-        ### Check the oldest revision
+        # -> Check the oldest revision
         revision, revision_models = revisions[1]
         self.assertIsInstance(revision, Revision)
         self.assertEqual(len(revision_models), 2)
@@ -97,7 +97,7 @@ class TestReversionDiff(TestCase):
             "Luke",
         )
 
-        ### Check the newest revision
+        # -> Check the newest revision
         revision, revision_models = revisions[0]
         self.assertIsInstance(revision, Revision)
         self.assertEqual(len(revision_models), 2)

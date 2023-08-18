@@ -1,14 +1,7 @@
-import csv
-from datetime import date, datetime
-import re
-import sys
-
-from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
-from django.db.models import Count, Sum
+from django.db.models import Count
 
-from mesads.app.models import ADS, ADSManager, ADSUpdateFile
-from mesads.fradm.models import Prefecture
+from mesads.app.models import ADS
 
 
 class Command(BaseCommand):
@@ -52,7 +45,7 @@ class Command(BaseCommand):
 
                 try:
                     ads.save()
-                except:
+                except Exception:
                     print("oops, ads %s" % ads.id)
 
         for item in handled.values():

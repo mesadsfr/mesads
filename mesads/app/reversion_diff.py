@@ -23,7 +23,7 @@ from django.core.exceptions import FieldDoesNotExist
 from django.db import models
 from django.db.models.functions import Cast
 from django.utils.safestring import mark_safe
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext
 
 from reversion.models import Version
 
@@ -199,8 +199,11 @@ class ModelHistory:
         for idx, (_, objects) in enumerate(revisions):
             for cls, objects_ids in objects.items():
                 for object_id, version in objects_ids.items():
+                    next_idx = idx + 1
                     last_version = self._find_first_version_from_revisions_list(
-                        revisions[idx + 1 :], cls, object_id
+                        revisions[next_idx:],
+                        cls,
+                        object_id,
                     )
                     diff = Diff(
                         model=cls,
@@ -243,7 +246,7 @@ class ModelHistory:
             return ""
 
         if isinstance(value, bool):
-            return _("Yes") if value else _("No")
+            return gettext("Yes") if value else gettext("No")
 
         field = cls._meta.get_field(name)
 

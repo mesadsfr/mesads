@@ -309,7 +309,7 @@ def validate_siret(value):
     except requests.exceptions.Timeout:
         logging.exception("Timeout while verifying SIRET validity. Skip validation.")
         return
-    except requests.exceptions.RequestException as exc:
+    except requests.exceptions.RequestException:
         logging.exception(
             "Unknown error while verifying SIRET validity. Skip validation."
         )
