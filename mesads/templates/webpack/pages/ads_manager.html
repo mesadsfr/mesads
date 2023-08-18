@@ -204,6 +204,7 @@
             </form>
           </div>
       </section>
+      {% if not edit_form.fields.epci_delegate.disabled %}
       <section class="fr-accordion">
           <h3 class="fr-accordion__title">
               <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-116">La gestion des ADS de votre administration est déléguée à un EPCI</button>
@@ -240,6 +241,7 @@
             </form>
           </div>
       </section>
+      {% endif %}
     </div>
   {% endif %}
 {% endif %}

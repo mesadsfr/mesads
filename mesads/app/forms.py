@@ -10,7 +10,7 @@ from django.urls import reverse, reverse_lazy
 from dal import autocomplete
 
 from mesads.fradm.forms import FrenchAdministrationForm
-from mesads.fradm.models import Commune, EPCI
+from mesads.fradm.models import Commune, EPCI, Prefecture
 
 from .models import (
     ADS,
@@ -52,8 +52,21 @@ class ADSManagerEditForm(forms.ModelForm):
             "epci_delegate",
         )
 
+    def __init__(self, instance=None, *args, **kwargs):
+        super().__init__(instance=instance, *args, **kwargs)
+        if instance.content_type.model_class() in (EPCI, Prefecture):
+            self.fields["epci_delegate"].disabled = True
+        elif instance.content_type.model_class() == Commune:
+            self.fields["epci_delegate"].queryset = EPCI.objects.filter(
+                departement=instance.content_object.departement
+            )
+            self.fields["epci_delegate"].widget.url = reverse(
+                "fradm.autocomplete.epci",
+                kwargs={"departement": instance.content_object.departement},
+            )
+
     epci_delegate = forms.ModelChoiceField(
-        queryset=EPCI.objects,
+        queryset=None,
         widget=autocomplete.ListSelect2(url=reverse_lazy("fradm.autocomplete.epci")),
         label=ADSManager.epci_delegate.field.verbose_name,
         help_text=ADSManager.epci_delegate.field.help_text,
