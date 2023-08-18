@@ -30,7 +30,7 @@
       {% for request in user_ads_manager_requests %}
       <tr>
         <td>{{ request.ads_manager.content_object.display_text|capfirst }}</td>
-        <td>{% if request.ads_count %}{{ request.ads_count }}{% elif request.ads_manager.no_ads_declared %}<small>Ne gère aucune ADS<small>{% else %}-{% endif %}</td>
+        <td>{% if request.ads_count %}{{ request.ads_count }}{% elif request.ads_manager.no_ads_declared %}<small>Ne gère aucune ADS<small>{% elif request.ads_manager.epci_delegate %}<small>ADS gérées par l'EPCI<br /><i>{{ request.ads_manager.epci_delegate }}</i></small>{% else %}-{% endif %}</td>
         <td>
           {% if request.accepted is None %}
           ⏱ En attente de validation par la préfecture
@@ -63,7 +63,7 @@
       <tr x-show="displayExtra || {{ forloop.counter0 }} < 5" x-transition>
         <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
         <td>
-          {% if ads_manager.ads_set.count > 0 %}{{ ads_manager.ads_set.count }}{% elif ads_manager.no_ads_declared %}<small>Ne gère aucune ADS</small>{% else %}-{% endif %}
+          {% if ads_manager.ads_set.count > 0 %}{{ ads_manager.ads_set.count }}{% elif ads_manager.no_ads_declared %}<small>Ne gère aucune ADS</small>{% elif ads_manager.epci_delegate %}<small>ADS gérées par l'EPCI<br /><i>{{ ads_manager.epci_delegate }}</i></small>{% else %}-{% endif %}
         </td>
         <td>
           <a class="fr-btn fr-btn--sm" href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">Gérez les ADS</a>
