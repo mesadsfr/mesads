@@ -270,6 +270,12 @@ class ADSManagerAdministrator(models.Model):
     def __str__(self):
         return f"Administrateur des gestionnaires de la préfecture {self.prefecture}"
 
+    referent_emails = models.TextField(
+        null=False,
+        blank=True,
+        help_text="Emails des référents de votre préfecture, à contacter pour les questions relative aux ADS.",
+    )
+
     prefecture = models.OneToOneField(
         Prefecture, on_delete=models.CASCADE, null=False, blank=False
     )

@@ -1,3 +1,4 @@
+from django.forms import Textarea
 from django.contrib import admin
 from django.db.models import Count
 from django.urls import reverse
@@ -38,6 +39,7 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
         "expected_ads_count",
         "ads_managers_link",
         "display_ads_count",
+        "referent_emails",
     )
 
     readonly_fields = (
@@ -47,6 +49,14 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
     )
 
     search_fields = ("prefecture__libelle",)
+
+    def get_form(self, request, obj=None, **kwargs):
+        kwargs["widgets"] = {
+            "referent_emails": Textarea(
+                attrs={"placeholder": "Entrer une adresse e-mail par ligne"}
+            ),
+        }
+        return super().get_form(request, obj=obj, **kwargs)
 
     @admin.display(description="Administrateurs (sans staff MesADS)")
     def display_users_count(self, ads_manager_administrator):
