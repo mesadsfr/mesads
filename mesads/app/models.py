@@ -576,7 +576,7 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
         blank=True,
         null=True,
         verbose_name="Date de création de l'ADS",
-        help_text="Indiquer la date à laquelle l’ADS a été attribuée au titulaire pour la première fois.",
+        help_text="Indiquer la date à laquelle l’ADS a été attribuée à un titulaire pour la première fois.",
     )
     ads_renew_date = models.DateField(
         blank=True,
@@ -603,7 +603,7 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
         choices=ATTRIBUTION_TYPES,
         blank=True,
         null=False,
-        verbose_name="Type d'attribution de l'ADS",
+        verbose_name="Type d'attribution de l'ADS au titulaire actuel",
     )
 
     transaction_identifier = models.CharField(
