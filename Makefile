@@ -28,6 +28,7 @@ run-local-as-prod:
 ### To run from container ###
 
 test:
+	flake8 mesads
 	coverage run --source=. manage.py test
 	coverage report -m
 
