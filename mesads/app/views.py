@@ -1,6 +1,5 @@
 from datetime import date, datetime, timedelta
 import collections
-import csv
 
 from docxtpl import DocxTemplate
 
@@ -23,6 +22,8 @@ from django.views.generic import UpdateView, TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, FormView, ProcessFormView
 from django.views.generic.list import ListView
+
+import xlsxwriter
 
 from formtools.wizard.views import CookieWizardView
 
@@ -513,67 +514,53 @@ class ADSCreateView(ADSView, CreateView):
 def prefecture_export_ads(request, ads_manager_administrator):
     prefecture = ads_manager_administrator.prefecture
     response = HttpResponse(
-        content_type="text/csv",
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         headers={
-            "Content-Disposition": 'attachment; filename="ADS_prefecture_%s.csv"'
-            % prefecture.numero
+            "Content-Disposition": f'attachment; filename="ADS_prefecture_{prefecture.numero}.xlsx"'
         },
     )
+
+    workbook = xlsxwriter.Workbook(response)
+    bold_format = workbook.add_format({"bold": True})
+    sheet1 = workbook.add_worksheet(f"ADS de la préfecture {prefecture.numero}")
+
+    sheet1.write_row(
+        0,
+        0,
+        (
+            "Identifiant unique",
+            "Administration",
+            "Numéro",
+            "Date de création",
+            "Date d'attribution au titulaire actuel",
+            "Type d'attribution",
+            "Raison de l'attribution",
+            "Conventionné CPAM ?",
+            "Plaque d'immatriculation",
+            "Véhicule compatible PMR ?",
+            "Véhicule électrique ou hybride ?",
+            "Nom du titulaire",
+            "SIRET titulaire",
+            "ADS exploitée par le titulaire ?",
+            "Statuts des exploitants (un par ligne)",
+            "Noms des exploitants (un par ligne)",
+            "SIRET des exploitants (un par ligne)",
+        ),
+    )
+    # Applying bold format to headers
+    sheet1.set_row(0, None, bold_format)
 
     def display_bool(value):
         if value is None:
             return ""
         return "oui" if value else "non"
 
-    fields = [
-        ("Identifiant unique", lambda ads: ads.id),
-        ("Administration", lambda ads: ads.ads_manager.content_object.display_text()),
-        ("Numéro", lambda ads: ads.number),
-        ("Date de création", lambda ads: ads.ads_creation_date),
-        ("Date d'attribution au titulaire actuel", lambda ads: ads.attribution_date),
-        (
-            "Type d'attribution",
-            lambda ads: ads.attribution_type
-            and dict(ADS.attribution_type.field.choices)[ads.attribution_type],
-        ),
-        ("Raison de l'attribution", lambda ads: ads.attribution_reason),
-        ("Conventionné CPAM ?", lambda ads: display_bool(ads.accepted_cpam)),
-        ("Plaque d'immatriculation", lambda ads: ads.immatriculation_plate),
-        (
-            "Véhicule compatible PMR ?",
-            lambda ads: display_bool(ads.vehicle_compatible_pmr),
-        ),
-        ("Véhicule électrique ou hybride ?", lambda ads: display_bool(ads.eco_vehicle)),
-        ("Nom du titulaire", lambda ads: ads.owner_name),
-        ("SIRET titulaire", lambda ads: ads.owner_siret),
-        (
-            "ADS exploitée par le titulaire ?",
-            lambda ads: display_bool(ads.used_by_owner),
-        ),
-        (
-            "Statuts des exploitants (un par ligne)",
-            lambda ads: "\n".join(
-                [
-                    dict(ADSUser.status.field.choices)[status] if status else ""
-                    for status in ads.ads_users_status
-                ]
-            ),
-        ),
-        (
-            "Noms des exploitants (un par ligne)",
-            lambda ads: "\n".join([name or "" for name in ads.ads_users_names]),
-        ),
-        (
-            "SIRET des exploitants (un par ligne)",
-            lambda ads: "\n".join([siret or "" for siret in ads.ads_users_sirets]),
-        ),
-    ]
+    def display_date(value):
+        if not value:
+            return ""
+        return value.strftime("%d/%m/%Y")
 
-    writer = csv.DictWriter(response, fieldnames=[field[0] for field in fields])
-
-    writer.writeheader()
-
-    for ads in (
+    for idx, ads in enumerate(
         ADS.objects.select_related(
             "ads_manager__administrator__prefecture",
         )
@@ -587,8 +574,54 @@ def prefecture_export_ads(request, ads_manager_administrator):
             ads_users_sirets=ArrayAgg("adsuser__siret"),
         )
     ):
-        writer.writerow({field[0]: field[1](ads) for field in fields})
+        sheet1.write_row(
+            idx + 1,
+            0,
+            (
+                ads.id,
+                ads.ads_manager.content_object.display_text(),
+                ads.number,
+                display_date(ads.ads_creation_date),
+                display_date(ads.attribution_date),
+                dict(ADS.ATTRIBUTION_TYPES).get(ads.attribution_type, ""),
+                ads.attribution_reason,
+                display_bool(ads.accepted_cpam),
+                ads.immatriculation_plate,
+                display_bool(ads.vehicle_compatible_pmr),
+                display_bool(ads.eco_vehicle),
+                ads.owner_name,
+                ads.owner_siret,
+                display_bool(ads.used_by_owner),
+                "\n".join(
+                    [
+                        f"{idx + 1}. {dict(ADSUser.status.field.choices).get(status, '')}"
+                        for idx, status in enumerate(ads.ads_users_status)
+                        if any(status for status in ads.ads_users_status)
+                    ]
+                ),
+                "\n".join(
+                    [
+                        f"{idx + 1}. {name}"
+                        if any(x for x in ads.ads_users_names)
+                        else ""
+                        for idx, name in enumerate(ads.ads_users_names)
+                    ]
+                ),
+                "\n".join(
+                    [
+                        f"{idx + 1}. {siret}"
+                        if any(x for x in ads.ads_users_sirets)
+                        else ""
+                        for idx, siret in enumerate(ads.ads_users_sirets)
+                        if len(ads.ads_users_sirets)
+                    ]
+                ),
+            ),
+        )
 
+    sheet1.autofit()
+
+    workbook.close()
     return response
 
 

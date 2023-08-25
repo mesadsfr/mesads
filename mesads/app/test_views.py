@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 import html
 
 from django.contrib import messages
@@ -921,7 +921,7 @@ class TestADSCreateView(ClientTestCase):
         self.assertEqual(legal_files[1].file.read(), b"Second file")
 
 
-class TestCSVExport(ClientTestCase):
+class TestExport(ClientTestCase):
     def test_permissions(self):
         for client_name, client, expected_status in (
             ("admin", self.admin_client, 200),
@@ -945,16 +945,20 @@ class TestCSVExport(ClientTestCase):
             number="1", ads_manager=self.ads_manager_city35, accepted_cpam=True
         )
         ADS.objects.create(number="2", ads_manager=self.ads_manager_city35)
-        ADS.objects.create(number="3", ads_manager=self.ads_manager_city35)
+        ADS.objects.create(
+            number="3",
+            ads_manager=self.ads_manager_city35,
+            ads_creation_date=datetime.now().date(),
+        )
 
         resp = self.ads_manager_administrator_35_client.get(
             f"/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export"
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.headers["Content-Type"], "text/csv")
-
-        # Header + 2 ADS
-        self.assertEqual(len(resp.content.splitlines()), 4)
+        self.assertEqual(
+            resp.headers["Content-Type"],
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
 
 
 class TestDashboardsViews(ClientTestCase):
