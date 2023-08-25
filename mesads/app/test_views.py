@@ -960,6 +960,40 @@ class TestExport(ClientTestCase):
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
 
+    def test_export_no_ads_declared(self):
+        """Similar to test_export, but with no_ads_declared for the ADSManager."""
+        self.ads_manager_city35.no_ads_declared = True
+        self.ads_manager_city35.save()
+
+        ADS.objects.create(
+            number="1", ads_manager=self.ads_manager_city35, accepted_cpam=True
+        )
+        resp = self.ads_manager_administrator_35_client.get(
+            f"/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            resp.headers["Content-Type"],
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+
+    def test_export_epci_delegate(self):
+        """Similar to test_export, but with epci_delegate for the ADSManager."""
+        self.ads_manager_city35.epci_delegate = self.fixtures_epci[0]
+        self.ads_manager_city35.save()
+
+        ADS.objects.create(
+            number="1", ads_manager=self.ads_manager_city35, accepted_cpam=True
+        )
+        resp = self.ads_manager_administrator_35_client.get(
+            f"/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            resp.headers["Content-Type"],
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+
 
 class TestDashboardsViews(ClientTestCase):
     """Test DashboardsView and DashboardsDetailView"""

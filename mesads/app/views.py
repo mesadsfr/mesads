@@ -522,8 +522,7 @@ def prefecture_export_ads(request, ads_manager_administrator):
 
     workbook = xlsxwriter.Workbook(response)
     bold_format = workbook.add_format({"bold": True})
-    sheet1 = workbook.add_worksheet(f"ADS de la préfecture {prefecture.numero}")
-
+    sheet1 = workbook.add_worksheet("ADS enregistrées")
     sheet1.write_row(
         0,
         0,
@@ -620,6 +619,40 @@ def prefecture_export_ads(request, ads_manager_administrator):
         )
 
     sheet1.autofit()
+
+    sheet2 = workbook.add_worksheet("Gestionnaires ADS")
+    sheet2.write_row(
+        0,
+        0,
+        (
+            "Nom de l'administration",
+            "Nombre d'ADS",
+            "Statut de la gestion des ADS",
+        ),
+    )
+    # Applying bold format to headers
+    sheet2.set_row(0, None, bold_format)
+
+    for idx, ads_manager in enumerate(ads_manager_administrator.adsmanager_set.all()):
+        status = ""
+        if ads_manager.no_ads_declared:
+            status = "L'administration a déclaré ne gérer aucune ADS"
+        elif ads_manager.epci_delegate:
+            status = (
+                "La gestion des ADS est déléguée à %s"
+                % ads_manager.epci_delegate.display_fulltext()
+            )
+
+        sheet2.write_row(
+            idx + 1,
+            0,
+            (
+                ads_manager.content_object.display_text(),
+                ads_manager.ads_set.count() or "",
+                status,
+            ),
+        )
+    sheet2.autofit()
 
     workbook.close()
     return response
