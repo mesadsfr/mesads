@@ -126,6 +126,10 @@ class ADSManagerAdmin(admin.ModelAdmin):
         """Render a dash if ads_count is zero to improve readability."""
         if ads_manager.no_ads_declared:
             return "L'administration ne gère pas d'ADS"
+        elif ads_manager.epci_delegate:
+            return (
+                f"La gestion des ADS est déléguée à l'EPCI {ads_manager.epci_delegate}"
+            )
         return ads_manager.ads_count or "-"
 
     def get_queryset(self, request):
