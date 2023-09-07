@@ -83,7 +83,7 @@ class ADSManagerAdminView(RevisionMixin, TemplateView):
     def get_context_data(self, **kwargs):
         """Populate context with the list of ADSManagerRequest current user can accept."""
         ctx = super().get_context_data(**kwargs)
-        ctx["ads_manager_requests"] = (
+        query = (
             ADSManagerRequest.objects.select_related(
                 "ads_manager__administrator",
                 "ads_manager__administrator__prefecture",
@@ -92,8 +92,20 @@ class ADSManagerAdminView(RevisionMixin, TemplateView):
             )
             .prefetch_related("ads_manager__content_object")
             .filter(ads_manager__administrator__users__in=[self.request.user])
-            .order_by("ads_manager__administrator", "-created_at")
         )
+        if self.request.GET.get("sort") == "name":
+            ctx["sort"] = "name"
+            ctx["ads_manager_requests"] = query.order_by(
+                "ads_manager__administrator",
+                "ads_manager__commune__libelle",
+                "ads_manager__epci__name",
+                "ads_manager__prefecture__libelle",
+            )
+        else:
+            ctx["ads_manager_requests"] = query.order_by(
+                "ads_manager__administrator",
+                "-created_at",
+            )
         return ctx
 
     def post(self, request):

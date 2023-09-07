@@ -21,8 +21,20 @@
     <thead>
       <tr>
         <th>👨‍💻 Utilisateur</th>
-        <th>🏢 Administration</th>
-        <th>📅 Date de la demande</th>
+        <th>
+          {% if sort == "name" %}
+            🏢 Administration ▲
+          {% else %}
+            <a href="?sort=name">🏢 Administration ▶</a>
+          {% endif %}
+        </th>
+        <th>
+          {% if sort == "name" %}
+          <a href="?">📅 Date de la demande ▶</a>
+          {% else %}
+          📅 Date de la demande ▲
+          {% endif %}
+        </th>
         <th>🔎 Action</th>
       </tr>
     </thead>

@@ -107,6 +107,23 @@ class TestADSManagerAdminView(ClientTestCase):
         self.assertFalse(self.ads_manager_request.accepted)
         self.assertEqual(len(mail.outbox), 1)
 
+    def test_sort(self):
+        for ads_manager in ADSManager.objects.all():
+            ADSManagerRequest.objects.create(
+                user=self.create_user().obj,
+                ads_manager=ads_manager,
+                accepted=None,
+            )
+            resp = self.ads_manager_administrator_35_client.get(
+                "/admin_gestion",
+            )
+            self.assertEqual(resp.status_code, 200)
+
+            resp = self.ads_manager_administrator_35_client.get(
+                "/admin_gestion?sort=name",
+            )
+            self.assertEqual(resp.status_code, 200)
+
 
 class TestADSManagerRequestView(ClientTestCase):
     def setUp(self):
