@@ -34,7 +34,14 @@
         <td>{{ ads_manager_request.created_at }}</td>
         <td>
           <div class="fr-grid-row fr-grid-row--gutters">
-            {% comment %}Request is pending{% endcomment %}
+            {% comment %}
+            Display the button to accept/deny when the request is pending.
+
+            In the past, we used to also display the buttons when the request
+            was accepted or denied. It was error prone. Instead, we want the
+            users to contact our team to revoke an access, or grant when the
+            request has been mistakenly denied.
+            {% endcomment %}
             {% if ads_manager_request.accepted is None %}
             <div class="fr-p-1w">
               <form method="post">
@@ -50,16 +57,6 @@
                 <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
                 <input type="hidden" name="action" value="deny" />
                 <button type="submit" class="fr-btn fr-btn--sm">Refuser</button>
-              </form>
-            </div>
-            {% comment %}Request has been denied: allow to accept it{% endcomment %}
-            {% elif ads_manager_request.accepted is False %}
-            <div class="fr-p-1w">
-              <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
-                <input type="hidden" name="action" value="accept" />
-                <button type="submit" class="fr-btn fr-btn--sm">Donner l'accès</button>
               </form>
             </div>
             {% endif %}
