@@ -1,6 +1,7 @@
 from django.apps import apps
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
+from django.contrib.postgres.fields import CITextField
 from django.core.mail import send_mail
 from django.db import models
 from django.utils import timezone
@@ -49,8 +50,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     The goal is to remain compatible with django admin, but have email
     authentication instead of username authentication.
     """
-
-    from django.contrib.postgres.fields import CITextField
 
     email = CITextField(
         _("email address"),
