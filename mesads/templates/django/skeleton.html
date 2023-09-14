@@ -98,19 +98,7 @@
       </div>
     </header>
 
-    <main class="fr-container {% block main_styles %}fr-pt-5w fr-pb-5w{% endblock %}">
-      {% for message in messages %}
-      <div class="fr-alert fr-alert--info
-        {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}fr-alert--info {% endif %}
-        {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}fr-alert--success {% endif %}
-        {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}fr-alert--error {% endif %}
-      ">
-        <p>{{ message|safe }}</p>
-      </div>
-      {% endfor %}
-
-      {% block body %}{% endblock %}
-    </main>
+    {% block content %}{% endblock %}
 
     <footer class="fr-footer" role="contentinfo" id="footer">
       <div class="fr-container">

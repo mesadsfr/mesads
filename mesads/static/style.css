@@ -68,3 +68,10 @@ h1 {
   /* !important is required to override the background-color set by default to even rows */
   background-color: rgba(0, 127, 127, 0.15) !important;
 }
+
+#main-container-banner {
+  background-image: url('/static/images/banner.svg');
+  background-repeat: no-repeat;
+  background-size: 100%;
+  padding-top: 25%;
+}
