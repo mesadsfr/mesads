@@ -1,6 +1,7 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.urls import path
+from django.views.generic import TemplateView
 
 from . import views
 from .decorators import (
@@ -72,4 +73,24 @@ urlpatterns = [
         name="app.exports.prefecture",
     ),
     path("faq", views.FAQView.as_view(), name="app.faq"),
+    path(
+        "profils",
+        TemplateView.as_view(template_name="pages/profils.html"),
+        name="app.profils",
+    ),
+    path(
+        "profils/aom",
+        TemplateView.as_view(template_name="pages/profils_aom.html"),
+        name="app.profils.aom",
+    ),
+    path(
+        "profils/chauffeur",
+        TemplateView.as_view(template_name="pages/profils_driver.html"),
+        name="app.profils.driver",
+    ),
+    path(
+        "profils/autre",
+        TemplateView.as_view(template_name="pages/profils_other.html"),
+        name="app.profils.other",
+    ),
 ]
