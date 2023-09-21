@@ -1,7 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div id="main-container-banner">
-    {{ block.super }}
+<div id="banner-container">
+  <div id="banner">
+    <div id="banner-text">
+        {% block banner %}Le site de référence pour la gestion des licences de taxi (ADS){% endblock %}
+    </div>
+  </div>
+
+  {% comment %}Contains the <main> tag{% endcomment %}
+  {{ block.super }}
 </div>
 {% endblock %}
