@@ -83,6 +83,7 @@ CMD python manage.py makemigrations && python manage.py migrate && \
   --module mesads.wsgi \
   -M -p $(nproc) \
   -R 100 \
+  -b 32768 \
   --static-map /static=/app/static \
   --limit-post=10000000 \
   --http-manage-expect \
