@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta
 import collections
+import json
 
 from docxtpl import DocxTemplate
 
@@ -11,7 +12,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
 from django.db.models import Count, Q, Sum, Value
-from django.db.models.functions import Coalesce, Replace
+from django.db.models.functions import Coalesce, Replace, TruncMonth
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.defaultfilters import date as date_template_filter
@@ -1201,3 +1202,23 @@ class ADSDecreeView(CustomCookieWizardView):
 
         decree.save(response)
         return response
+
+
+class StatsView(TemplateView):
+    template_name = "pages/stats.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ads_count_by_month = (
+            ADS.objects.annotate(month=TruncMonth("creation_date"))
+            .values("month")
+            .annotate(count=Count("id"))
+            .order_by("month")
+        )
+
+        ctx["ads_count_by_month"] = json.dumps(
+            dict(
+                ((row["month"].isoformat(), row["count"]) for row in ads_count_by_month)
+            )
+        )
+        return ctx

@@ -1,0 +1,20 @@
+{% extends "base-banner.html" %}
+
+{% block title %}Les statistiques Mes ADS{% endblock %}
+{% block banner %}Les statistiques Mes ADS{% endblock %}
+
+{% block body %}
+<div>
+  <h3>Nombre d'ADS enregistrées</h3>
+  <canvas id="ads-count"></canvas>
+</div>
+
+<script id="data" type="application/json">
+{
+  "ads_count_by_month": {{ ads_count_by_month|safe }}
+}
+</script>
+
+<script src="./stats.ts"></script>
+
+{% endblock %}

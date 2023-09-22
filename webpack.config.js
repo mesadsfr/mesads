@@ -17,12 +17,10 @@ module.exports = (env, argv) => {
     },
 
     resolve: {
-      // use aliases used in sources instead of relative paths like ../../
+      // Required, otherwise webpack can't find `chart.js/auto` module.
+      // https://github.com/chartjs/Chart.js/discussions/11376
       alias: {
-        // "@images": path.join(WebpackTemplatesDir, "assets/images/"),
-        // "@fonts": path.join(WebpackTemplatesDir, "assets/fonts/"),
-        // "@styles": path.join(WebpackTemplatesDir, "assets/styles/"),
-        // "@scripts": path.join(WebpackTemplatesDir, "assets/scripts/"),
+        "chart.js": path.resolve("node_modules/chart.js/"),
       },
       extensions: [".js", ".jsx", ".ts", ".tsx"],
     },

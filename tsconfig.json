@@ -2,6 +2,7 @@
   "extends": "@tsconfig/recommended/tsconfig.json",
   "include": ["mesads/templates/webpack"],
   "compilerOptions": {
-    "baseUrl": "mesads/app/tempplates/webpack/"
+    "baseUrl": "mesads/app/tempplates/webpack/",
+    "lib": ["dom", "es2017"]
   }
 }
