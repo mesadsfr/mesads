@@ -56,7 +56,9 @@ class InfoBox extends L.Control {
       `${ads_count} ADS ${ads_count > 1 ? "enregistrées" : "enregistrée"}`,
     ];
     if (expected_ads_count !== null) {
-      infos.push(`${expected_ads_count} ADS au total dans la préfecture`);
+      infos.push(
+        `${expected_ads_count} ADS au total dans la préfecture (estimation)`
+      );
       infos.push(
         `<strong>Taux de remplissage: ${Math.round(
           (ads_count / expected_ads_count) * 100
