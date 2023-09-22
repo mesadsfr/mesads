@@ -17,11 +17,7 @@ module.exports = (env, argv) => {
     },
 
     resolve: {
-      // Required, otherwise webpack can't find `chart.js/auto` module.
-      // https://github.com/chartjs/Chart.js/discussions/11376
-      alias: {
-        "chart.js": path.resolve("node_modules/chart.js/"),
-      },
+      alias: {},
       extensions: [".js", ".jsx", ".ts", ".tsx"],
     },
 

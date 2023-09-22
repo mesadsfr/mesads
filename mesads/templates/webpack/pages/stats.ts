@@ -5,18 +5,14 @@ import {
   LineElement,
   LinearScale,
   PointElement,
-  TimeScale,
 } from "chart.js";
-
-import "chartjs-adapter-moment";
 
 Chart.register(
   CategoryScale,
   LineController,
   LineElement,
   LinearScale,
-  PointElement,
-  TimeScale
+  PointElement
 );
 
 // Given a dict where keys are dates and values are numbers, return a dict where
