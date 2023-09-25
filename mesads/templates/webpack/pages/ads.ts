@@ -73,9 +73,12 @@ Alpine.directive("add-ads-user-button", (el, { expression }, { evaluate }) => {
       .forEach((value, index) => {
         const div = value as HTMLDivElement;
 
-        div.querySelectorAll("input").forEach((input) => {
-          input.id = input.id.replace(/__prefix__/g, index.toString());
-          input.name = input.name.replace(/__prefix__/, index.toString());
+        const entries: NodeListOf<HTMLInputElement | HTMLSelectElement> =
+          div.querySelectorAll("input, select");
+
+        entries.forEach((value) => {
+          value.id = value.id.replace(/__prefix__/g, index.toString());
+          value.name = value.name.replace(/__prefix__/, index.toString());
         });
       });
 
