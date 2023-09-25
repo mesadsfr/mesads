@@ -1215,10 +1215,25 @@ class StatsView(TemplateView):
             .annotate(count=Count("id"))
             .order_by("month")
         )
-
         ctx["ads_count_by_month"] = json.dumps(
             dict(
                 ((row["month"].isoformat(), row["count"]) for row in ads_count_by_month)
+            )
+        )
+
+        ads_manager_requests_by_month = (
+            ADSManagerRequest.objects.filter(accepted=True)
+            .annotate(month=TruncMonth("created_at"))
+            .values("month")
+            .annotate(count=Count("id"))
+            .order_by("month")
+        )
+        ctx["ads_manager_requests_by_month"] = json.dumps(
+            dict(
+                (
+                    (row["month"].isoformat(), row["count"])
+                    for row in ads_manager_requests_by_month
+                )
             )
         )
         return ctx

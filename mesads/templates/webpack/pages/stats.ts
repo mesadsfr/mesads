@@ -50,7 +50,8 @@ function AccumulateValues(data: Record<string, number>) {
 
 // The type of data given to this script by the Django template.
 type DataType = {
-  ads_count_by_month: Record<string, number>;
+  ads_by_month: Record<string, number>;
+  ads_manager_requests_by_month: Record<string, number>;
 };
 
 const data = JSON.parse(
@@ -60,7 +61,7 @@ const data = JSON.parse(
 // Add graph for ads count by trimester
 (function () {
   const ctx = document.getElementById("ads-count") as HTMLCanvasElement;
-  const adsByTrimester = GroupDataByTrimester(data.ads_count_by_month);
+  const adsByTrimester = GroupDataByTrimester(data.ads_by_month);
 
   new Chart(ctx, {
     type: "line",
@@ -69,6 +70,31 @@ const data = JSON.parse(
       datasets: [
         {
           data: AccumulateValues(adsByTrimester),
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 5,
+        },
+      ],
+    },
+  });
+})();
+
+// Add graph for ads manager requests by trimester
+(function () {
+  const ctx = document.getElementById(
+    "ads-manager-requests-count"
+  ) as HTMLCanvasElement;
+
+  const requestsByTrimester = GroupDataByTrimester(
+    data.ads_manager_requests_by_month
+  );
+
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: Object.keys(requestsByTrimester),
+      datasets: [
+        {
+          data: AccumulateValues(requestsByTrimester),
           borderColor: "rgba(75, 192, 192, 1)",
           borderWidth: 5,
         },

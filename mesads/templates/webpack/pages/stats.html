@@ -5,13 +5,20 @@
 
 {% block body %}
 <div>
-  <h3>Nombre d'ADS enregistrées</h3>
+  <h3>Evolution du nombre d'ADS enregistrées</h3>
   <canvas id="ads-count"></canvas>
 </div>
 
+<div class="fr-mt-3w">
+  <h3>Évolution du nombre de gestionnaires ADS</h3>
+  <canvas id="ads-manager-requests-count"></canvas>
+</div>
+
+
 <script id="data" type="application/json">
 {
-  "ads_count_by_month": {{ ads_count_by_month|safe }}
+  "ads_by_month": {{ ads_count_by_month|safe }},
+  "ads_manager_requests_by_month": {{ ads_manager_requests_by_month|safe }}
 }
 </script>
 
