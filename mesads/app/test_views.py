@@ -1468,3 +1468,9 @@ class TestADSHistoryView(ClientTestCase):
             f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/history"
         )
         self.assertEqual(resp.status_code, 200)
+
+
+class TestStatsView(ClientTestCase):
+    def test_get(self):
+        resp = self.anonymous_client.get("/stats")
+        self.assertEqual(resp.status_code, 200)
