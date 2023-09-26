@@ -5,6 +5,7 @@ import {
   LineElement,
   LinearScale,
   PointElement,
+  Tooltip,
 } from "chart.js";
 
 Chart.register(
@@ -12,7 +13,8 @@ Chart.register(
   LineController,
   LineElement,
   LinearScale,
-  PointElement
+  PointElement,
+  Tooltip
 );
 
 // Given a dict where keys are dates and values are numbers, return a dict where
@@ -48,6 +50,36 @@ function AccumulateValues(data: Record<string, number>) {
   }, []);
 }
 
+function DisplayLineChart(
+  canvas: HTMLCanvasElement,
+  labels: string[],
+  data: number[]
+) {
+  new Chart(canvas, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          data: data,
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 5,
+        },
+      ],
+    },
+    options: {
+      locale: "fr",
+      plugins: {
+        tooltip: {
+          padding: 20,
+          mode: "nearest",
+          displayColors: false,
+        },
+      },
+    },
+  });
+}
+
 // The type of data given to this script by the Django template.
 type DataType = {
   ads_by_month: Record<string, number>;
@@ -58,47 +90,20 @@ const data = JSON.parse(
   (document.getElementById("data") as HTMLScriptElement).text
 ) as DataType;
 
-// Add graph for ads count by trimester
-(function () {
-  const ctx = document.getElementById("ads-count") as HTMLCanvasElement;
-  const adsByTrimester = GroupDataByTrimester(data.ads_by_month);
+const adsByTimester = GroupDataByTrimester(data.ads_by_month);
 
-  new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: Object.keys(adsByTrimester),
-      datasets: [
-        {
-          data: AccumulateValues(adsByTrimester),
-          borderColor: "rgba(75, 192, 192, 1)",
-          borderWidth: 5,
-        },
-      ],
-    },
-  });
-})();
+DisplayLineChart(
+  document.getElementById("ads-count") as HTMLCanvasElement,
+  Object.keys(adsByTimester),
+  AccumulateValues(adsByTimester)
+);
 
-// Add graph for ads manager requests by trimester
-(function () {
-  const ctx = document.getElementById(
-    "ads-manager-requests-count"
-  ) as HTMLCanvasElement;
+const requestsByTrimester = GroupDataByTrimester(
+  data.ads_manager_requests_by_month
+);
 
-  const requestsByTrimester = GroupDataByTrimester(
-    data.ads_manager_requests_by_month
-  );
-
-  new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: Object.keys(requestsByTrimester),
-      datasets: [
-        {
-          data: AccumulateValues(requestsByTrimester),
-          borderColor: "rgba(75, 192, 192, 1)",
-          borderWidth: 5,
-        },
-      ],
-    },
-  });
-})();
+DisplayLineChart(
+  document.getElementById("ads-manager-requests-count") as HTMLCanvasElement,
+  Object.keys(requestsByTrimester),
+  AccumulateValues(requestsByTrimester)
+);
