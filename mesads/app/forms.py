@@ -256,12 +256,11 @@ class ADSDecreeForm3(forms.Form):
     STEP_TITLE = "Informations générales"
 
     def _validate_decree_number(self, value):
-        """The number of an "arrêté municipal" is formed like 0000/2022. I'm not
-        sure the first part always contains four digits (for numbers < 1000
-        and >= 10 000), so we accept any number of digits for this part."""
-        if value and not re.match(r"\d+/\d{4}$", value):
+        """The number of an "arrêté municipal" is formed like 0000/2022.
+        Apparently, the first part can contain letters too."""
+        if value and not re.match(r".+/\d{4}$", value):
             raise ValidationError(
-                "Le champ doit être sous la forme 0000/%s"
+                "Le champ doit être sous la forme XXXX/%s"
                 % datetime.now().strftime("%Y")
             )
         return value
