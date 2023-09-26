@@ -1472,5 +1472,5 @@ class TestADSHistoryView(ClientTestCase):
 
 class TestStatsView(ClientTestCase):
     def test_get(self):
-        resp = self.anonymous_client.get("/stats")
+        resp = self.anonymous_client.get("/chiffres-cles")
         self.assertEqual(resp.status_code, 200)

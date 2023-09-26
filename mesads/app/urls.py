@@ -93,5 +93,5 @@ urlpatterns = [
         TemplateView.as_view(template_name="pages/profils_other.html"),
         name="app.profils.other",
     ),
-    path("stats", views.StatsView.as_view(), name="app.stats"),
+    path("chiffres-cles", views.StatsView.as_view(), name="app.stats"),
 ]

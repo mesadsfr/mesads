@@ -1,17 +1,24 @@
 {% extends "base-banner.html" %}
 
-{% block title %}Les statistiques Mes ADS{% endblock %}
-{% block banner %}Les statistiques Mes ADS{% endblock %}
+{% block title %}Chiffres clés Mes ADS{% endblock %}
+{% block banner %}Chiffres clés Mes ADS{% endblock %}
 
 {% block body %}
-<div>
-  <h3>Evolution du nombre d'ADS enregistrées</h3>
-  <canvas id="ads-count"></canvas>
-</div>
 
-<div class="fr-mt-3w">
-  <h3>Évolution du nombre de gestionnaires ADS</h3>
-  <canvas id="ads-manager-requests-count"></canvas>
+<p>
+  Mes ADS est un projet en pleine évolution, démarré en 2022. Nous essayons de faire évoluer le produit en fonction de vos retours. Si vous avez des questions, des suggestions, ou si vous remarquez un bug, n'hésitez surtout pas à nous contacter en utilisant le chat ou par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+</p>
+
+<div class="fr-grid-row fr-grid-row--gutters">
+  <div class="fr-col-12 fr-col-md-6">
+    <h3>Evolution du nombre d'ADS enregistrées</h3>
+    <canvas id="ads-count"></canvas>
+  </div>
+
+  <div class="fr-col-12 fr-col-md-6">
+    <h3>Évolution du nombre de gestionnaires ADS</h3>
+    <canvas id="ads-manager-requests-count"></canvas>
+  </div>
 </div>
 
 
