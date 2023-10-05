@@ -10,7 +10,7 @@ RUN npm install
 #
 # Python builder
 #
-FROM python AS python-builder
+FROM python:3.11 AS python-builder
 
 RUN pip install \
   poetry
@@ -42,7 +42,7 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 #
 # Production runner
 #
-FROM python
+FROM python:3.11
 
 # nodejs is required by mjml
 RUN apt-get update && apt-get install -y \
