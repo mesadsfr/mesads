@@ -5,7 +5,7 @@ on: [push]
 jobs:
   tests:
     runs-on: ubuntu-latest
-    container: python:3
+    container: python:3.11
 
     services:
       postgres:
