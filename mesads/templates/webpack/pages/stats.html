@@ -9,13 +9,67 @@
   Mes ADS est un projet en pleine évolution, démarré en 2022. Nous essayons de faire évoluer le produit en fonction de vos retours. Si vous avez des questions, des suggestions, ou si vous remarquez un bug, n'hésitez surtout pas à nous contacter en utilisant le chat ou par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
 </p>
 
+<p>
+  Vous trouverez sur cette page quelques statistiques à propos du projet.
+</p>
+
+<hr />
+
 <div class="fr-grid-row fr-grid-row--gutters">
-  <div class="fr-col-12 fr-col-md-6">
+  <div class="stats-card fr-col-12 fr-col-md-4">
+    <div class="stats-card-content">
+      <div class="stats-card-number">
+        {{ ads_count }}
+      </div>
+      <div class="stats-card-description">
+        ADS enregistrées ce jour
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-card fr-col-12 fr-col-md-4">
+    <div class="stats-card-content">
+      <div class="stats-card-number">
+        {{ ads_manager_requests_count }}
+      </div>
+      <div class="stats-card-description">
+        instructeurs enregistrés pour gérer les ADS
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-card fr-col-12 fr-col-md-4">
+    <div class="stats-card-content">
+      <div class="stats-card-number">
+        {{ ads_managers_count }}
+      </div>
+      <div class="stats-card-description">
+        différentes administrations gérant des ADS
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-card fr-col-12 fr-col-md-4">
+    <div class="stats-card-content">
+      <div class="stats-card-number">
+        +10 000
+      </div>
+      <div class="stats-card-description">
+        réponses à vos questions concernant les ADS, la platforme, les démarches, etc.
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="fr-mt-3w" />
+
+<div class="fr-grid-row fr-grid-row--gutters">
+  <div class="fr-col-12">
     <h3>Evolution du nombre d'ADS enregistrées</h3>
     <canvas id="ads-count"></canvas>
   </div>
 
-  <div class="fr-col-12 fr-col-md-6">
+  <div class="fr-col-12">
     <h3>Évolution du nombre de gestionnaires ADS</h3>
     <canvas id="ads-manager-requests-count"></canvas>
   </div>

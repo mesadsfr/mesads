@@ -1209,6 +1209,9 @@ class StatsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+
+        ctx["ads_count"] = ADS.objects.count()
+
         ads_count_by_month = (
             ADS.objects.annotate(month=TruncMonth("creation_date"))
             .values("month")
@@ -1220,6 +1223,10 @@ class StatsView(TemplateView):
                 ((row["month"].isoformat(), row["count"]) for row in ads_count_by_month)
             )
         )
+
+        ctx["ads_manager_requests_count"] = ADSManagerRequest.objects.filter(
+            accepted=True
+        ).count()
 
         ads_manager_requests_by_month = (
             ADSManagerRequest.objects.filter(accepted=True)
@@ -1236,4 +1243,11 @@ class StatsView(TemplateView):
                 )
             )
         )
+
+        ctx["ads_managers_count"] = (
+            ADSManager.objects.annotate(ads_count=Count("ads"))
+            .filter(ads_count__gt=0)
+            .count()
+        )
+
         return ctx
