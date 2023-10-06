@@ -1,9 +1,0 @@
-{% for faq_section in faq_sections %}
-    {% if faq_section.template %}
-        {% if not forloop.first or not forloop.parentloop.first %}<hr class="fr-mt-5w fr-mb-3w" />{% endif %}
-        <h2 id="{{ faq_section.title|slugify }}">{{ faq_section.title }}</h2>
-        {% include faq_section.template  %}
-    {% endif %}
-
-    {% include "pages/faq-section-content.html" with faq_sections=faq_section.subitems %}
-{% endfor %}

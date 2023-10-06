@@ -968,64 +968,6 @@ class DashboardsDetailView(DetailView):
 
 class FAQView(TemplateView):
     template_name = "pages/faq.html"
-    faq_sections = [
-        {
-            "title": "Gestion du compte",
-            "subitems": [
-                {
-                    "title": "Comment créer un compte ?",
-                    "template": "pages/faq/account_create.html",
-                },
-                {
-                    "title": "Je ne reçois pas l'e-mail de validation",
-                    "template": "pages/faq/account_email_not_received.html",
-                },
-                {
-                    "title": "Comment configurer l'accès gestionnaire ?",
-                    "template": "pages/faq/account_send_request.html",
-                },
-                {
-                    "title": "J'ai oublié mon mot de passe",
-                    "template": "pages/faq/account_forgot_password.html",
-                },
-                {
-                    "title": "Je veux changer l'adresse e-mail de mon compte",
-                    "template": "pages/faq/account_change_email.html",
-                },
-            ],
-        },
-        {
-            "title": "Gestion des ADS",
-            "subitems": [
-                {
-                    "title": "Créer, modifier et supprimer une ADS",
-                    "template": "pages/faq/ads_manage.html",
-                },
-                {
-                    "title": "Pour les préfectures",
-                    "subitems": [
-                        {
-                            "title": "Comment valider les demandes d'accès des agents territoriaux ?",
-                            "template": "pages/faq/ads_prefecture_manage.html",
-                        },
-                        {
-                            "title": "Comment révoquer un accès ?",
-                            "template": "pages/faq/ads_prefecture_revoke.html",
-                        },
-                    ],
-                },
-            ],
-        },
-        {
-            "title": "Problème technique, remarque, question",
-            "template": "pages/faq/contact.html",
-        },
-    ]
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx["faq_sections"] = self.faq_sections
-        return ctx
 
 
 class CustomCookieWizardView(CookieWizardView):
