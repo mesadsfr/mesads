@@ -1,11 +1,10 @@
-{% extends "base.html" %}
+{% extends "pages/ads_register/base.html" %}
 
 {% load show_pagination_links %}
 
 {% block title %}ADS {{ ads_manager.content_object.display_text }}{% endblock %}
 
-{% block body %}
-
+{% block main %}
 <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
   <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
   <div class="fr-collapse" id="breadcrumb-1">
@@ -21,7 +20,6 @@
 </nav>
 
 <h1>ADS de {{ ads_manager.content_object.display_fulltext }}</h1>
-
 
 {% if not ads_manager.is_locked and not ads_manager.no_ads_declared %}
 <p>
@@ -192,7 +190,7 @@
           <div class="{% if not ads_manager.no_ads_declared %}fr-collapse {% endif %}" id="accordion-115">
             <form method="post">
               {% csrf_token %}
-              {% include 'pages/ads-form_bool.html' with field=edit_form.no_ads_declared field_errors=edit_form.errors.no_ads_declared required=edit_form.fields.no_ads_declared.required %}
+              {% include './ads-form_bool.html' with field=edit_form.no_ads_declared field_errors=edit_form.errors.no_ads_declared required=edit_form.fields.no_ads_declared.required %}
 
               <div class="fr-col-3 fr-input-group fr-mt-2w">
                 <ul class="fr-btns-group">
@@ -210,7 +208,7 @@
               <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-116">La gestion des ADS de votre administration est déléguée à un EPCI</button>
           </h3>
           <div class="{% if not ads_manager.epci_delegate %}fr-collapse {% endif %}" id="accordion-116">
-            <form method="post" class="fr-col-12 fr-col-sm-6">
+            <form method="post">
               {% csrf_token %}
 
               <div class="fr-select-group{% if edit_form.errors.epci_delegate %} fr-select-group--error{% endif %}">

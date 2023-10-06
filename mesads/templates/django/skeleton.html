@@ -70,24 +70,10 @@
           <div class="fr-header__menu-links"></div>
           <nav class="fr-nav" id="navigation-832" role="navigation" aria-label="Menu principal">
             <ul class="fr-nav__list">
-            {% if user.is_authenticated %}
-              {% if user.is_staff %}
-              <li class="fr-nav__item">
-                {% url 'app.dashboards.list' as dashboards_url %}
-                <a class="fr-nav__link" href="{{ dashboards_url }}"{% if request.path == dashboards_url %} aria-current="page"{% endif %}>Dashboards</a>
-              </li>
-              {% endif %}
-              {% if user.adsmanageradministrator_set.all|length > 0 %}
-              <li class="fr-nav__item">
-                {% url 'app.ads-manager-admin.index' as ads_manager_admin_index_url %}
-                <a class="fr-nav__link" href="{{ ads_manager_admin_index_url }}"{% if request.path == ads_manager_admin_index_url %} aria-current="page"{% endif %}>Administration des gestionnaires</a>
-              </li>
-              {% endif %}
               <li class="fr-nav__item">
                 {% url 'app.ads-manager.index' as ads_manager_index_url %}
-                <a class="fr-nav__link" href="{{ ads_manager_index_url }}"{% if request.path == ads_manager_index_url %} aria-current="page"{% endif %}>Gestion des ADS</a>
+                <a class="fr-nav__link" href="{{ ads_manager_index_url }}"{% if request.path == ads_manager_index_url %} aria-current="page"{% endif %}>Registre des ADS</a>
               </li>
-            {% endif %}
               <li class="fr-nav__item">
                 {% url 'app.faq' as faq_url %}
                 <a class="fr-nav__link" href="{{ faq_url }}"{% if request.path == faq_url %} aria-current="page"{% endif %}>J'ai un problème</a>

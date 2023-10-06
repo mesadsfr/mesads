@@ -1,9 +1,8 @@
-{% extends "base.html" %}
+{% extends "pages/ads_register/base.html" %}
 
 {% block title %}Décret de {{ ads_manager.content_object.display_text }}{% endblock %}
 
-{% block body %}
-
+{% block main %}
 <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
     <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
     <div class="fr-collapse" id="breadcrumb-1">
@@ -24,27 +23,25 @@
 
 <h1>Décret de {{ ads_manager.content_object.display_fulltext }}</h1>
 
-<div class="fr-col-12 fr-col-sm-8 fr-col-md-6">
-    <p>
-        Vous avez la possibilité d'insérer l'arrêté délimitant le nombre d'ADS au sein de votre administration.
-    </p>
+  <p>
+      Vous avez la possibilité d'insérer l'arrêté délimitant le nombre d'ADS au sein de votre administration.
+  </p>
 
-    <p>
-        Si vous ne disposez pas de cet élément, nous vous invitons à vous rapprocher de votre référent auprès de la préfecture qui doit disposer d'un exemplaire.
-    </p>
+  <p>
+      Si vous ne disposez pas de cet élément, nous vous invitons à vous rapprocher de votre référent auprès de la préfecture qui doit disposer d'un exemplaire.
+  </p>
 
-    <form
-        method="post"
-        enctype="multipart/form-data"
-    >
-        {% csrf_token %}
+  <form
+      method="post"
+      enctype="multipart/form-data"
+  >
+      {% csrf_token %}
 
-        <hr />
-        {% include 'formset_files.html' with formset=formset %}
-        <hr />
-        <button type="submit" class="fr-btn">Valider le formulaire</button>
-    </form>
-</div>
+      <hr />
+      {% include './formset_files.html' with formset=formset %}
+      <hr />
+      <button type="submit" class="fr-btn">Valider le formulaire</button>
+  </form>
 
 <script src="ads_manager_decree.ts"></script>
 {% endblock %}

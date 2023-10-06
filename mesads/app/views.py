@@ -19,7 +19,7 @@ from django.template.defaultfilters import date as date_template_filter
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
-from django.views.generic import UpdateView, TemplateView
+from django.views.generic import UpdateView, TemplateView, RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, FormView, ProcessFormView
 from django.views.generic.list import ListView
@@ -64,22 +64,20 @@ class HTTP500View(TemplateView):
     template_name = "500.html"
 
 
-class HomepageView(TemplateView):
+class HomepageView(RedirectView):
     """Render template when user is not connected. If user is connected,
     redirect depending on permissions."""
 
-    template_name = "pages/homepage.html"
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_staff:
-            return redirect(reverse("app.dashboards.list"))
+    def get_redirect_url(self, *args, **kwargs):
+        if self.request.user.is_staff:
+            return reverse("app.dashboards.list")
         if len(self.request.user.adsmanageradministrator_set.all()):
-            return redirect(reverse("app.ads-manager-admin.index"))
-        return redirect(reverse("app.ads-manager.index"))
+            return reverse("app.ads-manager-admin.index")
+        return reverse("app.ads-manager.index")
 
 
 class ADSManagerAdminView(RevisionMixin, TemplateView):
-    template_name = "pages/ads_manager_admin.html"
+    template_name = "pages/ads_register/ads_manager_admin.html"
 
     def get_context_data(self, **kwargs):
         """Populate context with the list of ADSManagerRequest current user can accept."""
@@ -167,7 +165,7 @@ class ADSManagerAdminView(RevisionMixin, TemplateView):
 
 
 class ADSManagerRequestView(FormView):
-    template_name = "pages/ads_manager_request.html"
+    template_name = "pages/ads_register/ads_manager_request.html"
     form_class = ADSManagerForm
     success_url = reverse_lazy("app.ads-manager.index")
 
@@ -304,7 +302,7 @@ class ADSManagerRequestView(FormView):
 
 
 class ADSManagerView(ListView, ProcessFormView):
-    template_name = "pages/ads_manager.html"
+    template_name = "pages/ads_register/ads_manager.html"
     model = ADS
     paginate_by = 50
 
@@ -383,7 +381,7 @@ class ADSManagerView(ListView, ProcessFormView):
 
 
 class ADSView(RevisionMixin, UpdateView):
-    template_name = "pages/ads.html"
+    template_name = "pages/ads_register/ads.html"
     form_class = ADSForm
 
     def get_form_kwargs(self):
@@ -466,7 +464,7 @@ def ads_manager_decree_view(request, manager_id):
 
     return render(
         request,
-        "pages/ads_manager_decree.html",
+        "pages/ads_register/ads_manager_decree.html",
         context={
             "ads_manager": ads_manager,
             "formset": formset,
@@ -475,7 +473,7 @@ def ads_manager_decree_view(request, manager_id):
 
 
 class ADSDeleteView(DeleteView):
-    template_name = "pages/ads_confirm_delete.html"
+    template_name = "pages/ads_register/ads_confirm_delete.html"
     model = ADS
     pk_url_kwarg = "ads_id"
 
@@ -672,7 +670,7 @@ def prefecture_export_ads(request, ads_manager_administrator):
 
 
 class DashboardsView(TemplateView):
-    template_name = "pages/dashboards_list.html"
+    template_name = "pages/ads_register/dashboards_list.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -841,7 +839,7 @@ class DashboardsView(TemplateView):
 
 
 class DashboardsDetailView(DetailView):
-    template_name = "pages/dashboards_detail.html"
+    template_name = "pages/ads_register/dashboards_detail.html"
     model = ADSManagerAdministrator
     pk_url_kwarg = "ads_manager_administrator_id"
 
@@ -1030,7 +1028,7 @@ class CustomCookieWizardView(CookieWizardView):
 
 
 class ADSHistoryView(DetailView):
-    template_name = "pages/ads_history.html"
+    template_name = "pages/ads_register/ads_history.html"
     model = ADS
     pk_url_kwarg = "ads_id"
 
@@ -1053,7 +1051,7 @@ class ADSHistoryView(DetailView):
 class ADSDecreeView(CustomCookieWizardView):
     """Decree for ADS creation."""
 
-    template_name = "pages/ads_decree.html"
+    template_name = "pages/ads_register/ads_decree.html"
     form_list = (
         ADSDecreeForm1,
         ADSDecreeForm2,

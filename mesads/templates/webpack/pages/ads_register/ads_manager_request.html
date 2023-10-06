@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "pages/ads_register/base.html" %}
 {% load static %}
 
 {% block title %}Gestionnaire ADS{% endblock %}
 
-{% block body %}
+{% block main %}
 <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
   <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
   <div class="fr-collapse" id="breadcrumb-1">
@@ -116,7 +116,7 @@
             D'une commune
           </label>
 
-          <div class="fr-col-12 fr-col-sm-6 fr-input-group radio-inline{% if form.errors.commune %} fr-input-group--error{% endif %}">
+          <div class="fr-input-group radio-inline{% if form.errors.commune %} fr-input-group--error{% endif %}">
             <label
               class="fr-label"
               for="{{ form.commune.id_for_label }}"
@@ -141,7 +141,7 @@
             D'un établissement public à fiscalité propre (métropole, communauté de commune, communauté d’agglomération ou communauté urbaine)
           </label>
 
-          <div class="fr-col-12 fr-col-sm-6 fr-input-group radio-inline{% if form.errors.epci %} fr-input-group--error{% endif %}">
+          <div class="fr-input-group radio-inline{% if form.errors.epci %} fr-input-group--error{% endif %}">
             <label
               class="fr-label"
               for="{{ form.epci.id_for_label }}"
@@ -166,7 +166,7 @@
             D'une préfecture (ADS aéroport)
           </label>
 
-          <div class="fr-col-12 fr-col-sm-6 fr-input-group radio-inline{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
+          <div class="fr-input-group radio-inline{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
             <label
               class="fr-label"
               for="{{ form.prefecture.id_for_label }}"
@@ -190,7 +190,7 @@
 
   <!-- Non-fields errors -->
   {% if form.non_field_errors %}
-    <div class="fr-col-12 fr-input-group fr-input-group--error">
+    <div class="fr-input-group fr-input-group--error">
       {% for error in form.non_field_errors %}
       <!-- Non-field error -->
       <p class="fr-error-text">
@@ -200,7 +200,7 @@
     </div>
   {% endif %}
 
-  <div class="fr-col-12 fr-input-group">
+  <div class="fr-input-group">
     <button type="submit" class="fr-btn">Envoyer la demande à la préfecture</button>
   </div>
 </form>

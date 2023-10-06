@@ -1,18 +1,19 @@
-{% extends "base.html" %}
+{% extends "./base.html" %}
+{% load static %}
 
 {% block title %}Dashboards d'administration{% endblock %}
 
-{% block body %}
+{% block extra_head %}
+<link rel="stylesheet" href="leaflet/dist/leaflet.css" />
+{% endblock %}
 
+{% block main %}
 <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
   <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
   <div class="fr-collapse" id="breadcrumb-1">
     <ol class="fr-breadcrumb__list">
       <li>
-        <a class="fr-breadcrumb__link" href="{% url 'app.dashboards.list' %}">Dashboards</a>
-      </li>
-      <li>
-        <a class="fr-breadcrumb__link" aria-current="page">{{ object.prefecture.display_text|capfirst }}</a>
+        <a class="fr-breadcrumb__link" aria-current="page">Dashboards</a>
       </li>
     </ol>
   </div>
@@ -24,7 +25,7 @@
 
 <div class="fr-table fr-table--bordered">
     <table>
-        <caption>Statistiques de {{ object.prefecture.display_fulltext }}</caption>
+        <caption>Statistiques par préfecture</caption>
         <thead>
             <tr>
                 <th>&nbsp;</th>
@@ -47,8 +48,8 @@
         </thead>
         <tbody>
             {% for row in stats %}
-            <tr>
-                <td><a href="{% url 'app.ads-manager.detail' manager_id=row.obj.id %}">{{ row.obj.content_object.display_text|capfirst }}</a></td>
+            <tr id="prefecture_{{ row.obj.prefecture.numero }}" x-data="{selected: window.location.hash}" @hashchange.window="selected = window.location.hash" :class="selected == '#prefecture_{{ row.obj.prefecture.numero }}' ? 'tr-highlighted' : ''">
+                <td><a href="{% url 'app.dashboards.detail' ads_manager_administrator_id=row.obj.id %}">{{ row.obj.prefecture }}</a></td>
 
                 <td>
                   <strong>{{ row.ads.now|default:"" }}</strong>
@@ -67,9 +68,33 @@
                 <td><small>{{ row.users.12_months|default:"" }}</small></td>
             </tr>
             {% endfor %}
+
+            <tr>
+              <td><strong>TOTAL</strong></td>
+              <td>
+                <strong>{{ stats_total.ads.now|default:"" }}</strong>
+                {% if stats_total.ads.with_info_now %}
+                <br />
+                <small>{{ stats_total.ads.with_info_now }} avec infos contact</small
+                {% endif %}
+              </td>
+              <td><small>{{ stats_total.ads.3_months|default:"" }}</small></td>
+              <td><small>{{ stats_total.ads.6_months|default:"" }}</small></td>
+              <td><small>{{ stats_total.ads.12_months|default:"" }}</small></td>
+
+              <td><strong>{{ stats_total.users.now|default:"" }}</strong></td>
+              <td><small>{{ stats_total.users.3_months|default:"" }}</small></td>
+              <td><small>{{ stats_total.users.6_months|default:"" }}</small></td>
+              <td><small>{{ stats_total.users.12_months|default:"" }}</small></td>
+            </tr>
         </tbody>
     </table>
 </div>
 
+  <div id="map" style="width: 100%; height: 764px;"></div>
+{% endblock %}
 
+{% block endbody %}
+<script src="leaflet/dist/leaflet.js"></script>
+<script src="./dashboards_list.ts"></script>
 {% endblock %}
