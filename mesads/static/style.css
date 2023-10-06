@@ -105,7 +105,7 @@ h1 {
   border-bottom: 5px solid #000091;
   background-color: rgba(0, 0, 145, 0.05);
   padding: 2rem;
-  min-height: 200px;
+  min-height: 100%;
 }
 
 .stats-card-number {
