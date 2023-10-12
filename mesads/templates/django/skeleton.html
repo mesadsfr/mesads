@@ -1,4 +1,5 @@
 {% load static %}
+{% load is_subpath %}
 <!doctype html>
 <html lang="fr" data-fr-scheme="light">
   <head>
@@ -72,7 +73,8 @@
             <ul class="fr-nav__list">
               <li class="fr-nav__item">
                 {% url 'app.ads-manager.index' as ads_manager_index_url %}
-                <a class="fr-nav__link" href="{{ ads_manager_index_url }}"{% if request.path == ads_manager_index_url %} aria-current="page"{% endif %}>Registre des ADS</a>
+                {% is_subpath request.path ads_manager_index_url 1 as is_ads_register %}
+                <a class="fr-nav__link" href="{{ ads_manager_index_url }}"{% if is_ads_register %} aria-current="page"{% endif %}>Registre des ADS</a>
               </li>
               <li class="fr-nav__item">
                 {% url 'app.faq' as faq_url %}

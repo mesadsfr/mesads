@@ -28,15 +28,20 @@ class TestHomepageView(ClientTestCase):
     def test_redirection(self):
         for client_name, client, expected_status, redirect_url in (
             ("anonymous", self.anonymous_client, 302, "/auth/login/?next=/"),
-            ("auth", self.auth_client, 302, "/gestion"),
-            ("ads_manager 35", self.ads_manager_city35_client, 302, "/gestion"),
+            ("auth", self.auth_client, 302, "/registre_ads/gestion"),
+            (
+                "ads_manager 35",
+                self.ads_manager_city35_client,
+                302,
+                "/registre_ads/gestion",
+            ),
             (
                 "ads_manager_admin 35",
                 self.ads_manager_administrator_35_client,
                 302,
-                "/admin_gestion",
+                "/registre_ads/admin_gestion",
             ),
-            ("admin", self.admin_client, 302, "/dashboards"),
+            ("admin", self.admin_client, 302, "/registre_ads/dashboards"),
         ):
             with self.subTest(
                 client_name=client_name,
@@ -66,18 +71,18 @@ class TestADSManagerAdminView(ClientTestCase):
             ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
-                resp = client.get("/admin_gestion")
+                resp = client.get("/registre_ads/admin_gestion")
                 self.assertEqual(resp.status_code, expected_status)
 
     def test_invalid_action(self):
         resp = self.ads_manager_administrator_35_client.post(
-            "/admin_gestion", {"action": "xxx", "request_id": 1}
+            "/registre_ads/admin_gestion", {"action": "xxx", "request_id": 1}
         )
         self.assertEqual(resp.status_code, 400)
 
     def test_invalid_request_id(self):
         resp = self.ads_manager_administrator_35_client.post(
-            "/admin_gestion", {"action": "accept", "request_id": 12342}
+            "/registre_ads/admin_gestion", {"action": "accept", "request_id": 12342}
         )
         self.assertEqual(resp.status_code, 404)
 
@@ -85,11 +90,11 @@ class TestADSManagerAdminView(ClientTestCase):
         self.assertEqual(len(mail.outbox), 0)
 
         resp = self.ads_manager_administrator_35_client.post(
-            "/admin_gestion",
+            "/registre_ads/admin_gestion",
             {"action": "accept", "request_id": self.ads_manager_request.id},
         )
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp.url, "/admin_gestion")
+        self.assertEqual(resp.url, "/registre_ads/admin_gestion")
         self.ads_manager_request.refresh_from_db()
         self.assertTrue(self.ads_manager_request.accepted)
         self.assertEqual(len(mail.outbox), 1)
@@ -98,11 +103,11 @@ class TestADSManagerAdminView(ClientTestCase):
         self.assertEqual(len(mail.outbox), 0)
 
         resp = self.ads_manager_administrator_35_client.post(
-            "/admin_gestion",
+            "/registre_ads/admin_gestion",
             {"action": "deny", "request_id": self.ads_manager_request.id},
         )
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp.url, "/admin_gestion")
+        self.assertEqual(resp.url, "/registre_ads/admin_gestion")
         self.ads_manager_request.refresh_from_db()
         self.assertFalse(self.ads_manager_request.accepted)
         self.assertEqual(len(mail.outbox), 1)
@@ -115,12 +120,12 @@ class TestADSManagerAdminView(ClientTestCase):
                 accepted=None,
             )
             resp = self.ads_manager_administrator_35_client.get(
-                "/admin_gestion",
+                "/registre_ads/admin_gestion",
             )
             self.assertEqual(resp.status_code, 200)
 
             resp = self.ads_manager_administrator_35_client.get(
-                "/admin_gestion?sort=name",
+                "/registre_ads/admin_gestion?sort=name",
             )
             self.assertEqual(resp.status_code, 200)
 
@@ -138,16 +143,18 @@ class TestADSManagerRequestView(ClientTestCase):
             ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
-                resp = client.get("/gestion")
+                resp = client.get("/registre_ads/gestion")
                 self.assertEqual(resp.status_code, expected_status)
 
     def test_create_request_invalid_id(self):
         """Provide the id of a non-existing object."""
-        resp = self.auth_client.post("/gestion", {"commune": 9999})
+        resp = self.auth_client.post("/registre_ads/gestion", {"commune": 9999})
         self.assertIn("error", resp.content.decode("utf8"))
 
     def test_create_request_commune(self):
-        resp = self.auth_client.post("/gestion", {"commune": self.commune_melesse.id})
+        resp = self.auth_client.post(
+            "/registre_ads/gestion", {"commune": self.commune_melesse.id}
+        )
         self.assertEqual(resp.status_code, 302)
         self.assertNotIn("error", resp.content.decode("utf8"))
         self.assertEqual(
@@ -155,7 +162,7 @@ class TestADSManagerRequestView(ClientTestCase):
         )
 
         # Make sure django message is in the next request
-        resp = self.auth_client.get("/gestion")
+        resp = self.auth_client.get("/registre_ads/gestion")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.context["messages"]), 1)
         self.assertEqual(list(resp.context["messages"])[0].level, messages.SUCCESS)
@@ -168,7 +175,9 @@ class TestADSManagerRequestView(ClientTestCase):
         #
         # If we send the same request, a warning message is displayed and no email is sent.
         #
-        resp = self.auth_client.post("/gestion", {"commune": self.commune_melesse.id})
+        resp = self.auth_client.post(
+            "/registre_ads/gestion", {"commune": self.commune_melesse.id}
+        )
         self.assertEqual(resp.status_code, 302)
         self.assertNotIn("error", resp.content.decode("utf8"))
         self.assertEqual(
@@ -176,7 +185,7 @@ class TestADSManagerRequestView(ClientTestCase):
         )
 
         # Check warning message
-        resp = self.auth_client.get("/gestion")
+        resp = self.auth_client.get("/registre_ads/gestion")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.context["messages"]), 1)
         self.assertEqual(list(resp.context["messages"])[0].level, messages.WARNING)
@@ -185,7 +194,7 @@ class TestADSManagerRequestView(ClientTestCase):
 
     def test_create_request_epci(self):
         epci = EPCI.objects.first()
-        resp = self.auth_client.post("/gestion", {"epci": epci.id})
+        resp = self.auth_client.post("/registre_ads/gestion", {"epci": epci.id})
         self.assertEqual(resp.status_code, 302)
         self.assertNotIn("error", resp.content.decode("utf8"))
         self.assertEqual(
@@ -193,7 +202,7 @@ class TestADSManagerRequestView(ClientTestCase):
         )
 
         # Make sure django message is in the next request
-        resp = self.auth_client.get("/gestion")
+        resp = self.auth_client.get("/registre_ads/gestion")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.context["messages"]), 1)
         self.assertEqual(list(resp.context["messages"])[0].level, messages.SUCCESS)
@@ -201,21 +210,23 @@ class TestADSManagerRequestView(ClientTestCase):
         #
         # If we send the same request, no object is created and a warning message is displayed.
         #
-        resp = self.auth_client.post("/gestion", {"epci": epci.id})
+        resp = self.auth_client.post("/registre_ads/gestion", {"epci": epci.id})
         self.assertEqual(resp.status_code, 302)
         self.assertNotIn("error", resp.content.decode("utf8"))
         self.assertEqual(
             ADSManagerRequest.objects.count(), self.initial_ads_managers_count + 1
         )
 
-        resp = self.auth_client.get("/gestion")
+        resp = self.auth_client.get("/registre_ads/gestion")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.context["messages"]), 1)
         self.assertEqual(list(resp.context["messages"])[0].level, messages.WARNING)
 
     def test_create_request_prefecture(self):
         prefecture = Prefecture.objects.first()
-        resp = self.auth_client.post("/gestion", {"prefecture": prefecture.id})
+        resp = self.auth_client.post(
+            "/registre_ads/gestion", {"prefecture": prefecture.id}
+        )
         self.assertEqual(resp.status_code, 302)
         self.assertNotIn("error", resp.content.decode("utf8"))
         self.assertEqual(
@@ -223,7 +234,7 @@ class TestADSManagerRequestView(ClientTestCase):
         )
 
         # Make sure django message is in the next request
-        resp = self.auth_client.get("/gestion")
+        resp = self.auth_client.get("/registre_ads/gestion")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.context["messages"]), 1)
         self.assertEqual(list(resp.context["messages"])[0].level, messages.SUCCESS)
@@ -231,7 +242,9 @@ class TestADSManagerRequestView(ClientTestCase):
         #
         # If we send the same request, no object is created and a warning message is displayed.
         #
-        resp = self.auth_client.post("/gestion", {"prefecture": prefecture.id})
+        resp = self.auth_client.post(
+            "/registre_ads/gestion", {"prefecture": prefecture.id}
+        )
         self.assertEqual(resp.status_code, 302)
         self.assertNotIn("error", resp.content.decode("utf8"))
         self.assertEqual(
@@ -239,7 +252,7 @@ class TestADSManagerRequestView(ClientTestCase):
         )
 
         # Make sure django message is in the next request
-        resp = self.auth_client.get("/gestion")
+        resp = self.auth_client.get("/registre_ads/gestion")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.context["messages"]), 1)
         self.assertEqual(list(resp.context["messages"])[0].level, messages.WARNING)
@@ -254,16 +267,18 @@ class TestADSManagerView(ClientTestCase):
             ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
-                resp = client.get(f"/gestion/{self.ads_manager_city35.id}/")
+                resp = client.get(
+                    f"/registre_ads/gestion/{self.ads_manager_city35.id}/"
+                )
                 self.assertEqual(resp.status_code, expected_status)
 
     def test_get_404(self):
-        resp = self.ads_manager_city35_client.get("/gestion/99999/")
+        resp = self.ads_manager_city35_client.get("/registre_ads/gestion/99999/")
         self.assertEqual(resp.status_code, 404)
 
     def test_get(self):
         resp = self.ads_manager_city35_client.get(
-            f"/gestion/{self.ads_manager_city35.id}/"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/"
         )
         self.assertIn(
             self.ads_manager_city35.content_object.libelle, resp.content.decode("utf8")
@@ -276,7 +291,7 @@ class TestADSManagerView(ClientTestCase):
         ).get()
 
         resp = self.ads_manager_administrator_35_client.get(
-            f"/gestion/{ads_manager.id}/"
+            f"/registre_ads/gestion/{ads_manager.id}/"
         )
         self.assertIn(
             self.ads_manager_administrator_35.prefecture.libelle,
@@ -314,7 +329,7 @@ class TestADSManagerView(ClientTestCase):
 
         # Immatriculatin plate, returns first ADS
         resp = self.ads_manager_city35_client.get(
-            f"/gestion/{self.ads_manager_city35.id}/?q=imm4tricul4tion"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=imm4tricul4tion"
         )
         self.assertIn("FILTER1", resp.content.decode("utf8"))
         self.assertNotIn("FILTER2", resp.content.decode("utf8"))
@@ -323,7 +338,7 @@ class TestADSManagerView(ClientTestCase):
 
         # Owner firstname/lastname, returns second ADS
         resp = self.ads_manager_city35_client.get(
-            f"/gestion/{self.ads_manager_city35.id}/?q=bob dyla"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=bob dyla"
         )
         self.assertNotIn("FILTER1", resp.content.decode("utf8"))
         self.assertIn("FILTER2", resp.content.decode("utf8"))
@@ -332,7 +347,7 @@ class TestADSManagerView(ClientTestCase):
 
         # Owner SIRET, return third ADS
         resp = self.ads_manager_city35_client.get(
-            f"/gestion/{self.ads_manager_city35.id}/?q=123123123"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=123123123"
         )
         self.assertNotIn("FILTER1", resp.content.decode("utf8"))
         self.assertNotIn("FILTER2", resp.content.decode("utf8"))
@@ -341,7 +356,7 @@ class TestADSManagerView(ClientTestCase):
 
         # User SIRET, return ADS 4
         resp = self.ads_manager_city35_client.get(
-            f"/gestion/{self.ads_manager_city35.id}/?q=22222222222222"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=22222222222222"
         )
         self.assertNotIn("FILTER1", resp.content.decode("utf8"))
         self.assertNotIn("FILTER2", resp.content.decode("utf8"))
@@ -350,7 +365,7 @@ class TestADSManagerView(ClientTestCase):
 
         # User name, return ADS 3
         resp = self.ads_manager_city35_client.get(
-            f"/gestion/{self.ads_manager_city35.id}/?q=Henri SUPER"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=Henri SUPER"
         )
         self.assertNotIn("FILTER1", resp.content.decode("utf8"))
         self.assertNotIn("FILTER2", resp.content.decode("utf8"))
@@ -359,7 +374,7 @@ class TestADSManagerView(ClientTestCase):
 
         # CPAM accepted true, return ads 1
         resp = self.ads_manager_city35_client.get(
-            f"/gestion/{self.ads_manager_city35.id}/?accepted_cpam=True"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?accepted_cpam=True"
         )
         self.assertIn("FILTER1", resp.content.decode("utf8"))
         self.assertNotIn("FILTER2", resp.content.decode("utf8"))
@@ -368,7 +383,7 @@ class TestADSManagerView(ClientTestCase):
 
         # CPAM accepted false, return ads 2
         resp = self.ads_manager_city35_client.get(
-            f"/gestion/{self.ads_manager_city35.id}/?accepted_cpam=False"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?accepted_cpam=False"
         )
         self.assertNotIn("FILTER1", resp.content.decode("utf8"))
         self.assertIn("FILTER2", resp.content.decode("utf8"))
@@ -377,7 +392,7 @@ class TestADSManagerView(ClientTestCase):
 
         # CPAM accepted any, and no filters, return all
         resp = self.ads_manager_city35_client.get(
-            f"/gestion/{self.ads_manager_city35.id}/?q=&accepted_cpam="
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=&accepted_cpam="
         )
         self.assertIn("FILTER1", resp.content.decode("utf8"))
         self.assertIn("FILTER2", resp.content.decode("utf8"))
@@ -388,7 +403,7 @@ class TestADSManagerView(ClientTestCase):
         # Set the flag "no_ads_declared" for an administration that has no ADS
         self.assertFalse(self.ads_manager_city35.no_ads_declared)
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/",
             {
                 "no_ads_declared": "on",
             },
@@ -399,7 +414,7 @@ class TestADSManagerView(ClientTestCase):
 
         # Remove the flag
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/",
         )
         self.assertEqual(resp.status_code, 302)
         self.ads_manager_city35.refresh_from_db()
@@ -410,7 +425,7 @@ class TestADSManagerView(ClientTestCase):
         self.assertFalse(self.ads_manager_city35.no_ads_declared)
         ADS.objects.create(number="12346", ads_manager=self.ads_manager_city35)
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/",
             {
                 "no_ads_declared": "on",
             },
@@ -436,20 +451,20 @@ class TestADSView(ClientTestCase):
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(
-                    f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}"
+                    f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}"
                 )
                 self.assertEqual(resp.status_code, expected_status)
 
     def test_get_404(self):
         resp = self.ads_manager_city35_client.get(
-            f"/gestion/{self.ads_manager_city35.id}/ads/999"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/999"
         )
         self.assertEqual(resp.status_code, 404)
 
     def test_invalid_form(self):
         """ADSUserFormSet is not provided, error should be rendered."""
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
                 "owner_name": "Jean-Jacques Goldman",
@@ -460,7 +475,7 @@ class TestADSView(ClientTestCase):
 
     def test_update(self):
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
                 "owner_name": "Jean-Jacques Goldman",
@@ -476,7 +491,8 @@ class TestADSView(ClientTestCase):
         )
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(
-            resp.url, f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}"
+            resp.url,
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
         )
         self.ads.refresh_from_db()
         self.assertEqual(self.ads.owner_name, "Jean-Jacques Goldman")
@@ -487,7 +503,7 @@ class TestADSView(ClientTestCase):
             number="xxx", ads_manager=self.ads_manager_city35
         )
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": other_ads.number,
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -506,7 +522,7 @@ class TestADSView(ClientTestCase):
     def test_strip_ads_charfields(self):
         """Empty string fields should be stripped automatically."""
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
                 "owner_name": "  Jean Jaques   ",
@@ -528,7 +544,7 @@ class TestADSView(ClientTestCase):
 
     def test_update_creation_after_attribution(self):
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.number,
                 "ads_creation_date": "2015-10-01",
@@ -559,7 +575,7 @@ class TestADSView(ClientTestCase):
         )
 
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -590,7 +606,7 @@ class TestADSView(ClientTestCase):
 
         # Fields should be changed during this POST, since the values are not empty
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -615,7 +631,7 @@ class TestADSView(ClientTestCase):
 
         # However now they should be stripped
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -645,7 +661,7 @@ class TestADSView(ClientTestCase):
         )
         new_upload = SimpleUploadedFile("newfile.pdf", b"New content")
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -672,7 +688,7 @@ class TestADSView(ClientTestCase):
         )
 
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -702,7 +718,7 @@ class TestADSView(ClientTestCase):
         # Error, the commune doesn't belong to the same departement than the EPCI
         invalid_commune = Commune.objects.filter(~Q(departement="01")).first()
         resp = self.admin_client.post(
-            f"/gestion/{epci_ads_manager.id}/ads/{epci_ads.id}",
+            f"/registre_ads/gestion/{epci_ads_manager.id}/ads/{epci_ads.id}",
             {
                 "number": epci_ads.id,
                 "epci_commune": invalid_commune.id,
@@ -724,7 +740,7 @@ class TestADSView(ClientTestCase):
 
         valid_commune = Commune.objects.filter(departement="01").first()
         resp = self.admin_client.post(
-            f"/gestion/{epci_ads_manager.id}/ads/{epci_ads.id}",
+            f"/registre_ads/gestion/{epci_ads_manager.id}/ads/{epci_ads.id}",
             {
                 "number": epci_ads.id,
                 "epci_commune": valid_commune.id,
@@ -745,7 +761,7 @@ class TestADSView(ClientTestCase):
 
     def test_create_ads_user_invalid_siret(self):
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -789,22 +805,24 @@ class TestADSDeleteView(ClientTestCase):
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(
-                    f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/delete"
+                    f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/delete"
                 )
                 self.assertEqual(resp.status_code, expected_status)
 
     def test_get_404(self):
         resp = self.ads_manager_city35_client.get(
-            f"/gestion/{self.ads_manager_city35.id}/ads/999/delete"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/999/delete"
         )
         self.assertEqual(resp.status_code, 404)
 
     def test_delete(self):
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/delete",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/delete",
         )
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp.url, f"/gestion/{self.ads_manager_city35.id}/")
+        self.assertEqual(
+            resp.url, f"/registre_ads/gestion/{self.ads_manager_city35.id}/"
+        )
         self.assertRaises(ADS.DoesNotExist, self.ads.refresh_from_db)
 
 
@@ -817,7 +835,9 @@ class TestADSCreateView(ClientTestCase):
             ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
-                resp = client.get(f"/gestion/{self.ads_manager_city35.id}/ads/")
+                resp = client.get(
+                    f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/"
+                )
                 self.assertEqual(resp.status_code, expected_status)
 
     def test_create_invalid(self):
@@ -825,13 +845,13 @@ class TestADSCreateView(ClientTestCase):
         self.ads_manager_city35.no_ads_declared = True
         self.ads_manager_city35.save()
         resp = self.ads_manager_city35_client.get(
-            f"/gestion/{self.ads_manager_city35.id}/ads/"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/"
         )
         self.assertEqual(resp.status_code, 404)
 
     def test_create(self):
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
             {
                 "number": "abcdef",
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -847,7 +867,7 @@ class TestADSCreateView(ClientTestCase):
         self.assertEqual(resp.status_code, 302)
         ads = ADS.objects.order_by("-id")[0]
         self.assertEqual(
-            resp.url, f"/gestion/{self.ads_manager_city35.id}/ads/{ads.id}"
+            resp.url, f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{ads.id}"
         )
 
     def test_create_duplicate(self):
@@ -855,7 +875,7 @@ class TestADSCreateView(ClientTestCase):
         ADS.objects.create(number="123", ads_manager=self.ads_manager_city35)
 
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
             {
                 "number": "123",
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -873,7 +893,7 @@ class TestADSCreateView(ClientTestCase):
 
     def test_create_with_ads_user(self):
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
             {
                 "number": "abcdef",
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -892,7 +912,7 @@ class TestADSCreateView(ClientTestCase):
         self.assertEqual(resp.status_code, 302)
         ads = ADS.objects.order_by("-id")[0]
         self.assertEqual(
-            resp.url, f"/gestion/{self.ads_manager_city35.id}/ads/{ads.id}"
+            resp.url, f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{ads.id}"
         )
 
         self.assertEqual(ADSUser.objects.count(), 1)
@@ -910,7 +930,7 @@ class TestADSCreateView(ClientTestCase):
         )
 
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
             {
                 "number": "abcdef",
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -928,7 +948,7 @@ class TestADSCreateView(ClientTestCase):
         self.assertEqual(resp.status_code, 302)
         ads = ADS.objects.order_by("-id")[0]
         self.assertEqual(
-            resp.url, f"/gestion/{self.ads_manager_city35.id}/ads/{ads.id}"
+            resp.url, f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{ads.id}"
         )
 
         self.assertEqual(ADSLegalFile.objects.count(), 2)
@@ -949,12 +969,14 @@ class TestExport(ClientTestCase):
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(
-                    f"/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export"
+                    f"/registre_ads/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export"
                 )
                 self.assertEqual(resp.status_code, expected_status)
 
     def test_get_404(self):
-        resp = self.ads_manager_administrator_35_client.get("/prefectures/9999/export")
+        resp = self.ads_manager_administrator_35_client.get(
+            "/registre_ads/prefectures/9999/export"
+        )
         self.assertEqual(resp.status_code, 404)
 
     def test_export(self):
@@ -969,7 +991,7 @@ class TestExport(ClientTestCase):
         )
 
         resp = self.ads_manager_administrator_35_client.get(
-            f"/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export"
+            f"/registre_ads/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export"
         )
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(
@@ -986,7 +1008,7 @@ class TestExport(ClientTestCase):
             number="1", ads_manager=self.ads_manager_city35, accepted_cpam=True
         )
         resp = self.ads_manager_administrator_35_client.get(
-            f"/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export"
+            f"/registre_ads/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export"
         )
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(
@@ -1003,7 +1025,7 @@ class TestExport(ClientTestCase):
             number="1", ads_manager=self.ads_manager_city35, accepted_cpam=True
         )
         resp = self.ads_manager_administrator_35_client.get(
-            f"/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export"
+            f"/registre_ads/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export"
         )
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(
@@ -1022,7 +1044,7 @@ class TestDashboardsViews(ClientTestCase):
         self.dashboards_view.setup(request)
 
         request = RequestFactory().get(
-            f"/dashboards/{self.ads_manager_administrator_35.id}"
+            f"/registre_ads/dashboards/{self.ads_manager_administrator_35.id}"
         )
         self.dashboards_detail_view = DashboardsDetailView(
             object=self.ads_manager_administrator_35
@@ -1038,11 +1060,11 @@ class TestDashboardsViews(ClientTestCase):
             ("admin", self.admin_client, 200),
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
-                resp = client.get("/dashboards")
+                resp = client.get("/registre_ads/dashboards")
                 self.assertEqual(resp.status_code, expected_status)
 
                 resp = client.get(
-                    f"/dashboards/{self.ads_manager_administrator_35.id}/"
+                    f"/registre_ads/dashboards/{self.ads_manager_administrator_35.id}/"
                 )
                 self.assertEqual(resp.status_code, expected_status)
 
@@ -1235,16 +1257,18 @@ class TestADSManagerDecreeView(ClientTestCase):
             ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
-                resp = client.get(f"/gestion/{self.ads_manager_city35.id}/arrete")
+                resp = client.get(
+                    f"/registre_ads/gestion/{self.ads_manager_city35.id}/arrete"
+                )
                 self.assertEqual(resp.status_code, expected_status)
 
     def test_get_404(self):
-        resp = self.ads_manager_city35_client.get("/gestion/99999/arrete")
+        resp = self.ads_manager_city35_client.get("/registre_ads/gestion/99999/arrete")
         self.assertEqual(resp.status_code, 404)
 
     def test_get(self):
         resp = self.ads_manager_city35_client.get(
-            f"/gestion/{self.ads_manager_city35.id}/arrete"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/arrete"
         )
         self.assertEqual(resp.status_code, 200)
         self.assertIn(
@@ -1260,7 +1284,7 @@ class TestADSManagerDecreeView(ClientTestCase):
         )
 
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/arrete",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/arrete",
             {
                 "adsmanagerdecree_set-TOTAL_FORMS": 5,
                 "adsmanagerdecree_set-INITIAL_FORMS": 0,
@@ -1297,20 +1321,20 @@ class TestADSDecreeView(ClientTestCase):
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(
-                    f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete"
+                    f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete"
                 )
                 self.assertEqual(resp.status_code, expected_status)
 
     def test_get(self):
         resp = self.ads_manager_city35_client.get(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete"
         )
         self.assertEqual(resp.status_code, 200)
         self.assertIn('data-fr-current-step="1"', resp.content.decode("utf8"))
 
     def _step_0(self, is_old_ads):
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
             {
                 self.mgt_form_current_step_name: "0",
                 "0-is_old_ads": is_old_ads,
@@ -1322,7 +1346,7 @@ class TestADSDecreeView(ClientTestCase):
 
     def _step_1(self, decree_creation_reason="change_vehicle"):
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
             {
                 self.mgt_form_current_step_name: "1",
                 "1-decree_creation_reason": decree_creation_reason,
@@ -1357,7 +1381,8 @@ class TestADSDecreeView(ClientTestCase):
         if overrides:
             params.update(overrides)
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete", params
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
+            params,
         )
         self.assertEqual(resp.status_code, 200)
         if check_going_to_next_step:
@@ -1366,7 +1391,7 @@ class TestADSDecreeView(ClientTestCase):
 
     def _step_3(self):
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
             {
                 self.mgt_form_current_step_name: "3",
             },
@@ -1385,7 +1410,7 @@ class TestADSDecreeView(ClientTestCase):
         goto_step = str(goto_step)
 
         resp = self.ads_manager_city35_client.post(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete",
             {
                 self.mgt_form_current_step_name: current_step,
                 "wizard_goto_step": goto_step,
@@ -1459,13 +1484,13 @@ class TestADSHistoryView(ClientTestCase):
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(
-                    f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/history"
+                    f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/history"
                 )
                 self.assertEqual(resp.status_code, expected_status)
 
     def test_get(self):
         resp = self.ads_manager_city35_client.get(
-            f"/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/history"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/history"
         )
         self.assertEqual(resp.status_code, 200)
 

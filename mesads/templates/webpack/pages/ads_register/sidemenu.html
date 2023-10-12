@@ -4,9 +4,9 @@
 {% url 'app.ads-manager-admin.index' as ads_manager_admin_index_url %}
 {% url 'app.ads-manager.index'  as ads_manager_index_url %}
 
-{% is_subpath request.path dashboards_index_url as in_dashboards %}
-{% is_subpath request.path ads_manager_admin_index_url as in_ads_manager_admin %}
-{% is_subpath request.path ads_manager_index_url as in_ads_manager %}
+{% is_subpath request.path dashboards_index_url 2 as in_dashboards %}
+{% is_subpath request.path ads_manager_admin_index_url 2 as in_ads_manager_admin %}
+{% is_subpath request.path ads_manager_index_url 2 as in_ads_manager %}
 
 <nav class="fr-sidemenu" aria-labelledby="fr-sidemenu-title">
   <div class="fr-sidemenu__inner">
