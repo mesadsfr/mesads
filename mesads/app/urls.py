@@ -1,7 +1,7 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.urls import path
-from django.views.generic import TemplateView
+from django.views.generic import RedirectView, TemplateView
 
 from . import views
 from .decorators import (
@@ -21,6 +21,14 @@ urlpatterns = [
         "registre_ads/dashboards/<int:ads_manager_administrator_id>/",
         staff_member_required(views.DashboardsDetailView.as_view()),
         name="app.dashboards.detail",
+    ),
+    # When the user makes a request to become an ADSManager, we send an email to
+    # the administrator. This email used to contain a link to /admin_gestion.
+    # For backward compatibility, we redirect the user to the new URL
+    # /registre_ads/admin_gestion.
+    path(
+        "admin_gestion",
+        RedirectView.as_view(url="/registre_ads/admin_gestion", permanent=True),
     ),
     path(
         "registre_ads/admin_gestion",
