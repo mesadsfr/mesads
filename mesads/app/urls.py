@@ -11,7 +11,11 @@ from .decorators import (
 
 
 urlpatterns = [
-    path("", login_required(views.HomepageView.as_view()), name="app.homepage"),
+    path(
+        "registre_ads/",
+        login_required(views.ADSRegisterView.as_view()),
+        name="app.ads-register.index",
+    ),
     path(
         "registre_ads/dashboards",
         staff_member_required(views.DashboardsView.as_view()),
@@ -84,26 +88,34 @@ urlpatterns = [
 
 
 urlpatterns += [
+    path("", views.HomepageView.as_view(), name="app.homepage"),
     path("faq", views.FAQView.as_view(), name="app.faq"),
     path(
-        "profils",
-        TemplateView.as_view(template_name="pages/profils.html"),
-        name="app.profils",
+        "gestionnaire_ads",
+        TemplateView.as_view(template_name="pages/profiles_ads_manager.html"),
+        name="app.profiles.ads_manager",
     ),
     path(
-        "profils/aom",
-        TemplateView.as_view(template_name="pages/profils_aom.html"),
-        name="app.profils.aom",
+        "prefecture",
+        TemplateView.as_view(
+            template_name="pages/profiles_ads_manager_administrator.html"
+        ),
+        name="app.profiles.ads_manager_administrator",
     ),
     path(
-        "profils/chauffeur",
-        TemplateView.as_view(template_name="pages/profils_driver.html"),
-        name="app.profils.driver",
+        "aom",
+        TemplateView.as_view(template_name="pages/profiles_aom.html"),
+        name="app.profiles.aom",
     ),
     path(
-        "profils/autre",
-        TemplateView.as_view(template_name="pages/profils_other.html"),
-        name="app.profils.other",
+        "chauffeur",
+        TemplateView.as_view(template_name="pages/profiles_driver.html"),
+        name="app.profiles.driver",
+    ),
+    path(
+        "autre",
+        TemplateView.as_view(template_name="pages/profiles_other.html"),
+        name="app.profiles.other",
     ),
     path("chiffres-cles", views.StatsView.as_view(), name="app.stats"),
 ]

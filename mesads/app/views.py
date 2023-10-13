@@ -19,7 +19,7 @@ from django.template.defaultfilters import date as date_template_filter
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
-from django.views.generic import UpdateView, TemplateView, RedirectView
+from django.views.generic import RedirectView, TemplateView, UpdateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, FormView, ProcessFormView
 from django.views.generic.list import ListView
@@ -64,10 +64,11 @@ class HTTP500View(TemplateView):
     template_name = "500.html"
 
 
-class HomepageView(RedirectView):
-    """Render template when user is not connected. If user is connected,
-    redirect depending on permissions."""
+class HomepageView(TemplateView):
+    template_name = "pages/homepage.html"
 
+
+class ADSRegisterView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         if self.request.user.is_staff:
             return reverse("app.dashboards.list")

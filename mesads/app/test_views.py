@@ -25,9 +25,50 @@ from .views import DashboardsView, DashboardsDetailView
 
 
 class TestHomepageView(ClientTestCase):
+    def test_200(self):
+        resp = self.anonymous_client.get("/")
+        self.assertEqual(resp.status_code, 200)
+
+
+class TestProfileADSManagerAdministratorView(ClientTestCase):
+    def test_200(self):
+        resp = self.anonymous_client.get("/prefecture")
+        self.assertEqual(resp.status_code, 200)
+
+
+class TestProfileADSManagerView(ClientTestCase):
+    def test_200(self):
+        resp = self.anonymous_client.get("/gestionnaire_ads")
+        self.assertEqual(resp.status_code, 200)
+
+
+class TestProfileAOMView(ClientTestCase):
+    def test_200(self):
+        resp = self.anonymous_client.get("/aom")
+        self.assertEqual(resp.status_code, 200)
+
+
+class TestProfileDriverView(ClientTestCase):
+    def test_200(self):
+        resp = self.anonymous_client.get("/chauffeur")
+        self.assertEqual(resp.status_code, 200)
+
+
+class TestProfileOtherView(ClientTestCase):
+    def test_200(self):
+        resp = self.anonymous_client.get("/autre")
+        self.assertEqual(resp.status_code, 200)
+
+
+class TestADSRegisterView(ClientTestCase):
     def test_redirection(self):
         for client_name, client, expected_status, redirect_url in (
-            ("anonymous", self.anonymous_client, 302, "/auth/login/?next=/"),
+            (
+                "anonymous",
+                self.anonymous_client,
+                302,
+                "/auth/login/?next=/registre_ads/",
+            ),
             ("auth", self.auth_client, 302, "/registre_ads/gestion"),
             (
                 "ads_manager 35",
@@ -48,7 +89,7 @@ class TestHomepageView(ClientTestCase):
                 expected_status=expected_status,
                 redirect_url=redirect_url,
             ):
-                resp = client.get("/")
+                resp = client.get("/registre_ads/")
                 self.assertEqual(resp.status_code, expected_status)
                 self.assertEqual(resp.url, redirect_url)
 

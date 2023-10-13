@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}MesADS: vous êtes agent au sein d'une préfecture{% endblock %}
+
+{% block body %}
+
+<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+  <div class="fr-collapse" id="breadcrumb-1">
+    <ol class="fr-breadcrumb__list">
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Page d'accueil</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" aria-current="page">Agent au sein d'une préfecture</a>
+      </li>
+    </ol>
+  </div>
+</nav>
+
+<h1>Vous êtes agent au sein d'une préfecture</h1>
+
+<p>
+  Les préfectures :
+  <ul>
+    <li>ont un rôle d'administrateur des gestionnaires d'ADS (mairies, EPCI)</li>
+    <li>gèrent les ADS de certains aéroports et doivent les enregistrer</li>
+  </ul>
+</p>
+
+<p>
+  Un compte est nécessaire pour enregistrer des ADS ou accéder à l'administration des gestionnaires. Une fois votre compte créé, envoyez-nous un email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a> afin de rattacher votre compte à votre préfecture.
+</p>
+
+<p style="text-align: center">
+    <a class="fr-btn fr-btn--lg fr-btn--secondary" href="{% url 'login' %}">Je me connecte ou je créé mon compte</a>
+</p>
+{% endblock %}

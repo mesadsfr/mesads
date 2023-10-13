@@ -3,16 +3,12 @@
 {% block title %}Profil AOM{% endblock %}
 
 {% block body %}
-
 <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
   <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
   <div class="fr-collapse" id="breadcrumb-1">
     <ol class="fr-breadcrumb__list">
       <li>
-        <a class="fr-breadcrumb__link" href="{% url 'login' %}">Connexion</a>
-      </li>
-      <li>
-        <a class="fr-breadcrumb__link" href="{% url 'app.profils' %}">Choix du profil</a>
+        <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Page d'accueil</a>
       </li>
       <li>
         <a class="fr-breadcrumb__link" aria-current="page">Autorité Organisatrice des Mobilités (AOM)</a>
@@ -28,8 +24,11 @@
     <div class="fr-notice fr-notice--info">
       <div class="fr-container">
         <div class="fr-notice__body">
-          <p class="fr-notice__title">
-            A priori, ce site et les services de MesADS ne vous sont pas destinés. Néanmoins, si vous pensez avoir besoin d'échanger avec notre équipe, nous serons ravis de le faire sur le chat en bas à droite de l'écran, ou par email à l'adresse <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
+          <p class="fr-notice__title fr-mb-1w">
+            A priori, ce site et les services de MesADS ne vous sont pas destinés.
+          </p>
+          <p>
+            Néanmoins, si vous pensez avoir besoin d'échanger avec notre équipe, nous serons ravis de le faire sur le chat en bas à droite de l'écran, ou par email à l'adresse <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
           </p>
         </div>
       </div>

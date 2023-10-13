@@ -3,16 +3,12 @@
 {% block title %}Création de compte - chauffeur{% endblock %}
 
 {% block body %}
-
 <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
   <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
   <div class="fr-collapse" id="breadcrumb-1">
     <ol class="fr-breadcrumb__list">
       <li>
-        <a class="fr-breadcrumb__link" href="{% url 'login' %}">Connexion</a>
-      </li>
-      <li>
-        <a class="fr-breadcrumb__link" href="{% url 'app.profils' %}">Choix du profil</a>
+        <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Page d'accueil</a>
       </li>
       <li>
         <a class="fr-breadcrumb__link" aria-current="page">Chauffeur de taxi</a>
@@ -21,8 +17,10 @@
   </div>
 </nav>
 
+<h1>Vous êtes ou souhaitez devenir chauffeur de taxi</h1>
+
 <div class="fr-grid-row fr-grid-row--center">
-  <div class="fr-col-12 fr-col-md-8">
+  <div class="">
     <div class="fr-accordions-group">
       <section class="fr-accordion">
         <h3 class="fr-accordion__title">
@@ -50,5 +48,4 @@
     </div>
   </div>
 </div>
-
 {% endblock %}
