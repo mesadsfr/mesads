@@ -1,25 +1,3 @@
-{% extends "skeleton.html" %}
+{% extends "../../base-sidemenu.html" %}
 
-{% block content %}
-<main class="fr-container fr-pt-md-5w fr-pb-5w">
-  <div class="fr-grid-row">
-    <div class="fr-col-12 fr-col-md-3">
-      {% include "./sidemenu.html" %}
-    </div>
-
-    <div class="fr-col-12 fr-col-md-9">
-      {% for message in messages %}
-        <div class="fr-alert fr-alert--info fr-mb-2w
-          {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}fr-alert--info {% endif %}
-          {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}fr-alert--success {% endif %}
-          {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}fr-alert--error {% endif %}
-        ">
-          <p>{{ message|safe }}</p>
-        </div>
-      {% endfor %}
-
-      {% block main %}{% endblock %}
-    </div>
-  </div>
-</main>
-{% endblock %}
+{% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
