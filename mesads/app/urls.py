@@ -34,6 +34,11 @@ urlpatterns = [
         "admin_gestion",
         RedirectView.as_view(url="/registre_ads/admin_gestion", permanent=True),
     ),
+    # Backward compatibility
+    path(
+        "gestion",
+        RedirectView.as_view(url="/registre_ads/gestion", permanent=True),
+    ),
     path(
         "registre_ads/admin_gestion",
         ads_manager_administrator_required(views.ADSManagerAdminView.as_view()),
