@@ -1,0 +1,28 @@
+{% load is_subpath %}
+
+{% url 'vehicules-relais.search' as vehicules_relais_search_url %}
+{% url 'vehicules-relais.register' as vehicules_relais_register_url %}
+
+{% is_subpath request.path vehicules_relais_search_url 2 as in_search %}
+{% is_subpath request.path vehicules_relais_register_url 2 as in_register %}
+
+<nav class="fr-sidemenu" aria-labelledby="fr-sidemenu-title">
+  <div class="fr-sidemenu__inner">
+    <button class="fr-sidemenu__btn" hidden aria-controls="fr-sidemenu-wrapper" aria-expanded="false">
+      Voir le menu
+    </button>
+    <div class="fr-collapse" id="fr-sidemenu-wrapper">
+      <div class="fr-sidemenu__title" id="fr-sidemenu-title">Registre des Véhicules Relais</div>
+      <ul class="fr-sidemenu__list">
+        <li class="fr-sidemenu__item{% if in_search %} fr-sidemenu__item--active{% endif %}">
+          <a class="fr-sidemenu__link" href="{% url 'vehicules-relais.search' %}" target="_self"{% if in_search %} aria-current="page"{% endif %}>Consulter le registre</a>
+        </li>
+        {% if request.user.is_authenticated %}
+        <li class="fr-sidemenu__item{% if in_register %} fr-sidemenu__item--active{% endif %}">
+          <a class="fr-sidemenu__link" href="{% url 'vehicules-relais.register' %}" target="_self"{% if in_register %} aria-current="page"{% endif %}>Enregistrer un véhicule</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

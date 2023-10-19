@@ -95,8 +95,42 @@
       </div>
     </div>
 
-    <div>
-      <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.profiles.other' %}">Vous avez un autre profil</a>
+    <div class="fr-col-6">
+      <div class="fr-tile fr-enlarge-link">
+        <div class="fr-tile__body">
+          <div class="fr-tile__content">
+            <h3 class="fr-tile__title">
+              <a href="{% url 'app.profiles.vehicules-relais' %}">Propriétaire d'un véhicule relais</a>
+            </h3>
+          </div>
+        </div>
+        <div class="fr-tile__header">
+          <div class="fr-tile__pictogram">
+            <div style="font-size: 4rem">
+              🚖
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fr-col-6">
+      <div class="fr-tile fr-enlarge-link">
+        <div class="fr-tile__body">
+          <div class="fr-tile__content">
+            <h3 class="fr-tile__title">
+              <a href="{% url 'app.profiles.other' %}">Vous avez un autre profil</a>
+            </h3>
+          </div>
+        </div>
+        <div class="fr-tile__header">
+          <div class="fr-tile__pictogram">
+            <div style="font-size: 4rem">
+              👤
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 {% else %}
@@ -108,14 +142,33 @@
         <div class="fr-tile__body">
           <div class="fr-tile__content">
             <h3 class="fr-tile__title">
-              <a href="{% url 'app.ads-register.index' %}">Au registre des ADS</a>
+              <a href="{% url 'app.ads-register.index' %}">Registre des ADS</a>
             </h3>
           </div>
         </div>
         <div class="fr-tile__header">
           <div class="fr-tile__pictogram">
             <div style="font-size: 4rem">
-              👨‍💻
+              📄
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fr-col-6">
+      <div class="fr-tile fr-enlarge-link">
+        <div class="fr-tile__body">
+          <div class="fr-tile__content">
+            <h3 class="fr-tile__title">
+              <a href="{% url 'vehicules-relais.index' %}">Registre des Véhicules Relais</a>
+            </h3>
+          </div>
+        </div>
+        <div class="fr-tile__header">
+          <div class="fr-tile__pictogram">
+            <div style="font-size: 4rem">
+              🚖
             </div>
           </div>
         </div>

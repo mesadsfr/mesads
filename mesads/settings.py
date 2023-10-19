@@ -111,6 +111,7 @@ INSTALLED_APPS = [
     "mesads.users",
     "mesads.fradm",
     "mesads.api",
+    "mesads.vehicules_relais",
 ]
 
 CRON_CLASSES = [

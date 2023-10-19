@@ -1,0 +1,81 @@
+{% extends "../../base-sidemenu.html" %}
+
+{% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
+
+{% block main %}
+<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+  <div class="fr-collapse" id="breadcrumb-1">
+    <ol class="fr-breadcrumb__list">
+      <li>
+        <a class="fr-breadcrumb__link" aria-current="page">Registre des véhicules relais</a>
+      </li>
+    </ol>
+  </div>
+</nav>
+
+<h1>Consulter le registre des taxis relais</h1>
+
+<p class="fr-text--lg">
+  Un « taxi relais » est un véhicule utilisé temporairement en cas d'immobilisation d'origine mécanique, à la suite d'une panne ou d'un accident, ou de vol d'un véhicule taxi ou de ses équipements spéciaux.
+</p>
+
+
+{% comment %} XXX: n'afficher ce message que si la personne n'est pas deja admin
+XXX: afficher le bouton de connexion uniquement si la personne n'est pas deja connectee {% endcomment %}
+<div class="fr-alert fr-alert--warning">
+  <h3 class="fr-alert__title">Si vous êtes propriétaire d'un taxi relais, nous vous rappelons que</h3>
+
+  <p>
+    <i>Tout détenteur d'un taxi relais doit le déclarer auprès du préfet de département ou du préfet de police de Paris dans sa zone de compétence.</i>
+  </p>
+
+  <div class="fr-grid-row fr-grid-row--center fr-m-2w">
+    <a class="fr-btn fr-btn--secondary" href="{% url 'login' %}?next={% url 'vehicules-relais.register' %}">Connectez-vous ou créez un compte pour enregistrer vos véhicules relais</a>
+  </div>
+</div>
+
+<form class="fr-mt-3w" method="post" action="{% url 'vehicules-relais.search' %}">
+  {% csrf_token %}
+  <div class="fr-form-group">
+    <fieldset class="fr-fieldset">
+      <div class="fr-fieldset__content">
+        <div class="fr-input-group radio-inline{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
+          <label class="fr-label" for="{{ form.prefecture.id_for_label }}">
+            Sélectionnez la préfecture :
+          </label>
+
+          {{ form.prefecture }}
+
+          {% for error in form.errors.prefecture %}
+          <p class="fr-error-text">
+            {{ error }}
+          </p>
+          {% endfor %}
+        </div>
+      </div>
+    </fieldset>
+  </div>
+
+  <!-- Non-fields errors -->
+  {% if form.non_field_errors %}
+  <div class="fr-input-group fr-input-group--error">
+    {% for error in form.non_field_errors %}
+      <!-- Non-field error -->
+      <p class="fr-error-text">
+        {{ error }}
+      </p>
+    {% endfor %}
+  </div>
+  {% endif %}
+  <div class="fr-input-group">
+    <button type="submit" class="fr-btn">Lister les taxis relais de la préfecture</button>
+  </div>
+</form>
+
+{% endblock %}
+
+{% block endbody %}
+  {% comment %}Extra javascript to display form for new requests.{% endcomment %}
+  {{ form.media }}
+{% endblock %}

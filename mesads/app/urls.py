@@ -118,6 +118,11 @@ urlpatterns += [
         name="app.profiles.driver",
     ),
     path(
+        "proprietaire_vehicules_relais",
+        TemplateView.as_view(template_name="pages/profiles_vehicules_relais.html"),
+        name="app.profiles.vehicules-relais",
+    ),
+    path(
         "autre",
         TemplateView.as_view(template_name="pages/profiles_other.html"),
         name="app.profiles.other",
