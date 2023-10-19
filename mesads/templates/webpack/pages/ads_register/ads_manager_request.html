@@ -5,7 +5,7 @@
 
 {% block main %}
 <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
+  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
   <div class="fr-collapse" id="breadcrumb-1">
     <ol class="fr-breadcrumb__list">
       <li>
@@ -90,120 +90,145 @@
 </ul>
 {% endfor %}
 
-<div class="fr-mb-2w fr-alert fr-alert--info">
-  <h3 class="fr-alert__title">Un problème ? Contactez-nous !</h3>
-  <p>
-    Si vous avez le moindre problème, par exemple si votre demande est refusée ou met trop de temps avant d'être acceptée, vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
-  </p>
-</div>
+<hr>
 
+<p class="fr-text--xl">
+  MesADS est le registre national des autorisations de stationnement (licences de taxi) délivrées par l'administration.
+</p>
 
-<h4>Configuration de l'accès gestionnaire</h4>
+<div class="fr-accordions-group fr-mb-5w">
+  <section class="fr-accordion">
+    <h3 class="fr-accordion__title">
+        <button class="fr-accordion__btn" aria-expanded="{% if user_ads_manager_requests|length != 0 or ads_managers_administrators|length != 0 %}true{% else %}false{% endif %}" aria-controls="accordion-1">
+          Je suis instructeur au sein d'une administration et je souhaite gérer ses ADS
+        </button>
+    </h3>
+    <div class="fr-collapse" id="accordion-1">
+      <form class="fr-grid-row fr-grid-row--middle" method="post" action="{% url 'app.ads-manager.index' %}">
+        {% csrf_token %}
+        <div class="fr-form-group">
+          <fieldset class="fr-fieldset">
+            <legend class="fr-fieldset__legend fr-text--regular" id='radio-inline-legend'>
+                Afin d'obtenir un accès pour la gestion de vos ADS, sélectionnez votre administration puis cliquez sur “envoyer la demande à la préfecture”. <strong>L'accès est strictement réservé aux agents de l'administration</strong>.
+            </legend>
 
-<form class="fr-grid-row fr-grid-row--middle" method="post" action="{% url 'app.ads-manager.index' %}">
-  {% csrf_token %}
-  <div class="fr-form-group">
-    <fieldset class="fr-fieldset">
-      <legend class="fr-fieldset__legend fr-text--regular" id='radio-inline-legend'>
-          Vous souhaitez obtenir un accès pour la gestion des autorisations de stationnement :
-      </legend>
+            <div class="fr-mb-2w fr-alert fr-alert--info">
+              <h3 class="fr-alert__title">Un problème ? Contactez-nous !</h3>
+              <p>
+                Si vous avez le moindre problème, par exemple si votre demande est refusée ou met trop de temps avant d'être acceptée, vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+              </p>
+            </div>
 
-      <div class="fr-fieldset__content">
-        <!-- Commune -->
-        <div class="fr-radio-group">
-          <input type="radio" id="radio-inline-1" name="radio-inline">
-          <label class="fr-label" for="radio-inline-1">
-            D'une commune
-          </label>
+            <p>Vous souhaitez gérer les ADS :</p>
 
-          <div class="fr-input-group radio-inline{% if form.errors.commune %} fr-input-group--error{% endif %}">
-            <label
-              class="fr-label"
-              for="{{ form.commune.id_for_label }}"
-            >
-              Sélectionnez la commune:
-            </label>
+            <div class="fr-fieldset__content">
+              <!-- Commune -->
+              <div class="fr-radio-group">
+                <input type="radio" id="radio-inline-1" name="radio-inline">
+                <label class="fr-label" for="radio-inline-1">
+                  D'une commune
+                </label>
 
-            {{ form.commune }}
+                <div class="fr-input-group radio-inline{% if form.errors.commune %} fr-input-group--error{% endif %}">
+                  <label
+                    class="fr-label"
+                    for="{{ form.commune.id_for_label }}"
+                  >
+                    Sélectionnez la commune:
+                  </label>
 
-            {% for error in form.errors.commune %}
+                  {{ form.commune }}
+
+                  {% for error in form.errors.commune %}
+                  <p class="fr-error-text">
+                    {{ error }}
+                  </p>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <!-- EPCI -->
+              <div class="fr-radio-group">
+                <input type="radio" id="radio-inline-2" name="radio-inline">
+                <label class="fr-label" for="radio-inline-2">
+                  D'un établissement public à fiscalité propre (métropole, communauté de commune, communauté d’agglomération ou communauté urbaine)
+                </label>
+
+                <div class="fr-input-group radio-inline{% if form.errors.epci %} fr-input-group--error{% endif %}">
+                  <label
+                    class="fr-label"
+                    for="{{ form.epci.id_for_label }}"
+                  >
+                    Sélectionnez l'établissement :
+                  </label>
+
+                  {{ form.epci }}
+
+                  {% for error in form.errors.epci %}
+                  <p class="fr-error-text">
+                    {{ error }}
+                  </p>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <!-- Préfecture -->
+              <div class="fr-radio-group">
+                <input type="radio" id="radio-inline-3" name="radio-inline">
+                <label class="fr-label" for="radio-inline-3">
+                  D'une préfecture (ADS aéroport)
+                </label>
+
+                <div class="fr-input-group radio-inline{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
+                  <label
+                    class="fr-label"
+                    for="{{ form.prefecture.id_for_label }}"
+                  >
+                    Sélectionnez la préfecture :
+                  </label>
+
+                  {{ form.prefecture }}
+
+                  {% for error in form.errors.prefecture %}
+                  <p class="fr-error-text">
+                    {{ error }}
+                  </p>
+                  {% endfor %}
+                </div>
+              </div>
+
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- Non-fields errors -->
+        {% if form.non_field_errors %}
+          <div class="fr-input-group fr-input-group--error">
+            {% for error in form.non_field_errors %}
+            <!-- Non-field error -->
             <p class="fr-error-text">
               {{ error }}
             </p>
             {% endfor %}
           </div>
+        {% endif %}
+        <div class="fr-input-group">
+          <button type="submit" class="fr-btn">Envoyer la demande à la préfecture</button>
         </div>
-
-        <!-- EPCI -->
-        <div class="fr-radio-group">
-          <input type="radio" id="radio-inline-2" name="radio-inline">
-          <label class="fr-label" for="radio-inline-2">
-            D'un établissement public à fiscalité propre (métropole, communauté de commune, communauté d’agglomération ou communauté urbaine)
-          </label>
-
-          <div class="fr-input-group radio-inline{% if form.errors.epci %} fr-input-group--error{% endif %}">
-            <label
-              class="fr-label"
-              for="{{ form.epci.id_for_label }}"
-            >
-              Sélectionnez l'établissement :
-            </label>
-
-            {{ form.epci }}
-
-            {% for error in form.errors.epci %}
-            <p class="fr-error-text">
-              {{ error }}
-            </p>
-            {% endfor %}
-          </div>
-        </div>
-
-        <!-- Préfecture -->
-        <div class="fr-radio-group">
-          <input type="radio" id="radio-inline-3" name="radio-inline">
-          <label class="fr-label" for="radio-inline-3">
-            D'une préfecture (ADS aéroport)
-          </label>
-
-          <div class="fr-input-group radio-inline{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
-            <label
-              class="fr-label"
-              for="{{ form.prefecture.id_for_label }}"
-            >
-              Sélectionnez la préfecture :
-            </label>
-
-            {{ form.prefecture }}
-
-            {% for error in form.errors.prefecture %}
-            <p class="fr-error-text">
-              {{ error }}
-            </p>
-            {% endfor %}
-          </div>
-        </div>
-
-      </div>
-    </fieldset>
-  </div>
-
-  <!-- Non-fields errors -->
-  {% if form.non_field_errors %}
-    <div class="fr-input-group fr-input-group--error">
-      {% for error in form.non_field_errors %}
-      <!-- Non-field error -->
-      <p class="fr-error-text">
-        {{ error }}
-      </p>
-      {% endfor %}
+      </form>
     </div>
-  {% endif %}
-
-  <div class="fr-input-group">
-    <button type="submit" class="fr-btn">Envoyer la demande à la préfecture</button>
-  </div>
-</form>
+  </section>
+  <section class="fr-accordion">
+    <h3 class="fr-accordion__title">
+        <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-2">
+          J'ai un autre profil
+        </button>
+    </h3>
+    <div class="fr-collapse" id="accordion-2">
+      Le registre des ADS (licences de taxi) ne vous est pas ouvert, si nécessaire vous pouvez nous contacter en cliquant sur la bulle en bas à droite de votre écran
+    </div>
+  </section>
+</div>
 {% endblock %}
 
 {% block endbody %}
