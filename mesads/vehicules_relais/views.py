@@ -32,7 +32,9 @@ class SearchDepartementView(TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["prefecture"] = get_object_or_404(Prefecture, numero=kwargs["departement"])
-        ctx["vehicules"] = Vehicule.objects.filter(departement=ctx["prefecture"])
+        ctx["vehicules"] = Vehicule.objects.filter(
+            departement=ctx["prefecture"]
+        ).select_related("proprietaire")
         return ctx
 
 
