@@ -44,24 +44,17 @@ class Proprietaire(models.Model):
 class VehiculeManager(models.Manager):
     def get_next_number(self, departement):
         """Get the current last number for the specified departement."""
-        highest = self.filter(departement=departement).aggregate(highest=Max("numero"))[
-            "highest"
-        ]
+        try:
+            last_vehicule = self.filter(departement=departement).latest("id")
+        except Vehicule.DoesNotExist:
+            return f"{departement.numero:02s}-01"
 
-        if highest is None:
-            return 1
-        return int(highest) + 1
+        last_numero = int(last_vehicule.numero.split("-")[1])
+        return f"{departement.numero:02s}-{last_numero+1:02d}"
 
 
 @reversion.register
 class Vehicule(models.Model):
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["departement", "numero"], name="unique_vehicule"
-            )
-        ]
-
     objects = VehiculeManager()
 
     def __str__(self):
@@ -88,8 +81,9 @@ class Vehicule(models.Model):
     numero = models.CharField(
         null=False,
         blank=True,
-        max_length=10,
+        max_length=16,
         help_text="Numéro unique identifiant le véhicule relais",
+        unique=True,
     )
 
     immatriculation = models.CharField(

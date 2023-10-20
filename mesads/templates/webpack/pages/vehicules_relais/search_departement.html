@@ -17,4 +17,28 @@
   </div>
 </nav>
 
+<div class="fr-table fr-table--bordered">
+  <table>
+    <caption>Véhicules relais du département {{ prefecture.numero }} - {{ prefecture.libelle }}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Numéro</th>
+        <th scope="col">Propriétaire du véhicule</th>
+        <th scope="col">Type de véhicule</th>
+        <th scope="col">n° immatriculation</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for vehicule in vehicules %}
+      <tr>
+        <td><strong>{{ vehicule.numero }}</strong></td>
+        <td>{{ vehicule.proprietaire.nom }}</td>
+        <td>{{ vehicule.modele }}</td>
+        <td>{{ vehicule.immatriculation }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
 {% endblock %}
