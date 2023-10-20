@@ -1,7 +1,5 @@
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.urls import path
-from django.views.generic import RedirectView, TemplateView
 
 from . import views
 
@@ -29,7 +27,7 @@ urlpatterns = [
     ),
     path(
         "enregistrer",
-        views.RegisterView.as_view(),
+        login_required(views.RegisterView.as_view()),
         name="vehicules-relais.register",
     ),
 ]
