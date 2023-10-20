@@ -17,6 +17,15 @@
   </div>
 </nav>
 
+
+<p class="fr-text--lg">
+  Un « taxi relais » est un véhicule utilisé temporairement en cas d'immobilisation d'origine mécanique, à la suite d'une panne ou d'un accident, ou de vol d'un véhicule taxi ou de ses équipements spéciaux.
+</p>
+
+<p>
+  Ce tableau répertorie l'ensemble des taxis relais qui peuvent être exploités au sein du département.
+</p>
+
 <div class="fr-table fr-table--bordered">
   <table>
     <caption>Véhicules relais du département {{ prefecture.numero }} - {{ prefecture.libelle }}</caption>
@@ -43,6 +52,10 @@
         <td>{{ vehicule.proprietaire.nom }}</td>
         <td>...</td>
         <td><a href="#">Afficher les détails</a></td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" style="text-align: center">Aucun véhicule relais n'est enregistré pour ce département.</td>
       </tr>
       {% endfor %}
     </tbody>
