@@ -18,9 +18,9 @@ urlpatterns = [
         name="vehicules-relais.search",
     ),
     path(
-        "consulter/<str:prefecture>",
-        views.SearchPrefectureView.as_view(),
-        name="vehicules-relais.search.prefecture",
+        "consulter/<str:departement>",
+        views.SearchDepartementView.as_view(),
+        name="vehicules-relais.search.departement",
     ),
     path(
         "enregistrer",

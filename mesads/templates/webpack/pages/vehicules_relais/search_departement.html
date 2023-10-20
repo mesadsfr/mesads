@@ -11,7 +11,7 @@
         <a class="fr-breadcrumb__link" href="{% url 'vehicules-relais.search' %}">Registre des véhicules relais</a>
       </li>
       <li>
-        <a class="fr-breadcrumb__link" aria-current="page">{{ prefecture.display_text|capfirst }} ({{ prefecture.numero }})</a>
+        <a class="fr-breadcrumb__link" aria-current="page">Departement {{ prefecture.numero }} - {{ prefecture.libelle }}</a>
       </li>
     </ol>
   </div>

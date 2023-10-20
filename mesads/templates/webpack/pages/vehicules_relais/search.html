@@ -42,7 +42,7 @@ XXX: afficher le bouton de connexion uniquement si la personne n'est pas deja co
       <div class="fr-fieldset__content">
         <div class="fr-input-group radio-inline{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
           <label class="fr-label" for="{{ form.prefecture.id_for_label }}">
-            Sélectionnez la préfecture :
+            Sélectionnez le département :
           </label>
 
           {{ form.prefecture }}
@@ -69,7 +69,7 @@ XXX: afficher le bouton de connexion uniquement si la personne n'est pas deja co
   </div>
   {% endif %}
   <div class="fr-input-group">
-    <button type="submit" class="fr-btn">Lister les taxis relais de la préfecture</button>
+    <button type="submit" class="fr-btn">Voir les taxis relais du département</button>
   </div>
 </form>
 
