@@ -1,9 +1,8 @@
 from django.db import models
-from django.db.models import Max, F
 
 import reversion
 
-from mesads.fradm.models import Prefecture
+from mesads.fradm.models import Commune, Prefecture
 
 
 @reversion.register
@@ -147,4 +146,16 @@ class Vehicule(models.Model):
         null=True,
         blank=True,
         help_text="Le véhicule est-il accessible aux personnes à mobilité réduite ?",
+    )
+
+    commune_localisation = models.ForeignKey(
+        Commune,
+        on_delete=models.RESTRICT,
+        null=True,
+        blank=True,
+        help_text="Commune où est situé le véhicule",
+    )
+
+    localisation = models.TextField(
+        null=False, blank=True, help_text="Adresse complète de localisation du véhicule"
     )

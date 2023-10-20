@@ -50,7 +50,11 @@
           {% endfor %}
         </td>
         <td>{{ vehicule.proprietaire.nom }}</td>
-        <td>...</td>
+        <td>
+          {% if vehicule.commune_localisation %}
+            {{ vehicule.commune_localisation.libelle }} ({{ vehicule.commune_localisation.departement }})
+          {% endif %}
+        </td>
         <td><a href="#">Afficher les détails</a></td>
       </tr>
       {% empty %}

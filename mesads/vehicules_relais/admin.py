@@ -12,6 +12,11 @@ class ProprietaireAdmin(admin.ModelAdmin):
         "last_update_at",
     )
 
+    search_fields = (
+        "nom",
+        "siret",
+    )
+
 
 @admin.register(Vehicule)
 class VehiculeAdmin(admin.ModelAdmin):
@@ -35,10 +40,24 @@ class VehiculeAdmin(admin.ModelAdmin):
         "date_mise_circulation",
         "nombre_places",
         "pmr",
+        "commune_localisation",
+        "localisation",
     )
 
     readonly_fields = (
         "created_at",
         "last_update_at",
         "numero",
+    )
+
+    search_fields = (
+        "proprietaire",
+        "departement",
+        "commune_localisation",
+    )
+
+    autocomplete_fields = (
+        "proprietaire",
+        "departement",
+        "commune_localisation",
     )
