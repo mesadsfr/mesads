@@ -20,9 +20,6 @@
   Un « taxi relais » est un véhicule utilisé temporairement en cas d'immobilisation d'origine mécanique, à la suite d'une panne ou d'un accident, ou de vol d'un véhicule taxi ou de ses équipements spéciaux.
 </p>
 
-
-{% comment %} XXX: n'afficher ce message que si la personne n'est pas deja admin
-XXX: afficher le bouton de connexion uniquement si la personne n'est pas deja connectee {% endcomment %}
 <div class="fr-alert fr-alert--warning">
   <h3 class="fr-alert__title">Si vous êtes propriétaire d'un taxi relais, nous vous rappelons que</h3>
 
@@ -31,7 +28,13 @@ XXX: afficher le bouton de connexion uniquement si la personne n'est pas deja co
   </p>
 
   <div class="fr-grid-row fr-grid-row--center fr-m-2w">
-    <a class="fr-btn fr-btn--secondary" href="{% url 'login' %}?next={% url 'vehicules-relais.register' %}">Connectez-vous ou créez un compte pour enregistrer vos véhicules relais</a>
+    <a class="fr-btn fr-btn--secondary" href="{% url 'login' %}?next={% url 'vehicules-relais.register' %}">
+      {% if request.user.is_authenticated %}
+        Enregistrez vos véhicules relais
+      {% else %}
+        Connectez-vous ou créez un compte pour enregistrer vos véhicules relais
+    {% endif %}
+    </a>
   </div>
 </div>
 
