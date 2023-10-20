@@ -55,7 +55,7 @@
             {{ vehicule.commune_localisation.libelle }} ({{ vehicule.commune_localisation.departement }})
           {% endif %}
         </td>
-        <td><a href="#">Afficher les détails</a></td>
+        <td><a href="{% url 'vehicules-relais.vehicule' numero=vehicule.numero %}">Afficher les détails</a></td>
       </tr>
       {% empty %}
       <tr>

@@ -18,9 +18,14 @@ urlpatterns = [
         name="vehicules-relais.search",
     ),
     path(
-        "consulter/<str:departement>",
+        "consulter/departements/<str:departement>",
         views.SearchDepartementView.as_view(),
         name="vehicules-relais.search.departement",
+    ),
+    path(
+        "consulter/vehicules/<str:numero>",
+        views.VehiculeView.as_view(),
+        name="vehicules-relais.vehicule",
     ),
     path(
         "enregistrer",
