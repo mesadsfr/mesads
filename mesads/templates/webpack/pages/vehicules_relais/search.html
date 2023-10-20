@@ -28,9 +28,9 @@
   </p>
 
   <div class="fr-grid-row fr-grid-row--center fr-m-2w">
-    <a class="fr-btn fr-btn--secondary" href="{% url 'login' %}?next={% url 'vehicules-relais.register' %}">
+    <a class="fr-btn fr-btn--secondary" href="{% url 'login' %}?next={% url 'vehicules-relais.proprietaire' %}">
       {% if request.user.is_authenticated %}
-        Enregistrez vos véhicules relais
+        Mon espace propriétaire
       {% else %}
         Connectez-vous ou créez un compte pour enregistrer vos véhicules relais
     {% endif %}

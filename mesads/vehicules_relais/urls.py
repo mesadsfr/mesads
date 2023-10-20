@@ -26,8 +26,8 @@ urlpatterns = [
         name="vehicules-relais.vehicule",
     ),
     path(
-        "enregistrer",
-        login_required(views.RegisterView.as_view()),
-        name="vehicules-relais.register",
+        "proprietaire",
+        login_required(views.ProprietaireView.as_view()),
+        name="vehicules-relais.proprietaire",
     ),
 ]

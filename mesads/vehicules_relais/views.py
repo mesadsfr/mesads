@@ -47,5 +47,5 @@ class VehiculeView(TemplateView):
         return ctx
 
 
-class RegisterView(TemplateView):
-    template_name = "pages/vehicules_relais/register.html"
+class ProprietaireView(TemplateView):
+    template_name = "pages/vehicules_relais/proprietaire.html"
