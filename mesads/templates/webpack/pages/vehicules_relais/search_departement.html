@@ -23,18 +23,26 @@
     <thead>
       <tr>
         <th scope="col">Numéro</th>
-        <th scope="col">Propriétaire du véhicule</th>
         <th scope="col">Type de véhicule</th>
-        <th scope="col">n° immatriculation</th>
+        <th scope="col">Caractéristiques principales</th>
+        <th scope="col">Propriétaire du véhicule</th>
+        <th scope="col">Ville de localisation du véhicule</th>
+        <th scope="col">Afficher les caractéristiques complètes</th>
       </tr>
     </thead>
     <tbody>
       {% for vehicule in vehicules %}
       <tr>
         <td><strong>{{ vehicule.numero }}</strong></td>
-        <td>{{ vehicule.proprietaire.nom }}</td>
         <td>{{ vehicule.modele }}</td>
-        <td>{{ vehicule.immatriculation }}</td>
+        <td>
+          {% for feature in vehicule.main_features %}
+            {{ feature }}<br />
+          {% endfor %}
+        </td>
+        <td>{{ vehicule.proprietaire.nom }}</td>
+        <td>...</td>
+        <td><a href="#">Afficher les détails</a></td>
       </tr>
       {% endfor %}
     </tbody>

@@ -66,6 +66,19 @@ class Vehicule(models.Model):
             self.numero = Vehicule.objects.get_next_number(self.departement)
         return super().save(*args, **kwargs)
 
+    def main_features(self):
+        ret = []
+        if self.motorisation == "electrique":
+            ret.append("Véhicule électrique")
+        elif self.motorisation == "hybride":
+            ret.append("Véhicule hybride")
+        elif self.motorisation == "hybride_rechargeable":
+            ret.append("Véhicule hybride rechargeable")
+
+        if self.pmr:
+            ret.append("Accès PMR")
+        return ret
+
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     last_update_at = models.DateTimeField(auto_now=True, null=True)
 
