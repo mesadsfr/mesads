@@ -6,7 +6,7 @@ from django.views.generic import FormView, RedirectView, TemplateView
 from mesads.fradm.forms import PrefectureForm
 from mesads.fradm.models import Prefecture
 
-from .models import Vehicule
+from .models import Proprietaire, Vehicule
 
 
 class IndexView(RedirectView):
@@ -16,6 +16,13 @@ class IndexView(RedirectView):
 class SearchView(FormView):
     template_name = "pages/vehicules_relais/search.html"
     form_class = PrefectureForm
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["is_proprietaire"] = Proprietaire.objects.filter(
+            users__in=[self.request.user]
+        ).exists()
+        return ctx
 
     def form_valid(self, form):
         return redirect(
