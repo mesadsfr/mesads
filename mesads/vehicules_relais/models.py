@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 import reversion
@@ -38,6 +39,8 @@ class Proprietaire(models.Model):
         blank=True,
         max_length=256,
     )
+
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
 
 
 class VehiculeManager(models.Manager):

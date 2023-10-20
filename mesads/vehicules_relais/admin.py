@@ -3,6 +3,11 @@ from django.contrib import admin
 from .models import Vehicule, Proprietaire
 
 
+class UsersInline(admin.TabularInline):
+    model = Proprietaire.users.through
+    autocomplete_fields = ["user"]
+
+
 @admin.register(Proprietaire)
 class ProprietaireAdmin(admin.ModelAdmin):
     list_display = (
@@ -16,6 +21,22 @@ class ProprietaireAdmin(admin.ModelAdmin):
         "nom",
         "siret",
     )
+
+    fields = (
+        "created_at",
+        "last_update_at",
+        "nom",
+        "siret",
+        "telephone",
+        "email",
+    )
+
+    readonly_fields = (
+        "created_at",
+        "last_update_at",
+    )
+
+    inlines = (UsersInline,)
 
 
 @admin.register(Vehicule)
