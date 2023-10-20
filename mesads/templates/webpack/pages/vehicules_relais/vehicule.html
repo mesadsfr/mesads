@@ -47,15 +47,15 @@
         </tr>
         <tr>
           <th>SIRET</th>
-          <td>{{ vehicule.proprietaire.siret }}</td>
+          <td>{{ vehicule.proprietaire.siret|default:"-" }}</td>
         </tr>
         <tr>
           <th>Tél.</th>
-          <td>{{ vehicule.proprietaire.telephone }}</td>
+          <td>{{ vehicule.proprietaire.telephone|default:"-" }}</td>
         </tr>
         <tr>
           <th>Email</th>
-          <td>{{ vehicule.proprietaire.email }}</td>
+          <td>{{ vehicule.proprietaire.email|default:"-" }}</td>
         </tr>
       </table>
     </div>
@@ -71,13 +71,15 @@
             {% if vehicule.commune_localisation %}
               {{ vehicule.commune_localisation.libelle }} ({{ vehicule.commune_localisation.departement }})
             {% else %}
-              <i>Non renseigné</i>
+              -
             {% endif %}
           </td>
         </tr>
         <tr>
           <th>Adresse complète</th>
-          <td>{{ vehicule.localisation|linebreaksbr }}</td>
+          <td>
+            {{ vehicule.localisation|linebreaksbr|default:"-" }}
+          </td>
         </tr>
       </table>
     </div>
