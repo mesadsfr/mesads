@@ -40,7 +40,7 @@
       {% for row in object_list %}
       <tr>
         <td>{{ row.nom }}</td>
-        <td>{{ row.siret }}</td>
+        <td>{{ row.siret|default:"-" }}</td>
         <td><a href="{% url 'vehicules-relais.proprietaire.detail' pk=row.id %}">Afficher les détails</a></td>
       </tr>
       {% endfor %}
