@@ -30,4 +30,9 @@ urlpatterns = [
         login_required(views.ProprietaireView.as_view()),
         name="vehicules-relais.proprietaire",
     ),
+    path(
+        "proprietaire/nouveau",
+        login_required(views.NewProprietaireView.as_view()),
+        name="vehicules-relais.proprietaire.new",
+    ),
 ]

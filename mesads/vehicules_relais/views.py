@@ -65,3 +65,7 @@ class ProprietaireView(TemplateView):
             and Proprietaire.objects.filter(users__in=[self.request.user]).exists()
         )
         return ctx
+
+
+class NewProprietaireView(TemplateView):
+    template_name = "pages/vehicules_relais/proprietaire-new.html"
