@@ -11,13 +11,9 @@
         <a class="fr-breadcrumb__link" href="{% url 'vehicules-relais.proprietaire' %}">Espace propriétaire</a>
       </li>
       <li>
-        <a class="fr-breadcrumb__link" aria-current="page">Mon espace propriétaire</a>
+        <a class="fr-breadcrumb__link" aria-current="page">{{ object.nom }}</a>
       </li>
     </ol>
   </div>
 </nav>
-
-
-Infos
-
 {% endblock %}

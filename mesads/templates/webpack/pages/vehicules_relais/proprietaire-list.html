@@ -26,6 +26,27 @@
     <a class="fr-btn fr-btn--secondary" href="{% url 'vehicules-relais.proprietaire.new' %}">Activer mon espace propriétaire</a>
   </p>
 </div>
+{% else %}
+<div class="fr-table fr-table--bordered">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Nom</th>
+        <th scope="col">SIRET</th>
+        <th scope="col">Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in object_list %}
+      <tr>
+        <td>{{ row.nom }}</td>
+        <td>{{ row.siret }}</td>
+        <td><a href="{% url 'vehicules-relais.proprietaire.detail' pk=row.id %}">Afficher les détails</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endif %}
 
 {% endblock %}

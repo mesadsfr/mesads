@@ -1,7 +1,14 @@
 from typing import Any
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, FormView, RedirectView, TemplateView
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    FormView,
+    ListView,
+    RedirectView,
+    TemplateView,
+)
 
 from mesads.fradm.forms import PrefectureForm
 from mesads.fradm.models import Prefecture
@@ -56,8 +63,9 @@ class VehiculeView(TemplateView):
         return ctx
 
 
-class ProprietaireListView(TemplateView):
+class ProprietaireListView(ListView):
     template_name = "pages/vehicules_relais/proprietaire-list.html"
+    model = Proprietaire
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -84,6 +92,6 @@ class ProprietaireCreateView(CreateView):
         return redirection
 
 
-class ProprietaireDetailView(CreateView):
+class ProprietaireDetailView(DetailView):
     template_name = "pages/vehicules_relais/proprietaire-detail.html"
-    form_class = ProprietaireForm
+    model = Proprietaire

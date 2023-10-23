@@ -36,7 +36,7 @@ urlpatterns = [
         name="vehicules-relais.proprietaire.new",
     ),
     path(
-        "proprietaire/<int:id>",
+        "proprietaire/<int:pk>",
         login_required(views.ProprietaireDetailView.as_view()),
         name="vehicules-relais.proprietaire.detail",
     ),
