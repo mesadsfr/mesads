@@ -19,9 +19,10 @@ class SearchView(FormView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["is_proprietaire"] = Proprietaire.objects.filter(
-            users__in=[self.request.user]
-        ).exists()
+        ctx["is_proprietaire"] = (
+            self.request.user.is_authenticated
+            and Proprietaire.objects.filter(users__in=[self.request.user]).exists()
+        )
         return ctx
 
     def form_valid(self, form):
