@@ -1,3 +1,31 @@
 {% extends "../../base-sidemenu.html" %}
 
 {% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
+
+{% block main %}
+<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+  <div class="fr-collapse" id="breadcrumb-1">
+    <ol class="fr-breadcrumb__list">
+      <li>
+        <a class="fr-breadcrumb__link" aria-current="page">Espace propriétaire</a>
+      </li>
+    </ol>
+  </div>
+</nav>
+
+<h1>Mon espace propriétaire</h1>
+
+{% if not is_proprietaire %}
+<div class="fr-alert fr-alert--error">
+  <h3 class="fr-alert__title">Votre compte propriétaire n'est pas activé</h3>
+  <p>
+    Il est nécessaire d'activer votre compte propriétaire avant de pouvoir enregistrer vos véhicules relais.
+  </p>
+  <p class="fr-grid-row fr-grid-row--center fr-mt-2w">
+    <a class="fr-btn fr-btn--secondary" href="#">Activer mon espace propriétaire</a>
+  </p>
+</div>
+{% endif %}
+
+{% endblock %}

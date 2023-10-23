@@ -57,3 +57,11 @@ class VehiculeView(TemplateView):
 
 class ProprietaireView(TemplateView):
     template_name = "pages/vehicules_relais/proprietaire.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["is_proprietaire"] = (
+            self.request.user.is_authenticated
+            and Proprietaire.objects.filter(users__in=[self.request.user]).exists()
+        )
+        return ctx
