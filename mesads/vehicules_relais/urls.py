@@ -27,12 +27,17 @@ urlpatterns = [
     ),
     path(
         "proprietaire",
-        login_required(views.ProprietaireView.as_view()),
+        login_required(views.ProprietaireListView.as_view()),
         name="vehicules-relais.proprietaire",
     ),
     path(
         "proprietaire/nouveau",
-        login_required(views.NewProprietaireView.as_view()),
+        login_required(views.ProprietaireCreateView.as_view()),
         name="vehicules-relais.proprietaire.new",
+    ),
+    path(
+        "proprietaire/<int:id>",
+        login_required(views.ProprietaireDetailView.as_view()),
+        name="vehicules-relais.proprietaire.detail",
     ),
 ]

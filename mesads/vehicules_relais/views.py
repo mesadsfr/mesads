@@ -1,12 +1,13 @@
 from typing import Any
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import FormView, RedirectView, TemplateView
+from django.views.generic import CreateView, FormView, RedirectView, TemplateView
 
 from mesads.fradm.forms import PrefectureForm
 from mesads.fradm.models import Prefecture
 
 from .models import Proprietaire, Vehicule
+from .forms import ProprietaireForm
 
 
 class IndexView(RedirectView):
@@ -55,8 +56,8 @@ class VehiculeView(TemplateView):
         return ctx
 
 
-class ProprietaireView(TemplateView):
-    template_name = "pages/vehicules_relais/proprietaire.html"
+class ProprietaireListView(TemplateView):
+    template_name = "pages/vehicules_relais/proprietaire-list.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -67,5 +68,22 @@ class ProprietaireView(TemplateView):
         return ctx
 
 
-class NewProprietaireView(TemplateView):
-    template_name = "pages/vehicules_relais/proprietaire-new.html"
+class ProprietaireCreateView(CreateView):
+    template_name = "pages/vehicules_relais/proprietaire-create.html"
+    form_class = ProprietaireForm
+
+    def get_success_url(self):
+        return reverse(
+            "vehicules-relais.proprietaire.detail",
+            kwargs={"id": self.object.id},
+        )
+
+    def form_valid(self, form):
+        redirection = super().form_valid(form)
+        self.object.users.set([self.request.user])
+        return redirection
+
+
+class ProprietaireDetailView(CreateView):
+    template_name = "pages/vehicules_relais/proprietaire-detail.html"
+    form_class = ProprietaireForm
