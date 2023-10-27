@@ -44,10 +44,10 @@
 
   {% csrf_token %}
 
-  {% include '../ads_register/ads-form_string.html' with field=form.nom field_errors=form.errors.nom required=form.fields.nom %}
-  {% include '../ads_register/ads-form_string.html' with field=form.siret field_errors=form.errors.siret required=form.fields.siret %}
-  {% include '../ads_register/ads-form_string.html' with field=form.telephone field_errors=form.errors.telephone required=form.fields.telephone %}
-  {% include '../ads_register/ads-form_string.html' with field=form.email field_errors=form.errors.email required=form.fields.email %}
+  {% include 'form_fields/string.html' with field=form.nom field_errors=form.errors.nom required=form.fields.nom %}
+  {% include 'form_fields/string.html' with field=form.siret field_errors=form.errors.siret required=form.fields.siret %}
+  {% include 'form_fields/string.html' with field=form.telephone field_errors=form.errors.telephone required=form.fields.telephone %}
+  {% include 'form_fields/string.html' with field=form.email field_errors=form.errors.email required=form.fields.email %}
 
   <!-- Submit buttons -->
   <div class="fr-input-group">
