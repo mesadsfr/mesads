@@ -85,7 +85,7 @@ class ProprietaireCreateView(CreateView):
     def get_success_url(self):
         return reverse(
             "vehicules-relais.proprietaire.detail",
-            kwargs={"id": self.object.id},
+            kwargs={"proprietaire_id": self.object.id},
         )
 
     def form_valid(self, form):
@@ -97,3 +97,4 @@ class ProprietaireCreateView(CreateView):
 class ProprietaireDetailView(DetailView):
     template_name = "pages/vehicules_relais/proprietaire-detail.html"
     model = Proprietaire
+    pk_url_kwarg = "proprietaire_id"

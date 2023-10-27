@@ -41,7 +41,7 @@
       <tr>
         <td>{{ row.nom }}</td>
         <td>{{ row.siret|default:"-" }}</td>
-        <td><a href="{% url 'vehicules-relais.proprietaire.detail' pk=row.id %}">Afficher les détails</a></td>
+        <td><a href="{% url 'vehicules-relais.proprietaire.detail' proprietaire_id=row.id %}">Afficher les détails</a></td>
       </tr>
       {% endfor %}
     </tbody>
