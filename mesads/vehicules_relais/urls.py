@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import path
 
 from . import views
+from .decorators import proprietaire_required
 
 
 urlpatterns = [
@@ -37,7 +38,7 @@ urlpatterns = [
     ),
     path(
         "proprietaire/<int:proprietaire_id>",
-        login_required(views.ProprietaireDetailView.as_view()),
+        proprietaire_required(views.ProprietaireDetailView.as_view()),
         name="vehicules-relais.proprietaire.detail",
     ),
 ]
