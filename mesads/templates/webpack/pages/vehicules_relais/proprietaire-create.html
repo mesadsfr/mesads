@@ -28,9 +28,30 @@
   Ces informations sont publiques et seront accessibles dans le registre des taxis relais.
 </p>
 
-<form method="post">
+<hr />
+
+<form method="post" enctype="multipart/form-data">
+  {% if form.non_field_errors %}
+    <div class="fr-input-group fr-input-group--error">
+      {% for error in form.non_field_errors %}
+      <!-- Non-field error -->
+      <p class="fr-error-text">
+        {{ error }}
+      </p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
   {% csrf_token %}
-  {{ form }}
-  <input type="submit" />
+
+  {% include '../ads_register/ads-form_string.html' with field=form.nom field_errors=form.errors.nom required=form.fields.nom %}
+  {% include '../ads_register/ads-form_string.html' with field=form.siret field_errors=form.errors.siret required=form.fields.siret %}
+  {% include '../ads_register/ads-form_string.html' with field=form.telephone field_errors=form.errors.telephone required=form.fields.telephone %}
+  {% include '../ads_register/ads-form_string.html' with field=form.email field_errors=form.errors.email required=form.fields.email %}
+
+  <!-- Submit buttons -->
+  <div class="fr-input-group">
+    <button type="submit" class="fr-btn">Créer l'espace propriétaire</button>
+  </div>
 </form>
 {% endblock %}
