@@ -51,14 +51,17 @@
                     <li>
                       <a class="fr-link fr-icon-user-line" href="{% url 'password_change' %}">Changer de mot de passe</a>
                     </li>
-
                     <li>
                       <a class="fr-link fr-icon-close-circle-line" href="{% url 'logout' %}">Déconnexion</a>
                     </li>
-                  {% endif %}
-                  {% if user.is_superuser %}
+                    {% if user.is_superuser %}
+                      <li>
+                        <a class="fr-link fr-icon-alert-line" href="{% url 'admin:index' %}">Admin</a>
+                      </li>
+                    {% endif %}
+                  {% else %}
                     <li>
-                      <a class="fr-link fr-icon-alert-line" href="{% url 'admin:index' %}">Admin</a>
+                      <a class="fr-link fr-icon-close-circle-line" href="{% url 'login' %}">Connexion</a>
                     </li>
                   {% endif %}
                 </ul>
