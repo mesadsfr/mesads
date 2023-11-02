@@ -1,3 +1,4 @@
+from typing import Any
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
@@ -97,3 +98,8 @@ class ProprietaireDetailView(DetailView):
     template_name = "pages/vehicules_relais/proprietaire-detail.html"
     model = Proprietaire
     pk_url_kwarg = "proprietaire_id"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["vehicules"] = Vehicule.objects.filter(proprietaire=self.object)
+        return ctx

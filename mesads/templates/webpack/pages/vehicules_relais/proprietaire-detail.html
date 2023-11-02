@@ -16,4 +16,51 @@
     </ol>
   </div>
 </nav>
+
+<div class="fr-table">
+  <table>
+    <caption>Mes coordonnées</caption>
+    <tr>
+      <th>Nom</th>
+      <td>{{ object.nom }}</td>
+    </tr>
+    <tr>
+      <th>Numéro SIRET</th>
+      <td>{{ object.siret|default:"-" }}</td>
+    </tr>
+    <tr>
+      <th>Numéro de tel</th>
+      <td>{{ object.telephone|default:"-" }}</td>
+    </tr>
+    <tr>
+      <th>Adresse mail de contact</th>
+      <td>{{ object.email|default:"-" }}</td>
+    </tr>
+  </table>
+</div>
+
+<div class="fr-table">
+  <table>
+    <caption>Mes véhicules enregistrés</caption>
+    <thead>
+      <tr>
+        <th>Numéro</th>
+        <th>Marque et modèle</th>
+        <th>Immatriculation</th>
+        <th>Détails</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for vehicule in vehicules %}
+      <tr>
+        <td>{{ vehicule.numero }}</td>
+        <td>{{ vehicule.modele|default:"-" }}</td>
+        <td>{{ vehicule.immatriculation|default:"-" }}</td>
+        <td><a href="#">Afficher les détails</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
 {% endblock %}
