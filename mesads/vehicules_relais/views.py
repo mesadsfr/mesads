@@ -106,10 +106,20 @@ class ProprietaireDetailView(DetailView):
 
 
 class VehiculeCreateView(CreateView):
-    template_name = "pages/vehicules_relais/proprietaire-vehicule-new.html"
+    template_name = "pages/vehicules_relais/vehicule-create.html"
     form_class = VehiculeForm
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["proprietaire"] = self.kwargs["proprietaire"]
         return ctx
+
+    def form_valid(self, form):
+        form.instance.proprietaire = self.kwargs["proprietaire"]
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            "vehicules-relais.proprietaire.detail",
+            kwargs={"proprietaire_id": self.kwargs["proprietaire_id"]},
+        )

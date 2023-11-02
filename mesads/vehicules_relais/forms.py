@@ -1,5 +1,9 @@
 from django import forms
 
+from dal import autocomplete
+
+from mesads.fradm.models import Commune, Prefecture
+
 from .models import Proprietaire, Vehicule
 
 
@@ -17,4 +21,30 @@ class ProprietaireForm(forms.ModelForm):
 class VehiculeForm(forms.ModelForm):
     class Meta:
         model = Vehicule
-        fields = ("immatriculation",)
+        fields = (
+            "departement",
+            "immatriculation",
+            "modele",
+            "motorisation",
+            "date_mise_circulation",
+            "nombre_places",
+            "pmr",
+            "commune_localisation",
+            "localisation",
+        )
+
+    departement = forms.ModelChoiceField(
+        queryset=Prefecture.objects,
+        widget=autocomplete.ListSelect2(url="fradm.autocomplete.prefecture"),
+        label=Vehicule.departement.field.verbose_name,
+        help_text=Vehicule.departement.field.help_text,
+        required=False,
+    )
+
+    commune_localisation = forms.ModelChoiceField(
+        queryset=Commune.objects,
+        widget=autocomplete.ListSelect2(url="fradm.autocomplete.commune"),
+        label=Vehicule.commune_localisation.field.verbose_name,
+        help_text=Vehicule.commune_localisation.field.help_text,
+        required=False,
+    )
