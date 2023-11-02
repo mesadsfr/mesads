@@ -12,11 +12,17 @@ def proprietaire_required(func):
     @functools.wraps(func)
     def wrapped(request, proprietaire_id=None, *args, **kwargs):
         if request.user.is_staff:
-            get_object_or_404(Proprietaire, id=proprietaire_id)
+            proprietaire = get_object_or_404(Proprietaire, id=proprietaire_id)
         else:
-            get_object_or_404(
+            proprietaire = get_object_or_404(
                 Proprietaire, id=proprietaire_id, users__in=[request.user]
             )
-        return func(request, proprietaire_id=proprietaire_id, *args, **kwargs)
+        return func(
+            request,
+            proprietaire_id=proprietaire_id,
+            proprietaire=proprietaire,
+            *args,
+            **kwargs
+        )
 
     return login_required(wrapped)

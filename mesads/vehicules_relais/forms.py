@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Proprietaire
+from .models import Proprietaire, Vehicule
 
 
 class ProprietaireForm(forms.ModelForm):
@@ -12,3 +12,9 @@ class ProprietaireForm(forms.ModelForm):
             "telephone",
             "email",
         )
+
+
+class VehiculeForm(forms.ModelForm):
+    class Meta:
+        model = Vehicule
+        fields = ("immatriculation",)

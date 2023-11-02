@@ -41,4 +41,9 @@ urlpatterns = [
         proprietaire_required(views.ProprietaireDetailView.as_view()),
         name="vehicules-relais.proprietaire.detail",
     ),
+    path(
+        "proprietaire/<int:proprietaire_id>/nouveau_vehicule",
+        proprietaire_required(views.VehiculeCreateView.as_view()),
+        name="vehicules-relais.proprietaire.vehicule.new",
+    ),
 ]

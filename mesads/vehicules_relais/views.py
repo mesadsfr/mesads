@@ -14,7 +14,7 @@ from mesads.fradm.forms import PrefectureForm
 from mesads.fradm.models import Prefecture
 
 from .models import Proprietaire, Vehicule
-from .forms import ProprietaireForm
+from .forms import ProprietaireForm, VehiculeForm
 
 
 class IndexView(RedirectView):
@@ -102,4 +102,14 @@ class ProprietaireDetailView(DetailView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["vehicules"] = Vehicule.objects.filter(proprietaire=self.object)
+        return ctx
+
+
+class VehiculeCreateView(CreateView):
+    template_name = "pages/vehicules_relais/proprietaire-vehicule-new.html"
+    form_class = VehiculeForm
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["proprietaire"] = self.kwargs["proprietaire"]
         return ctx

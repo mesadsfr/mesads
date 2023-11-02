@@ -51,7 +51,7 @@
 <h1 class="fr-h4">Mes véhicules enregistrés</h1>
 
 <p>
-  🚖 &nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="#">
+  🚖 &nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'vehicules-relais.proprietaire.vehicule.new' proprietaire_id=object.id %}">
     Enregistrer un nouveau véhicule
   </a>
 </p>
@@ -73,7 +73,7 @@
         <td>{{ vehicule.numero }}</td>
         <td>{{ vehicule.modele|default:"-" }}</td>
         <td>{{ vehicule.immatriculation|default:"-" }}</td>
-        <td><a href="#">Afficher les détails</a></td>
+        <td><a href="">Afficher les détails</a></td>
       </tr>
       {% endfor %}
     </tbody>
