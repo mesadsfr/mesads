@@ -82,23 +82,7 @@ Enregistrement d'une ADS
 
     <!-- EPCI commune -->
     {% if ads_manager.content_type.name == 'EPCI' %}
-    <div class="fr-select-group{% if form.errors.epci_commune %} fr-select-group--error{% endif %}">
-      <label
-        class="fr-label"
-        for="{{ form.epci_commune.id_for_label }}"
-      >
-        {{ form.epci_commune.label }}
-        {% if form.epci_commune.help_text %}<span class="fr-hint-text">{{ form.epci_commune.help_text }}</span>{% endif %}
-      </label>
-
-      {{ form.epci_commune }}
-
-      {% for error in form.epci_commune.errors %}
-      <p class="fr-error-text">
-        {{ error }}
-      </p>
-      {% endfor %}
-    </div>
+      {% include 'form_fields/select-autocomplete.html' with field=form.epci_commune field_errors=form.errors.epci_commune %}
     {% endif %}
 
     <!-- ADS number -->

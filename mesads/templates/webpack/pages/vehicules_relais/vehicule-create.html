@@ -34,49 +34,14 @@
 
   {% csrf_token %}
 
-  <div class="fr-select-group{% if form.errors.departement %} fr-select-group--error{% endif %}">
-    <label
-      class="fr-label"
-      for="{{ form.departement.id_for_label }}"
-    >
-      {{ form.departement.label }}
-      {% if form.departement.help_text %}<span class="fr-hint-text">{{ form.departement.help_text }}</span>{% endif %}
-    </label>
-
-    {{ form.departement }}
-
-    {% for error in form.departement.errors %}
-    <p class="fr-error-text">
-      {{ error }}
-    </p>
-    {% endfor %}
-  </div>
-
+  {% include 'form_fields/select-autocomplete.html' with field=form.departement field_errors=form.errors.departement %}
   {% include 'form_fields/string.html' with field=form.immatriculation field_errors=form.errors.immatriculation required=form.fields.immatriculation %}
   {% include 'form_fields/string.html' with field=form.modele field_errors=form.errors.modele required=form.fields.modele %}
   {% include 'form_fields/select.html' with field=form.motorisation field_errors=form.errors.motorisation required=form.fields.motorisation %}
   {% include 'form_fields/date.html' with field=form.date_mise_circulation field_errors=form.errors.date_mise_circulation required=form.fields.date_mise_circulation %}
   {% include 'form_fields/number.html' with field=form.nombre_places field_errors=form.errors.nombre_places required=form.fields.nombre_places %}
   {% include 'form_fields/bool.html' with field=form.pmr field_errors=form.errors.pmr required=form.fields.pmr %}
-
-  <div class="fr-select-group{% if form.errors.commune_localisation %} fr-select-group--error{% endif %}">
-    <label
-      class="fr-label"
-      for="{{ form.commune_localisation.id_for_label }}"
-    >
-      {{ form.commune_localisation.label }}
-      {% if form.commune_localisation.help_text %}<span class="fr-hint-text">{{ form.commune_localisation.help_text }}</span>{% endif %}
-    </label>
-
-    {{ form.commune_localisation }}
-
-    {% for error in form.commune_localisation.errors %}
-    <p class="fr-error-text">
-      {{ error }}
-    </p>
-    {% endfor %}
-  </div>
-
+  {% include 'form_fields/select-autocomplete.html' with field=form.commune_localisation field_errors=form.errors.commune_localisation %}
   {% include 'form_fields/textarea.html' with field=form.localisation field_errors=form.errors.localisation required=form.fields.localisation %}
 
   <!-- Submit buttons -->
