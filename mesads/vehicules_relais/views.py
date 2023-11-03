@@ -1,4 +1,5 @@
 from typing import Any
+from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
@@ -8,6 +9,7 @@ from django.views.generic import (
     ListView,
     RedirectView,
     TemplateView,
+    UpdateView,
 )
 
 from mesads.fradm.forms import PrefectureForm
@@ -127,8 +129,9 @@ class VehiculeCreateView(CreateView):
         )
 
 
-class VehiculeDetailView(DetailView):
-    template_name = "pages/vehicules_relais/vehicule_detail.html"
+class VehiculeUpdateView(UpdateView):
+    template_name = "pages/vehicules_relais/vehicule_edit.html"
+    form_class = VehiculeForm
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -140,4 +143,18 @@ class VehiculeDetailView(DetailView):
             Vehicule,
             numero=self.kwargs["vehicule_numero"],
             proprietaire=self.kwargs["proprietaire_id"],
+        )
+
+    def form_valid(self, form):
+        ret = super().form_valid(form)
+        messages.success(self.request, "Les modifications ont été enregistrées.")
+        return ret
+
+    def get_success_url(self):
+        return reverse(
+            "vehicules-relais.proprietaire.vehicule.edit",
+            kwargs={
+                "proprietaire_id": self.kwargs["proprietaire_id"],
+                "vehicule_numero": self.kwargs["vehicule_numero"],
+            },
         )
