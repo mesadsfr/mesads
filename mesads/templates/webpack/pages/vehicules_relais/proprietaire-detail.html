@@ -61,7 +61,8 @@
     <caption>Mes véhicules enregistrés</caption>
     <thead>
       <tr>
-        <th>Numéro</th>
+        <th>Département</th>
+        <th>Numéro du véhicule</th>
         <th>Marque et modèle</th>
         <th>Immatriculation</th>
         <th>Détails</th>
@@ -70,6 +71,7 @@
     <tbody>
       {% for vehicule in vehicules %}
       <tr>
+        <td>{{ vehicule.departement.numero }} - {{ vehicule.departement.libelle }}</td>
         <td>{{ vehicule.numero }}</td>
         <td>{{ vehicule.modele|default:"-" }}</td>
         <td>{{ vehicule.immatriculation|default:"-" }}</td>
