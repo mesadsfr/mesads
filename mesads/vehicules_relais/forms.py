@@ -33,12 +33,21 @@ class VehiculeForm(forms.ModelForm):
             "localisation",
         )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["immatriculation"].required = True
+        self.fields["modele"].required = True
+        self.fields["motorisation"].required = True
+        self.fields["date_mise_circulation"].required = True
+        self.fields["nombre_places"].required = True
+        self.fields["pmr"].required = True
+
     departement = forms.ModelChoiceField(
         queryset=Prefecture.objects,
         widget=autocomplete.ListSelect2(url="fradm.autocomplete.prefecture"),
         label=Vehicule.departement.field.verbose_name,
         help_text=Vehicule.departement.field.help_text,
-        required=False,
+        required=True,
     )
 
     commune_localisation = forms.ModelChoiceField(
