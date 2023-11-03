@@ -34,7 +34,7 @@
 
   {% csrf_token %}
 
-  {% include 'form_fields/select-autocomplete.html' with field=form.departement field_errors=form.errors.departement %}
+  {% include 'form_fields/select-autocomplete.html' with field=form.departement field_errors=form.errors.departement required=form.fields.departement.required %}
   {% include 'form_fields/string.html' with field=form.immatriculation field_errors=form.errors.immatriculation required=form.fields.immatriculation.required %}
   {% include 'form_fields/string.html' with field=form.modele field_errors=form.errors.modele required=form.fields.modele.required %}
   {% include 'form_fields/select.html' with field=form.motorisation field_errors=form.errors.motorisation required=form.fields.motorisation.required %}
