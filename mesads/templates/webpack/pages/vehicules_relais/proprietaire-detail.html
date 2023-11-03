@@ -75,7 +75,7 @@
         <td>{{ vehicule.numero }}</td>
         <td>{{ vehicule.modele|default:"-" }}</td>
         <td>{{ vehicule.immatriculation|default:"-" }}</td>
-        <td><a href="">Afficher les détails</a></td>
+        <td><a href="{% url 'vehicules-relais.proprietaire.vehicule.detail' proprietaire_id=vehicule.proprietaire_id vehicule_numero=vehicule.numero %}">Afficher les détails</a></td>
       </tr>
       {% empty %}
       <tr>

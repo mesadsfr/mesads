@@ -125,3 +125,19 @@ class VehiculeCreateView(CreateView):
             "vehicules-relais.proprietaire.detail",
             kwargs={"proprietaire_id": self.kwargs["proprietaire_id"]},
         )
+
+
+class VehiculeDetailView(DetailView):
+    template_name = "pages/vehicules_relais/vehicule_detail.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["proprietaire"] = self.kwargs["proprietaire"]
+        return ctx
+
+    def get_object(self):
+        return get_object_or_404(
+            Vehicule,
+            numero=self.kwargs["vehicule_numero"],
+            proprietaire=self.kwargs["proprietaire_id"],
+        )
