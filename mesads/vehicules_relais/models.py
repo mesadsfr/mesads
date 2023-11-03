@@ -91,13 +91,18 @@ class Vehicule(models.Model):
         help_text="Propriétaire du véhicule",
     )
 
-    departement = models.ForeignKey(Prefecture, on_delete=models.RESTRICT, null=False)
+    departement = models.ForeignKey(
+        Prefecture,
+        on_delete=models.RESTRICT,
+        null=False,
+        verbose_name="Département du véhicule relais",
+    )
 
     numero = models.CharField(
         null=False,
         blank=True,
         max_length=16,
-        help_text="Numéro unique identifiant le véhicule relais",
+        verbose_name="Numéro unique identifiant le véhicule relais",
         unique=True,
     )
 
@@ -105,14 +110,14 @@ class Vehicule(models.Model):
         null=False,
         blank=True,
         max_length=32,
-        help_text="Plaque d'immatriculation du véhicule",
+        verbose_name="Plaque d'immatriculation du véhicule",
     )
 
     modele = models.CharField(
         null=False,
         blank=True,
         max_length=256,
-        help_text="Marque, modèle et série du véhicule",
+        verbose_name="Marque, modèle et série du véhicule",
     )
 
     MOTIRISATIONS = (
@@ -130,25 +135,30 @@ class Vehicule(models.Model):
         choices=MOTIRISATIONS,
         blank=True,
         null=False,
-        help_text="Motorisation du véhicule",
+        verbose_name="Motorisation du véhicule",
     )
 
     date_mise_circulation = models.DateField(
         null=True,
         blank=True,
-        help_text="Date de mise en circulation du véhicule",
+        verbose_name="Date de mise en circulation du véhicule",
     )
 
     nombre_places = models.IntegerField(
         null=True,
         blank=True,
-        help_text="Nombre de places assises (mention S1 sur la carte grise)",
+        verbose_name="Nombre de places assises",
+        help_text="Mention S1 sur la carte grise",
     )
 
     pmr = models.BooleanField(
         null=True,
         blank=True,
-        help_text="Le véhicule est-il accessible aux personnes à mobilité réduite ?",
+        verbose_name="Le véhicule est accessible aux personnes à mobilité réduite ?",
+        help_text=(
+            "Cochez la case si je véhicule est accessible. Vous pouvez retrouver cette information sur la mention « J.3 : "
+            "handicap » de la carte grise du véhicule concerné par l'ADS."
+        ),
     )
 
     commune_localisation = models.ForeignKey(
@@ -156,9 +166,11 @@ class Vehicule(models.Model):
         on_delete=models.RESTRICT,
         null=True,
         blank=True,
-        help_text="Commune où est situé le véhicule",
+        verbose_name="Commune où est situé le véhicule",
     )
 
     localisation = models.TextField(
-        null=False, blank=True, help_text="Adresse complète de localisation du véhicule"
+        null=False,
+        blank=True,
+        verbose_name="Adresse complète de localisation du véhicule",
     )
