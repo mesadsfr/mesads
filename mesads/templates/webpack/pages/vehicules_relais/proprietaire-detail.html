@@ -77,6 +77,10 @@
         <td>{{ vehicule.immatriculation|default:"-" }}</td>
         <td><a href="">Afficher les détails</a></td>
       </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5">Aucun véhicule enregistré</td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
