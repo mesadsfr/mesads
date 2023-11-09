@@ -22,7 +22,6 @@ class VehiculeForm(forms.ModelForm):
     class Meta:
         model = Vehicule
         fields = (
-            "departement",
             "immatriculation",
             "modele",
             "motorisation",
@@ -42,18 +41,25 @@ class VehiculeForm(forms.ModelForm):
         self.fields["nombre_places"].required = True
         self.fields["pmr"].required = True
 
-    departement = forms.ModelChoiceField(
-        queryset=Prefecture.objects,
-        widget=autocomplete.ListSelect2(url="fradm.autocomplete.prefecture"),
-        label=Vehicule.departement.field.verbose_name,
-        help_text=Vehicule.departement.field.help_text,
-        required=True,
-    )
-
     commune_localisation = forms.ModelChoiceField(
         queryset=Commune.objects,
         widget=autocomplete.ListSelect2(url="fradm.autocomplete.commune"),
         label=Vehicule.commune_localisation.field.verbose_name,
         help_text=Vehicule.commune_localisation.field.help_text,
         required=False,
+    )
+
+
+class VehiculeCreateForm(VehiculeForm):
+    """Similar to the edit form, but with a required departement field."""
+
+    class Meta(VehiculeForm.Meta):
+        fields = VehiculeForm.Meta.fields + ("departement",)
+
+    departement = forms.ModelChoiceField(
+        queryset=Prefecture.objects,
+        widget=autocomplete.ListSelect2(url="fradm.autocomplete.prefecture"),
+        label=Vehicule.departement.field.verbose_name,
+        help_text=Vehicule.departement.field.help_text,
+        required=True,
     )

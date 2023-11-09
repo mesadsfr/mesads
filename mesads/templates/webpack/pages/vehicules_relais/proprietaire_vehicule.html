@@ -59,8 +59,6 @@
 
       <strong>{{ object.departement.numero }} - {{ object.departement.libelle }}</strong>
     </div>
-    {% comment %} Provide the field in hidden to be able to validate the form {% endcomment %}
-    {{ form.departement.as_hidden }}
   {% else %}
     {% include 'form_fields/select-autocomplete.html' with field=form.departement field_errors=form.errors.departement required=form.fields.departement.required %}
   {% endif %}
