@@ -26,6 +26,11 @@
   </div>
 </nav>
 
+
+<p class="fr-text--lg">
+  Le numéro <strong>{{ object.numero }}</strong> a été attribué au véhicule. Vous pouvez consulter et modifier les informations du véhicule ci-dessous.
+</p>
+
 <form method="post" enctype="multipart/form-data">
   {% if form.non_field_errors %}
     <div class="fr-input-group fr-input-group--error">
