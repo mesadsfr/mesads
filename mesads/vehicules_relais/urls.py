@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.urls import path
 
 from . import views
@@ -53,7 +54,9 @@ urlpatterns = [
     ),
     path(
         "proprietaire/<int:proprietaire_id>/vehicules/<str:vehicule_numero>/historique",
-        proprietaire_required(views.ProprietaireVehiculeHistoryView.as_view()),
+        staff_member_required(
+            proprietaire_required(views.ProprietaireVehiculeHistoryView.as_view())
+        ),
         name="vehicules-relais.proprietaire.vehicule.history",
     ),
 ]
