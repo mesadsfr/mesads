@@ -109,33 +109,10 @@ class ProprietaireDetailView(DetailView):
         return ctx
 
 
-class ProprietaireVehiculeCreateView(CreateView):
-    template_name = "pages/vehicules_relais/proprietaire_vehicule.html"
-    form_class = VehiculeForm
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx["proprietaire"] = self.kwargs["proprietaire"]
-        return ctx
-
-    def form_valid(self, form):
-        form.instance.proprietaire = self.kwargs["proprietaire"]
-        messages.success(self.request, "Le véhicule a été enregistré.")
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return reverse(
-            "vehicules-relais.proprietaire.vehicule.edit",
-            kwargs={
-                "proprietaire_id": self.object.proprietaire.id,
-                "vehicule_numero": self.object.numero,
-            },
-        )
-
-
 class ProprietaireVehiculeUpdateView(UpdateView):
     template_name = "pages/vehicules_relais/proprietaire_vehicule.html"
     form_class = VehiculeForm
+    success_message = "Les modifications ont été enregistrées."
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -151,7 +128,7 @@ class ProprietaireVehiculeUpdateView(UpdateView):
 
     def form_valid(self, form):
         ret = super().form_valid(form)
-        messages.success(self.request, "Les modifications ont été enregistrées.")
+        messages.success(self.request, self.success_message)
         return ret
 
     def get_success_url(self):
@@ -162,3 +139,14 @@ class ProprietaireVehiculeUpdateView(UpdateView):
                 "vehicule_numero": self.object.numero,
             },
         )
+
+
+class ProprietaireVehiculeCreateView(ProprietaireVehiculeUpdateView, CreateView):
+    success_message = "Le véhicule a été enregistré."
+
+    def get_object(self, queryset=None):
+        return None
+
+    def form_valid(self, form):
+        form.instance.proprietaire = self.kwargs["proprietaire"]
+        return super().form_valid(form)
