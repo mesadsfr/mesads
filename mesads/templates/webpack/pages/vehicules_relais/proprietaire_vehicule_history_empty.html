@@ -1,0 +1,16 @@
+{% comment %} Display when the vehicule history is empty {% endcomment %}
+<div class="fr-alert fr-alert--info">
+  <h3 class="fr-alert__title">Historique des modifications du véhicule {{ object.numero }}</h3>
+
+  <p class="fr-mt-2w">
+    Sur cette page, vous trouverez la liste des modifications du véhicule <strong>{{ object.numero }}</strong>. Pour chaque modification, vous verrez la date de la modification, l'email de l'utilisateur à l'origine de la modification ainsi que les champs modifiés.
+  </p>
+
+  <p class="fr-mt-2w">
+    L'historique est pour l'instant vide, ce qui signifie que les caractéristiques du véhicule n'ont jamais été changées.
+  </p>
+
+  <p class="fr-mt-2w">
+    Si vous modifiez le véhicule et revenez sur cette page, l'historique des modifications sera disponible.
+  </p>
+</div>
