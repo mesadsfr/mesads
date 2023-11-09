@@ -27,10 +27,6 @@
 </nav>
 
 
-<p class="fr-text--lg">
-  Le numéro <strong>{{ object.numero }}</strong> a été attribué au véhicule. Vous pouvez consulter et modifier les informations du véhicule ci-dessous.
-</p>
-
 <form method="post" enctype="multipart/form-data">
   {% if form.non_field_errors %}
     <div class="fr-input-group fr-input-group--error">
@@ -45,7 +41,28 @@
 
   {% csrf_token %}
 
-  {% include 'form_fields/select-autocomplete.html' with field=form.departement field_errors=form.errors.departement required=form.fields.departement.required %}
+  {% if object %}
+    <div class="fr-input-group">
+      <label class="fr-label">
+        Numéro attribué au véhicule
+        <span class="fr-hint-text">Le numéro est attribué automatiquement et ne peut être changé.</span>
+      </label>
+
+      <strong>{{ object.numero }}</strong>
+    </div>
+
+    <div class="fr-input-group">
+      <label class="fr-label">
+        {{ form.departement.label }}
+        <span class="fr-hint-text">Le département est configuré lors de l'enregistrement du véhicule et ne peut être changé.</span>
+      </label>
+
+      <strong>{{ object.departement.numero }} - {{ object.departement.libelle }}</strong>
+    </div>
+  {% else %}
+    {% include 'form_fields/select-autocomplete.html' with field=form.departement field_errors=form.errors.departement required=form.fields.departement.required %}
+  {% endif %}
+
   {% include 'form_fields/string.html' with field=form.immatriculation field_errors=form.errors.immatriculation required=form.fields.immatriculation.required %}
   {% include 'form_fields/string.html' with field=form.modele field_errors=form.errors.modele required=form.fields.modele.required %}
   {% include 'form_fields/select.html' with field=form.motorisation field_errors=form.errors.motorisation required=form.fields.motorisation.required %}

@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 
 import reversion
@@ -61,6 +62,26 @@ class Vehicule(models.Model):
 
     def __str__(self):
         return f"Véhicule {self.numero} du département {self.departement.numero} - {self.proprietaire}"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if hasattr(self, "departement"):
+            self.__initial_departement = self.departement
+        else:
+            self.__initial_departement = None
+
+    def clean(self, *args, **kwargs):
+        if (
+            self.__initial_departement
+            and self.__initial_departement != self.departement
+        ):
+            raise ValidationError(
+                {
+                    "departement": "Une fois le véhicule créé, le département ne peut pas être modifié. "
+                    "Si vous souhaitez réellement changer le département, veuillez supprimer "
+                    "le véhicule et en enregistrer un nouveau."
+                }
+            )
 
     def save(self, *args, **kwargs):
         # Automatically set the number when creating a new instance.
