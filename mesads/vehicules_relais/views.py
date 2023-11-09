@@ -24,7 +24,7 @@ class IndexView(RedirectView):
 
 
 class SearchView(FormView):
-    template_name = "pages/vehicules_relais/search.html"
+    template_name = "pages/vehicules_relais/user_search.html"
     form_class = PrefectureForm
 
     def get_context_data(self, **kwargs):
@@ -45,7 +45,7 @@ class SearchView(FormView):
 
 
 class SearchDepartementView(TemplateView):
-    template_name = "pages/vehicules_relais/search_departement.html"
+    template_name = "pages/vehicules_relais/user_search_departement.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -57,7 +57,7 @@ class SearchDepartementView(TemplateView):
 
 
 class VehiculeView(TemplateView):
-    template_name = "pages/vehicules_relais/vehicule.html"
+    template_name = "pages/vehicules_relais/user_vehicule.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -66,7 +66,7 @@ class VehiculeView(TemplateView):
 
 
 class ProprietaireListView(ListView):
-    template_name = "pages/vehicules_relais/proprietaire-list.html"
+    template_name = "pages/vehicules_relais/proprietaire_list.html"
 
     def get_queryset(self):
         return Proprietaire.objects.filter(users__in=[self.request.user])
@@ -81,7 +81,7 @@ class ProprietaireListView(ListView):
 
 
 class ProprietaireCreateView(CreateView):
-    template_name = "pages/vehicules_relais/proprietaire-create.html"
+    template_name = "pages/vehicules_relais/proprietaire_create.html"
     form_class = ProprietaireForm
 
     def get_success_url(self):
@@ -97,7 +97,7 @@ class ProprietaireCreateView(CreateView):
 
 
 class ProprietaireDetailView(DetailView):
-    template_name = "pages/vehicules_relais/proprietaire-detail.html"
+    template_name = "pages/vehicules_relais/proprietaire_detail.html"
     model = Proprietaire
     pk_url_kwarg = "proprietaire_id"
 
@@ -109,8 +109,8 @@ class ProprietaireDetailView(DetailView):
         return ctx
 
 
-class VehiculeCreateView(CreateView):
-    template_name = "pages/vehicules_relais/vehicule-create.html"
+class ProprietaireVehiculeCreateView(CreateView):
+    template_name = "pages/vehicules_relais/proprietaire_vehicule.html"
     form_class = VehiculeForm
 
     def get_context_data(self, **kwargs):
@@ -120,17 +120,21 @@ class VehiculeCreateView(CreateView):
 
     def form_valid(self, form):
         form.instance.proprietaire = self.kwargs["proprietaire"]
+        messages.success(self.request, "Le véhicule a été enregistré.")
         return super().form_valid(form)
 
     def get_success_url(self):
         return reverse(
-            "vehicules-relais.proprietaire.detail",
-            kwargs={"proprietaire_id": self.kwargs["proprietaire_id"]},
+            "vehicules-relais.proprietaire.vehicule.edit",
+            kwargs={
+                "proprietaire_id": self.object.proprietaire.id,
+                "vehicule_numero": self.object.numero,
+            },
         )
 
 
-class VehiculeUpdateView(UpdateView):
-    template_name = "pages/vehicules_relais/vehicule_edit.html"
+class ProprietaireVehiculeUpdateView(UpdateView):
+    template_name = "pages/vehicules_relais/proprietaire_vehicule.html"
     form_class = VehiculeForm
 
     def get_context_data(self, **kwargs):
@@ -154,7 +158,7 @@ class VehiculeUpdateView(UpdateView):
         return reverse(
             "vehicules-relais.proprietaire.vehicule.edit",
             kwargs={
-                "proprietaire_id": self.kwargs["proprietaire_id"],
-                "vehicule_numero": self.kwargs["vehicule_numero"],
+                "proprietaire_id": self.object.proprietaire.id,
+                "vehicule_numero": self.object.numero,
             },
         )

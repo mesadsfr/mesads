@@ -43,12 +43,12 @@ urlpatterns = [
     ),
     path(
         "proprietaire/<int:proprietaire_id>/nouveau_vehicule",
-        proprietaire_required(views.VehiculeCreateView.as_view()),
+        proprietaire_required(views.ProprietaireVehiculeCreateView.as_view()),
         name="vehicules-relais.proprietaire.vehicule.new",
     ),
     path(
         "proprietaire/<int:proprietaire_id>/vehicules/<str:vehicule_numero>",
-        proprietaire_required(views.VehiculeUpdateView.as_view()),
+        proprietaire_required(views.ProprietaireVehiculeUpdateView.as_view()),
         name="vehicules-relais.proprietaire.vehicule.edit",
     ),
 ]
