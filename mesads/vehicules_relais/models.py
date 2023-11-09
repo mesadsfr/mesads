@@ -71,6 +71,7 @@ class Vehicule(models.Model):
             self.__initial_departement = None
 
     def clean(self, *args, **kwargs):
+        super().clean(*args, **kwargs)
         if (
             self.__initial_departement
             and self.__initial_departement != self.departement
