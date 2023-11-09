@@ -12,11 +12,15 @@ from django.views.generic import (
     UpdateView,
 )
 
+from reversion.views import RevisionMixin
+
 from mesads.fradm.forms import PrefectureForm
 from mesads.fradm.models import Prefecture
 
+from mesads.app.reversion_diff import ModelHistory
+
 from .models import Proprietaire, Vehicule
-from .forms import ProprietaireForm, VehiculeForm
+from .forms import ProprietaireForm, VehiculeForm, VehiculeCreateForm
 
 
 class IndexView(RedirectView):
@@ -109,7 +113,7 @@ class ProprietaireDetailView(DetailView):
         return ctx
 
 
-class ProprietaireVehiculeUpdateView(UpdateView):
+class ProprietaireVehiculeUpdateView(RevisionMixin, UpdateView):
     template_name = "pages/vehicules_relais/proprietaire_vehicule.html"
     form_class = VehiculeForm
     success_message = "Les modifications ont été enregistrées."
@@ -143,6 +147,7 @@ class ProprietaireVehiculeUpdateView(UpdateView):
 
 class ProprietaireVehiculeCreateView(ProprietaireVehiculeUpdateView, CreateView):
     success_message = "Le véhicule a été enregistré."
+    form_class = VehiculeCreateForm
 
     def get_object(self, queryset=None):
         return None
@@ -150,3 +155,28 @@ class ProprietaireVehiculeCreateView(ProprietaireVehiculeUpdateView, CreateView)
     def form_valid(self, form):
         form.instance.proprietaire = self.kwargs["proprietaire"]
         return super().form_valid(form)
+
+
+class ProprietaireVehiculeHistoryView(DetailView):
+    template_name = "pages/vehicules_relais/proprietaire_vehicule_history.html"
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(
+            Vehicule,
+            numero=self.kwargs["vehicule_numero"],
+            proprietaire=self.kwargs["proprietaire_id"],
+        )
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["history"] = ModelHistory(
+            self.object,
+            ignore_fields=[
+                Vehicule._meta.get_field("created_at"),
+                Vehicule._meta.get_field("last_update_at"),
+                Vehicule._meta.get_field("proprietaire"),
+                Vehicule._meta.get_field("departement"),
+            ],
+        )
+        ctx["proprietaire"] = self.kwargs["proprietaire"]
+        return ctx

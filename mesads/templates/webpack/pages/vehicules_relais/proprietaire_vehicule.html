@@ -26,6 +26,13 @@
   </div>
 </nav>
 
+{% if object %}
+<p>
+  🕰️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'vehicules-relais.proprietaire.vehicule.history' proprietaire_id=proprietaire.id vehicule_numero=object.numero %}">
+    Voir l'historique des modifications
+  </a>
+</p>
+{% endif %}
 
 <form method="post" enctype="multipart/form-data">
   {% if form.non_field_errors %}
