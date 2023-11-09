@@ -254,8 +254,8 @@ class ModelHistory:
             return next(
                 (
                     human_readable
-                    for value, human_readable in field.choices
-                    if value == value
+                    for field_value, human_readable in field.choices
+                    if field_value == value
                 ),
                 None,
             )
