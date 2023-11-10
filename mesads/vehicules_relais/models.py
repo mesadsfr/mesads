@@ -19,26 +19,22 @@ class Proprietaire(models.Model):
         null=False,
         blank=False,
         max_length=256,
-        help_text="Nom du propriétaire",
+        verbose_name="Nom du propriétaire",
     )
 
     siret = models.CharField(
         null=False,
         blank=True,
         max_length=64,
-        help_text="SIRET du propriétaire",
+        verbose_name="SIRET du propriétaire",
     )
 
     telephone = models.CharField(
-        null=False,
-        blank=True,
-        max_length=32,
+        null=False, blank=True, max_length=32, verbose_name="Numéro de téléphone"
     )
 
     email = models.EmailField(
-        null=False,
-        blank=True,
-        max_length=256,
+        null=False, blank=True, max_length=256, verbose_name="Adresse email"
     )
 
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
