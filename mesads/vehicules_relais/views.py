@@ -97,7 +97,7 @@ class ProprietaireEditView(UpdateView):
 
 
 class ProprietaireCreateView(ProprietaireEditView, CreateView):
-    template_name = "pages/vehicules_relais/proprietaire_create.html"
+    template_name = "pages/vehicules_relais/proprietaire_edit.html"
     form_class = ProprietaireForm
 
     def get_object(self, queryset=None):
