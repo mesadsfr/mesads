@@ -83,7 +83,7 @@ class ProprietaireListView(ListView):
         return ctx
 
 
-class ProprietaireEditView(UpdateView):
+class ProprietaireEditView(RevisionMixin, UpdateView):
     template_name = "pages/vehicules_relais/proprietaire_edit.html"
     model = Proprietaire
     pk_url_kwarg = "proprietaire_id"
@@ -119,6 +119,26 @@ class ProprietaireDetailView(DetailView):
         ctx["vehicules"] = Vehicule.objects.filter(
             proprietaire=self.object
         ).select_related("departement")
+        return ctx
+
+
+class ProprietaireHistoryView(DetailView):
+    template_name = "pages/vehicules_relais/proprietaire_history.html"
+    model = Proprietaire
+    pk_url_kwarg = "proprietaire_id"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["history"] = ModelHistory(
+            self.object,
+            ignore_fields=[
+                Proprietaire._meta.get_field("created_at"),
+                Proprietaire._meta.get_field("last_update_at"),
+                Proprietaire._meta.get_field("users"),
+                # Ignore all the changes to the vehicules.
+                *[field for field in Vehicule._meta.fields],
+            ],
+        )
         return ctx
 
 

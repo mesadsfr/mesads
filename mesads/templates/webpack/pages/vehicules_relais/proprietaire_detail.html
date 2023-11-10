@@ -17,6 +17,14 @@
   </div>
 </nav>
 
+{% if user.is_staff %}
+<p>
+  🕰️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'vehicules-relais.proprietaire.history' proprietaire_id=object.id %}">
+    Voir l'historique des modifications <small>(lien uniquement dispo pour l'équipe MesADS)</small>
+  </a>
+</p>
+{% endif %}
+
 <h2 class="fr-h4">Mes coordonnées</h2>
 
 <p>
