@@ -83,8 +83,10 @@ class ProprietaireListView(ListView):
         return ctx
 
 
-class ProprietaireCreateView(CreateView):
-    template_name = "pages/vehicules_relais/proprietaire_create.html"
+class ProprietaireEditView(UpdateView):
+    template_name = "pages/vehicules_relais/proprietaire_edit.html"
+    model = Proprietaire
+    pk_url_kwarg = "proprietaire_id"
     form_class = ProprietaireForm
 
     def get_success_url(self):
@@ -92,6 +94,14 @@ class ProprietaireCreateView(CreateView):
             "vehicules-relais.proprietaire.detail",
             kwargs={"proprietaire_id": self.object.id},
         )
+
+
+class ProprietaireCreateView(ProprietaireEditView, CreateView):
+    template_name = "pages/vehicules_relais/proprietaire_create.html"
+    form_class = ProprietaireForm
+
+    def get_object(self, queryset=None):
+        return None
 
     def form_valid(self, form):
         redirection = super().form_valid(form)

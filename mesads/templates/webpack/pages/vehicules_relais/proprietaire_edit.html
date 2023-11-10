@@ -10,23 +10,39 @@
       <li>
         <a class="fr-breadcrumb__link" href="{% url 'vehicules-relais.proprietaire' %}">Espace propriétaire</a>
       </li>
+      {% if object %}
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'vehicules-relais.proprietaire.detail' proprietaire_id=object.id %}">{{ object.nom }}</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" aria-current="page">Modifications des coordonnées</a>
+      </li>
+      {% else %}
       <li>
         <a class="fr-breadcrumb__link" aria-current="page">Créer un espace propriétaire</a>
       </li>
+      {% endif %}
     </ol>
   </div>
 </nav>
 
+{% if object %}
+<h1>Modifier votre espace propriétaire</h1>
+<p>
+  Vous pouvez mettre vos coordonnées à jour ici. Ces informations sont publiques et seront accessibles dans le registre des taxis relais.
+</p>
+{% else %}
 <h1>Créer un espace propriétaire</h1>
 
 <p>
-  Conformément aux dispositions de <a target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047937443">l'article 3 de l'arrêté du 28 juillet 2023</a>, tout détenteur d’un véhicule relais doit le déclarer dans le registre départemental des taxis relais.
+  Conformément aux dispositions de <a target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047937443">l'article 3 de l'arrêté du 28 juillet 2023</a>, tout détenteur d'un véhicule relais doit le déclarer dans le registre départemental des taxis relais.
 </p>
 
 <p>
   Renseignez vos coordonnées pour pouvoir enregistrer le nouveau profil.
   Ces informations sont publiques et seront accessibles dans le registre des taxis relais.
 </p>
+{% endif %}
 
 <hr />
 
@@ -51,7 +67,13 @@
 
   <!-- Submit buttons -->
   <div class="fr-input-group">
-    <button type="submit" class="fr-btn">Créer l'espace propriétaire</button>
+    <button type="submit" class="fr-btn">
+      {% if object %}
+        Modifier l'espace propriétaire
+      {% else %}
+        Créer l'espace propriétaire
+      {% endif %}
+    </button>
   </div>
 </form>
 {% endblock %}
