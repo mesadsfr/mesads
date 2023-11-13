@@ -73,7 +73,9 @@ class ProprietaireListView(ListView):
     paginate_by = 50
 
     def get_queryset(self):
-        return Proprietaire.objects.filter(users__in=[self.request.user])
+        return Proprietaire.objects.filter(users__in=[self.request.user]).order_by(
+            "nom"
+        )
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -115,9 +117,11 @@ class ProprietaireDetailView(ListView):
     paginate_by = 50
 
     def get_queryset(self):
-        return Vehicule.objects.filter(
-            proprietaire=self.kwargs["proprietaire_id"]
-        ).select_related("departement")
+        return (
+            Vehicule.objects.filter(proprietaire=self.kwargs["proprietaire_id"])
+            .select_related("departement")
+            .order_by(("numero"))
+        )
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
