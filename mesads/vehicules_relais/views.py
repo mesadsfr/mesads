@@ -110,16 +110,18 @@ class ProprietaireCreateView(ProprietaireEditView, CreateView):
         return redirection
 
 
-class ProprietaireDetailView(DetailView):
+class ProprietaireDetailView(ListView):
     template_name = "pages/vehicules_relais/proprietaire_detail.html"
-    model = Proprietaire
-    pk_url_kwarg = "proprietaire_id"
+    paginate_by = 50
+
+    def get_queryset(self):
+        return Vehicule.objects.filter(
+            proprietaire=self.kwargs["proprietaire_id"]
+        ).select_related("departement")
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["vehicules"] = Vehicule.objects.filter(
-            proprietaire=self.object
-        ).select_related("departement")
+        ctx["object"] = self.kwargs["proprietaire"]
         return ctx
 
 
