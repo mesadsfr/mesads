@@ -1,5 +1,7 @@
 {% extends "../../base-sidemenu.html" %}
 
+{% load show_pagination_links %}
+
 {% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
 
 {% block main %}
@@ -33,7 +35,7 @@
   </a>
 </p>
 
-<div class="fr-table fr-table--bordered">
+<div class="fr-table">
   <table>
     <thead>
       <tr>
@@ -52,6 +54,8 @@
       {% endfor %}
     </tbody>
   </table>
+
+  {% show_pagination_links page_obj %}
 </div>
 {% endif %}
 

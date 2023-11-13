@@ -70,6 +70,7 @@ class VehiculeView(TemplateView):
 
 class ProprietaireListView(ListView):
     template_name = "pages/vehicules_relais/proprietaire_list.html"
+    paginate_by = 50
 
     def get_queryset(self):
         return Proprietaire.objects.filter(users__in=[self.request.user])
