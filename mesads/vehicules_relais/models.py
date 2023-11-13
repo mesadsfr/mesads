@@ -174,8 +174,8 @@ class Vehicule(models.Model):
         blank=True,
         verbose_name="Le véhicule est accessible aux personnes à mobilité réduite ?",
         help_text=(
-            "Cochez la case si je véhicule est accessible. Vous pouvez retrouver cette information sur la mention « J.3 : "
-            "handicap » de la carte grise du véhicule concerné par l'ADS."
+            "Vous pouvez retrouver cette information sur la mention « J.3 : handicap » de la "
+            "carte grise du véhicule concerné par l'ADS."
         ),
     )
 

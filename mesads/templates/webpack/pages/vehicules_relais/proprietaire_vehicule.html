@@ -77,7 +77,7 @@
   {% include 'form_fields/select.html' with field=form.motorisation field_errors=form.errors.motorisation required=form.fields.motorisation.required %}
   {% include 'form_fields/date.html' with field=form.date_mise_circulation field_errors=form.errors.date_mise_circulation required=form.fields.date_mise_circulation.required %}
   {% include 'form_fields/number.html' with field=form.nombre_places field_errors=form.errors.nombre_places required=form.fields.nombre_places.required %}
-  {% include 'form_fields/bool.html' with field=form.pmr field_errors=form.errors.pmr required=form.fields.pmr.required %}
+  {% include 'form_fields/select.html' with field=form.pmr field_errors=form.errors.pmr required=form.fields.pmr.required %}
   {% include 'form_fields/select-autocomplete.html' with field=form.commune_localisation field_errors=form.errors.commune_localisation %}
   {% include 'form_fields/textarea.html' with field=form.localisation field_errors=form.errors.localisation required=form.fields.localisation.required %}
 
