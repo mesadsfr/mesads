@@ -10,6 +10,9 @@ class UsersInline(admin.TabularInline):
 
 @admin.register(Proprietaire)
 class ProprietaireAdmin(admin.ModelAdmin):
+    def get_queryset(self, request):
+        return Proprietaire.with_deleted.get_queryset()
+
     list_display = (
         "nom",
         "siret",
@@ -25,6 +28,7 @@ class ProprietaireAdmin(admin.ModelAdmin):
     fields = (
         "created_at",
         "last_update_at",
+        "deleted_at",
         "nom",
         "siret",
         "telephone",
@@ -34,6 +38,7 @@ class ProprietaireAdmin(admin.ModelAdmin):
     readonly_fields = (
         "created_at",
         "last_update_at",
+        "deleted_at",
     )
 
     inlines = (UsersInline,)
@@ -41,6 +46,9 @@ class ProprietaireAdmin(admin.ModelAdmin):
 
 @admin.register(Vehicule)
 class VehiculeAdmin(admin.ModelAdmin):
+    def get_queryset(self, request):
+        return Vehicule.with_deleted.get_queryset()
+
     list_display = (
         "proprietaire",
         "departement",
@@ -52,6 +60,7 @@ class VehiculeAdmin(admin.ModelAdmin):
     fields = (
         "created_at",
         "last_update_at",
+        "deleted_at",
         "proprietaire",
         "departement",
         "numero",
@@ -68,6 +77,7 @@ class VehiculeAdmin(admin.ModelAdmin):
     readonly_fields = (
         "created_at",
         "last_update_at",
+        "deleted_at",
         "numero",
     )
 

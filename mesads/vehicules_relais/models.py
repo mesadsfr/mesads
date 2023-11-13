@@ -5,11 +5,19 @@ from django.db import models
 import reversion
 
 from mesads.fradm.models import Commune, Prefecture
-from mesads.app.models import SmartValidationMixin, validate_siret
+from mesads.app.models import (
+    SmartValidationMixin,
+    validate_siret,
+    CharFieldsStripperMixin,
+    SoftDeleteMixin,
+    SoftDeleteManager,
+)
 
 
 @reversion.register
-class Proprietaire(SmartValidationMixin, models.Model):
+class Proprietaire(
+    SmartValidationMixin, CharFieldsStripperMixin, SoftDeleteMixin, models.Model
+):
     def __str__(self):
         return self.nom
 
@@ -45,7 +53,7 @@ class Proprietaire(SmartValidationMixin, models.Model):
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
 
 
-class VehiculeManager(models.Manager):
+class VehiculeManager(SoftDeleteManager):
     def get_next_number(self, departement):
         """Get the current last number for the specified departement."""
         try:
@@ -58,7 +66,7 @@ class VehiculeManager(models.Manager):
 
 
 @reversion.register
-class Vehicule(models.Model):
+class Vehicule(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
     objects = VehiculeManager()
 
     def __str__(self):
