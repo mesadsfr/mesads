@@ -5,12 +5,17 @@ from django.db import models
 import reversion
 
 from mesads.fradm.models import Commune, Prefecture
+from mesads.app.models import SmartValidationMixin, validate_siret
 
 
 @reversion.register
-class Proprietaire(models.Model):
+class Proprietaire(SmartValidationMixin, models.Model):
     def __str__(self):
         return self.nom
+
+    SMART_VALIDATION_WATCHED_FIELDS = {
+        "siret": lambda _, siret: validate_siret(siret),
+    }
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     last_update_at = models.DateTimeField(auto_now=True, null=True)
