@@ -38,7 +38,6 @@ class ProprietaireAdmin(admin.ModelAdmin):
     readonly_fields = (
         "created_at",
         "last_update_at",
-        "deleted_at",
     )
 
     inlines = (UsersInline,)
@@ -77,7 +76,6 @@ class VehiculeAdmin(admin.ModelAdmin):
     readonly_fields = (
         "created_at",
         "last_update_at",
-        "deleted_at",
         "numero",
     )
 
