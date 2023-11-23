@@ -4,6 +4,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     CreateView,
     DetailView,
+    DeleteView,
     FormView,
     ListView,
     RedirectView,
@@ -179,6 +180,19 @@ class ProprietaireVehiculeUpdateView(RevisionMixin, UpdateView):
                 "vehicule_numero": self.object.numero,
             },
         )
+
+
+class ProprietaireVehiculeDeleteView(RevisionMixin, DeleteView):
+    template_name = "pages/vehicules_relais/proprietaire_vehicule_confirm_delete.html"
+    model = Vehicule
+
+    def get_queryset(self):
+        return Vehicule.objects
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["proprietaire"] = self.kwargs["proprietaire"]
+        return ctx
 
 
 class ProprietaireVehiculeCreateView(ProprietaireVehiculeUpdateView, CreateView):
