@@ -186,13 +186,24 @@ class ProprietaireVehiculeDeleteView(RevisionMixin, DeleteView):
     template_name = "pages/vehicules_relais/proprietaire_vehicule_confirm_delete.html"
     model = Vehicule
 
-    def get_queryset(self):
-        return Vehicule.objects
+    def get_object(self, queryset=None):
+        return Vehicule.objects.filter(
+            proprietaire_id=self.kwargs["proprietaire_id"],
+            numero=self.kwargs["vehicule_numero"],
+        ).first()
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["proprietaire"] = self.kwargs["proprietaire"]
         return ctx
+
+    def get_success_url(self):
+        return reverse(
+            "vehicules-relais.proprietaire.detail",
+            kwargs={
+                "proprietaire_id": self.kwargs["proprietaire_id"],
+            },
+        )
 
 
 class ProprietaireVehiculeCreateView(ProprietaireVehiculeUpdateView, CreateView):
