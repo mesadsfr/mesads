@@ -167,9 +167,12 @@ class ProprietaireVehiculeUpdateView(RevisionMixin, UpdateView):
             proprietaire=self.kwargs["proprietaire_id"],
         )
 
+    def get_success_message(self):
+        return self.success_message
+
     def form_valid(self, form):
         ret = super().form_valid(form)
-        messages.success(self.request, self.success_message)
+        messages.success(self.request, self.get_success_message())
         return ret
 
     def get_success_url(self):
@@ -207,7 +210,6 @@ class ProprietaireVehiculeDeleteView(RevisionMixin, DeleteView):
 
 
 class ProprietaireVehiculeCreateView(ProprietaireVehiculeUpdateView, CreateView):
-    success_message = "Le véhicule a été enregistré."
     form_class = VehiculeCreateForm
 
     def get_object(self, queryset=None):
@@ -216,6 +218,9 @@ class ProprietaireVehiculeCreateView(ProprietaireVehiculeUpdateView, CreateView)
     def form_valid(self, form):
         form.instance.proprietaire = self.kwargs["proprietaire"]
         return super().form_valid(form)
+
+    def get_success_message(self):
+        return f"Le véhicule a été enregistré. Le numéro {self.object.numero} lui a été attribué."
 
 
 class ProprietaireVehiculeHistoryView(DetailView):
