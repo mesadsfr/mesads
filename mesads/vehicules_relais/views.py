@@ -220,7 +220,7 @@ class ProprietaireVehiculeCreateView(ProprietaireVehiculeUpdateView, CreateView)
         return super().form_valid(form)
 
     def get_success_message(self):
-        return f"Le véhicule a été enregistré. Le numéro {self.object.numero} lui a été attribué."
+        return f"Le véhicule a été enregistré. Le numéro <strong>{self.object.numero}</strong> lui a été attribué."
 
 
 class ProprietaireVehiculeHistoryView(DetailView):
