@@ -18,6 +18,10 @@ from mesads.app.models import (
 class Proprietaire(
     SmartValidationMixin, CharFieldsStripperMixin, SoftDeleteMixin, models.Model
 ):
+    class Meta:
+        verbose_name = "Propriétaire de véhicules relais"
+        verbose_name_plural = "Propriétaires de véhicules relais"
+
     def __str__(self):
         return self.nom
 
@@ -69,6 +73,10 @@ class VehiculeManager(SoftDeleteManager):
 
 @reversion.register
 class Vehicule(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
+    class Meta:
+        verbose_name = "Véhicule relais"
+        verbose_name_plural = "Véhicules relais"
+
     objects = VehiculeManager()
 
     def __str__(self):
