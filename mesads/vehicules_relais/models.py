@@ -57,7 +57,9 @@ class VehiculeManager(SoftDeleteManager):
     def get_next_number(self, departement):
         """Get the current last number for the specified departement."""
         try:
-            last_vehicule = self.filter(departement=departement).latest("id")
+            last_vehicule = Vehicule.with_deleted.filter(
+                departement=departement
+            ).latest("id")
         except Vehicule.DoesNotExist:
             return f"{departement.numero:02s}-01"
 
