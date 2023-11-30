@@ -132,7 +132,21 @@ class ProprietaireDetailView(ListView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["object"] = self.kwargs["proprietaire"]
+        ctx["deletable"] = self.kwargs["proprietaire"].vehicule_set.count() == 0
         return ctx
+
+
+class ProprietaireDeleteView(RevisionMixin, DeleteView):
+    template_name = "pages/vehicules_relais/proprietaire_confirm_delete.html"
+    model = Proprietaire
+
+    def get_object(self, queryset=None):
+        return Proprietaire.objects.filter(id=self.kwargs["proprietaire_id"]).first()
+
+    def get_success_url(self):
+        return reverse(
+            "vehicules-relais.proprietaire",
+        )
 
 
 class ProprietaireHistoryView(DetailView):

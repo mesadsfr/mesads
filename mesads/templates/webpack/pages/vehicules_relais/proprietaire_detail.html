@@ -25,6 +25,11 @@
     Voir l'historique des modifications <small>(lien uniquement dispo pour l'équipe MesADS)</small>
   </a>
 </p>
+  {% if deletable %}
+  <p>
+    <a class="fr-link fr-icon-delete-line fr-link--icon-left" href="{% url 'vehicules-relais.proprietaire.delete' proprietaire_id=object.id %}" style="color: var(--text-default-error)">Supprimer mon espace propriétaire</a>
+  </p>
+  {% endif %}
 {% endif %}
 
 <h2 class="fr-h4">Mes coordonnées</h2>
@@ -97,5 +102,4 @@
 
   {% show_pagination_links page_obj %}
 </div>
-
 {% endblock %}
