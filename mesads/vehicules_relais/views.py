@@ -48,15 +48,20 @@ class SearchView(FormView):
         )
 
 
-class SearchDepartementView(TemplateView):
+class SearchDepartementView(ListView):
     template_name = "pages/vehicules_relais/user_search_departement.html"
+    paginate_by = 100
+
+    def get_queryset(self):
+        return Vehicule.objects.filter(
+            departement__numero=self.kwargs["departement"]
+        ).select_related("proprietaire")
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["prefecture"] = get_object_or_404(Prefecture, numero=kwargs["departement"])
-        ctx["vehicules"] = Vehicule.objects.filter(
-            departement=ctx["prefecture"]
-        ).select_related("proprietaire")
+        ctx["prefecture"] = get_object_or_404(
+            Prefecture, numero=self.kwargs["departement"]
+        )
         return ctx
 
 

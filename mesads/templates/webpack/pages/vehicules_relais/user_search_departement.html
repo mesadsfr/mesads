@@ -1,5 +1,7 @@
 {% extends "../../base-sidemenu.html" %}
 
+{% load show_pagination_links %}
+
 {% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
 
 {% block main %}
@@ -40,7 +42,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for vehicule in vehicules %}
+      {% for vehicule in vehicule_list %}
       <tr>
         <td><strong>{{ vehicule.numero }}</strong></td>
         <td>{{ vehicule.modele }}</td>
@@ -64,6 +66,8 @@
       {% endfor %}
     </tbody>
   </table>
+
+  {% show_pagination_links page_obj %}
 </div>
 
 {% endblock %}
