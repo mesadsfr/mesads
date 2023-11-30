@@ -43,7 +43,7 @@ urlpatterns = [
         name="vehicules-relais.proprietaire.detail",
     ),
     path(
-        "proprietaire/<int:proprietaire_id>/delete",
+        "proprietaire/<int:proprietaire_id>/supprimer",
         proprietaire_required(views.ProprietaireDeleteView.as_view()),
         name="vehicules-relais.proprietaire.delete",
     ),

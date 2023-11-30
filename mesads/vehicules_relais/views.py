@@ -20,7 +20,12 @@ from mesads.fradm.models import Prefecture
 from mesads.app.reversion_diff import ModelHistory
 
 from .models import Proprietaire, Vehicule
-from .forms import ProprietaireForm, VehiculeForm, VehiculeCreateForm
+from .forms import (
+    ProprietaireDeleteForm,
+    ProprietaireForm,
+    VehiculeCreateForm,
+    VehiculeForm,
+)
 
 
 class IndexView(RedirectView):
@@ -139,9 +144,15 @@ class ProprietaireDetailView(ListView):
 class ProprietaireDeleteView(RevisionMixin, DeleteView):
     template_name = "pages/vehicules_relais/proprietaire_confirm_delete.html"
     model = Proprietaire
+    form_class = ProprietaireDeleteForm
 
     def get_object(self, queryset=None):
         return Proprietaire.objects.filter(id=self.kwargs["proprietaire_id"]).first()
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["proprietaire"] = self.object
+        return kwargs
 
     def get_success_url(self):
         return reverse(

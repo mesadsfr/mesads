@@ -39,6 +39,17 @@
 </div>
 
 <form class="fr-mt-3w" method="post">
+  {% if form.non_field_errors %}
+  <div class="fr-input-group fr-input-group--error">
+      {% for error in form.non_field_errors %}
+      <!-- Non-field error -->
+      <p class="fr-error-text">
+      {{ error }}
+      </p>
+      {% endfor %}
+  </div>
+  {% endif %}
+
   {% csrf_token %}
   <input
     class="fr-btn"
