@@ -14,3 +14,4 @@ dist
 .s3cfg
 ~*.docx
 dist_webpack
+*.xlsx
