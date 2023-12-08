@@ -544,8 +544,6 @@ class Command(BaseCommand):
 
                 if last_exc:
                     raise last_exc
-
-                raise ValueError("remove this line, this is just for testing purpose")
         except:
             self._log(
                 self.style.ERROR, "Échec de l'import, aucune ADS n'a été enregistrée"
