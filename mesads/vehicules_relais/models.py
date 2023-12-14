@@ -137,6 +137,7 @@ class Vehicule(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
         on_delete=models.RESTRICT,
         null=False,
         verbose_name="Département du véhicule relais",
+        help_text="Un véhicule relais ne peut être enregistré que pour un seul département.",
     )
 
     numero = models.CharField(
