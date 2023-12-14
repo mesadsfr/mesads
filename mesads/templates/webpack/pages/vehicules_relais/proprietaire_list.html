@@ -22,7 +22,13 @@
 <div class="fr-alert fr-alert--error">
   <h3 class="fr-alert__title">Votre compte propriétaire n'est pas activé</h3>
   <p>
-    Il est nécessaire d'activer votre compte propriétaire avant de pouvoir enregistrer vos véhicules relais.
+    Si vous êtes détenteur de taxis relais, il est nécessaire d'activer votre compte propriétaire avant de pouvoir les enregistrer.
+  </p>
+  <p>
+    Si vous n'êtes pas détenteur de taxis relais, cette section ne vous concerne pas et vous ne devez pas activer l'espace propriétaire.
+  </p>
+  <p>
+    En cas de doute, n'hésitez pas à contacter notre équipe par chat ou par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
   </p>
   <p class="fr-grid-row fr-grid-row--center fr-mt-2w">
     <a class="fr-btn fr-btn--secondary" href="{% url 'vehicules-relais.proprietaire.new' %}">Activer mon espace propriétaire</a>
