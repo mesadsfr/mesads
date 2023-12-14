@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import functools
 import itertools
@@ -218,7 +219,7 @@ class ADSImporter:
     def fmt_col_error(self, msg, value, idx):
         return ValueError(f"{msg}. Colonne {self.excel.idx_to_colname(idx)}: {value}")
 
-    def load_ads(self, cols):
+    def load_ads(self, cols, override=False):
         departement = self.find_departement(
             cols[self.excel.idx("numéro du département")]
         )
@@ -234,7 +235,12 @@ class ADSImporter:
             )
         ]
         ads = self.find_existing_ads(ads_manager, ads_number)
-        if ads:
+        if ads and not override:
+            raise self.fmt_col_error(
+                f"ADS {ads_number} déjà existante, mais le paramètre --override n'a pas été spécifié",
+                f"ADS id={ads.id}",
+                self.excel.idx("numéro de l'ads", exact=True),
+            )
             exists = True
         else:
             ads = ADS(ads_manager=ads_manager, number=ads_number)
@@ -476,13 +482,19 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("-f", "--ads-file", required=True)
+        parser.add_argument(
+            "--save", action=argparse.BooleanOptionalAction, default=False
+        )
+        parser.add_argument(
+            "--override", action=argparse.BooleanOptionalAction, default=False
+        )
 
     def _log(self, level, msg, icon=None):
         if not icon:
             icon = (level == self.style.SUCCESS) and "✅" or "❌"
         sys.stdout.write(level(f"{icon} {msg}\n"))
 
-    def handle(self, ads_file, **opts):
+    def handle(self, ads_file, override=False, save=False, **opts):
         workbook = openpyxl.load_workbook(ads_file)
         sheet = workbook.active
         importer = ADSImporter()
@@ -497,7 +509,7 @@ class Command(BaseCommand):
 
         for idx, cols in enumerate(sheet.iter_rows(min_row=2, values_only=True)):
             try:
-                ads, exists = importer.load_ads(cols)
+                ads, exists = importer.load_ads(cols, override=override)
                 if exists:
                     self._log(
                         self.style.SUCCESS,
@@ -549,6 +561,12 @@ class Command(BaseCommand):
 
                 if last_exc:
                     raise last_exc
+                elif not save:
+                    self._log(
+                        self.style.WARNING,
+                        f"Les ADS ne sont pas enregistrées car le paramètre --save n'a pas été spécifié",
+                    )
+                    raise ValueError
         except:
             self._log(
                 self.style.ERROR, "Échec de l'import, aucune ADS n'a été enregistrée"
