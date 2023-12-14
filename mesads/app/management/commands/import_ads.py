@@ -213,12 +213,10 @@ class ADSImporter:
         for idx, (col, exp) in enumerate(itertools.zip_longest(cols, self.COLUMNS)):
             if col == exp or col.strip() == exp.strip():
                 continue
-            raise ValueError(
-                f"\n=> Colonne {self.excel.idx_to_colname(idx)}: valeur inattendue:\n{col}\n\n=> Valeur attendue:\n{exp}"
-            )
+            raise self.fmt_col_error(f'valeur attendue: "{exp}"', col, idx)
 
     def fmt_col_error(self, msg, value, idx):
-        return ValueError(f"{msg} (colonne {self.excel.idx_to_colname(idx)}): {value}")
+        return ValueError(f"{msg}. Colonne {self.excel.idx_to_colname(idx)}: {value}")
 
     def load_ads(self, cols):
         departement = self.find_departement(
