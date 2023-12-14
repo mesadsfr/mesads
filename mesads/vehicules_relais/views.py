@@ -58,9 +58,11 @@ class SearchDepartementView(ListView):
     paginate_by = 100
 
     def get_queryset(self):
-        return Vehicule.objects.filter(
-            departement__numero=self.kwargs["departement"]
-        ).select_related("proprietaire")
+        return (
+            Vehicule.objects.filter(departement__numero=self.kwargs["departement"])
+            .order_by("numero")
+            .select_related("proprietaire")
+        )
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
