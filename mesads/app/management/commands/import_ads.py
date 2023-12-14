@@ -308,6 +308,12 @@ class ADSImporter:
         ads.owner_license_number = self.parse_license_number(
             cols, self.excel.idx("carte professionnelle du titulaire")
         )
+
+        if not ads.attribution_type:
+            ads.attribution_type = ""
+        if not ads.attribution_reason:
+            ads.attribution_reason = ""
+
         self.load_ads_users(cols, ads)
         return ads, exists
 
