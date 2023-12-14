@@ -235,16 +235,14 @@ class ADSImporter:
             )
         ]
         ads = self.find_existing_ads(ads_manager, ads_number)
-        if ads and not override:
+        if not ads:
+            ads = ADS(ads_manager=ads_manager, number=ads_number)
+        elif not override:
             raise self.fmt_col_error(
                 f"ADS {ads_number} déjà existante, mais le paramètre --override n'a pas été spécifié",
                 f"ADS id={ads.id}",
                 self.excel.idx("numéro de l'ads", exact=True),
             )
-            exists = True
-        else:
-            ads = ADS(ads_manager=ads_manager, number=ads_number)
-            exists = False
 
         ads.ads_creation_date = self.parse_date(
             cols,
@@ -319,7 +317,7 @@ class ADSImporter:
             ads.attribution_reason = ""
 
         ads_users = self.load_ads_users(cols, ads)
-        return ads, ads_users, exists
+        return ads, ads_users
 
     def load_ads_users(self, cols, ads):
         """Load the ADS users from the excel file"""
@@ -549,8 +547,8 @@ class Command(BaseCommand):
 
         for idx, cols in enumerate(sheet.iter_rows(min_row=2, values_only=True)):
             try:
-                ads, ads_users, exists = importer.load_ads(cols, override=override)
-                if exists:
+                ads, ads_users = importer.load_ads(cols, override=override)
+                if ads.id:
                     self._log(
                         self.style.SUCCESS,
                         f"Ligne {idx+2}: ADS {ads.id} prête à être mise à jour",
