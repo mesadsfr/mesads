@@ -211,10 +211,11 @@ class ADSImporter:
     def check_header(self, cols):
         """Make sure the header has the columns we expect."""
         for idx, (col, exp) in enumerate(itertools.zip_longest(cols, self.COLUMNS)):
-            if col.strip() != exp.strip():
-                raise ValueError(
-                    f"\n=> Colonne {idx}: valeur inattendue:\n{col}\n\n=> Valeur attendue:\n{exp}"
-                )
+            if col == exp or col.strip() == exp.strip():
+                continue
+            raise ValueError(
+                f"\n=> Colonne {self.excel.idx_to_colname(idx)}: valeur inattendue:\n{col}\n\n=> Valeur attendue:\n{exp}"
+            )
 
     def fmt_col_error(self, msg, value, idx):
         return ValueError(f"{msg} (colonne {self.excel.idx_to_colname(idx)}): {value}")
