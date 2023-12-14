@@ -442,6 +442,10 @@ class ADSImporter:
         if not cols[idx]:
             return ""
         phone = "".join(str(cols[idx]).split())
+        # Accept 9 digits phone numbers
+        if len(phone) == 9:
+            phone = "0" + phone
+
         if len(phone) != 10:
             raise self.fmt_col_error(
                 "Numéro de téléphone invalide, doit faire 10 chiffres", cols[idx], idx
