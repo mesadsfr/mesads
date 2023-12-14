@@ -13,7 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from mesads.app.models import ADS, ADSManager, validate_siret
+from mesads.app.models import ADS, ADSManager, ADSUser, validate_siret
 from mesads.fradm.models import Commune, Prefecture
 
 
@@ -318,36 +318,72 @@ class ADSImporter:
         if not ads.attribution_reason:
             ads.attribution_reason = ""
 
-        self.load_ads_users(cols, ads)
-        return ads, exists
+        ads_users = self.load_ads_users(cols, ads)
+        return ads, ads_users, exists
 
     def load_ads_users(self, cols, ads):
         """Load the ADS users from the excel file"""
+        ads_users = []
         for i in range(9):
-            idx = self.excel.nidx("nom de l'exploitant", i)
-            if cols[idx]:
+            name_exploitant_idx = self.excel.nidx("nom de l'exploitant", i)
+            siret_exploitant_idx = self.excel.nidx("siret de l'exploitant", i)
+            license_number_exploitant_idx = self.excel.nidx(
+                "numéro de la carte professionnelle", i, exact=True
+            )
+            if (
+                not cols[name_exploitant_idx]
+                and not cols[siret_exploitant_idx]
+                and not cols[license_number_exploitant_idx]
+            ):
+                continue
+
+            # Content of the first non-empty column set between name, siret and license number
+            first_col_set = (
+                cols[name_exploitant_idx]
+                or cols[siret_exploitant_idx]
+                or (cols[license_number_exploitant_idx])
+            )
+            # Index of the first non-empty column
+            first_col_set_idx = (
+                (cols[name_exploitant_idx] and name_exploitant_idx)
+                or (cols[siret_exploitant_idx] and siret_exploitant_idx)
+                or (
+                    cols[license_number_exploitant_idx]
+                    and license_number_exploitant_idx
+                )
+            )
+
+            if ads.ads_creation_date >= datetime.date(2014, 10, 1):
                 raise self.fmt_col_error(
-                    "Ce script ne permet pas encore d'importer les exploitants de l'ADS. Toutes les colonnes doivent rester vides",
-                    cols[idx],
-                    idx,
+                    "L'exploitant de l'ADS ne peut être défini que pour les anciennes ADS",
+                    first_col_set,
+                    first_col_set_idx,
                 )
 
-            idx = self.excel.nidx("siret de l'exploitant", i)
-            if cols[idx]:
+            if ads.used_by_owner:
                 raise self.fmt_col_error(
-                    "Ce script ne permet pas encore d'importer les exploitants de l'ADS. Toutes les colonnes doivent rester vides",
-                    cols[idx],
-                    cols[idx],
-                    idx,
+                    "L'exploitant de l'ADS ne peut être défini que pour les ADS non exploitées par leur titulaire",
+                    first_col_set,
+                    first_col_set_idx,
                 )
 
-            idx = self.excel.nidx("numéro de la carte professionnelle", i, exact=True)
-            if cols[idx]:
+            count = ADSUser.objects.filter(ads=ads).count()
+            if count:
                 raise self.fmt_col_error(
-                    "Ce script ne permet pas encore d'importer les exploitants de l'ADS. Toutes les colonnes doivent rester vides",
-                    cols[idx],
-                    idx,
+                    f"L'ADS {ads.number} a déjà {count} exploitants définis. Ce script ne permet pas de modifier les exploitants d'une ADS",
+                    first_col_set,
+                    first_col_set_idx,
                 )
+
+            ads_users.append(
+                ADSUser(
+                    ads=ads,
+                    name=cols[name_exploitant_idx] or "",
+                    siret=cols[siret_exploitant_idx] or "",
+                    license_number=cols[license_number_exploitant_idx] or "",
+                )
+            )
+        return ads_users
 
     @functools.cache
     def find_departement(self, numero):
@@ -513,7 +549,7 @@ class Command(BaseCommand):
 
         for idx, cols in enumerate(sheet.iter_rows(min_row=2, values_only=True)):
             try:
-                ads, exists = importer.load_ads(cols, override=override)
+                ads, ads_users, exists = importer.load_ads(cols, override=override)
                 if exists:
                     self._log(
                         self.style.SUCCESS,
@@ -524,7 +560,12 @@ class Command(BaseCommand):
                         self.style.SUCCESS,
                         f"Ligne {idx+2}: préparation d'une nouvelle ADS",
                     )
-                ads_list.append(ads)
+                ads_list.append(
+                    {
+                        "ads": ads,
+                        "ads_users": ads_users,
+                    }
+                )
             except ValueError as exc:
                 self._log(self.style.ERROR, f"Line {idx+2}: {exc}")
                 has_error = True
@@ -551,16 +592,25 @@ class Command(BaseCommand):
                         # fails, we still try to save the others but the outer
                         # transaction will be rolled back.
                         with transaction.atomic():
-                            ads.save()
+                            ads["ads"].save()
                             self._log(
                                 self.style.SUCCESS,
-                                f"Ligne {idx+1}: ADS numéro {ads.number} enregistrée",
+                                f"Ligne {idx+1}: ADS numéro {ads['ads'].number} enregistrée",
                             )
+
+                            for ads_user in ads["ads_users"]:
+                                ads_user.save()
+                                self._log(
+                                    self.style.SUCCESS,
+                                    f"Exploitant {ads_user.name} /  {ads_user.siret} / {ads_user.license_number} enregistré",
+                                    icon="  ",
+                                )
+
                     except Exception as exc:
                         last_exc = exc
                         self._log(
                             self.style.ERROR,
-                            f"Ligne {idx+1}: échec de l'import de l'ADS {ads.number}: {exc}",
+                            f"Ligne {idx+1}: échec de l'import de l'ADS {ads['ads'].number}: {exc}",
                         )
 
                 if last_exc:
