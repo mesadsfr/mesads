@@ -210,9 +210,3 @@ class Vehicule(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
         blank=True,
         verbose_name="Commune où est situé le véhicule",
     )
-
-    localisation = models.TextField(
-        null=False,
-        blank=True,
-        verbose_name="Adresse complète de localisation du véhicule",
-    )

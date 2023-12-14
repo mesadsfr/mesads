@@ -30,7 +30,6 @@ class VehiculeForm(forms.ModelForm):
             "nombre_places",
             "pmr",
             "commune_localisation",
-            "localisation",
         )
 
     def __init__(self, *args, **kwargs):

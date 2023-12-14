@@ -70,7 +70,6 @@ class VehiculeAdmin(admin.ModelAdmin):
         "nombre_places",
         "pmr",
         "commune_localisation",
-        "localisation",
     )
 
     readonly_fields = (
