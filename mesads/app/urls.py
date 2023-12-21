@@ -123,4 +123,9 @@ urlpatterns += [
         name="app.profiles.other",
     ),
     path("chiffres-cles", views.StatsView.as_view(), name="app.stats"),
+    path(
+        "accessibilite",
+        TemplateView.as_view(template_name="pages/accessibility.html"),
+        name="app.accessibility",
+    ),
 ]
