@@ -85,7 +85,7 @@ CMD python manage.py makemigrations && python manage.py migrate && \
   -R 100 \
   -b 32768 \
   --static-map /static=/app/static \
-  --limit-post=10000000 \
+  --limit-post=24000000 \
   --http-manage-expect \
   --ignore-sigpipe --ignore-write-errors --disable-write-exception \
   --cron='0 -1 -1 -1 -1 poetry run python /app/manage.py runcrons'
