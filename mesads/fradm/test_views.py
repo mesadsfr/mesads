@@ -5,7 +5,7 @@ class TestCommuneAutocompleteView(ClientTestCase):
     def test_get_queryset_anonymous(self):
         resp = self.anonymous_client.get("/fradm/commune/autocomplete")
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()["results"], [])
+        self.assertEqual(len(resp.json()["results"]), len(self.COMMUNES))
 
     def test_get_queryset_logged(self):
         resp = self.auth_client.get("/fradm/commune/autocomplete")
@@ -58,7 +58,7 @@ class TestEPCIAutocompleteView(ClientTestCase):
     def test_get_queryset_anonymous(self):
         resp = self.anonymous_client.get("/fradm/epci/autocomplete")
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()["results"], [])
+        self.assertEqual(len(resp.json()["results"]), len(self.EPCI))
 
     def test_get_queryset_logged(self):
         resp = self.auth_client.get("/fradm/epci/autocomplete")
@@ -97,7 +97,7 @@ class TestPrefectureAutocompleteView(ClientTestCase):
     def test_get_queryset_anonymous(self):
         resp = self.anonymous_client.get("/fradm/prefecture/autocomplete")
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()["results"], [])
+        self.assertEqual(len(resp.json()["results"]), len(self.PREFECTURES))
 
     def test_get_queryset_logged(self):
         resp = self.auth_client.get("/fradm/prefecture/autocomplete")

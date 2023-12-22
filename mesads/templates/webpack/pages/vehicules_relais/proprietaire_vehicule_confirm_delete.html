@@ -1,0 +1,54 @@
+{% extends "../../base-sidemenu.html" %}
+{% load meta %}
+{% load selectattr %}
+
+{% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
+
+{% block main %}
+<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+  <div class="fr-collapse" id="breadcrumb-1">
+    <ol class="fr-breadcrumb__list">
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'vehicules-relais.proprietaire' %}">Espace propriétaire</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'vehicules-relais.proprietaire.detail' proprietaire_id=proprietaire.id %}">{{ proprietaire.nom }}</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'vehicules-relais.proprietaire.vehicule.edit' proprietaire_id=proprietaire.id vehicule_numero=object.numero %}">
+            Véhicule {{ object.numero }}
+        </a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" aria-current="page">Supprimer le véhicule</a>
+      </li>
+    </ol>
+  </div>
+</nav>
+
+<div class="fr-alert fr-alert--error">
+  <h3 class="fr-alert__title">
+    Attention, vous êtes sur le point de supprimer définitivement le véhicule {{ object.numero }}
+  </h3>
+
+  <p>
+    Une fois le véhicule supprimé, il ne sera plus possible d'attribuer le numéro {{ object.numero }} à un autre véhicule.
+    Si vous n'êtes pas sûr ou si vous avez fait une erreur, n'hésitez pas à contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+  </p>
+</div>
+
+<form class="fr-mt-3w" method="post">
+  {% csrf_token %}
+  <input
+    class="fr-btn"
+    type="submit"
+    value="Supprimer définitivement"
+    style="background-color: var(--background-flat-error)"
+  />
+</form>
+
+
+
+
+{% endblock %}

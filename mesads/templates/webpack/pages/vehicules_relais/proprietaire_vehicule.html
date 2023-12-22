@@ -1,0 +1,109 @@
+{% extends "../../base-sidemenu.html" %}
+
+{% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
+
+{% block main %}
+<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+  <div class="fr-collapse" id="breadcrumb-1">
+    <ol class="fr-breadcrumb__list">
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'vehicules-relais.proprietaire' %}">Espace propriétaire</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'vehicules-relais.proprietaire.detail' proprietaire_id=proprietaire.id %}">{{ proprietaire.nom }}</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" aria-current="page">
+          {% if object %}
+            Véhicule {{ object.numero }}
+          {% else %}
+            Nouveau véhicule
+          {% endif %}
+        </a>
+      </li>
+    </ol>
+  </div>
+</nav>
+
+{% if object %}
+  {% if user.is_staff %}
+  <p>
+    🕰️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'vehicules-relais.proprietaire.vehicule.history' proprietaire_id=proprietaire.id vehicule_numero=object.numero %}">
+      Voir l'historique des modifications du véhicule <small>(lien uniquement dispo pour l'équipe MesADS)</small>
+    </a>
+  </p>
+  {% endif %}
+{% endif %}
+
+<form method="post" enctype="multipart/form-data">
+  {% if form.non_field_errors %}
+    <div class="fr-input-group fr-input-group--error">
+      {% for error in form.non_field_errors %}
+      <!-- Non-field error -->
+      <p class="fr-error-text">
+        {{ error }}
+      </p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% csrf_token %}
+
+  {% if object %}
+    <div class="fr-input-group">
+      <label class="fr-label">
+        Numéro attribué au véhicule
+        <span class="fr-hint-text">Le numéro est attribué automatiquement et ne peut être changé.</span>
+      </label>
+
+      <strong>{{ object.numero }}</strong>
+    </div>
+
+    <div class="fr-input-group">
+      <label class="fr-label">
+        {{ form.departement.label }}
+        <span class="fr-hint-text">Le département est configuré lors de l'enregistrement du véhicule et ne peut être changé.</span>
+      </label>
+
+      <strong>{{ object.departement.numero }} - {{ object.departement.libelle }}</strong>
+    </div>
+  {% else %}
+    {% include 'form_fields/select-autocomplete.html' with field=form.departement field_errors=form.errors.departement required=form.fields.departement.required %}
+  {% endif %}
+
+  {% include 'form_fields/string.html' with field=form.immatriculation field_errors=form.errors.immatriculation required=form.fields.immatriculation.required %}
+  {% include 'form_fields/string.html' with field=form.modele field_errors=form.errors.modele required=form.fields.modele.required %}
+  {% include 'form_fields/select.html' with field=form.motorisation field_errors=form.errors.motorisation required=form.fields.motorisation.required %}
+  {% include 'form_fields/date.html' with field=form.date_mise_circulation field_errors=form.errors.date_mise_circulation required=form.fields.date_mise_circulation.required %}
+  {% include 'form_fields/number.html' with field=form.nombre_places field_errors=form.errors.nombre_places required=form.fields.nombre_places.required %}
+  {% include 'form_fields/select.html' with field=form.pmr field_errors=form.errors.pmr required=form.fields.pmr.required %}
+  {% include 'form_fields/select-autocomplete.html' with field=form.commune_localisation field_errors=form.errors.commune_localisation %}
+
+  <!-- Submit buttons -->
+  <div class="fr-input-group">
+    <ul class="fr-btns-group">
+      <li>
+        <button type="submit" class="fr-btn">
+          {% if object %}
+            Mettre les informations du véhicule à jour
+          {% else %}
+            Enregistrer le véhicule
+          {% endif %}
+        </button>
+      </li>
+
+      {% if object %}
+      <li>
+        <a class="fr-link fr-icon-delete-line fr-link--icon-left" href="{% url 'vehicules-relais.proprietaire.vehicule.delete' proprietaire_id=object.proprietaire_id vehicule_numero=object.numero %}" style="color: var(--text-default-error)">Supprimer ce véhicule</a>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
+</form>
+{% endblock %}
+
+{% block endbody %}
+  {% comment %}Extra javascript required to display commune_localisation field.{% endcomment %}
+  {{ form.media }}
+{% endblock %}

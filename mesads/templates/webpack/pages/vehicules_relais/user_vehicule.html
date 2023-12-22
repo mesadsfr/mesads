@@ -1,0 +1,123 @@
+{% extends "../../base-sidemenu.html" %}
+
+{% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
+
+{% block main %}
+<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+  <div class="fr-collapse" id="breadcrumb-1">
+    <ol class="fr-breadcrumb__list">
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'vehicules-relais.search' %}">Registre des véhicules relais</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'vehicules-relais.search.departement' departement=vehicule.departement.numero %}">Département {{ vehicule.departement.numero }}  - {{ vehicule.departement.libelle }}</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" aria-current="page">Véhicule {{ vehicule.numero }}</a>
+      </li>
+    </ol>
+  </div>
+</nav>
+
+<div class="fr-alert fr-alert--info fr-mb-3w">
+  <h3 class="fr-alert__title fr-mb-2w">Si vous êtes chauffeur de taxi et que vous avez besoin d'utiliser temporairement un “taxi relais”, nous vous rappelons que</h3>
+  <p class="fr-mb-2w">
+    Doivent-être conservés à bord du taxi relais pour présentation aux agents chargés des contrôles :
+  </p>
+  <ul>
+    <li>l'arrêté portant autorisation de stationnement du véhicule remplacé ou, l'original de la carte de stationnement du véhicule remplacé sur le territoire de compétence du préfet de police de Paris ;</li>
+    <li>l'original ou la copie du certificat d'immatriculation du véhicule remplacé ;</li>
+    <li>le justificatif d'assurance mentionné à l'<a target="_blank" href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000030048399">article R. 3120-4 du code des transports</a> ;</li>
+    <li>tout document attestant de l'indisponibilité du taxi dont le véhicule de remplacement prend le relais notamment le justificatif de dépôt dans un garage de réparation automobile ou en cas de vol, la déclaration de vol auprès des forces de l'ordre ;</li>
+    <li>en cas de location du taxi relais, le contrat de location.</li>
+  </ul>
+</div>
+
+<h1>Taxi-relais n°{{ vehicule.numero }}</h1>
+
+<div class="fr-grid-row">
+  <div class="fr-col-12">
+    <div class="fr-table fr-table--bordered">
+      <table>
+        <caption>ℹ️ Informations sur le propriétaire du véhicule</caption>
+        <tr>
+          <th>Nom</th>
+          <td>{{ vehicule.proprietaire.nom }}</td>
+        </tr>
+        <tr>
+          <th>SIRET</th>
+          <td>{{ vehicule.proprietaire.siret|default:"-" }}</td>
+        </tr>
+        <tr>
+          <th>Tél.</th>
+          <td>{{ vehicule.proprietaire.telephone|default:"-" }}</td>
+        </tr>
+        <tr>
+          <th>Email</th>
+          <td>{{ vehicule.proprietaire.email|default:"-" }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="fr-col-12">
+    <div class="fr-table fr-table--bordered">
+      <table>
+        <caption>🔎 Localisation du véhicule</caption>
+        <tr>
+          <th>Ville</th>
+          <td>
+            {% if vehicule.commune_localisation %}
+              {{ vehicule.commune_localisation.libelle }} ({{ vehicule.commune_localisation.departement }})
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="fr-col-12">
+    <div class="fr-table fr-table--bordered">
+      <table>
+        <caption>🚖 Caractéristiques du véhicule</caption>
+        <tr>
+          <th>Numéro du taxi relais</th>
+          <td><strong>{{ vehicule.numero }}</strong></td>
+        </tr>
+        <tr>
+          <th>Immatriculation du véhicule</th>
+          <td>{{ vehicule.immatriculation|default:"-" }}</td>
+        </tr>
+        <tr>
+          <th>Modèle du véhicule</th>
+          <td>{{ vehicule.modele|default:"-" }}</td>
+        </tr>
+        <tr>
+          <th>Date de mise en circulation</th>
+          <td>{{ vehicule.date_mise_circulation|default:"-" }}</td>
+        </tr>
+        <tr>
+          <th>Nombre de places</th>
+          <td>{{ vehicule.nombre_places|default:"-" }}</td>
+        </tr>
+        <tr>
+          <th>Accès PMR ?</th>
+          <td>
+            {% if vehicule.pmr is True %}
+            Oui
+            {% elif vehicule.pmr is False %}
+            Non
+            {% else %}
+            -
+            {% endif %}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

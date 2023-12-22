@@ -1,0 +1,87 @@
+{% extends "../../base-sidemenu.html" %}
+
+{% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
+
+{% block main %}
+<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+  <div class="fr-collapse" id="breadcrumb-1">
+    <ol class="fr-breadcrumb__list">
+      <li>
+        <a class="fr-breadcrumb__link" aria-current="page">Registre des véhicules relais</a>
+      </li>
+    </ol>
+  </div>
+</nav>
+
+<h1>Consulter le registre des taxis relais</h1>
+
+<p class="fr-text">
+  Un « taxi relais » est un véhicule utilisé temporairement en cas d'immobilisation d'origine mécanique, à la suite d'une panne ou d'un accident, ou de vol d'un véhicule taxi ou de ses équipements spéciaux.
+</p>
+
+
+<form method="post" action="{% url 'vehicules-relais.search' %}">
+  {% csrf_token %}
+  <div class="fr-form-group">
+    <fieldset class="fr-fieldset">
+      <div class="fr-fieldset__content">
+        <div class="fr-input-group radio-inline{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
+          <label class="fr-label" for="{{ form.prefecture.id_for_label }}">
+            Sélectionnez le département :
+          </label>
+
+          {{ form.prefecture }}
+
+          {% for error in form.errors.prefecture %}
+          <p class="fr-error-text">
+            {{ error }}
+          </p>
+          {% endfor %}
+        </div>
+      </div>
+    </fieldset>
+  </div>
+
+  <!-- Non-fields errors -->
+  {% if form.non_field_errors %}
+  <div class="fr-input-group fr-input-group--error">
+    {% for error in form.non_field_errors %}
+      <!-- Non-field error -->
+      <p class="fr-error-text">
+        {{ error }}
+      </p>
+    {% endfor %}
+  </div>
+  {% endif %}
+  <div class="fr-input-group">
+    <button type="submit" class="fr-btn">Voir les taxis relais du département</button>
+  </div>
+</form>
+
+{% if not is_proprietaire %}
+<div class="fr-alert fr-alert--info fr-mt-5w">
+  <h3 class="fr-alert__title">Si vous êtes propriétaire d'un taxi relais, nous vous rappelons que</h3>
+
+  <p>
+    Si vous possédez un taxi relais, nous vous rappelons qu'il est obligatoire de déclarer tous les véhicules relais dans le registre départemental dédié avant de les exploiter. Si vous n'avez pas encore effectué cette déclaration, rendez-vous dans votre espace propriétaire
+  </p>
+
+  <div class="fr-grid-row fr-grid-row--center fr-m-2w">
+    <a class="fr-btn fr-btn--secondary" href="{% url 'login' %}?next={% url 'vehicules-relais.proprietaire' %}">
+      {% if request.user.is_authenticated %}
+        Mon espace propriétaire
+      {% else %}
+        Connectez-vous ou créez un compte pour enregistrer vos véhicules relais
+    {% endif %}
+    </a>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block endbody %}
+  {% comment %}Extra javascript to display form for new requests.{% endcomment %}
+  {{ form.media }}
+{% endblock %}

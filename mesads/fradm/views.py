@@ -12,9 +12,6 @@ class CommuneAutocompleteView(autocomplete.Select2QuerySetView):
     """
 
     def get_queryset(self):
-        if not self.request.user.is_authenticated:
-            return Commune.objects.none()
-
         departement = self.kwargs.get("departement", "").lower()
 
         if self.q:
@@ -55,9 +52,6 @@ class CommuneAutocompleteView(autocomplete.Select2QuerySetView):
 
 class EPCIAutocompleteView(autocomplete.Select2QuerySetView):
     def get_queryset(self):
-        if not self.request.user.is_authenticated:
-            return EPCI.objects.none()
-
         qs = EPCI.objects.annotate(unaccent_name=Unaccent("name")).all()
 
         departement = self.kwargs.get("departement", "").lower()
@@ -74,9 +68,6 @@ class EPCIAutocompleteView(autocomplete.Select2QuerySetView):
 
 class PrefectureAutocompleteView(autocomplete.Select2QuerySetView):
     def get_queryset(self):
-        if not self.request.user.is_authenticated:
-            return Prefecture.objects.none()
-
         if self.q:
             qs = Prefecture.objects.raw(
                 """
