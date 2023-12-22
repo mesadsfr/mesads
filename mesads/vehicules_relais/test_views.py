@@ -37,3 +37,17 @@ class TestSearchView(ClientTestCase):
                 resp.headers["Location"],
                 "/registre_vehicules_relais/consulter/departements/35",
             )
+
+
+class TestSearchDepartementView(ClientTestCase):
+    def test_get(self):
+        for client in self.anonymous_client, self.proprietaire_client:
+            resp = client.get("/registre_vehicules_relais/consulter/departements/35")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.context["prefecture"].numero, "35")
+            self.assertEqual(resp.context["object_list"].count(), 4)
+
+            resp = client.get("/registre_vehicules_relais/consulter/departements/33")
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.context["prefecture"].numero, "33")
+            self.assertEqual(resp.context["object_list"].count(), 1)
