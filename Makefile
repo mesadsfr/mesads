@@ -34,4 +34,4 @@ test:
 
 # Tests without coverage
 fasttest:
-	pytest --testmon
+	pytest --testmon -v -x -s
