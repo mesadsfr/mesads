@@ -34,4 +34,4 @@ test:
 
 # Tests without coverage
 fasttest:
-	python manage.py test --parallel
+	pytest --testmon

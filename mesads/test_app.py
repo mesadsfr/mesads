@@ -1,10 +1,13 @@
 import io
 import unittest
 
+import pytest
+
 from django.conf import settings
 from django.core.management import call_command
 
 
+@pytest.mark.django_db
 class TestMigrationsApplied(unittest.TestCase):
     def test_migrations(self):
         """The goal of this unittest is to ensure that all migrations have been applied.
