@@ -468,7 +468,7 @@ class ADSImporter:
         if siret:
             try:
                 validate_siret(siret)
-            except Exception as exc:
+            except Exception:
                 raise self.fmt_col_error("Siret invalide", siret, idx)
         return siret
 
@@ -616,10 +616,10 @@ class Command(BaseCommand):
                 elif not save:
                     self._log(
                         self.style.WARNING,
-                        f"Les ADS ne sont pas enregistrées car le paramètre --save n'a pas été spécifié",
+                        "Les ADS ne sont pas enregistrées car le paramètre --save n'a pas été spécifié",
                     )
                     raise ValueError
-        except:
+        except:  # noqa
             self._log(
                 self.style.ERROR, "Échec de l'import, aucune ADS n'a été enregistrée"
             )
