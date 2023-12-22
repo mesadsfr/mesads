@@ -2,6 +2,8 @@ from .unittest import ClientTestCase
 
 from mesads.fradm.models import Prefecture
 
+from mesads.vehicules_relais.models import Vehicule
+
 
 class TestIndexView(ClientTestCase):
     def test_200(self):
@@ -51,3 +53,17 @@ class TestSearchDepartementView(ClientTestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.context["prefecture"].numero, "33")
             self.assertEqual(resp.context["object_list"].count(), 1)
+
+
+class TestVehiculeView(ClientTestCase):
+    def test_get(self):
+        vehicule = Vehicule.objects.first()
+        for client in self.anonymous_client, self.proprietaire_client:
+            resp = client.get(
+                f"/registre_vehicules_relais/consulter/vehicules/{vehicule.numero}"
+            )
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.context["vehicule"], vehicule)
+
+            resp = client.get("/registre_vehicules_relais/consulter/vehicules/33-999")
+            self.assertEqual(resp.status_code, 404)
