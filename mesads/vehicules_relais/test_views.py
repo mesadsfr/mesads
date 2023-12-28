@@ -120,3 +120,35 @@ class TestProprietaireCreateView(ClientTestCase):
         )
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(Proprietaire.objects.filter(users__in=[user]).count(), 1)
+
+
+class TestProprietaireDetailView(ClientTestCase):
+    def test_view(self):
+        # Proprietaire with vehicules. Cannot be deleted because vehicules are attached to it.
+        resp = self.proprietaire_client.get(
+            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(self.proprietaire.id, resp.context["object"].id)
+        self.assertFalse(resp.context["deletable"])
+
+        # Proprietaire without vehicules
+        client, user = self.create_client()
+        proprietaire_without_vehicules = Proprietaire.objects.create(
+            nom="Propriétaire sans véhicules"
+        )
+        proprietaire_without_vehicules.users.add(user)
+        resp = client.get(
+            f"/registre_vehicules_relais/proprietaire/{proprietaire_without_vehicules.id}"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(proprietaire_without_vehicules.id, resp.context["object"].id)
+        self.assertTrue(resp.context["deletable"])
+
+        # Admin user should be able to access any proprietaire object
+        resp = self.admin_client.get(
+            f"/registre_vehicules_relais/proprietaire/{proprietaire_without_vehicules.id}"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(proprietaire_without_vehicules.id, resp.context["object"].id)
+        self.assertTrue(resp.context["deletable"])

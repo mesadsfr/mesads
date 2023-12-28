@@ -13,15 +13,15 @@ class ClientTestCase(BaseClientTestCase):
 
         self.proprietaire_client, self.proprietaire_user = self.create_client()
 
-        proprietaire = Proprietaire.objects.create(nom="Propriétaire")
-        proprietaire.users.set([self.proprietaire_user])
+        self.proprietaire = Proprietaire.objects.create(nom="Propriétaire")
+        self.proprietaire.users.set([self.proprietaire_user])
 
         ille_et_vilaine = Prefecture.objects.filter(numero="35").get()
         gironde = Prefecture.objects.filter(numero="33").get()
 
         # Assign three vehicules to the proprietaire in Ille-et-Vilaine.
         Vehicule.objects.create(
-            proprietaire=proprietaire,
+            proprietaire=self.proprietaire,
             departement=ille_et_vilaine,
             immatriculation="123-456-789",
             modele="Peugeot 308",
@@ -32,7 +32,7 @@ class ClientTestCase(BaseClientTestCase):
             commune_localisation=None,
         )
         Vehicule.objects.create(
-            proprietaire=proprietaire,
+            proprietaire=self.proprietaire,
             departement=ille_et_vilaine,
             immatriculation="666-666-666",
             modele="Range rover",
@@ -43,7 +43,7 @@ class ClientTestCase(BaseClientTestCase):
             commune_localisation=None,
         )
         Vehicule.objects.create(
-            proprietaire=proprietaire,
+            proprietaire=self.proprietaire,
             departement=ille_et_vilaine,
             immatriculation="AAAA-AAAA",
             modele="Tesla modele S",
@@ -55,7 +55,7 @@ class ClientTestCase(BaseClientTestCase):
         )
         # Assign one vehicule to the proprietaire in Gironde
         Vehicule.objects.create(
-            proprietaire=proprietaire,
+            proprietaire=self.proprietaire,
             departement=gironde,
             immatriculation="BBBB-BBBB",
             modele="Renault Clio",
