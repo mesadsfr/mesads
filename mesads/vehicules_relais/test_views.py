@@ -2,7 +2,7 @@ from .unittest import ClientTestCase
 
 from mesads.fradm.models import Prefecture
 
-from mesads.vehicules_relais.models import Vehicule
+from mesads.vehicules_relais.models import Proprietaire, Vehicule
 
 
 class TestIndexView(ClientTestCase):
@@ -67,3 +67,35 @@ class TestVehiculeView(ClientTestCase):
 
             resp = client.get("/registre_vehicules_relais/consulter/vehicules/33-999")
             self.assertEqual(resp.status_code, 404)
+
+
+class TestProprietaireListView(ClientTestCase):
+    def test_get(self):
+        resp = self.anonymous_client.get("/registre_vehicules_relais/proprietaire")
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(
+            resp.headers["Location"],
+            "/auth/login/?next=/registre_vehicules_relais/proprietaire",
+        )
+
+        # Admin user is not propriétaire
+        resp = self.admin_client.get("/registre_vehicules_relais/proprietaire")
+        self.assertEqual(resp.status_code, 200)
+        self.assertFalse(resp.context["is_proprietaire"])
+        self.assertEqual(resp.context["proprietaire_list"].count(), 0)
+
+        # Proprietaire user
+        resp = self.proprietaire_client.get("/registre_vehicules_relais/proprietaire")
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(resp.context["is_proprietaire"])
+        self.assertEqual(resp.context["proprietaire_list"].count(), 1)
+
+        # Append another proprietaire object to the user
+        obj = Proprietaire.objects.create(nom="Another one")
+        obj.save()
+        obj.users.add(self.proprietaire_user)
+
+        resp = self.proprietaire_client.get("/registre_vehicules_relais/proprietaire")
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(resp.context["is_proprietaire"])
+        self.assertEqual(resp.context["proprietaire_list"].count(), 2)
