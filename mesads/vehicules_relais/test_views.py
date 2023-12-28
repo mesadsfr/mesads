@@ -99,3 +99,24 @@ class TestProprietaireListView(ClientTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(resp.context["is_proprietaire"])
         self.assertEqual(resp.context["proprietaire_list"].count(), 2)
+
+
+class TestProprietaireCreateView(ClientTestCase):
+    def test_view(self):
+        client, user = self.create_client()
+
+        resp = client.get("/registre_vehicules_relais/proprietaire/nouveau")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(Proprietaire.objects.filter(users__in=[user]).count(), 0)
+
+        resp = client.post(
+            "/registre_vehicules_relais/proprietaire/nouveau",
+            {
+                "nom": "xxx",
+                "siret": "11111222223333",
+                "telephone": "0609020233",
+                "email": "proprietaire@mesads.beta.gouv.fr",
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(Proprietaire.objects.filter(users__in=[user]).count(), 1)
