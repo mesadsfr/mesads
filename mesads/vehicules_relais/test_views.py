@@ -152,3 +152,23 @@ class TestProprietaireDetailView(ClientTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(proprietaire_without_vehicules.id, resp.context["object"].id)
         self.assertTrue(resp.context["deletable"])
+
+
+class TestProprietaireDeleteView(ClientTestCase):
+    def test_view(self):
+        resp = self.proprietaire_client.post(
+            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/supprimer"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.context["form"].errors["__all__"]), 1)
+
+        for vehicule in Vehicule.objects.all():
+            vehicule.delete()
+
+        resp = self.proprietaire_client.post(
+            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/supprimer"
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(
+            Proprietaire.objects.filter(id=self.proprietaire.id).count(), 0
+        )
