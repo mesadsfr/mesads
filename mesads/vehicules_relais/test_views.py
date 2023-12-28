@@ -174,6 +174,26 @@ class TestProprietaireDeleteView(ClientTestCase):
         )
 
 
+class TestProprietaireEditView(ClientTestCase):
+    def test_view(self):
+        resp = self.proprietaire_client.post(
+            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/modifier",
+            {
+                "nom": "nouveau nom",
+                "siret": "99999999999991",
+                "telephone": "0600000000",
+                "email": "xxxx@yyy.com",
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
+
+        self.proprietaire.refresh_from_db()
+        self.assertEqual(self.proprietaire.nom, "nouveau nom")
+        self.assertEqual(self.proprietaire.siret, "99999999999991")
+        self.assertEqual(self.proprietaire.telephone, "0600000000")
+        self.assertEqual(self.proprietaire.email, "xxxx@yyy.com")
+
+
 class TestProprietaireHistoryView(ClientTestCase):
     def test_view(self):
         resp = self.admin_client.get(
