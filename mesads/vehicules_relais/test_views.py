@@ -172,3 +172,11 @@ class TestProprietaireDeleteView(ClientTestCase):
         self.assertEqual(
             Proprietaire.objects.filter(id=self.proprietaire.id).count(), 0
         )
+
+
+class TestProprietaireHistoryView(ClientTestCase):
+    def test_view(self):
+        resp = self.admin_client.get(
+            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/historique"
+        )
+        self.assertEqual(resp.status_code, 200)
