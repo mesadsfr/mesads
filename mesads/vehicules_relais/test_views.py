@@ -293,6 +293,12 @@ class TestProprietaireVehiculeDeleteView(ClientTestCase):
             proprietaire=self.proprietaire,
             departement=departement,
         )
+
+        resp = self.proprietaire_client.get(
+            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/supprimer"
+        )
+        self.assertEqual(resp.status_code, 200)
+
         resp = self.proprietaire_client.post(
             f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/supprimer"
         )
