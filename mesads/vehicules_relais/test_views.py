@@ -1,6 +1,8 @@
+import datetime
+
 from .unittest import ClientTestCase
 
-from mesads.fradm.models import Prefecture
+from mesads.fradm.models import Commune, Prefecture
 
 from mesads.vehicules_relais.models import Proprietaire, Vehicule
 
@@ -198,5 +200,126 @@ class TestProprietaireHistoryView(ClientTestCase):
     def test_view(self):
         resp = self.admin_client.get(
             f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/historique"
+        )
+        self.assertEqual(resp.status_code, 200)
+
+
+class TestProprietaireVehiculeCreateView(ClientTestCase):
+    def test_view(self):
+        departement = Prefecture.objects.first()
+        commune = Commune.objects.first()
+        count = Vehicule.objects.count()
+        resp = self.proprietaire_client.post(
+            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/nouveau_vehicule",
+            {
+                "immatriculation": "XXX-YYY",
+                "modele": "Peugeot 308",
+                "motorisation": "diesel",
+                "date_mise_circulation": "2020-11-19",
+                "nombre_places": "4",
+                "pmr": "off",
+                "commune_localisation": commune.id,
+                "departement": departement.id,
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(Vehicule.objects.count(), count + 1)
+
+
+class TestProprietaireVehiculeUpdateView(ClientTestCase):
+    def test_view(self):
+        departement = Prefecture.objects.first()
+        vehicule = Vehicule.objects.create(
+            proprietaire=self.proprietaire,
+            departement=departement,
+        )
+
+        resp = self.proprietaire_client.get(
+            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}",
+        )
+        self.assertEqual(resp.status_code, 200)
+
+        commune = Commune.objects.first()
+        resp = self.proprietaire_client.post(
+            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}",
+            {
+                "immatriculation": "XXX-YYY",
+                "modele": "Peugeot 308",
+                "motorisation": "diesel",
+                "date_mise_circulation": "2020-11-19",
+                "nombre_places": "4",
+                "pmr": True,
+                "commune_localisation": commune.id,
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
+        vehicule.refresh_from_db()
+
+        self.assertEqual(vehicule.immatriculation, "XXX-YYY")
+        self.assertEqual(vehicule.modele, "Peugeot 308")
+        self.assertEqual(vehicule.motorisation, "diesel")
+        self.assertEqual(vehicule.date_mise_circulation, datetime.date(2020, 11, 19))
+        self.assertEqual(vehicule.nombre_places, 4)
+        self.assertTrue(vehicule.pmr)
+        self.assertEqual(vehicule.commune_localisation, commune)
+
+        # It is impossible to update the departement of a vehicule once it is
+        # created. The field "departement" is ignored.
+        other_departement = Prefecture.objects.create(
+            numero="94", libelle="Val de Marne"
+        )
+        resp = self.proprietaire_client.post(
+            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}",
+            {
+                "immatriculation": "XXX-YYY",
+                "modele": "Peugeot 308",
+                "motorisation": "diesel",
+                "date_mise_circulation": "2020-11-19",
+                "nombre_places": "4",
+                "pmr": "true",
+                "commune_localisation": commune.id,
+                "departement": other_departement.id,
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
+        vehicule.refresh_from_db()
+        self.assertEqual(vehicule.departement, departement)
+
+
+class TestProprietaireVehiculeDeleteView(ClientTestCase):
+    def test_view(self):
+        departement = Prefecture.objects.first()
+        vehicule = Vehicule.objects.create(
+            proprietaire=self.proprietaire,
+            departement=departement,
+        )
+        resp = self.proprietaire_client.post(
+            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/supprimer"
+        )
+        self.assertEqual(resp.status_code, 302)
+        vehicule.refresh_from_db()
+        self.assertIsNotNone(vehicule.deleted_at)
+
+
+class TestProprietaireVehiculeHistoryView(ClientTestCase):
+    def test_view(self):
+        departement = Prefecture.objects.first()
+        vehicule = Vehicule.objects.create(
+            proprietaire=self.proprietaire,
+            departement=departement,
+        )
+        # only available for admins
+        resp = self.proprietaire_client.get(
+            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/historique"
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(
+            resp.headers["Location"],
+            f"/admin/login/?next=/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/historique",
+        )
+
+        # ok
+        resp = self.admin_client.get(
+            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/historique"
         )
         self.assertEqual(resp.status_code, 200)
