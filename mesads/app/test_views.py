@@ -1,10 +1,8 @@
 from datetime import datetime, timedelta
-import html
 
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
-from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import Q
 from django.test import RequestFactory
@@ -18,7 +16,6 @@ from .models import (
     ADSManager,
     ADSManagerRequest,
     ADSUser,
-    validate_siret,
 )
 from .unittest import ClientTestCase
 from .views import DashboardsView, DashboardsDetailView
@@ -190,14 +187,13 @@ class TestADSManagerRequestView(ClientTestCase):
     def test_create_request_invalid_id(self):
         """Provide the id of a non-existing object."""
         resp = self.auth_client.post("/registre_ads/gestion", {"commune": 9999})
-        self.assertIn("error", resp.content.decode("utf8"))
+        self.assertEqual(len(resp.context["form"].errors["__all__"]), 1)
 
     def test_create_request_commune(self):
         resp = self.auth_client.post(
             "/registre_ads/gestion", {"commune": self.commune_melesse.id}
         )
         self.assertEqual(resp.status_code, 302)
-        self.assertNotIn("error", resp.content.decode("utf8"))
         self.assertEqual(
             ADSManagerRequest.objects.count(), self.initial_ads_managers_count + 1
         )
@@ -220,7 +216,6 @@ class TestADSManagerRequestView(ClientTestCase):
             "/registre_ads/gestion", {"commune": self.commune_melesse.id}
         )
         self.assertEqual(resp.status_code, 302)
-        self.assertNotIn("error", resp.content.decode("utf8"))
         self.assertEqual(
             ADSManagerRequest.objects.count(), self.initial_ads_managers_count + 1
         )
@@ -237,7 +232,6 @@ class TestADSManagerRequestView(ClientTestCase):
         epci = EPCI.objects.first()
         resp = self.auth_client.post("/registre_ads/gestion", {"epci": epci.id})
         self.assertEqual(resp.status_code, 302)
-        self.assertNotIn("error", resp.content.decode("utf8"))
         self.assertEqual(
             ADSManagerRequest.objects.count(), self.initial_ads_managers_count + 1
         )
@@ -253,7 +247,6 @@ class TestADSManagerRequestView(ClientTestCase):
         #
         resp = self.auth_client.post("/registre_ads/gestion", {"epci": epci.id})
         self.assertEqual(resp.status_code, 302)
-        self.assertNotIn("error", resp.content.decode("utf8"))
         self.assertEqual(
             ADSManagerRequest.objects.count(), self.initial_ads_managers_count + 1
         )
@@ -269,7 +262,6 @@ class TestADSManagerRequestView(ClientTestCase):
             "/registre_ads/gestion", {"prefecture": prefecture.id}
         )
         self.assertEqual(resp.status_code, 302)
-        self.assertNotIn("error", resp.content.decode("utf8"))
         self.assertEqual(
             ADSManagerRequest.objects.count(), self.initial_ads_managers_count + 1
         )
@@ -287,7 +279,6 @@ class TestADSManagerRequestView(ClientTestCase):
             "/registre_ads/gestion", {"prefecture": prefecture.id}
         )
         self.assertEqual(resp.status_code, 302)
-        self.assertNotIn("error", resp.content.decode("utf8"))
         self.assertEqual(
             ADSManagerRequest.objects.count(), self.initial_ads_managers_count + 1
         )
@@ -321,9 +312,7 @@ class TestADSManagerView(ClientTestCase):
         resp = self.ads_manager_city35_client.get(
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/"
         )
-        self.assertIn(
-            self.ads_manager_city35.content_object.libelle, resp.content.decode("utf8")
-        )
+        self.assertEqual(self.ads_manager_city35, resp.context["ads_manager"])
 
         prefecture = Prefecture.objects.filter(numero="35").get()
         ads_manager = ADSManager.objects.filter(
@@ -334,22 +323,22 @@ class TestADSManagerView(ClientTestCase):
         resp = self.ads_manager_administrator_35_client.get(
             f"/registre_ads/gestion/{ads_manager.id}/"
         )
-        self.assertIn(
-            self.ads_manager_administrator_35.prefecture.libelle,
-            resp.content.decode("utf8"),
+        self.assertEqual(
+            self.ads_manager_administrator_35.prefecture,
+            resp.context["ads_manager"].content_object,
         )
 
     def test_filters(self):
         """Test filtering"""
         # ADS 1
-        ADS.objects.create(
+        ads1 = ADS.objects.create(
             number="FILTER1",
             ads_manager=self.ads_manager_city35,
             immatriculation_plate="imm4tri-cul4tion",
             accepted_cpam=True,
         )
         # ADS 2
-        ADS.objects.create(
+        ads2 = ADS.objects.create(
             number="FILTER2",
             ads_manager=self.ads_manager_city35,
             owner_name="Bob Dylan",
@@ -372,73 +361,49 @@ class TestADSManagerView(ClientTestCase):
         resp = self.ads_manager_city35_client.get(
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=imm4tricul4tion"
         )
-        self.assertIn("FILTER1", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER2", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER3", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER4", resp.content.decode("utf8"))
+        self.assertEqual(list(resp.context["ads_list"].all()), [ads1])
 
         # Owner firstname/lastname, returns second ADS
         resp = self.ads_manager_city35_client.get(
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=bob dyla"
         )
-        self.assertNotIn("FILTER1", resp.content.decode("utf8"))
-        self.assertIn("FILTER2", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER3", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER4", resp.content.decode("utf8"))
+        self.assertEqual(list(resp.context["ads_list"].all()), [ads2])
 
         # Owner SIRET, return third ADS
         resp = self.ads_manager_city35_client.get(
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=123123123"
         )
-        self.assertNotIn("FILTER1", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER2", resp.content.decode("utf8"))
-        self.assertIn("FILTER3", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER4", resp.content.decode("utf8"))
+        self.assertEqual(list(resp.context["ads_list"].all()), [ads3])
 
         # User SIRET, return ADS 4
         resp = self.ads_manager_city35_client.get(
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=22222222222222"
         )
-        self.assertNotIn("FILTER1", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER2", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER3", resp.content.decode("utf8"))
-        self.assertIn("FILTER4", resp.content.decode("utf8"))
+        self.assertEqual(list(resp.context["ads_list"].all()), [ads4])
 
         # User name, return ADS 3
         resp = self.ads_manager_city35_client.get(
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=Henri SUPER"
         )
-        self.assertNotIn("FILTER1", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER2", resp.content.decode("utf8"))
-        self.assertIn("FILTER3", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER4", resp.content.decode("utf8"))
+        self.assertEqual(list(resp.context["ads_list"].all()), [ads3])
 
         # CPAM accepted true, return ads 1
         resp = self.ads_manager_city35_client.get(
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/?accepted_cpam=True"
         )
-        self.assertIn("FILTER1", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER2", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER3", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER4", resp.content.decode("utf8"))
+        self.assertEqual(list(resp.context["ads_list"].all()), [ads1])
 
         # CPAM accepted false, return ads 2
         resp = self.ads_manager_city35_client.get(
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/?accepted_cpam=False"
         )
-        self.assertNotIn("FILTER1", resp.content.decode("utf8"))
-        self.assertIn("FILTER2", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER3", resp.content.decode("utf8"))
-        self.assertNotIn("FILTER4", resp.content.decode("utf8"))
+        self.assertEqual(list(resp.context["ads_list"].all()), [ads2])
 
         # CPAM accepted any, and no filters, return all
         resp = self.ads_manager_city35_client.get(
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=&accepted_cpam="
         )
-        self.assertIn("FILTER1", resp.content.decode("utf8"))
-        self.assertIn("FILTER2", resp.content.decode("utf8"))
-        self.assertIn("FILTER3", resp.content.decode("utf8"))
-        self.assertIn("FILTER4", resp.content.decode("utf8"))
+        self.assertEqual(list(resp.context["ads_list"].all()), [ads1, ads2, ads3, ads4])
 
     def test_post_ok(self):
         # Set the flag "no_ads_declared" for an administration that has no ADS
@@ -512,7 +477,7 @@ class TestADSView(ClientTestCase):
             },
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertIn("TOTAL_FORMS", resp.content.decode("utf8"))
+        self.assertEqual(len(resp.context["formset"].non_form_errors()), 1)
 
     def test_update(self):
         resp = self.ads_manager_city35_client.post(
@@ -558,7 +523,10 @@ class TestADSView(ClientTestCase):
             },
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertIn("Une ADS avec ce numéro existe déjà", resp.content.decode("utf8"))
+        self.assertIn(
+            "Une ADS avec ce numéro existe déjà",
+            resp.context["form"].errors["__all__"][0],
+        )
 
     def test_strip_ads_charfields(self):
         """Empty string fields should be stripped automatically."""
@@ -602,10 +570,8 @@ class TestADSView(ClientTestCase):
         )
         self.assertEqual(resp.status_code, 200)
         self.assertIn(
-            html.escape(
-                "La date de création de l'ADS doit être antérieure à la date d'attribution."
-            ),
-            resp.content.decode("utf8"),
+            "La date de création de l'ADS doit être antérieure à la date d'attribution.",
+            resp.context["form"].errors["__all__"][0],
         )
 
     def test_update_ads_user(self):
@@ -776,7 +742,7 @@ class TestADSView(ClientTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertIn(
             "Ce choix ne fait pas partie de ceux disponibles",
-            resp.content.decode("utf8"),
+            resp.context["form"].errors["epci_commune"][0],
         )
 
         valid_commune = Commune.objects.filter(departement="01").first()
@@ -821,14 +787,10 @@ class TestADSView(ClientTestCase):
             },
         )
         self.assertEqual(resp.status_code, 200)
-
-        # Make sure the message raised by validate_siret is in the
-        # response.
-        try:
-            validate_siret("xxx")
-        except ValidationError as exc:
-            self.assertIn(exc.message, resp.content.decode("utf8"))
-
+        self.assertEqual(
+            ["Un SIRET doit être composé de 14 numéros"],
+            resp.context["ads_users_formset"].forms[0].errors["siret"],
+        )
         self.assertEqual(ADSUser.objects.count(), 0)
 
 
@@ -930,7 +892,10 @@ class TestADSCreateView(ClientTestCase):
             },
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertIn("Une ADS avec ce numéro existe déjà", resp.content.decode("utf8"))
+        self.assertIn(
+            "Une ADS avec ce numéro existe déjà",
+            resp.context["form"].errors["number"][0],
+        )
 
     def test_create_with_ads_user(self):
         resp = self.ads_manager_city35_client.post(
@@ -1312,9 +1277,7 @@ class TestADSManagerDecreeView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/arrete"
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertIn(
-            self.ads_manager_city35.content_object.libelle, resp.content.decode("utf8")
-        )
+        self.assertEqual(resp.context["ads_manager"], self.ads_manager_city35)
 
     def test_post(self):
         file1 = SimpleUploadedFile(
@@ -1371,7 +1334,7 @@ class TestADSDecreeView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}/arrete"
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertIn('data-fr-current-step="1"', resp.content.decode("utf8"))
+        self.assertEqual(resp.context["wizard"]["steps"].index, 0)
 
     def _step_0(self, is_old_ads):
         resp = self.ads_manager_city35_client.post(
@@ -1382,7 +1345,7 @@ class TestADSDecreeView(ClientTestCase):
             },
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertIn('data-fr-current-step="2"', resp.content.decode("utf8"))
+        self.assertEqual(resp.context["wizard"]["steps"].index, 1)
         return resp
 
     def _step_1(self, decree_creation_reason="change_vehicle"):
@@ -1394,7 +1357,7 @@ class TestADSDecreeView(ClientTestCase):
             },
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertIn('data-fr-current-step="3"', resp.content.decode("utf8"))
+        self.assertEqual(resp.context["wizard"]["steps"].index, 2)
         return resp
 
     def _step_2(self, overrides=None, check_going_to_next_step=True):
@@ -1427,7 +1390,7 @@ class TestADSDecreeView(ClientTestCase):
         )
         self.assertEqual(resp.status_code, 200)
         if check_going_to_next_step:
-            self.assertIn('data-fr-current-step="4"', resp.content.decode("utf8"))
+            self.assertEqual(resp.context["wizard"]["steps"].index, 3)
         return resp
 
     def _step_3(self):
@@ -1479,7 +1442,10 @@ class TestADSDecreeView(ClientTestCase):
         resp = self._step_2(
             overrides={"2-decree_number": "abcdef"}, check_going_to_next_step=False
         )
-        self.assertIn("fr-input--error", resp.content.decode("utf8"))
+        self.assertEqual(
+            resp.context["form"].errors["decree_number"],
+            ["Le champ doit être sous la forme XXXX/2024"],
+        )
 
     def test_third_step_fields_dependencies(self):
         """If previous_decree_number is set, previous_decree_number must be set too"""
@@ -1493,7 +1459,12 @@ class TestADSDecreeView(ClientTestCase):
             },
             check_going_to_next_step=False,
         )
-        self.assertIn("fr-error-text", resp.content.decode("utf8"))
+        self.assertEqual(
+            resp.context["form"].errors["previous_decree_date"],
+            [
+                "Veuillez saisir la date de l'arrêté municipal précédent celui en cours de promulgation"
+            ],
+        )
 
     def test_back_navigation(self):
         """This tests CustomCookieWizardView.render_next_step: if the user goes
@@ -1506,7 +1477,7 @@ class TestADSDecreeView(ClientTestCase):
         self._step_back(1)
         self._step_back(0)
         resp = self._step_0(is_old_ads=False)
-        self.assertNotIn("error", resp.content.decode("utf8"))
+        self.assertFalse(resp.context["form"].is_valid())
 
 
 class TestADSHistoryView(ClientTestCase):
