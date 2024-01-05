@@ -1,5 +1,6 @@
 {% load static %}
 {% load is_subpath %}
+{% load html_metadata %}
 <!doctype html>
 <html lang="fr" data-fr-scheme="light">
   <head>
@@ -16,7 +17,9 @@
     {% endblock %}
 
     {% block extra_head %}{% endblock %}
-    <title>{% block title %}MesADS{% endblock %}</title>
+
+    {% html_metadata %}
+    {% block title %}{% endblock %}
   </head>
   <body>
     <header role="banner" class="fr-header">

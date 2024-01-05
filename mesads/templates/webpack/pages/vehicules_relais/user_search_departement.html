@@ -1,7 +1,5 @@
 {% extends "../../base-sidemenu.html" %}
 
-{% block title %}MesADS: véhicules relais {{ prefecture.numero }} - {{ prefecture.libelle }}{% endblock %}
-
 {% load show_pagination_links %}
 
 {% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
@@ -71,5 +69,4 @@
 
   {% show_pagination_links page_obj %}
 </div>
-
 {% endblock %}

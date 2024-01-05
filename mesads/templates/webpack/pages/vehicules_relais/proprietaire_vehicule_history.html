@@ -2,8 +2,6 @@
 {% load meta %}
 {% load selectattr %}
 
-{% block title %}MesADS: véhicule relais, historique du véhicule {{ object.numero }}{% endblock %}
-
 {% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
 
 {% block main %}
@@ -30,5 +28,4 @@
 </nav>
 
 {% include "history.html" with empty_template="history_empty.html" %}
-
 {% endblock %}

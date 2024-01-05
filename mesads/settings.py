@@ -148,7 +148,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "mesads.app.context_processors.mesads_settings",
+                "mesads.context_processors.mesads_settings",
             ],
         },
     },

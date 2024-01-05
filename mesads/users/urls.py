@@ -27,6 +27,10 @@ urlpatterns = [
     # By default, /auth/login displays the login form to authenticated users,
     # and also a permission error message if ?next is set. Override to force
     # redirect to ?next or to LOGIN_REDIRECT_URL.
-    path("login/", LoginView.as_view(redirect_authenticated_user=True)),
+    path(
+        "login/",
+        LoginView.as_view(redirect_authenticated_user=True),
+        name="override.login",
+    ),
     path("", include("django.contrib.auth.urls")),
 ]

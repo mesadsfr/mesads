@@ -2,8 +2,6 @@
 {% load meta %}
 {% load selectattr %}
 
-{% block title %}MesADS: véhicule relais, suppression de l'espace propriétaire {{ proprietaire.nom }}{% endblock %}
-
 {% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
 
 {% block main %}
@@ -60,5 +58,4 @@
     style="background-color: var(--background-flat-error)"
   />
 </form>
-
 {% endblock %}

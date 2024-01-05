@@ -1,11 +1,5 @@
 {% extends "base.html" %}
 
-{% block meta %}
-  <meta name="description" content="Mes ADS permet aux propriétaires de taxis relais de se conformer à la réglementation en vigueur en déclarant leurs véhicules relais.">`
-{% endblock %}
-
-{% block title %}Création de compte - propriétaire de véhicules relais{% endblock %}
-
 {% block body %}
 <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
   <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
@@ -30,5 +24,4 @@
 <div class="fr-grid-row fr-grid-row--center fr-mb-2w">
   <a class="fr-btn fr-btn--secondary" href="{% url 'login' %}?next={% url 'vehicules-relais.index' %}">Pour y accéder, connectez-vous ou créez un compte.</a>
 </div>
-
 {% endblock %}

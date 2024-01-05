@@ -108,11 +108,6 @@ urlpatterns += [
         name="app.profiles.ads_manager_administrator",
     ),
     path(
-        "aom",
-        TemplateView.as_view(template_name="pages/profiles_aom.html"),
-        name="app.profiles.aom",
-    ),
-    path(
         "chauffeur",
         TemplateView.as_view(template_name="pages/profiles_driver.html"),
         name="app.profiles.driver",
@@ -121,11 +116,6 @@ urlpatterns += [
         "proprietaire_vehicules_relais",
         TemplateView.as_view(template_name="pages/profiles_vehicules_relais.html"),
         name="app.profiles.vehicules-relais",
-    ),
-    path(
-        "autre",
-        TemplateView.as_view(template_name="pages/profiles_other.html"),
-        name="app.profiles.other",
     ),
     path("chiffres-cles", views.StatsView.as_view(), name="app.stats"),
     path(

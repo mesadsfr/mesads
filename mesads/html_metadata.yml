@@ -1,0 +1,176 @@
+urls:
+  ###
+  ### Root pages
+  ###
+  app.homepage:
+    title: Découvrez comment MesADS peut vous aider - Choisissez votre profil
+    description: "Trouvez comment utiliser MesADS en sélectionnant votre profil: gestionnaire ADS, chauffeur de taxi, propriétaire de véhicules relais, ou autre."
+
+  app.accessibility:
+    title: "Déclaration d'accessibilité de MesADS"
+    description: "Découvrez à quel point MesADS est conforme aux normes d'accessibilité numérique."
+
+  app.stats:
+    title: "Chiffres clés de MesADS"
+    description: "Statistiques sur l'utilisation de MesADS : nombre d'utilisateurs, nombre d'ADS enregistrés, etc."
+
+  app.faq:
+    title: "Foire aux questions de MesADS"
+    description: "Réponses aux questions fréquemment posées sur MesADS. Un problème technique ? Besoin d'aide ? Contactez-nous."
+
+  app.profiles.ads_manager:
+    title: "MesADS: le registre ADS pour les gestionnaires de communes et EPCI"
+    description: Respectez l'obligation d'enregistrement des ADS de votre commune ou EPCI avec MesADS. Créez votre compte pour commencer.
+
+  app.profiles.driver:
+    title: MesADS pour un chauffeur de taxi
+    description: MesADS liste les véhicules relais pour aider les chauffeurs de taxi à trouver un véhicule de remplacement en cas de panne ou d'accident.
+
+  app.profiles.vehicules-relais:
+    title: "Propriétaires de taxis relais: enregistrez-vous sur MesADS"
+    description: Respectez la réglementation facilement avec MesADS. Enregistrez et gérez vos taxis relais ici.
+
+  app.profiles.ads_manager_administrator:
+    title: "MesADS: le registre ADS pour les agents préfectoraux"
+    description: MesADS permet aux agents préfectoraux de gérer les instructeurs ADS et les ADS aéroports de leur département.
+
+  ###
+  ### Registration
+  ###
+  override.login:
+    title: "Connexion à l'espace MesADS"
+    description: "Connectez-vous pour gérer les ADS de votre administration ou enregistrer vos véhicules relais sur MesADS."
+
+  django_registration_register:
+    title: "Inscription sur MesADS"
+    description: "Créez votre compte MesADS pour gérer les ADS ou enregistrer des véhicules relais."
+
+  django_registration_complete:
+    title: "Confirmation d'inscription MesADS"
+    description: "Consultez votre email pour activer votre compte MesADS."
+
+  django_registration_activation_complete:
+    title: "Compte MesADS activé"
+    description: "Félicitations, votre compte MesADS est activé. Vous pouvez maintenant vous connecter."
+
+  django_registration_activate:
+    title: "Activation du compte MesADS"
+    description: "Activez votre compte MesADS en cliquant sur le lien reçu par email."
+
+  django_registration_registration_closed:
+    title: "Inscription MesADS temporairement suspendue"
+    description: "L'inscription sur MesADS est actuellement suspendue. Veuillez réessayer ultérieurement."
+
+  ###
+  ### Registre ADS
+  ###
+  app.ads-register.index:
+    # Redirection, no template to render
+    missing: true
+
+  app.dashboards.list:
+    title: "Aperçu des statistiques nationales du registre ADS"
+    description: "Explorez une vue complète des statistiques nationales relatives au déploiement du registre ADS."
+
+  app.dashboards.detail:
+    title: "Analyse détaillée des statistiques ADS pour {{ object.prefecture.display_fulltext }}"
+    description: "Découvrez en détail le déploiement et l'utilisation du registre ADS dans {{ object.prefecture.display_fulltext }}."
+
+  app.ads-manager-admin.index:
+    title: "Gestion et contrôle des accès des instructeurs ADS"
+    description: "Gérez les demandes d'accès au registre ADS en acceptant ou refusant les instructeurs de votre département."
+
+  app.ads-manager.index:
+    title: "Accès et gestion des administrations au registre ADS"
+    description: "Configurez votre accès au registre ADS et consultez les gestionnaires ADS déjà configurées."
+
+  app.ads-manager.detail:
+    title: "Vue d'ensemble des ADS gérées par {{ ads_manager.content_object.display_fulltext }}"
+    description: "Consultez et gérez l'ensemble des ADS attribuées par {{ ads_manager.content_object.display_fulltext }}."
+
+  app.ads-manager.decree.detail:
+    title: "Création d'arrêté municipal pour les ADS de {{ ads_manager.content_object.display_fulltext }}"
+    description: "Facilitez la génération de l'arrêté municipal définissant le nombre d'ADS pour {{ ads_manager.content_object.display_fulltext }}."
+
+  app.ads.create:
+    title: "Ajouter une nouvelle ADS à {{ ads_manager.content_object.display_fulltext }}"
+    description: "Procédez à l'enregistrement d'une nouvelle ADS au sein de {{ ads_manager.content_object.display_fulltext }}."
+
+  app.ads.detail:
+    title: "Gestion de l'ADS {{ ads.number }} dans {{ ads_manager.content_object.display_fulltext }}"
+    description: "Accédez au formulaire de modification et de détail pour l'ADS {{ ads.number }} de {{ ads_manager.content_object.display_fulltext }}."
+
+  app.ads.delete:
+    title: "Confirmez la suppression de l'ADS {{ ads.number }} de {{ ads_manager.content_object.display_fulltext }}"
+    description: "Effectuez la suppression de l'ADS {{ ads.number }} de {{ ads_manager.content_object.display_fulltext }}. En cas d'erreur, contactez notre équipe pour assistance."
+
+  app.exports.prefecture:
+    missing: true # Not HTML view
+
+  app.ads.history:
+    title: "Revue de l'historique de l'ADS {{ ads.number }} chez {{ ads_manager.content_object.display_fulltext }}"
+    description: "Consultez le journal des modifications apportées à l'ADS {{ ads.number }} de {{ ads_manager.content_object.display_fulltext }}."
+
+  app.ads.decree:
+    title: "Édition d'arrêté pour l'ADS {{ ads.number }} de {{ ads.ads_manager.content_object.display_fulltext }}"
+    description: "Générez et personnalisez l'arrêté municipal pour l'ADS {{ ads.number }} de {{ ads.ads_manager.content_object.display_fulltext }}."
+
+  ###
+  ### Vehicules relais
+  ###
+
+  # Redirection, no template to render
+  vehicules-relais.index:
+    missing: true
+
+  vehicules-relais.search:
+    title: "Recherche dans le registre des véhicules relais"
+    description: "Choisissez un département pour explorer la liste des véhicules relais disponibles."
+
+  vehicules-relais.search.departement:
+    title: "Liste des taxis relais en {{ prefecture.libelle }}"
+    description: "Explorez les taxis relais disponibles dans le département de {{ prefecture.libelle }}."
+
+  vehicules-relais.vehicule:
+    title: "Détails du taxi relais n°{{ vehicule.numero }}"
+    description: "Consultez les détails du taxi relais n°{{ vehicule.numero }}, y compris le propriétaire et les spécificités."
+
+  vehicules-relais.proprietaire:
+    title: "Gestion de vos espaces propriétaires de taxis relais"
+    description: "Accédez à la liste de vos taxis relais et à l'option de création de nouveaux espaces propriétaires."
+
+  vehicules-relais.proprietaire.new:
+    title: "Ajouter un espace propriétaire pour les taxis relais"
+    description: "Créez un espace pour gérer vos taxis relais en fournissant les informations nécessaires."
+
+  vehicules-relais.proprietaire.delete:
+    title: "Confirmer la suppression de l'espace propriétaire {{ object.nom }}"
+    description: "Procédez à la suppression de votre espace propriétaire de taxis relais nommé {{ object.nom }}."
+
+  vehicules-relais.proprietaire.detail:
+    title: "Détails de l'espace propriétaire {{ object.nom }}"
+    description: "Gérez vos informations et consultez vos taxis relais dans l'espace propriétaire {{ object.nom }}."
+
+  vehicules-relais.proprietaire.history:
+    title: "Journal des modifications de l'espace propriétaire {{ object.nom }}"
+    description: "Suivez l'historique des changements apportés à votre espace propriétaire de taxis relais {{ object.nom }}."
+
+  vehicules-relais.proprietaire.edit:
+    title: "Modifier l'espace propriétaire {{ object.nom }}"
+    description: "Apportez des modifications à votre espace propriétaire de taxis relais nommé {{ object.nom }}."
+
+  vehicules-relais.proprietaire.vehicule.new:
+    title: "Ajouter un nouveau taxi relais à {{ proprietaire.nom }}"
+    description: "Enregistrez un nouveau taxi relais dans votre espace propriétaire {{ proprietaire.nom }}."
+
+  vehicules-relais.proprietaire.vehicule.edit:
+    title: "Gérer le taxi relais n°{{ vehicule.numero }} de {{ proprietaire.nom }}"
+    description: "Modifiez les informations du taxi relais n°{{ vehicule.numero }} dans votre espace propriétaire {{ proprietaire.nom }}."
+
+  vehicules-relais.proprietaire.vehicule.delete:
+    title: "Confirmer la suppression du taxi relais n°{{ vehicule.numero }}"
+    description: "Supprimez définitivement le taxi relais n°{{ vehicule.numero }} de votre espace propriétaire {{ proprietaire.nom }}."
+
+  vehicules-relais.proprietaire.vehicule.history:
+    title: "Historique du taxi relais n°{{ vehicule.numero }}"
+    description: "Consultez l'historique des modifications apportées au taxi relais n°{{ vehicule.numero }} de {{ proprietaire.nom }}."

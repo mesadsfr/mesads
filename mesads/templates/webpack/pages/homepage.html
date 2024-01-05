@@ -1,11 +1,5 @@
 {% extends "base-banner.html" %}
 
-{% block meta %}
-  <meta name="description" content="Mes ADS, une startup d'état de beta.gouv.fr, propose une plateforme centralisée pour la gestion des Autorisations de Stationnement (ADS) et des véhicules relais pour les taxis." />
-{% endblock %}
-
-{% block title %}MesADS, le registre des ADS et des véhicules relais{% endblock %}
-
 {% block banner %}
   MesADS, le registre des ADS et des véhicules relais
 {% endblock %}
@@ -62,25 +56,6 @@
         <div class="fr-tile__body">
           <div class="fr-tile__content">
             <h3 class="fr-tile__title">
-              <a href="{% url 'app.profiles.aom' %}">Autorités organisatrices de la mobilité (AOM)</a>
-            </h3>
-          </div>
-        </div>
-        <div class="fr-tile__header">
-          <div class="fr-tile__pictogram">
-            <div style="font-size: 4rem">
-              🚦
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="fr-col-6">
-      <div class="fr-tile fr-enlarge-link">
-        <div class="fr-tile__body">
-          <div class="fr-tile__content">
-            <h3 class="fr-tile__title">
               <a href="{% url 'app.profiles.driver' %}">Chauffeur de taxi</a>
             </h3>
           </div>
@@ -108,25 +83,6 @@
           <div class="fr-tile__pictogram">
             <div style="font-size: 4rem">
               🦺
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="fr-col-6">
-      <div class="fr-tile fr-enlarge-link">
-        <div class="fr-tile__body">
-          <div class="fr-tile__content">
-            <h3 class="fr-tile__title">
-              <a href="{% url 'app.profiles.other' %}">Vous avez un autre profil</a>
-            </h3>
-          </div>
-        </div>
-        <div class="fr-tile__header">
-          <div class="fr-tile__pictogram">
-            <div style="font-size: 4rem">
-              👤
             </div>
           </div>
         </div>

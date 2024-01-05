@@ -39,21 +39,9 @@ class TestProfileADSManagerView(ClientTestCase):
         self.assertEqual(resp.status_code, 200)
 
 
-class TestProfileAOMView(ClientTestCase):
-    def test_200(self):
-        resp = self.anonymous_client.get("/aom")
-        self.assertEqual(resp.status_code, 200)
-
-
 class TestProfileDriverView(ClientTestCase):
     def test_200(self):
         resp = self.anonymous_client.get("/chauffeur")
-        self.assertEqual(resp.status_code, 200)
-
-
-class TestProfileOtherView(ClientTestCase):
-    def test_200(self):
-        resp = self.anonymous_client.get("/autre")
         self.assertEqual(resp.status_code, 200)
 
 
