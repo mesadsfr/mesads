@@ -57,9 +57,25 @@ urls:
     title: "Activation du compte MesADS"
     description: "Activez votre compte MesADS en cliquant sur le lien reçu par email."
 
-  django_registration_registration_closed:
-    title: "Inscription MesADS temporairement suspendue"
-    description: "L'inscription sur MesADS est actuellement suspendue. Veuillez réessayer ultérieurement."
+  password_change:
+    title: "Changement de mot de passe MesADS"
+    description: "Changez votre mot de passe MesADS."
+
+  password_reset:
+    title: "Réinitialisation du mot de passe MesADS"
+    description: "Réinitialisez votre mot de passe MesADS."
+
+  password_reset_done:
+    title: "Réinitialisation du mot de passe MesADS"
+    description: "Consultez votre email pour réinitialiser votre mot de passe MesADS."
+
+  password_reset_confirm:
+    title: "Réinitialisation du mot de passe MesADS"
+    description: "Réinitialisez votre mot de passe MesADS."
+
+  password_reset_complete:
+    title: "Réinitialisation du mot de passe MesADS"
+    description: "Votre mot de passe MesADS a été réinitialisé."
 
   ###
   ### Registre ADS
