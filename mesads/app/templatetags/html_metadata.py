@@ -4,6 +4,7 @@ import yaml
 
 from django import template
 from django.urls import resolve
+from django.urls.exceptions import Resolver404
 from django.utils.html import escape
 from django.template import Template
 from django.utils.safestring import mark_safe
@@ -17,7 +18,11 @@ def html_metadata(context):
     data = pkg_resources.resource_string(__name__, "../../html_metadata.yml")
     metadata = yaml.safe_load(data)
     request = context["request"]
-    url_name = resolve(request.path_info).url_name
+
+    try:
+        url_name = resolve(request.path).url_name
+    except Resolver404:
+        return ""
 
     metadata_title = metadata.get("urls", {}).get(url_name, {}).get("title")
     metadata_description = metadata.get("urls", {}).get(url_name, {}).get("description")
