@@ -24,4 +24,4 @@ class Command(BaseCommand):
         ct = ContentType.objects.get_for_model(Commune)
         for row in query:
             if row.ads_manager.content_type == ct:
-                writer.writerow([row.user.email, row.ads_manager.content_object])
+                writer.writerow([row.user.email])
