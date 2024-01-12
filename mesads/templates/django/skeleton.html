@@ -13,13 +13,9 @@
     <link rel="apple-touch-icon" href="{% static '@gouvfr/favicon/apple-touch-icon.png' %}"><!-- 180×180 -->
     <link rel="icon" href="{% static '@gouvfr/favicon/favicon.svg' %}" type="image/svg+xml">
     <link rel="shortcut icon" href="{% static '@gouvfr/favicon/favicon.ico' %}" type="image/x-icon"><!-- 32×32 -->
-    {% block meta %}
-    {% endblock %}
 
     {% block extra_head %}{% endblock %}
-
     {% html_metadata %}
-    {% block title %}{% endblock %}
   </head>
   <body>
     <header role="banner" class="fr-header">
