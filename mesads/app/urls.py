@@ -1,7 +1,7 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.urls import path
-from django.views.generic import RedirectView, TemplateView
+from django.views.generic import TemplateView
 
 from . import views
 from .decorators import (
