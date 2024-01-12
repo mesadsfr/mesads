@@ -3,11 +3,10 @@ import sys
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
-from django.db import transaction
 from django.db.models import Count
 
-from mesads.app.models import ADSManager, ADSManagerAdministrator, ADSManagerRequest
-from mesads.fradm.models import Commune, EPCI, Prefecture
+from mesads.app.models import ADSManagerRequest
+from mesads.fradm.models import Commune
 
 
 class Command(BaseCommand):
@@ -22,5 +21,7 @@ class Command(BaseCommand):
             .annotate(ads_count=Count("ads_manager__ads"))
             .filter(ads_count=0)
         )
+        ct = ContentType.objects.get_for_model(Commune)
         for row in query:
-            writer.writerow([row.user.email, row.ads_manager.content_object])
+            if row.ads_manager.content_type == ct:
+                writer.writerow([row.user.email, row.ads_manager.content_object])
