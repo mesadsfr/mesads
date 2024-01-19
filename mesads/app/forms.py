@@ -382,29 +382,6 @@ class ADSDecreeForm3(forms.Form):
         required=False,
     )
 
-    def clean(self):
-        cleaned_data = super().clean()
-
-        # Declare the fields that have mutual dependencies: if one of them is filled, the others must be filled too.
-        deps = [
-            {
-                "previous_decree_number": "Veuillez saisir le numéro de l'arrêté municipal précédent celui en cours de promulgation",
-                "previous_decree_date": "Veuillez saisir la date de l'arrêté municipal précédent celui en cours de promulgation",
-            },
-            {
-                "tenant_ads_user": "Veuillez saisir l'identité de l'exploitant de l'ADS",
-                "tenant_signature_date": "Veuillez saisir la date de signature du contrat de locataire-gérant",
-            },
-        ]
-
-        for dep in deps:
-            if any(cleaned_data.get(key) for key in dep.keys()):
-                for key in dep.keys():
-                    if not cleaned_data.get(key):
-                        self.add_error(key, dep[key])
-
-        return cleaned_data
-
 
 class ADSDecreeForm4(forms.Form):
     STEP_TITLE = "Téléchargement de l'arrêté"

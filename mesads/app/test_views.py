@@ -1435,25 +1435,6 @@ class TestADSDecreeView(ClientTestCase):
             ["Le champ doit être sous la forme XXXX/2024"],
         )
 
-    def test_third_step_fields_dependencies(self):
-        """If previous_decree_number is set, previous_decree_number must be set too"""
-        self._step_0(is_old_ads=True)
-        self._step_1()
-        # Invalid decree number
-        resp = self._step_2(
-            overrides={
-                "2-previous_decree_number": "0003/2023",
-                "2-previous_decree_date": "",
-            },
-            check_going_to_next_step=False,
-        )
-        self.assertEqual(
-            resp.context["form"].errors["previous_decree_date"],
-            [
-                "Veuillez saisir la date de l'arrêté municipal précédent celui en cours de promulgation"
-            ],
-        )
-
     def test_back_navigation(self):
         """This tests CustomCookieWizardView.render_next_step: if the user goes
         to a previous step, storage should be cleared for the next steps to
