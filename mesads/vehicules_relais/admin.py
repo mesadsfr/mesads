@@ -24,6 +24,7 @@ class ProprietaireAdmin(admin.ModelAdmin):
     search_fields = (
         "nom",
         "siret",
+        "users__email",
     )
 
     fields = (
