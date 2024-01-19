@@ -11,21 +11,36 @@ class FrenchAdministrationForm(forms.Form):
 
     commune = forms.ModelChoiceField(
         queryset=Commune.objects,
-        widget=autocomplete.ListSelect2(url="fradm.autocomplete.commune"),
+        widget=autocomplete.ListSelect2(
+            url="fradm.autocomplete.commune",
+            attrs={
+                "data-placeholder": "Sélectionnez la commune dont vous souhaitez gérer les ADS",
+            },
+        ),
         label="Commune",
         required=False,
     )
 
     epci = forms.ModelChoiceField(
         queryset=EPCI.objects,
-        widget=autocomplete.ListSelect2(url="fradm.autocomplete.epci"),
+        widget=autocomplete.ListSelect2(
+            url="fradm.autocomplete.epci",
+            attrs={
+                "data-placeholder": "Sélectionnez l'EPCI dont vous souhaitez gérer les ADS",
+            },
+        ),
         required=False,
         label="EPCI",
     )
 
     prefecture = forms.ModelChoiceField(
         queryset=Prefecture.objects,
-        widget=autocomplete.ListSelect2(url="fradm.autocomplete.prefecture"),
+        widget=autocomplete.ListSelect2(
+            url="fradm.autocomplete.prefecture",
+            attrs={
+                "data-placeholder": "Sélectionnez la préfecture dont vous souhaitez gérer les ADS",
+            },
+        ),
         label="Préfecture",
         required=False,
     )

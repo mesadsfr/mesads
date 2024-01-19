@@ -110,7 +110,7 @@
   </ul>
 
   <div id="tabpanel-1-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" aria-labelledby="tabpanel-1" tabindex="0">
-    <form class="fr-grid-row fr-grid-row--middle" method="post" action="{% url 'app.ads-manager.index' %}">
+    <form method="post" action="{% url 'app.ads-manager.index' %}">
       {% csrf_token %}
       <div class="fr-form-group">
         <fieldset class="fr-fieldset">
@@ -135,14 +135,7 @@
                 D'une commune
               </label>
 
-              <div class="fr-input-group radio-inline{% if form.errors.commune %} fr-input-group--error{% endif %}">
-                <label
-                  class="fr-label"
-                  for="{{ form.commune.id_for_label }}"
-                >
-                  Sélectionnez la commune:
-                </label>
-
+              <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.commune %} fr-input-group--error{% endif %}">
                 {{ form.commune }}
 
                 {% for error in form.errors.commune %}
@@ -160,14 +153,7 @@
                 D'un établissement public à fiscalité propre (métropole, communauté de commune, communauté d’agglomération ou communauté urbaine)
               </label>
 
-              <div class="fr-input-group radio-inline{% if form.errors.epci %} fr-input-group--error{% endif %}">
-                <label
-                  class="fr-label"
-                  for="{{ form.epci.id_for_label }}"
-                >
-                  Sélectionnez l'établissement :
-                </label>
-
+              <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.epci %} fr-input-group--error{% endif %}">
                 {{ form.epci }}
 
                 {% for error in form.errors.epci %}
@@ -185,14 +171,7 @@
                 D'une préfecture (ADS aéroport)
               </label>
 
-              <div class="fr-input-group radio-inline{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
-                <label
-                  class="fr-label"
-                  for="{{ form.prefecture.id_for_label }}"
-                >
-                  Sélectionnez la préfecture :
-                </label>
-
+              <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
                 {{ form.prefecture }}
 
                 {% for error in form.errors.prefecture %}
@@ -208,15 +187,16 @@
 
       <!-- Non-fields errors -->
       {% if form.non_field_errors %}
-        <div class="fr-input-group fr-input-group--error">
-          {% for error in form.non_field_errors %}
-          <!-- Non-field error -->
-          <p class="fr-error-text">
-            {{ error }}
-          </p>
-          {% endfor %}
-        </div>
+      <div class="fr-input-group fr-input-group--error">
+        {% for error in form.non_field_errors %}
+        <!-- Non-field error -->
+        <p class="fr-error-text">
+          {{ error }}
+        </p>
+        {% endfor %}
+      </div>
       {% endif %}
+
       <div class="fr-input-group">
         <button type="submit" class="fr-btn">Envoyer la demande à la préfecture</button>
       </div>
