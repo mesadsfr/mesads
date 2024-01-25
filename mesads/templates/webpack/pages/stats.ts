@@ -20,8 +20,10 @@ Chart.register(
 // Given a dict where keys are dates and values are numbers, return a dict where
 // keys are trimesters and values are the sum of the values of the corresponding
 // dates.
+// The current trimester (ie. the one that is not finished yet) is not included.
 function GroupDataByTrimester(data: Record<string, number>) {
   const groupedByTrimester: Record<string, number> = {};
+  let last = null;
 
   Object.keys(data).forEach((key) => {
     const [year, month] = key.split("-").map(Number);
@@ -35,7 +37,14 @@ function GroupDataByTrimester(data: Record<string, number>) {
       groupedByTrimester[trimesterKey] = 0;
     }
     groupedByTrimester[trimesterKey] += data[key];
+    last = trimesterKey;
   });
+
+  if (last) {
+    delete groupedByTrimester[last];
+  }
+
+  groupedByTrimester.V;
   return groupedByTrimester;
 }
 
