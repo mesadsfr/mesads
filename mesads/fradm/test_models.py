@@ -4,6 +4,14 @@ from .models import Commune, EPCI, Prefecture
 
 
 class TestCommune(TestCase):
+    def test_type_name(self):
+        commune = Commune()
+        self.assertEqual(commune.type_name(), "commune")
+
+    def test_text(self):
+        commune = Commune(libelle="Anthony")
+        self.assertEqual(commune.text(), "Anthony")
+
     def test_display_text(self):
         commune = Commune(libelle="Anthony")
         self.assertIn("d'", commune.display_text())
@@ -25,6 +33,14 @@ class TestCommune(TestCase):
 
 
 class TestPrefecture(TestCase):
+    def test_type_name(self):
+        prefecture = Prefecture()
+        self.assertEqual(prefecture.type_name(), "préfecture")
+
+    def test_text(self):
+        prefecture = Prefecture(libelle="Préfecture de Police de Paris")
+        self.assertEqual(prefecture.text(), "Préfecture de Police de Paris")
+
     def test_display_text(self):
         prefecture = Prefecture(numero="75", libelle="Préfecture de Police de Paris")
         self.assertEqual(prefecture.display_text(), "préfecture de Police de Paris")
@@ -46,6 +62,14 @@ class TestPrefecture(TestCase):
 
 
 class TestEPCI(TestCase):
+    def test_type_name(self):
+        epci = EPCI()
+        self.assertEqual(epci.type_name(), "EPCI")
+
+    def test_text(self):
+        epci = EPCI(name="CC du Sud")
+        self.assertEqual(epci.text(), "CC du Sud")
+
     def test_display_text(self):
         epci = EPCI(siren="200060473", departement="976", name="CC du Sud")
         self.assertEqual(epci.display_text(), "EPCI CC du Sud")
