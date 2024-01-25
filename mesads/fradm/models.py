@@ -8,6 +8,14 @@ class AdministrationModel(models.Model):
     class Meta:
         abstract = True
 
+    def type_name(self):
+        """Human readable name of the administration type (commune, prefecture, epci)."""
+        raise NotImplementedError
+
+    def text(self):
+        """Name of the administration."""
+        raise NotImplementedError
+
     def display_text(self):
         """Human readable name of this administration."""
         raise NotImplementedError
@@ -33,6 +41,12 @@ class Commune(AdministrationModel):
 
     class Meta:
         unique_together = (("departement", "libelle"),)
+
+    def type_name(self):
+        return "commune"
+
+    def text(self):
+        return self.libelle
 
     def display_text(self):
         if self.libelle.lower()[0:1] in "aeiouy":
@@ -68,6 +82,12 @@ class Prefecture(AdministrationModel):
 
     ads_managers = GenericRelation("app.ADSManager", related_query_name="prefecture")
 
+    def type_name(self):
+        return "préfecture"
+
+    def text(self):
+        return self.libelle
+
     def display_text(self):
         # Special case when "libelle" equals "Préfecture de Police de Paris":
         # return "préfecture de xxx" (with lowercase "p" at the beginning)
@@ -102,6 +122,12 @@ class EPCI(AdministrationModel):
         verbose_name = "EPCI"
         verbose_name_plural = "EPCI"
         unique_together = (("departement", "name"),)
+
+    def type_name(self):
+        return "EPCI"
+
+    def text(self):
+        return self.name
 
     def display_text(self):
         return f"EPCI {self.name}"

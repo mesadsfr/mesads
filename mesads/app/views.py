@@ -540,6 +540,7 @@ def prefecture_export_ads(request, ads_manager_administrator):
         0,
         (
             "Identifiant unique",
+            "Type d'administration",
             "Administration",
             "Numéro",
             "Date de création",
@@ -590,7 +591,8 @@ def prefecture_export_ads(request, ads_manager_administrator):
             0,
             (
                 ads.id,
-                ads.ads_manager.content_object.display_text(),
+                ads.ads_manager.content_object.type_name(),
+                ads.ads_manager.content_object.text(),
                 ads.number,
                 display_date(ads.ads_creation_date),
                 display_date(ads.attribution_date),
