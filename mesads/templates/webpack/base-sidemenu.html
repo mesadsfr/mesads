@@ -23,3 +23,9 @@
   </div>
 </main>
 {% endblock %}
+
+{% block endbody %}
+  {{ block.super }}
+
+  <script src="base.ts"></script>
+{% endblock %}

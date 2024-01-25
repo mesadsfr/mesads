@@ -246,5 +246,7 @@
 {% endblock %}
 
 {% block endbody %}
-{{ edit_form.media }}
+  {{ block.super }}
+
+  {{ edit_form.media }}
 {% endblock %}

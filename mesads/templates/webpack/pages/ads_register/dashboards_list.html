@@ -93,6 +93,8 @@
 {% endblock %}
 
 {% block endbody %}
-<script src="leaflet/dist/leaflet.js"></script>
-<script src="./dashboards_list.ts"></script>
+  {{ block.super }}
+
+  <script src="leaflet/dist/leaflet.js"></script>
+  <script src="./dashboards_list.ts"></script>
 {% endblock %}

@@ -81,6 +81,8 @@
 {% endblock %}
 
 {% block endbody %}
+  {{ block.super }}
+
   {% comment %}Extra javascript to display form for new requests.{% endcomment %}
   {{ form.media }}
 {% endblock %}

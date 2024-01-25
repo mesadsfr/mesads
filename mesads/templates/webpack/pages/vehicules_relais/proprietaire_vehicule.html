@@ -104,6 +104,8 @@
 {% endblock %}
 
 {% block endbody %}
+  {{ block.super }}
+
   {% comment %}Extra javascript required to display commune_localisation field.{% endcomment %}
   {{ form.media }}
 {% endblock %}

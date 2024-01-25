@@ -15,3 +15,9 @@
   {% block body %}{% endblock %}
 </main>
 {% endblock %}
+
+{% block endbody %}
+  {{ block.super }}
+
+  <script src="base.ts"></script>
+{% endblock %}
