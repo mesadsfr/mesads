@@ -35,14 +35,12 @@ class InfoBox extends L.Control {
   };
 
   update = (props: APIProps | null) => {
-    const title = props
-      ? `Nombre d'ADS pour ${props.code_insee} - ${props.nom}`
-      : `Nombre d'ADS`;
+    const title = props ? `${props.nom} (${props.code_insee})` : `Nombre d'ADS`;
     const content = props
       ? this.getInfoboxContent(props.ads_count, props.expected_ads_count)
-      : `Survolez une région pour afficher les détails`;
+      : `Survolez un département pour <br/>afficher le nombre d'ADS enregistrées`;
     this._div.innerHTML = `
-          <div class="fr-tile fr-enlarge-link fr-tile--horizontal">
+          <div class="fr-tile fr-enlarge-link fr-tile--horizontal" style="opacity: 0.8">
             <div class="fr-tile__body">
                 <h4 class="fr-tile__title">${title}</h4>
                 <p class="fr-tile__desc">${content}</p>
@@ -53,16 +51,18 @@ class InfoBox extends L.Control {
 
   getInfoboxContent = (ads_count: number, expected_ads_count: number) => {
     const infos = [
-      `${ads_count} ADS ${ads_count > 1 ? "enregistrées" : "enregistrée"}`,
+      `&rarr; ${ads_count} ADS ${
+        ads_count > 1 ? "enregistrées" : "enregistrée"
+      }`,
     ];
     if (expected_ads_count !== null) {
       infos.push(
-        `${expected_ads_count} ADS au total dans la préfecture (estimation)`
+        `&rarr; ${expected_ads_count} ADS au total <br />dans la préfecture (estimation)`
       );
       infos.push(
-        `<strong>Taux de remplissage: ${Math.round(
+        `<div class="fr-mt-1w"><strong>Taux de remplissage: ${Math.round(
           (ads_count / expected_ads_count) * 100
-        )}%</strong>`
+        )}%</strong></div>`
       );
     } else {
       infos.push("Nombre d'ADS total inconnu pour cette préfecture");
@@ -158,10 +158,9 @@ function displayStatsMap(data: APIResponse) {
     }
     description += "</ul>";
     div.innerHTML = `
-      <div class="fr-tile fr-enlarge-link fr-tile--horizontal">
+      <div class="fr-tile fr-enlarge-link fr-tile--horizontal" style="opacity: 0.8">
         <div class="fr-tile__body">
-            <h4 class="fr-tile__title">Légende</h4>
-            ${description}
+          ${description}
         </div>
       </div>
       `;
