@@ -2,8 +2,14 @@
 
 {% block banner %}Chiffres clés Mes ADS{% endblock %}
 
-{% block body %}
+{% block extra_head %}
+{{ block.super }}
 
+<link rel="stylesheet" href="leaflet/dist/leaflet.css" />
+{% endblock %}
+
+
+{% block body %}
 <p>
   Mes ADS est un projet en pleine évolution, démarré en 2022. Nous essayons de faire évoluer le produit en fonction de vos retours. Si vous avez des questions, des suggestions, ou si vous remarquez un bug, n'hésitez surtout pas à nous contacter en utilisant le chat ou par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
 </p>
@@ -62,6 +68,12 @@
 
 <hr class="fr-mt-3w" />
 
+<div id="map" style="width: 100%; height: 764px;"></div>
+<script src="leaflet/dist/leaflet.js"></script>
+<script src="./stats_map.ts"></script>
+
+<hr class="fr-mt-3w" />
+
 <div class="fr-grid-row fr-grid-row--gutters">
   <div class="fr-col-12">
     <h3>Evolution du nombre d'ADS enregistrées</h3>
@@ -73,7 +85,6 @@
     <canvas id="ads-manager-requests-count"></canvas>
   </div>
 </div>
-
 
 <script id="data" type="application/json">
 {
