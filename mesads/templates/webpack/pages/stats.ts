@@ -43,8 +43,6 @@ function GroupDataByTrimester(data: Record<string, number>) {
   if (last) {
     delete groupedByTrimester[last];
   }
-
-  groupedByTrimester.V;
   return groupedByTrimester;
 }
 
