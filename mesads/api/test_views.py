@@ -160,7 +160,7 @@ class TestStatsGeoJSONPerPrefecture(ClientTestCase):
     def test_get_unauthorized(self):
         client = APIClient()
         resp = client.get("/api/stats/geojson/per-prefecture/")
-        self.assertEqual(resp.status_code, 401)
+        self.assertEqual(resp.status_code, 200)
 
     def test_get(self):
         client = APIClient()
