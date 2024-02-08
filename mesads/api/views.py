@@ -33,8 +33,6 @@ class ADSUpdatesViewSet(
 class StatsGeoJSONPerPrefecture(views.APIView):
     """Exposes a GeoJSON with the number of ADS for each prefecture."""
 
-    permission_classes = [permissions.IsAdminUser]
-
     def get(self, request):
         query_stats = ADSManagerAdministrator.objects.select_related(
             "prefecture"
