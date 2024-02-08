@@ -11,6 +11,31 @@ class UsersInline(admin.TabularInline):
     autocomplete_fields = ["user"]
 
 
+class VehiculeCount(admin.SimpleListFilter):
+    """Filter by vehicules count."""
+
+    title = "Nombre de véhicules"
+
+    parameter_name = "vehicules_count"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("1", ">=1 véhicule"),
+            ("5", ">=5 véhicules"),
+            ("10", ">=10 véhicules"),
+            ("50", ">=50 véhicules"),
+        )
+
+    def queryset(self, request, queryset):
+        try:
+            count_filter = int(self.value())
+        except (ValueError, TypeError):
+            return queryset
+
+        queryset = queryset.annotate(vehicule_count=Count("vehicule"))
+        return queryset.filter(vehicule_count__gte=count_filter)
+
+
 @admin.register(Proprietaire)
 class ProprietaireAdmin(admin.ModelAdmin):
     list_display = (
@@ -43,6 +68,8 @@ class ProprietaireAdmin(admin.ModelAdmin):
         "last_update_at",
         "vehicules_link",
     )
+
+    list_filter = (VehiculeCount,)
 
     inlines = (UsersInline,)
 
