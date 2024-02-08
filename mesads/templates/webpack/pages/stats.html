@@ -1,7 +1,5 @@
 {% extends "base-banner.html" %}
 
-{% block banner %}Chiffres clés Mes ADS{% endblock %}
-
 {% block extra_head %}
 {{ block.super }}
 
@@ -10,8 +8,10 @@
 
 
 {% block body %}
+<h1>Chiffres clés Mes ADS</h1>
+
 <p>
-  Mes ADS est un projet en pleine évolution, démarré en 2022. Nous essayons de faire évoluer le produit en fonction de vos retours. Si vous avez des questions, des suggestions, ou si vous remarquez un bug, n'hésitez surtout pas à nous contacter en utilisant le chat ou par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+  Mes ADS est un projet en pleine évolution, démarré en 2022. Nous essayons d'améliorer le produit en fonction de vos retours. Si vous avez des questions, des suggestions, ou si vous remarquez un bug, n'hésitez surtout pas à nous contacter en utilisant le chat ou par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
 </p>
 
 <p>
@@ -19,6 +19,8 @@
 </p>
 
 <hr />
+
+<h2>Les statistiques du registre ADS</h2>
 
 <div class="fr-grid-row fr-grid-row--gutters">
   <div class="stats-card fr-col-12 fr-col-md-4">
@@ -68,7 +70,7 @@
 
 <hr class="fr-mt-3w" />
 
-<h3>Carte de déploiement du registre ADS au niveau national</h3>
+<h2>Carte de déploiement du registre ADS au niveau national</h2>
 <div id="map" style="width: 100%; height: 764px;"></div>
 <script src="leaflet/dist/leaflet.js"></script>
 <script src="./stats_map.ts"></script>
@@ -79,21 +81,27 @@
 
 <hr class="fr-mt-3w" />
 
+<h2>Les courbes d'utilisation de MesADS</h2>
+
+<p>
+  Ces graphiques montrent l'évolution du nombre d'ADS enregistrées sur la plateforme, ainsi que le nombre de gestionnaires ADS enregistrés sur la plateforme depuis son lancement.
+</p>
+
 <div class="fr-grid-row fr-grid-row--gutters">
   <div class="fr-col-12">
-    <h3>Evolution du nombre d'ADS enregistrées</h3>
+    <h3>Nombre d'ADS enregistrées</h3>
     <canvas id="ads-count"></canvas>
 
-    <p class="fr-mt-3w">
+    <p class="fr-mt-3w fr-text--xs">
       Ce graphique montre l'évolution du nombre d'ADS enregistrées sur la plateforme depuis son lancement.
     </p>
   </div>
 
   <div class="fr-col-12">
-    <h3>Évolution du nombre de gestionnaires ADS</h3>
+    <h3>Nombre de gestionnaires ADS</h3>
     <canvas id="ads-manager-requests-count"></canvas>
 
-    <p class="fr-mt-3w">
+    <p class="fr-mt-3w fr-text--xs">
       Ce graphique montre l'évolution du nombre de comptes instructeurs créés sur la plateforme depuis son lancement. Un compte instructeur a la possibilité d'enregistrer des ADS pour son administration.
     </p>
   </div>
@@ -107,5 +115,4 @@
 </script>
 
 <script src="./stats.ts"></script>
-
 {% endblock %}

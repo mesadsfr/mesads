@@ -1,13 +1,14 @@
 {% load meta %}
 {% load selectattr %}
 
-{% for revision, objects in history.get_revisions %}
-  <h4>Changement du {{ revision.date_created|date:"d/m/Y" }} par {{ revision.user.email }}</h4>
+<h1>Historique des changements</h1>
 
+{% for revision, objects in history.get_revisions %}
   {% for cls, objects_ids in objects.items %}
     {% for object_id, diff in objects_ids.items %}
       <div class="fr-table fr-table--bordered">
           <table>
+              <caption>Changement du {{ revision.date_created|date:"d/m/Y" }} par {{ revision.user.email }}</caption>
               <thead>
                 {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
                 <th class="fr-text--lg" style="text-align:center; background-color:#c9191e; color:#fff" colspan="2">

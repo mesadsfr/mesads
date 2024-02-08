@@ -19,6 +19,10 @@
   <div class="fr-col-12 fr-col-md-8">
     <h1>Créez votre compte Mes ADS</h1>
 
+    <p class="fr-text--lead">
+      Renseignez vos informations afin de créer votre compte MesADS.
+    </p>
+
     <form method="post" action="{% url 'django_registration_register' %}">
       {% csrf_token %}
 
@@ -30,7 +34,6 @@
         >
           {{ form.email.label }} :
         </label>
-
 
         <p class="fr-hint-text">
           Privilégiez une adresse professionnelle ou une adresse dédiée à la gestion des ADS (adresse partagée ou adresse personnelle)
@@ -117,7 +120,7 @@
       </div>
 
       <div class="fr-mb-2w fr-alert fr-alert--info">
-        <h3 class="fr-alert__title">Activation de votre compte</h3>
+        <p class="fr-alert__title">Activation de votre compte</p>
         <p>
           Vous allez recevoir un lien d'activation par e-mail. Il est fréquent que ce mail ne soit pas reçu à cause de filtres anti-spams. Si vous ne recevez pas ce mail, vérifiez votre dossier de courriers indésirables.
         </p>

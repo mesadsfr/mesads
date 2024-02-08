@@ -3,8 +3,19 @@
 {% block body %}
 <div class="fr-grid-row fr-grid-row--center">
   <div class="fr-col-12 fr-col-md-6">
-    <h1 style="text-align: center">Vous avez déjà un compte Mes ADS</h1>
+    <h1>Connexion à votre compte MesADS</h1>
 
+    <p class="fr-text--lead">
+      {% if next %}
+      La page à laquelle vous tentez d'accéder nécessite une connexion à votre compte MesADS.
+      {% else %}
+      Certaines fonctionnalités nécessitent de vous connecter à votre compte MesADS.
+      {% endif %}
+
+      Renseignez vos identifiants pour vous connecter, ou créez un compte si vous n'en avez pas encore.
+    </p>
+
+    <h2 style="text-align: center">Si vous avez déjà un compte Mes ADS</h2>
     {% if next and user.is_authenticated %}
       <div class="fr-input-group fr-input-group--error">
         <p class="fr-error-text">
@@ -90,7 +101,6 @@
     <hr class="fr-mt-2w">
 
     <h2 style="text-align: center">Première visite ?</h2>
-
     <p style="text-align: center">
       <a class="fr-btn fr-btn--lg fr-btn--secondary" href="{% url 'django_registration_register' %}">Créer votre compte</a>
     </p>

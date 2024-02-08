@@ -34,6 +34,10 @@
     </a>
   </p>
   {% endif %}
+
+  <h1>Modification véhicule relais {{ object.numero }}</h1>
+{% else %}
+  <h1>Enregistrement d'un nouveau véhicule relais</h1>
 {% endif %}
 
 <form method="post" enctype="multipart/form-data">

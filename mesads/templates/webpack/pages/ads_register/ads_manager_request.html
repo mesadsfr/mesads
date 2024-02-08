@@ -13,8 +13,16 @@
   </div>
 </nav>
 
+<h1>Vos administrations en gestion</h1>
+
+<p class="fr-text--lead">
+  Cette page liste les administrations pour lesquelles vous avez demandé à gérer les ADS (licences de taxi). Vous pouvez également demander à gérer les ADS pour une nouvelle administration..
+</p>
+
 {% if user_ads_manager_requests|length > 0 %}
-<div class="fr-table">
+<h2>Vos administrations en gestion</h2>
+
+<div class="fr-table fr-table--no-caption">
   <table>
     <caption>Administrations en gestion</caption>
     <thead>
@@ -43,6 +51,10 @@
     </tbody>
   </table>
 </div>
+{% endif %}
+
+{% if ads_managers_administrators|length %}
+<h2>Vos accès préfecture</h2>
 {% endif %}
 
 {% for ads_manager_administrator in ads_managers_administrators %}
@@ -90,10 +102,7 @@
 
 <hr>
 
-<p class="fr-text--xl">
-  MesADS est le registre national des autorisations de stationnement (licences de taxi) délivrées par l'administration.
-</p>
-
+<h2>Demander à gérer les ADS pour une nouvelle administration</h2>
 
 <div class="fr-tabs">
   <ul class="fr-tabs__list" role="tablist" aria-label="[A modifier | nom du système d'onglet]">
@@ -119,7 +128,7 @@
           </legend>
 
           <div class="fr-mb-2w fr-alert fr-alert--info">
-            <h3 class="fr-alert__title">Un problème ? Contactez-nous !</h3>
+            <p class="fr-alert__title">Un problème ? Contactez-nous !</p>
             <p>
               Si vous avez le moindre problème, par exemple si votre demande est refusée ou met trop de temps avant d'être acceptée, vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
             </p>
