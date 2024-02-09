@@ -59,7 +59,7 @@
       <!-- form.q -->
       <div class="fr-col-lg-6 fr-input-group{% if search_form.q.errors %} fr-input-group--error{% endif %}">
         <label class="fr-label" for="{{ search_form.q.id_for_label }}">
-          Rechercher par nom ou SIRET du titulaire, ou de l'exploitant, ou plaque d'immatriculation du véhicule{% if ads_manager.content_type.name == 'EPCI' %}, commune…{% endif %}
+          Rechercher par nom ou SIRET du titulaire, ou de l'exploitant, numéro de l'ADS, plaque d'immatriculation du véhicule{% if ads_manager.content_type.name == 'EPCI' %}, commune…{% endif %}
         </label>
 
         <input class="fr-input{% if search_form.q.errors %} fr-input--error{% endif %}" type="text"
