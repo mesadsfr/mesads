@@ -352,6 +352,7 @@ class ADSManagerView(ListView, ProcessFormView):
                     | Q(adsuser__siret__icontains=q)
                     | Q(owner_name__icontains=q)
                     | Q(clean_immatriculation_plate__icontains=q)
+                    | Q(epci_commune__libelle__icontains=q)
                 )
 
         # Add ordering on the number. CAST is necessary in the case the ADS number is not an integer.
@@ -614,17 +615,21 @@ def prefecture_export_ads(request, ads_manager_administrator):
                 ),
                 "\n".join(
                     [
-                        f"{idx + 1}. {name}"
-                        if any(x for x in ads.ads_users_names)
-                        else ""
+                        (
+                            f"{idx + 1}. {name}"
+                            if any(x for x in ads.ads_users_names)
+                            else ""
+                        )
                         for idx, name in enumerate(ads.ads_users_names)
                     ]
                 ),
                 "\n".join(
                     [
-                        f"{idx + 1}. {siret}"
-                        if any(x for x in ads.ads_users_sirets)
-                        else ""
+                        (
+                            f"{idx + 1}. {siret}"
+                            if any(x for x in ads.ads_users_sirets)
+                            else ""
+                        )
                         for idx, siret in enumerate(ads.ads_users_sirets)
                         if len(ads.ads_users_sirets)
                     ]
