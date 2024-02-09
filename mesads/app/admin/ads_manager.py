@@ -3,6 +3,8 @@ from django.db.models import Count, Q
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
+from mesads.fradm.models import Commune, Prefecture, EPCI
+
 from ..models import (
     ADSManager,
     ADSManagerDecree,
@@ -67,6 +69,32 @@ class ADSManagerDecreeInline(admin.StackedInline):
     extra = 0
 
 
+class Toto(admin.SimpleListFilter):
+    title = "Type d'administration"
+    parameter_name = "content_type"
+
+    def lookups(self, request, model_admin):
+        return (
+            (
+                Commune.ads_managers.field.related_query_name(),
+                Commune().type_name().capitalize(),
+            ),
+            (
+                Prefecture.ads_managers.field.related_query_name(),
+                Prefecture().type_name().capitalize(),
+            ),
+            (
+                EPCI.ads_managers.field.related_query_name(),
+                EPCI().type_name().upper(),
+            ),
+        )
+
+    def queryset(self, request, queryset):
+        if not self.value():
+            return queryset
+        return queryset.filter(content_type__model=self.value())
+
+
 @admin.register(ADSManager)
 class ADSManagerAdmin(admin.ModelAdmin):
     @admin.display(description="Administration")
@@ -82,6 +110,7 @@ class ADSManagerAdmin(admin.ModelAdmin):
     list_filter = (
         ADSCount,
         ADSManagerRequestCount,
+        Toto,
     )
 
     ordering = ("commune__libelle",)
