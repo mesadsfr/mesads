@@ -353,6 +353,7 @@ class ADSManagerView(ListView, ProcessFormView):
                     | Q(owner_name__icontains=q)
                     | Q(clean_immatriculation_plate__icontains=q)
                     | Q(epci_commune__libelle__icontains=q)
+                    | Q(number__icontains=q)
                 )
 
         # Add ordering on the number. CAST is necessary in the case the ADS number is not an integer.
