@@ -461,6 +461,7 @@ def ads_manager_decree_view(request, manager_id):
         )
         if formset.is_valid():
             formset.save()
+            messages.success(request, "Les modifications ont été enregistrées.")
             return redirect("app.ads-manager.decree.detail", manager_id=manager_id)
     else:
         formset = ADSManagerDecreeFormSet(instance=ads_manager)
