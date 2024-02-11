@@ -222,10 +222,11 @@ class ProprietaireVehiculeDeleteView(RevisionMixin, DeleteView):
     model = Vehicule
 
     def get_object(self, queryset=None):
-        return Vehicule.objects.filter(
+        return get_object_or_404(
+            Vehicule,
             proprietaire_id=self.kwargs["proprietaire_id"],
             numero=self.kwargs["vehicule_numero"],
-        ).first()
+        )
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
