@@ -137,3 +137,5 @@ class VehiculeAdmin(admin.ModelAdmin):
         "departement",
         "commune_localisation",
     )
+
+    list_filter = ("departement",)
