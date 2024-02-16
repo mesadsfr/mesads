@@ -167,9 +167,15 @@ class TestStatsGeoJSONPerPrefecture(ClientTestCase):
         client.force_authenticate(user=self.admin_user)
 
         # Create 3 ADS in departement 35
-        ADS.objects.create(number="1", ads_manager=self.ads_manager_city35)
-        ADS.objects.create(number="2", ads_manager=self.ads_manager_city35)
-        ADS.objects.create(number="3", ads_manager=self.ads_manager_city35)
+        ADS.objects.create(
+            number="1", ads_manager=self.ads_manager_city35, ads_in_use=True
+        )
+        ADS.objects.create(
+            number="2", ads_manager=self.ads_manager_city35, ads_in_use=True
+        )
+        ADS.objects.create(
+            number="3", ads_manager=self.ads_manager_city35, ads_in_use=True
+        )
 
         resp = client.get("/api/stats/geojson/per-prefecture/")
         self.assertEqual(resp.status_code, 200)

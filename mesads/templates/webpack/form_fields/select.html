@@ -18,6 +18,10 @@
     {% if x_model %}x-model="{{ x_model }}"{% endif %}
     {% if readonly %}disabled{% endif %}
   >
+    {% if empty_option %}
+      <option disabled selected value>Sélectionnez une option</option>
+    {% endif %}
+
     {% for option in field %}
       {{ option }}
     {% endfor %}

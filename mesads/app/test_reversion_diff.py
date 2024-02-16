@@ -22,8 +22,12 @@ class TestReversionDiff(TestCase):
             content_type=ContentType.objects.get_for_model(self.commune),
             object_id=self.commune.id,
         )
-        self.ads = ADS.objects.create(number=1, ads_manager=self.ads_manager)
-        self.ads2 = ADS.objects.create(number=2, ads_manager=self.ads_manager)
+        self.ads = ADS.objects.create(
+            number=1, ads_manager=self.ads_manager, ads_in_use=True
+        )
+        self.ads2 = ADS.objects.create(
+            number=2, ads_manager=self.ads_manager, ads_in_use=True
+        )
 
     def test_no_revision(self):
         revisions = ModelHistory(self.ads).get_revisions()

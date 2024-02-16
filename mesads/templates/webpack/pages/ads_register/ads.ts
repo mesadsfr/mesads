@@ -7,6 +7,7 @@ type DataType = {
   ads_creation_date: string;
   used_by_owner: string;
   attribution_type: string;
+  ads_in_use: string;
 };
 
 const data = JSON.parse(
@@ -30,6 +31,7 @@ Alpine.data("get_x_data", () => ({
   },
 
   used_by_owner: data.used_by_owner,
+  ads_in_use: data.ads_in_use,
 
   // The field "owner_license_number" should always be displayed for new ADS.
   // For old ADS, it should only be displayed if the field "used_by_owner" is

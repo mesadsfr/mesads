@@ -440,15 +440,41 @@ class ADSView(RevisionMixin, UpdateView):
         ads_users_formset = ctx["ads_users_formset"]
         ads_legal_files_formset = ctx["ads_legal_files_formset"]
 
-        if ads_users_formset.is_valid() and ads_legal_files_formset.is_valid():
-            resp = super().form_valid(form)
+        html_name_ads_users_formset = ads_users_formset.management_form[
+            "TOTAL_FORMS"
+        ].html_name
+        if (
+            self.request.POST.get(html_name_ads_users_formset) is not None
+            and not ads_users_formset.is_valid()
+        ):
+            return super().form_invalid(form)
+
+        html_name_ads_legal_files_formset = ads_legal_files_formset.management_form[
+            "TOTAL_FORMS"
+        ].html_name
+        if (
+            self.request.POST.get(html_name_ads_legal_files_formset) is not None
+            and not ads_legal_files_formset.is_valid()
+        ):
+            return super().form_invalid(form)
+
+        resp = super().form_valid(form)
+
+        if self.request.POST.get(html_name_ads_users_formset):
             ads_users_formset.instance = self.object
             ads_users_formset.save()
+        else:
+            ADSUser.objects.filter(ads=self.object).delete()
+
+        if self.request.POST.get(html_name_ads_legal_files_formset):
             ads_legal_files_formset.instance = self.object
             ads_legal_files_formset.save()
-            messages.success(self.request, "Les modifications ont été enregistrées.")
-            return resp
-        return super().form_invalid(form)
+        else:
+            ADSLegalFile.objects.filter(ads=self.object).delete()
+
+        messages.success(self.request, "Les modifications ont été enregistrées.")
+
+        return resp
 
 
 def ads_manager_decree_view(request, manager_id):

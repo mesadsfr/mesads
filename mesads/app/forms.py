@@ -12,6 +12,7 @@ from dal import autocomplete
 from mesads.fradm.forms import FrenchAdministrationForm
 from mesads.fradm.models import Commune, EPCI, Prefecture
 
+from .fields import NullBooleanField
 from .models import (
     ADS,
     ADSLegalFile,
@@ -89,6 +90,7 @@ class ADSForm(forms.ModelForm):
             "epci_commune",
             "number",
             "ads_creation_date",
+            "ads_in_use",
             "ads_renew_date",
             "attribution_date",
             "attribution_type",
@@ -130,6 +132,13 @@ class ADSForm(forms.ModelForm):
         label=ADS.epci_commune.field.verbose_name,
         help_text=ADS.epci_commune.field.help_text,
         required=False,
+    )
+
+    ads_in_use = NullBooleanField(
+        widget=BooleanSelect(),
+        label=ADS.ads_in_use.field.verbose_name,
+        help_text=ADS.ads_in_use.field.help_text,
+        required=True,
     )
 
 

@@ -28,7 +28,7 @@ class TestADSManager(ClientTestCase):
         self.assertIsNone(validate_no_ads_declared(self.ads_manager_city35, True))
         self.assertIsNone(validate_no_ads_declared(self.ads_manager_city35, False))
 
-        ADS(number="12345", ads_manager=self.ads_manager_city35).save()
+        ADS(number="12345", ads_manager=self.ads_manager_city35, ads_in_use=True).save()
 
         self.assertIsNone(validate_no_ads_declared(self.ads_manager_city35, False))
         self.assertRaises(
@@ -156,7 +156,7 @@ class TestADS(ClientTestCase):
     def setUp(self):
         super().setUp()
         self.ads = ADS.objects.create(
-            number="12346", ads_manager=self.ads_manager_city35
+            number="12346", ads_manager=self.ads_manager_city35, ads_in_use=True
         )
 
     def test_str(self):
@@ -177,7 +177,7 @@ class TestADSLegalFile(ClientTestCase):
     def setUp(self):
         super().setUp()
         self.ads = ADS.objects.create(
-            number="12346", ads_manager=self.ads_manager_city35
+            number="12346", ads_manager=self.ads_manager_city35, ads_in_use=True
         )
 
     def test_exists_in_storage(self):
@@ -198,7 +198,9 @@ class TestADSUser(ClientTestCase):
     def setUp(self):
         super().setUp()
         self.ads = ADS.objects.create(
-            number="12346", ads_manager=self.ads_manager_city35
+            number="12346",
+            ads_manager=self.ads_manager_city35,
+            ads_in_use=True,
         )
 
     def test_str(self):

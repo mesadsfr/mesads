@@ -581,9 +581,18 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
     ads_creation_date = models.DateField(
         blank=True,
         null=True,
-        verbose_name="Date de création de l'ADS",
-        help_text="Indiquer la date à laquelle l’ADS a été attribuée à un titulaire pour la première fois.",
+        verbose_name="Date de création initiale de l'ADS",
+        help_text=mark_safe(
+            "Indiquer la date à laquelle l'ADS a été attribuée à un titulaire pour la première fois."
+            "<br />"
+            "Pour les « anciennes ADS » <strong>entrez la date de création initiale de l'ADS</strong>, et pas la date éventuelle de cession à un nouveau titulaire."
+        ),
     )
+
+    ads_in_use = models.BooleanField(
+        blank=False, null=False, verbose_name="L'ADS est-elle actuellement exploitée ?"
+    )
+
     ads_renew_date = models.DateField(
         blank=True,
         null=True,

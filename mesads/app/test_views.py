@@ -324,6 +324,7 @@ class TestADSManagerView(ClientTestCase):
             ads_manager=self.ads_manager_city35,
             immatriculation_plate="imm4tri-cul4tion",
             accepted_cpam=True,
+            ads_in_use=True,
         )
         # ADS 2
         ads2 = ADS.objects.create(
@@ -331,16 +332,20 @@ class TestADSManagerView(ClientTestCase):
             ads_manager=self.ads_manager_city35,
             owner_name="Bob Dylan",
             accepted_cpam=False,
+            ads_in_use=True,
         )
         # ADS 3
         ads3 = ADS.objects.create(
             number="FILTER3",
             ads_manager=self.ads_manager_city35,
             owner_siret="12312312312312",
+            ads_in_use=True,
         )
         ADSUser.objects.create(ads=ads3, name="Henri super", siret="11111111111111")
         # ADS 4
-        ads4 = ADS.objects.create(number="FILTER4", ads_manager=self.ads_manager_city35)
+        ads4 = ADS.objects.create(
+            number="FILTER4", ads_manager=self.ads_manager_city35, ads_in_use=True
+        )
         ADSUser.objects.create(
             ads=ads4, name="Matthieu pas super", siret="22222222222222"
         )
@@ -417,7 +422,9 @@ class TestADSManagerView(ClientTestCase):
     def test_post_error(self):
         # Set the flag "no_ads_declared" for an administration which has ADS registered is impossible
         self.assertFalse(self.ads_manager_city35.no_ads_declared)
-        ADS.objects.create(number="12346", ads_manager=self.ads_manager_city35)
+        ADS.objects.create(
+            number="12346", ads_manager=self.ads_manager_city35, ads_in_use=True
+        )
         resp = self.ads_manager_city35_client.post(
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/",
             {
@@ -433,7 +440,7 @@ class TestADSView(ClientTestCase):
     def setUp(self):
         super().setUp()
         self.ads = ADS.objects.create(
-            number="12346", ads_manager=self.ads_manager_city35
+            number="12346", ads_manager=self.ads_manager_city35, ads_in_use=True
         )
 
     def test_permissions(self):
@@ -472,6 +479,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "ads_in_use": "true",
                 "owner_name": "Jean-Jacques Goldman",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
@@ -491,10 +499,78 @@ class TestADSView(ClientTestCase):
         self.ads.refresh_from_db()
         self.assertEqual(self.ads.owner_name, "Jean-Jacques Goldman")
 
+    def test_update_invalid_ads_users_formset(self):
+        """Missing INITIAL_FORMS, MIN_NUM_FORMS and MAX_NUM_FORMS."""
+        resp = self.ads_manager_city35_client.post(
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            {
+                "number": self.ads.id,
+                "ads_in_use": "true",
+                "owner_name": "Jean-Jacques Goldman",
+                "adsuser_set-TOTAL_FORMS": 10,
+                "adslegalfile_set-TOTAL_FORMS": 10,
+                "adslegalfile_set-INITIAL_FORMS": 0,
+                "adslegalfile_set-MIN_NUM_FORMS": 0,
+                "adslegalfile_set-MAX_NUM_FORMS": 10,
+            },
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertFalse(resp.context["ads_users_formset"].is_valid())
+        self.assertTrue(resp.context["ads_legal_files_formset"].is_valid())
+
+    def test_update_invalid_ads_legal_files_formset(self):
+        """Missing INITIAL_FORMS, MIN_NUM_FORMS and MAX_NUM_FORMS."""
+        resp = self.ads_manager_city35_client.post(
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            {
+                "number": self.ads.id,
+                "ads_in_use": "true",
+                "owner_name": "Jean-Jacques Goldman",
+                "adsuser_set-TOTAL_FORMS": 10,
+                "adsuser_set-INITIAL_FORMS": 0,
+                "adsuser_set-MIN_NUM_FORMS": 0,
+                "adsuser_set-MAX_NUM_FORMS": 10,
+                "adslegalfile_set-TOTAL_FORMS": 10,
+            },
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(resp.context["ads_users_formset"].is_valid())
+        self.assertFalse(resp.context["ads_legal_files_formset"].is_valid())
+
+    def test_update_ads_not_in_use(self):
+        """ADS legal files and ads users should be removed when the formsets are not provided."""
+        ADSUser.objects.create(
+            ads=self.ads, status="autre", name="Paul", siret="12312312312312"
+        )
+        ADSLegalFile.objects.create(
+            ads=self.ads, file=SimpleUploadedFile("file.pdf", b"Content")
+        )
+
+        self.assertEqual(self.ads.adsuser_set.count(), 1)
+        self.assertEqual(self.ads.adslegalfile_set.count(), 1)
+
+        resp = self.ads_manager_city35_client.post(
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            {
+                "number": self.ads.id,
+                "ads_in_use": "false",
+                "owner_name": "Jean-Jacques Goldman",
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(
+            resp.url,
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+        )
+        self.ads.refresh_from_db()
+        self.assertEqual(self.ads.owner_name, "Jean-Jacques Goldman")
+        self.assertEqual(self.ads.adsuser_set.count(), 0)
+        self.assertEqual(self.ads.adslegalfile_set.count(), 0)
+
     def test_update_duplicate(self):
         """Update ADS with the id of another ADS."""
         other_ads = ADS.objects.create(
-            number="xxx", ads_manager=self.ads_manager_city35
+            number="xxx", ads_manager=self.ads_manager_city35, ads_in_use=True
         )
         resp = self.ads_manager_city35_client.post(
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
@@ -522,6 +598,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "ads_in_use": "true",
                 "owner_name": "  Jean Jaques   ",
                 "owner_email": "-",
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -544,6 +621,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.number,
+                "ads_in_use": "true",
                 "ads_creation_date": "2015-10-01",
                 "attribution_date": "2010-11-04",
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -573,6 +651,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 1,
                 "adsuser_set-MIN_NUM_FORMS": 0,
@@ -604,6 +683,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 1,
                 "adsuser_set-MIN_NUM_FORMS": 0,
@@ -629,6 +709,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 1,
                 "adsuser_set-MIN_NUM_FORMS": 0,
@@ -659,6 +740,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
                 "adsuser_set-MIN_NUM_FORMS": 0,
@@ -686,6 +768,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 1,
                 "adsuser_set-MIN_NUM_FORMS": 0,
@@ -708,7 +791,9 @@ class TestADSView(ClientTestCase):
     def test_update_epci_commune(self):
         # ADSManager related to the first EPCI in database
         epci_ads_manager = EPCI.objects.filter(departement="01")[0].ads_managers.get()
-        epci_ads = ADS.objects.create(number="12346", ads_manager=epci_ads_manager)
+        epci_ads = ADS.objects.create(
+            number="12346", ads_manager=epci_ads_manager, ads_in_use=True
+        )
 
         # Error, the commune doesn't belong to the same departement than the EPCI
         invalid_commune = Commune.objects.filter(~Q(departement="01")).first()
@@ -716,6 +801,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{epci_ads_manager.id}/ads/{epci_ads.id}",
             {
                 "number": epci_ads.id,
+                "ads_in_use": "true",
                 "epci_commune": invalid_commune.id,
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
@@ -739,6 +825,7 @@ class TestADSView(ClientTestCase):
             {
                 "number": epci_ads.id,
                 "epci_commune": valid_commune.id,
+                "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
                 "adsuser_set-MIN_NUM_FORMS": 0,
@@ -759,6 +846,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 1,
                 "adsuser_set-MIN_NUM_FORMS": 0,
@@ -785,7 +873,9 @@ class TestADSView(ClientTestCase):
 class TestADSDeleteView(ClientTestCase):
     def setUp(self):
         super().setUp()
-        self.ads = ADS.objects.create(id="12346", ads_manager=self.ads_manager_city35)
+        self.ads = ADS.objects.create(
+            id="12346", ads_manager=self.ads_manager_city35, ads_in_use=True
+        )
 
     def test_permissions(self):
         for client_name, client, expected_status in (
@@ -845,6 +935,7 @@ class TestADSCreateView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
             {
                 "number": "abcdef",
+                "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
                 "adsuser_set-MIN_NUM_FORMS": 0,
@@ -863,12 +954,15 @@ class TestADSCreateView(ClientTestCase):
 
     def test_create_duplicate(self):
         """Attempt to create ads with already-existing id."""
-        ADS.objects.create(number="123", ads_manager=self.ads_manager_city35)
+        ADS.objects.create(
+            number="123", ads_manager=self.ads_manager_city35, ads_in_use=True
+        )
 
         resp = self.ads_manager_city35_client.post(
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
             {
                 "number": "123",
+                "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
                 "adsuser_set-MIN_NUM_FORMS": 0,
@@ -890,6 +984,7 @@ class TestADSCreateView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
             {
                 "number": "abcdef",
+                "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
                 "adsuser_set-MIN_NUM_FORMS": 0,
@@ -927,6 +1022,7 @@ class TestADSCreateView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
             {
                 "number": "abcdef",
+                "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
                 "adsuser_set-MIN_NUM_FORMS": 0,
@@ -975,13 +1071,21 @@ class TestExport(ClientTestCase):
 
     def test_export(self):
         ADS.objects.create(
-            number="1", ads_manager=self.ads_manager_city35, accepted_cpam=True
+            number="1",
+            ads_manager=self.ads_manager_city35,
+            accepted_cpam=True,
+            ads_in_use=True,
         )
-        ADS.objects.create(number="2", ads_manager=self.ads_manager_city35)
+        ADS.objects.create(
+            number="2",
+            ads_manager=self.ads_manager_city35,
+            ads_in_use=True,
+        )
         ADS.objects.create(
             number="3",
             ads_manager=self.ads_manager_city35,
             ads_creation_date=datetime.now().date(),
+            ads_in_use=True,
         )
 
         resp = self.ads_manager_administrator_35_client.get(
@@ -999,7 +1103,10 @@ class TestExport(ClientTestCase):
         self.ads_manager_city35.save()
 
         ADS.objects.create(
-            number="1", ads_manager=self.ads_manager_city35, accepted_cpam=True
+            number="1",
+            ads_manager=self.ads_manager_city35,
+            accepted_cpam=True,
+            ads_in_use=True,
         )
         resp = self.ads_manager_administrator_35_client.get(
             f"/registre_ads/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export"
@@ -1016,7 +1123,10 @@ class TestExport(ClientTestCase):
         self.ads_manager_city35.save()
 
         ADS.objects.create(
-            number="1", ads_manager=self.ads_manager_city35, accepted_cpam=True
+            number="1",
+            ads_manager=self.ads_manager_city35,
+            accepted_cpam=True,
+            ads_in_use=True,
         )
         resp = self.ads_manager_administrator_35_client.get(
             f"/registre_ads/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export"
@@ -1116,7 +1226,7 @@ class TestDashboardsViews(ClientTestCase):
             ]
         ):
             ads = ADS.objects.create(
-                number=str(idx), ads_manager=self.ads_manager_city35
+                number=str(idx), ads_manager=self.ads_manager_city35, ads_in_use=True
             )
             ads.creation_date = creation_date
             ads.save()
@@ -1298,7 +1408,7 @@ class TestADSDecreeView(ClientTestCase):
     def setUp(self):
         super().setUp()
         self.ads = ADS.objects.create(
-            number="12346", ads_manager=self.ads_manager_city35
+            number="12346", ads_manager=self.ads_manager_city35, ads_in_use=True
         )
         self.mgt_form_current_step_name = (
             f"ads_decree_view_{self.ads.id}_{self.ads_manager_city35.id}-current_step"
@@ -1453,7 +1563,7 @@ class TestADSHistoryView(ClientTestCase):
     def setUp(self):
         super().setUp()
         self.ads = ADS.objects.create(
-            number="12346", ads_manager=self.ads_manager_city35
+            number="12346", ads_manager=self.ads_manager_city35, ads_in_use=True
         )
 
     def test_permissions(self):
