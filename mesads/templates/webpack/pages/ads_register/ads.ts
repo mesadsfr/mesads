@@ -3,16 +3,6 @@ import SetupFormsetFiles from "./formset_files";
 
 SetupFormsetFiles();
 
-// array.findLastIndex is only available for firefox>104
-function findLastIndex(arr: any[], func: (e: any) => boolean) {
-  for (let i = arr.length; i > 0; --i) {
-    if (func(arr[i - 1])) {
-      return i - 1;
-    }
-  }
-  return -1;
-}
-
 type DataType = {
   ads_creation_date: string;
   used_by_owner: string;
