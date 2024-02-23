@@ -16,9 +16,11 @@ class Command(BaseCommand):
         writer = csv.DictWriter(
             sys.stdout,
             fieldnames=[
-                "Préfecture",
+                "Département",
+                "Nom département",
                 "Type d'administration",
                 "Nom de l'administration",
+                "Code INSEE",
                 "Nombre d'ADS",
             ],
         )
@@ -36,11 +38,13 @@ class Command(BaseCommand):
 
         for row in query:
             prefecture = None
+            insee = None
 
             if issubclass(row.content_type.model_class(), Commune):
                 if row.content_object.libelle == "Test MesADS":
                     continue
                 prefecture = row.content_object.departement
+                insee = row.content_object.insee
             elif issubclass(row.content_type.model_class(), EPCI):
                 if row.content_object.name == "CC Test MesADS":
                     continue
@@ -52,9 +56,11 @@ class Command(BaseCommand):
 
             writer.writerow(
                 {
-                    "Préfecture": prefectures[prefecture],
+                    "Département": prefecture,
+                    "Nom département": prefectures[prefecture],
                     "Type d'administration": row.content_object.type_name(),
                     "Nom de l'administration": row.content_object.text(),
+                    "Code INSEE": insee,
                     "Nombre d'ADS": row.ads_count,
                 }
             )
