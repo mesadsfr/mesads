@@ -222,26 +222,27 @@ Enregistrement d'une ADS
           </template>
 
           <div class="fr-input-group" x-show="ads_before_2014" x-transition>
-            <hr />
-              <p class="fr-hint-text">
+            <div class="fr-alert fr-alert--info fr-mb-3w">
+              <p>
                 Si le seul conducteur est le titulaire de l'ADS, renseignez "Oui" à la case "ADS exploitée par son titulaire" et renseignez sa carte professionnelle.
               </p>
 
-              <p class="fr-hint-text">
+              <p class="fr-mt-2w">
                 Dans le cas où l'ADS est exploitée par plusieurs conducteurs :
-                <ul class="fr-hint-text">
+                <ul>
                   <li>renseignez "Non" à la case "ADS exploitée par son titulaire" et rentrez les informations du locataire-gérant, du locataire-coopérateur ou des salariés.</li>
                   <li>Si le titulaire est aussi conducteur, renseignez aussi ses informations en sélectionnant "Titulaire exploitant" en modalité d'exploitation.</li>
                 </ul>
               </p>
-            </span>
+            </div>
           </div>
 
           <div class="fr-input-group" x-show="!ads_before_2014" x-transition>
-            <hr />
-            <span class="fr-hint-text">
-              Pour les nouvelles ADS (créées après le 1<sup>er</sup> Octobre 2014), le conducteur est obligatoirement le titulaire de l'ADS.
-            </span>
+            <div class="fr-alert fr-alert--info fr-mb-3w">
+              <p>
+                Pour les nouvelles ADS (créées après le 1<sup>er</sup> Octobre 2014), le conducteur est obligatoirement le titulaire de l'ADS.
+              </p>
+            </div>
           </div>
 
           <div id="ads-users" class="fr-input-group" x-show="ads_before_2014" x-transition>
