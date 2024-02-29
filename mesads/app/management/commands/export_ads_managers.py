@@ -1,11 +1,10 @@
 import csv
 import sys
 
-from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.db.models import Count
 
-from mesads.app.models import ADS, ADSManager, ADSManagerRequest
+from mesads.app.models import ADSManager
 from mesads.fradm.models import Commune, EPCI, Prefecture
 
 
