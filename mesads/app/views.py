@@ -63,6 +63,11 @@ class HTTP500View(TemplateView):
 
     template_name = "500.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        """The base class TemplateView only accepts GET requests. By overriding
+        dispatch, we return the error page for any other method."""
+        return super().get(request, *args, **kwargs)
+
 
 class HomepageView(TemplateView):
     template_name = "pages/homepage.html"

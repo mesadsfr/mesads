@@ -11,6 +11,7 @@ from django.utils import timezone
 
 from freezegun import freeze_time
 
+from mesads.app.views import HTTP500View
 from mesads.fradm.models import Commune, EPCI, Prefecture
 
 from .models import (
@@ -22,6 +23,18 @@ from .models import (
 )
 from .unittest import ClientTestCase
 from .views import DashboardsView, DashboardsDetailView
+
+
+class TestHTTP500View(ClientTestCase):
+    def test_500(self):
+        request = RequestFactory().get("/500")
+        response = HTTP500View.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+
+        # POST requests should be allowed
+        request = RequestFactory().post("/500")
+        response = HTTP500View.as_view()(request)
+        self.assertEqual(response.status_code, 200)
 
 
 class TestHomepageView(ClientTestCase):
