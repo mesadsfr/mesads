@@ -10,12 +10,7 @@ from .decorators import (
 )
 
 
-def oops(request):
-    raise RuntimeError("oops! this endpoint is used to test the HTTP/500 page")
-
-
 urlpatterns = [
-    path("oops", oops, name="oops"),
     path(
         "registre_ads/",
         login_required(views.ADSRegisterView.as_view()),
