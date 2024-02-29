@@ -10,6 +10,7 @@ pytest-django = "^4.5.2"
 pytest-cov = "^4.0.0"
 black = "^23.3.0"
 pytest-testmon = "^2.1.0"
+freezegun = "^1.4.0"
 
 
 [tool.coverage.run]

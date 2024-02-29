@@ -1116,8 +1116,14 @@ class ADSDecreeView(CustomCookieWizardView):
                 }
             )
         elif step == "2":
-            now = datetime.now()
             ads_user = ads.adsuser_set.first()
+
+            now = datetime.now()
+            try:
+                today_in_5_years = now.replace(year=now.year + 5)
+            except ValueError:  # 29th February
+                today_in_5_years = now + timedelta(days=365 * 5)
+
             ret.update(
                 {
                     "decree_creation_date": now.strftime("%Y-%m-%d"),
@@ -1127,7 +1133,7 @@ class ADSDecreeView(CustomCookieWizardView):
                     # are more, user can edit the .docx generated manually.
                     "tenant_ads_user": ads_user.name if ads_user else "",
                     # New ADS have a validity of 5 years
-                    "ads_end_date": now.replace(year=now.year + 5).strftime("%Y-%m-%d"),
+                    "ads_end_date": today_in_5_years.strftime("%Y-%m-%d"),
                     "ads_number": ads.number,
                     "immatriculation_plate": ads.immatriculation_plate,
                 }

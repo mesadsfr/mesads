@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import re
 
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
@@ -7,6 +8,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import Q
 from django.test import RequestFactory
 from django.utils import timezone
+
+from freezegun import freeze_time
 
 from mesads.fradm.models import Commune, EPCI, Prefecture
 
@@ -1527,6 +1530,15 @@ class TestADSDecreeView(ClientTestCase):
         self._step_2()
         self._step_3()
 
+    @freeze_time("2024-02-29")
+    def test_generate_on_feb_29th(self):
+        """Make sure we don't have an issue on date calculation when the current
+        date is on February 29th on a leap year."""
+        self._step_0(is_old_ads=True)
+        self._step_1()
+        self._step_2()
+        self._step_3()
+
     def test_generate_new_ads(self):
         self._step_0(is_old_ads=False)
         self._step_1()
@@ -1540,9 +1552,11 @@ class TestADSDecreeView(ClientTestCase):
         resp = self._step_2(
             overrides={"2-decree_number": "abcdef"}, check_going_to_next_step=False
         )
-        self.assertEqual(
-            resp.context["form"].errors["decree_number"],
-            ["Le champ doit être sous la forme XXXX/2024"],
+        self.assertIsNotNone(
+            re.match(
+                r"Le champ doit être sous la forme XXXX/[0-9]{4}",
+                resp.context["form"].errors["decree_number"][0],
+            )
         )
 
     def test_back_navigation(self):
