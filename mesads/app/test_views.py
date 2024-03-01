@@ -885,6 +885,25 @@ class TestADSView(ClientTestCase):
         )
         self.assertEqual(ADSUser.objects.count(), 0)
 
+    def test_get_incorrect_ads_manager(self):
+        """If user requests /registre_ads/gestion/xxx/ads/yyy but xxx is an
+        existing ADSManager, but not the one of the ADS, we want to make sure
+        the user is redirected to the correct page."""
+        commune = Commune.objects.create(
+            insee="xx",
+            departement="xx",
+            libelle="xx",
+        )
+        ads_manager = ADSManager.objects.create(content_object=commune)
+        resp = self.admin_client.get(
+            f"/registre_ads/gestion/{ads_manager.id}/ads/{self.ads.id}",
+        )
+        self.assertEqual(resp.status_code, 301)
+        self.assertEqual(
+            resp.headers["Location"],
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+        )
+
 
 class TestADSDeleteView(ClientTestCase):
     def setUp(self):

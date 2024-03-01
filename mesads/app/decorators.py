@@ -1,9 +1,10 @@
 import functools
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_list_or_404, get_object_or_404
+from django.shortcuts import get_list_or_404, get_object_or_404, redirect
+from django.urls import resolve, reverse
 
-from .models import ADSManagerRequest, ADSManagerAdministrator
+from .models import ADS, ADSManagerRequest, ADSManagerAdministrator
 
 
 def ads_manager_required(func):
@@ -25,6 +26,20 @@ def ads_manager_required(func):
                 ads_manager__id=manager_id,
                 accepted=True,
             )
+        if kwargs.get("ads_id"):
+            # Make sure the ADS exists if the view is for an ADS
+            ads = get_object_or_404(ADS, id=kwargs.get("ads_id"))
+
+            # If the URL is with the form /xxx/<ads_manager_id>/xxx/<ads_id> but
+            # <ads_manager_id> has been manually changed by the user and doesn't
+            # match the actual manager_id, we redirect to the correct URL.
+            if ads.ads_manager.id != manager_id:
+                urlpattern = resolve(request.path_info)
+                url = reverse(
+                    urlpattern.url_name,
+                    kwargs={"manager_id": ads.ads_manager.id, "ads_id": ads.id},
+                )
+                return redirect(url, permanent=True)
         return func(request, manager_id=manager_id, *args, **kwargs)
 
     return login_required(wrapped)
