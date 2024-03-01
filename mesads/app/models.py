@@ -674,9 +674,10 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
         null=False,
         verbose_name="Titulaire de l'ADS",
         help_text=(
-            "S'il s'agit d'une personne physique, précisez le nom et le prénom "
-            "du titulaire de l'ADS. S'il s'agit d'une personne morale, indiquez "
-            "sa raison sociale. "
+            "Pour les nouvelles ADS, précisez le nom et le prénom du titulaire de l'ADS. "
+            "Pour les anciennes ADS, précisez le nom et le prénom du titulaire "
+            "de l'ADS s'il s'agit d'une personne physique, sinon indiquez la "
+            "raison sociale de la personne morale."
         ),
     )
 
