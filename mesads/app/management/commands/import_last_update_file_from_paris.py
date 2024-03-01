@@ -109,6 +109,8 @@ class Command(BaseCommand):
             ads = ADS(ads_manager=ads_manager, number=row["numero_ads"])
             is_new_object = True
 
+        ads.ads_in_use = True
+
         # The CSV file sent by Paris contains a field with the attribution date,
         # but not the creation date.
         # For new ADS, since the ADS user is always the owner, we store the
