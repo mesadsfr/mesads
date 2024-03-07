@@ -43,15 +43,13 @@ class DetectDataInconsistencies(CronJobBase):
 
     @sentry_exceptions
     def do(self):
-        new_ads_with_ads_users = (
-            ADS.objects.filter(
-                ads_creation_date__isnull=False,
-                ads_creation_date__gte=date(2014, 10, 1),
-            )
-            .filter(adsuser__isnull=False)
-            .count()
-        )
-        if new_ads_with_ads_users > 0:
+        new_ads_with_ads_users = ADS.objects.filter(
+            ads_creation_date__isnull=False,
+            ads_creation_date__gte=date(2014, 10, 1),
+        ).filter(adsuser__isnull=False)
+        count = new_ads_with_ads_users.count()
+        if count > 0:
+            ads_list = ", ".join([str(ads.id) for ads in new_ads_with_ads_users])
             raise ValueError(
-                f"Fount data inconsistencies: {new_ads_with_ads_users} new ADS, created after October 2014, are linked to an ADSUser. It should never be the case."
+                f"Fount data inconsistencies: {count} new ADS, created after October 2014, are linked to an ADSUser (ADS ids: {ads_list}). It should never be the case."
             )
