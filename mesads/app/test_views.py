@@ -478,18 +478,6 @@ class TestADSView(ClientTestCase):
         )
         self.assertEqual(resp.status_code, 404)
 
-    def test_invalid_form(self):
-        """ADSUserFormSet is not provided, error should be rendered."""
-        resp = self.ads_manager_city35_client.post(
-            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
-            {
-                "number": self.ads.id,
-                "owner_name": "Jean-Jacques Goldman",
-            },
-        )
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(len(resp.context["formset"].non_form_errors()), 1)
-
     def test_update(self):
         resp = self.ads_manager_city35_client.post(
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",

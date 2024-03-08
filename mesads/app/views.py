@@ -418,16 +418,24 @@ class ADSView(RevisionMixin, UpdateView):
         ctx = super().get_context_data(**kwargs)
         ctx["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
 
-        if self.request.POST:
+        if self.request.POST and self.request.POST.get(
+            ADSUserFormSet().management_form["TOTAL_FORMS"].html_name
+        ):
             ctx["ads_users_formset"] = ADSUserFormSet(
                 self.request.POST, instance=self.object
             )
+        else:
+            ctx["ads_users_formset"] = ADSUserFormSet(instance=self.object)
+
+        if self.request.POST and self.request.POST.get(
+            ADSLegalFileFormSet().management_form["TOTAL_FORMS"].html_name
+        ):
             ctx["ads_legal_files_formset"] = ADSLegalFileFormSet(
                 self.request.POST, self.request.FILES, instance=self.object
             )
         else:
-            ctx["ads_users_formset"] = ADSUserFormSet(instance=self.object)
             ctx["ads_legal_files_formset"] = ADSLegalFileFormSet(instance=self.object)
+
         return ctx
 
     def get_object(self, queryset=None):
