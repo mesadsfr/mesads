@@ -13,7 +13,7 @@ from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
 from django.db.models import Count, Q, Sum, Value
 from django.db.models.functions import Coalesce, Replace, TruncMonth
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.defaultfilters import date as date_template_filter
 from django.template.loader import render_to_string
@@ -417,29 +417,33 @@ class ADSView(RevisionMixin, UpdateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
+        ctx["ads_users_formset"] = self.ads_users_formset
+        ctx["ads_legal_files_formset"] = self.ads_legal_files_formset
+        return ctx
+
+    def get_object(self, queryset=None):
+        ads = get_object_or_404(ADS, id=self.kwargs["ads_id"])
 
         if self.request.POST and self.request.POST.get(
             ADSUserFormSet().management_form["TOTAL_FORMS"].html_name
         ):
-            ctx["ads_users_formset"] = ADSUserFormSet(
-                self.request.POST, instance=self.object
-            )
+            self.ads_users_formset = ADSUserFormSet(self.request.POST, instance=ads)
         else:
-            ctx["ads_users_formset"] = ADSUserFormSet(instance=self.object)
+            self.ads_users_formset = ADSUserFormSet(instance=ads)
+            # Always display at least a form
+            if not ads.adsuser_set.count():
+                self.ads_users_formset.extra = 1
 
         if self.request.POST and self.request.POST.get(
             ADSLegalFileFormSet().management_form["TOTAL_FORMS"].html_name
         ):
-            ctx["ads_legal_files_formset"] = ADSLegalFileFormSet(
-                self.request.POST, self.request.FILES, instance=self.object
+            self.ads_legal_files_formset = ADSLegalFileFormSet(
+                self.request.POST, self.request.FILES, instance=ads
             )
         else:
-            ctx["ads_legal_files_formset"] = ADSLegalFileFormSet(instance=self.object)
+            self.ads_legal_files_formset = ADSLegalFileFormSet(instance=ads)
 
-        return ctx
-
-    def get_object(self, queryset=None):
-        return get_object_or_404(ADS, id=self.kwargs["ads_id"])
+        return ads
 
     def form_invalid(self, form):
         messages.error(
@@ -448,46 +452,55 @@ class ADSView(RevisionMixin, UpdateView):
         )
         return super().form_invalid(form)
 
+    @transaction.atomic
     def form_valid(self, form):
-        ctx = self.get_context_data()
-        ads_users_formset = ctx["ads_users_formset"]
-        ads_legal_files_formset = ctx["ads_legal_files_formset"]
-
-        html_name_ads_users_formset = ads_users_formset.management_form[
+        html_name_ads_users_formset = self.ads_users_formset.management_form[
             "TOTAL_FORMS"
         ].html_name
         if (
             self.request.POST.get(html_name_ads_users_formset) is not None
-            and not ads_users_formset.is_valid()
+            and not self.ads_users_formset.is_valid()
         ):
-            return super().form_invalid(form)
+            return self.form_invalid(form)
 
-        html_name_ads_legal_files_formset = ads_legal_files_formset.management_form[
-            "TOTAL_FORMS"
-        ].html_name
+        html_name_ads_legal_files_formset = (
+            self.ads_legal_files_formset.management_form["TOTAL_FORMS"].html_name
+        )
         if (
             self.request.POST.get(html_name_ads_legal_files_formset) is not None
-            and not ads_legal_files_formset.is_valid()
+            and not self.ads_legal_files_formset.is_valid()
         ):
-            return super().form_invalid(form)
+            return self.form_invalid(form)
 
-        resp = super().form_valid(form)
+        self.object = form.save(check=False)
+        self.ads_users_formset.instance = self.object
+        self.ads_legal_files_formset.instance = self.object
 
-        if self.request.POST.get(html_name_ads_users_formset):
-            ads_users_formset.instance = self.object
-            ads_users_formset.save()
-        else:
+        if not self.request.POST.get(html_name_ads_users_formset):
             ADSUser.objects.filter(ads=self.object).delete()
-
-        if self.request.POST.get(html_name_ads_legal_files_formset):
-            ads_legal_files_formset.instance = self.object
-            ads_legal_files_formset.save()
         else:
+            try:
+                with transaction.atomic():
+                    self.ads_users_formset.save()
+            except IntegrityError:
+                errmsg = [
+                    c
+                    for c in ADSUser._meta.constraints
+                    if c.name == "only_one_titulaire_exploitant"
+                ][0].violation_error_message
+                self.ads_users_formset.non_form_errors().append(errmsg)
+                return self.form_invalid(form)
+
+        if not self.request.POST.get(html_name_ads_legal_files_formset):
             ADSLegalFile.objects.filter(ads=self.object).delete()
+        else:
+            self.ads_legal_files_formset.instance = self.object
+            self.ads_legal_files_formset.save()
+
+        self.object.run_checks()
 
         messages.success(self.request, "Les modifications ont été enregistrées.")
-
-        return resp
+        return HttpResponseRedirect(self.get_success_url())
 
 
 def ads_manager_decree_view(request, manager_id):
@@ -537,8 +550,27 @@ class ADSDeleteView(DeleteView):
 class ADSCreateView(ADSView, CreateView):
     def dispatch(self, request, manager_id):
         """If the ADSManager has the flag no_ads_declared to True, it is
-        imposisble to create ADS for it."""
+        impossible to create ADS for it."""
         get_object_or_404(ADSManager, id=manager_id, no_ads_declared=False)
+
+        html_name_ads_users_formset = (
+            ADSUserFormSet().management_form["TOTAL_FORMS"].html_name
+        )
+        if self.request.POST.get(html_name_ads_users_formset):
+            self.ads_users_formset = ADSUserFormSet(self.request.POST)
+        else:
+            self.ads_users_formset = ADSUserFormSet()
+        self.ads_users_formset.extra = 1
+
+        html_name_ads_legal_files_formset = (
+            ADSLegalFileFormSet().management_form["TOTAL_FORMS"].html_name
+        )
+        if self.request.POST.get(html_name_ads_legal_files_formset):
+            self.ads_legal_files_formset = ADSLegalFileFormSet(
+                self.request.POST, self.request.FILES
+            )
+        else:
+            self.ads_legal_files_formset = ADSLegalFileFormSet()
         return super().dispatch(request, manager_id)
 
     def get_object(self, queryset=None):
@@ -595,7 +627,6 @@ def prefecture_export_ads(request, ads_manager_administrator):
             "Véhicule électrique ou hybride ?",
             "Nom du titulaire",
             "SIRET titulaire",
-            "ADS exploitée par le titulaire ?",
             "Statuts des exploitants (un par ligne)",
             "Noms des exploitants (un par ligne)",
             "SIRET des exploitants (un par ligne)",
@@ -646,7 +677,6 @@ def prefecture_export_ads(request, ads_manager_administrator):
                 display_bool(ads.eco_vehicle),
                 ads.owner_name,
                 ads.owner_siret,
-                display_bool(ads.used_by_owner),
                 "\n".join(
                     [
                         f"{idx + 1}. {dict(ADSUser.status.field.choices).get(status, '')}"

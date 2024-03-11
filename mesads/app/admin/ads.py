@@ -148,13 +148,6 @@ class ADSAdmin(CompareVersionAdmin):
         "prefecture",
         "owner_name",
         "owner_siret",
-        # Rewrite titles to limit the width of the column.
-        admin.display(description="Carte pro. tit.")(
-            lambda ads: ads.owner_license_number or "-"
-        ),
-        admin.display(description="Exploitée par titulaire ?", boolean=True)(
-            lambda ads: ads.used_by_owner
-        ),
         "ads_users",
     )
 
@@ -175,7 +168,6 @@ class ADSAdmin(CompareVersionAdmin):
 
     list_filter = [
         ADSPeriodListFilter,
-        "used_by_owner",
         "adsuser__status",
         ADSUsersCount,
         "attribution_type",

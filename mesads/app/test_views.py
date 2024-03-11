@@ -4,6 +4,7 @@ import re
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
+from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import Q
 from django.test import RequestFactory
@@ -1012,7 +1013,7 @@ class TestADSCreateView(ClientTestCase):
                 "adsuser_set-INITIAL_FORMS": 0,
                 "adsuser_set-MIN_NUM_FORMS": 0,
                 "adsuser_set-MAX_NUM_FORMS": 10,
-                "adsuser_set-0-status": "autre",
+                "adsuser_set-0-status": "cooperateur",
                 "adsuser_set-0-name": "Paul",
                 "adsuser_set-0-siret": "12312312312312",
                 "adslegalfile_set-TOTAL_FORMS": 10,
@@ -1029,9 +1030,63 @@ class TestADSCreateView(ClientTestCase):
 
         self.assertEqual(ADSUser.objects.count(), 1)
         new_ads_user = ADSUser.objects.get()
-        self.assertEqual(new_ads_user.status, "autre")
+        self.assertEqual(new_ads_user.status, "cooperateur")
         self.assertEqual(new_ads_user.name, "Paul")
         self.assertEqual(new_ads_user.siret, "12312312312312")
+
+    def test_create_with_two_titulaires(self):
+        resp = self.ads_manager_city35_client.post(
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
+            {
+                "number": "abcdef",
+                "ads_in_use": "true",
+                "adsuser_set-TOTAL_FORMS": 10,
+                "adsuser_set-INITIAL_FORMS": 0,
+                "adsuser_set-MIN_NUM_FORMS": 0,
+                "adsuser_set-MAX_NUM_FORMS": 10,
+                "adsuser_set-0-status": "titulaire_exploitant",
+                "adsuser_set-0-license_number": "yyy",
+                "adsuser_set-1-status": "titulaire_exploitant",
+                "adsuser_set-1-license_number": "xxx",
+                "adslegalfile_set-TOTAL_FORMS": 10,
+                "adslegalfile_set-INITIAL_FORMS": 0,
+                "adslegalfile_set-MIN_NUM_FORMS": 0,
+                "adslegalfile_set-MAX_NUM_FORMS": 10,
+            },
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            resp.context["ads_users_formset"].non_form_errors(),
+            ["Il ne peut y avoir qu'un seul titulaire par ADS."],
+        )
+
+    def test_create_new_ads_with_non_titulaire_user(self):
+        try:
+            self.ads_manager_city35_client.post(
+                f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
+                {
+                    "number": "abcdef",
+                    "ads_in_use": "true",
+                    "ads_creation_date": "2015-10-01",
+                    "adsuser_set-TOTAL_FORMS": 10,
+                    "adsuser_set-INITIAL_FORMS": 0,
+                    "adsuser_set-MIN_NUM_FORMS": 0,
+                    "adsuser_set-MAX_NUM_FORMS": 10,
+                    "adsuser_set-0-status": "salarie",
+                    "adsuser_set-0-license_number": "yyy",
+                    "adslegalfile_set-TOTAL_FORMS": 10,
+                    "adslegalfile_set-INITIAL_FORMS": 0,
+                    "adslegalfile_set-MIN_NUM_FORMS": 0,
+                    "adslegalfile_set-MAX_NUM_FORMS": 10,
+                },
+            )
+        except ValidationError as exc:
+            self.assertEqual(
+                exc.message,
+                "Le conducteur doit nécessairement être le titulaire de l'ADS (personne physique) pour une ADS créée après le 1er octobre 2014.",
+            )
+        else:
+            self.fail("ValidationError not raised")
 
     def test_create_with_legal_files(self):
         legal_file1 = SimpleUploadedFile(
