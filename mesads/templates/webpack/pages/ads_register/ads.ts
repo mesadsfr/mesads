@@ -5,7 +5,6 @@ SetupFormsetFiles();
 
 type DataType = {
   ads_creation_date: string;
-  used_by_owner: string;
   attribution_type: string;
   ads_in_use: string;
 };
@@ -30,19 +29,7 @@ Alpine.data("get_x_data", () => ({
     return !this.ads_creation_date || this.ads_before_2014;
   },
 
-  used_by_owner: data.used_by_owner,
   ads_in_use: data.ads_in_use,
-
-  // The field "owner_license_number" should always be displayed for new ADS.
-  // For old ADS, it should only be displayed if the field "used_by_owner" is
-  // set to "true"
-  get should_display_owner_license_number() {
-    return (
-      !this.ads_before_2014 ||
-      this.used_by_owner === "true" ||
-      this.used_by_owner === "unknown"
-    );
-  },
 
   attribution_type: data.attribution_type,
 
@@ -55,9 +42,6 @@ Alpine.directive("add-ads-user-button", (el, { expression }, { evaluate }) => {
     if (!form) {
       throw new Error("ads-users div not found");
     }
-
-    // Retrieve the value of the "extraADSUserForms" x-data attribute
-    const extra = evaluate("extraADSUserForms") as number;
 
     // For each entry, replace the string __prefix__ present in the id and name by the form index.
     el.parentElement

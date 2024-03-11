@@ -105,16 +105,7 @@ class ADSForm(forms.ModelForm):
             "owner_phone",
             "owner_mobile",
             "owner_email",
-            "used_by_owner",
-            "owner_license_number",
         )
-        widgets = {
-            # used_by_owner has null=True because the field is not set for new
-            # ADS, but we don't want to allow null values for old ADS. Use a
-            # BooleanSelect instead of the default NullBooleanSelect.
-            # Note, we could use a checkbox instead of a select.
-            "used_by_owner": BooleanSelect(),
-        }
 
     def __init__(self, epci=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -164,7 +155,11 @@ class AutoDeleteADSUserFormSet(BaseInlineFormSet):
 ADSUserFormSet = inlineformset_factory(
     ADS,
     ADSUser,
-    fields=("status", "name", "siret", "license_number"),
+    # It is important to leave "deleted_at" in the fields, otherwise
+    # django.db.models.constraints.CheckConstraint.validate() will silently skip
+    # the evaluation of the constraints using this field.
+    # Does it suck? Yes. Did I spend 2 days to figure it out? Also yes.
+    fields=("status", "name", "siret", "license_number", "deleted_at"),
     can_delete=True,
     extra=0,
     formset=AutoDeleteADSUserFormSet,

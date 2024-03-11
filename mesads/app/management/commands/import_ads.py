@@ -290,6 +290,9 @@ class ADSImporter:
             self.excel.idx("email du titulaire"),
         )
 
+        raise RuntimeError(
+            "The field ADS.used_by_owner has been removed. Please update this code if you need to import ADS."
+        )
         ads.used_by_owner = self.parse_bool(
             cols,
             self.excel.idx("ads exploitée par son titulaire"),
