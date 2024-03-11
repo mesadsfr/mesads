@@ -133,7 +133,6 @@ Enregistrement d'une ADS
         </div>
       </template>
 
-
       <!-- ADS renew date -->
       <template x-if="ads_in_use === 'true' && !ads_before_2014">
         <div x-show="!ads_before_2014" x-transition class="fr-input-group">
@@ -154,7 +153,9 @@ Enregistrement d'une ADS
           {% include 'form_fields/select.html' with x_model="attribution_type" field=form.attribution_type field_errors=form.errors.attribution_type required=form.fields.attribution_type.required readonly=ads_manager.is_locked %}
 
           <!-- Transaction identifier -->
-          {% include 'form_fields/string.html' with x_transition=True x_show="attribution_type == 'paid'" field=form.transaction_identifier field_errors=form.errors.transaction_identifier required=form.fields.transaction_identifier.required readonly=ads_manager.is_locked %}
+          <template x-if="attribution_type === 'paid'">
+            {% include 'form_fields/string.html' with x_transition=True field=form.transaction_identifier field_errors=form.errors.transaction_identifier required=form.fields.transaction_identifier.required readonly=ads_manager.is_locked %}
+          </template>
 
           <!-- ADS attribution reason -->
           {% include 'form_fields/string.html' with field=form.attribution_reason field_errors=form.errors.attribution_reason required=form.fields.attribution_reason.required readonly=ads_manager.is_locked %}
@@ -206,117 +207,134 @@ Enregistrement d'une ADS
     <template x-if="ads_in_use === 'true'">
       <fieldset class="mesads-fieldset fr-mb-3w">
         <legend>Informations conducteur</legend>
-        <div>
-          <!-- Used by owner ? -->
-          <template x-if="ads_before_2014">
-            <div x-show="ads_before_2014" x-transition class="fr-input-group">
-              {% include 'form_fields/select.html' with x_model="used_by_owner" field=form.used_by_owner field_errors=form.errors.used_by_owner required=form.fields.used_by_owner.required readonly=ads_manager.is_locked %}
-            </div>
-          </template>
-
-          <!-- Owner licence number -->
-          <template x-if="should_display_owner_license_number">
-            <div x-show="should_display_owner_license_number" x-transition class="fr-input-group">
-            {% include 'form_fields/string.html' with field=form.owner_license_number field_errors=form.errors.owner_license_number required=form.fields.owner_license_number.required readonly=ads_manager.is_locked %}
-            </div>
-          </template>
-
-          <div class="fr-input-group" x-show="ads_before_2014" x-transition>
-            <div class="fr-alert fr-alert--info fr-mb-3w">
-              <p>
-                Si le seul conducteur est le titulaire de l'ADS, renseignez "Oui" à la case "ADS exploitée par son titulaire" et renseignez sa carte professionnelle.
-              </p>
-
-              <p class="fr-mt-2w">
-                Dans le cas où l'ADS est exploitée par plusieurs conducteurs :
-                <ul>
-                  <li>renseignez "Non" à la case "ADS exploitée par son titulaire" et rentrez les informations du locataire-gérant, du locataire-coopérateur ou des salariés.</li>
-                  <li>Si le titulaire est aussi conducteur, renseignez aussi ses informations en sélectionnant "Titulaire exploitant" en modalité d'exploitation.</li>
-                </ul>
-              </p>
-            </div>
+        <div class="fr-input-group" x-show="!ads_before_2014" x-transition>
+          <div class="fr-alert fr-alert--info fr-mb-3w">
+            <p>
+              Pour les nouvelles ADS (créées après le 1<sup>er</sup> Octobre 2014), le conducteur est obligatoirement le titulaire de l'ADS.
+            </p>
           </div>
+        </div>
 
-          <div class="fr-input-group" x-show="!ads_before_2014" x-transition>
-            <div class="fr-alert fr-alert--info fr-mb-3w">
-              <p>
-                Pour les nouvelles ADS (créées après le 1<sup>er</sup> Octobre 2014), le conducteur est obligatoirement le titulaire de l'ADS.
-              </p>
-            </div>
+        <div id="ads-users" class="fr-input-group">
+          {{ ads_users_formset.management_form }}
+
+          {% if ads_users_formset.non_form_errors %}
+          <div class="fr-input-group fr-input-group--error fr-ml-2w">
+            {% for error in ads_users_formset.non_form_errors %}
+            <!-- Non-field error -->
+            <p class="fr-error-text">
+              {{ error }}
+            </p>
+            {% endfor %}
           </div>
+          {% endif %}
 
-          <template x-if="ads_before_2014">
-            <div id="ads-users" class="fr-input-group" x-show="ads_before_2014" x-transition>
-              <div x-show="used_by_owner === 'false'" x-transition>
-                {{ ads_users_formset.management_form }}
+          {% for ads_user_form in ads_users_formset %}
+            <template x-if="(!ads_before_2014 && {{ forloop.counter0 }} > 0)">
+              <input type="hidden" name="{{ ads_user_form.DELETE.html_name }}" value="on" />
+            </template>
 
-                {% for ads_user_form in ads_users_formset %}
-                  <div
-                    class="fr-form-group ads-user-form fr-mt-3w"
-                  >
-                    <template x-if="used_by_owner === 'false'">
-                      <fieldset class="fr-fieldset">
-                          <legend class="fr-fieldset__legend">Conducteur n°{{ forloop.counter }}</legend>
+            <template x-if="!ads_creation_date || ads_before_2014 || (!ads_before_2014 && {{ forloop.counter0 }} == 0)">
+              <div
+                class="fr-form-group ads-user-form fr-mt-3w"
+              >
+                <fieldset class="fr-fieldset">
+                  <legend class="fr-fieldset__legend">Conducteur n°{{ forloop.counter }}</legend>
+                  <div class="fr-pl-3w" x-data="{'status': '{{ ads_user_form.status.value }}'}">
+                    {% if ads_user_form.non_field_errors %}
+                    <div class="fr-input-group fr-input-group--error">
+                      {% for error in ads_user_form.non_field_errors %}
+                      <!-- Non-field error -->
+                      <p class="fr-error-text">
+                        {{ error }}
+                      </p>
+                      {% endfor %}
+                    </div>
+                    {% endif %}
 
-                        <div class="fr-pl-3w">
-                          <!-- User status -->
-                          {% include 'form_fields/select.html' with field=ads_user_form.status field_errors=ads_user_form.errors.status required=ads_user_form.fields.status.required readonly=ads_manager.is_locked %}
-                          <!-- User name -->
-                          {% include 'form_fields/string.html' with field=ads_user_form.name field_errors=ads_user_form.errors.name required=ads_user_form.fields.name.required readonly=ads_manager.is_locked %}
-                          <!-- User SIRET -->
-                          {% include 'form_fields/string.html' with field=ads_user_form.siret field_errors=ads_user_form.errors.siret required=ads_user_form.fields.siret.required readonly=ads_manager.is_locked %}
-                          <!-- Professional licence number -->
-                          {% include 'form_fields/string.html' with field=ads_user_form.license_number field_errors=ads_user_form.errors.license_number required=ads_user_form.fields.license_number.required readonly=ads_manager.is_locked %}
-                        </div>
-
-                      </fieldset>
+                    <!-- User status -->
+                    <template x-if="ads_before_2014">
+                      {% include 'form_fields/select.html' with x_model="status" field=ads_user_form.status field_errors=ads_user_form.errors.status required=ads_user_form.fields.status.required readonly=ads_manager.is_locked %}
                     </template>
-                    {% for hidden_field in ads_user_form.hidden_fields %}
-                      {{ hidden_field }}
-                    {% endfor %}
-                  </div>
-                {% endfor %}
-
-                {% comment %}Template to render a new form when user wants to add an ADSUser{% endcomment %}
-                <template x-for="i in extraADSUserForms">
-                  <div
-                    class="fr-form-group ads-user-form fr-mt-3w"
-                  >
-                    <template x-if="used_by_owner === 'false'">
-                      <fieldset class="fr-fieldset">
-                          <legend class="fr-fieldset__legend">Informations du nouveau conducteur</legend>
-
-                        <div class="fr-pl-3w">
-                          <!-- User status -->
-                          {% include 'form_fields/select.html' with field=ads_users_formset.empty_form.status field_errors=ads_users_formset.empty_form.errors.status required=ads_users_formset.empty_form.fields.status.required readonly=ads_manager.is_locked %}
-                          <!-- User name -->
-                          {% include 'form_fields/string.html' with field=ads_users_formset.empty_form.name field_errors=ads_users_formset.empty_form.errors.name required=ads_users_formset.empty_form.fields.name.required readonly=ads_manager.is_locked %}
-                          <!-- User SIRET -->
-                          {% include 'form_fields/string.html' with field=ads_users_formset.empty_form.siret field_errors=ads_users_formset.empty_form.errors.siret required=ads_users_formset.empty_form.fields.siret.required readonly=ads_manager.is_locked %}
-                          <!-- Professional licence number -->
-                          {% include 'form_fields/string.html' with field=ads_users_formset.empty_form.license_number field_errors=ads_users_formset.empty_form.errors.license_number required=ads_users_formset.empty_form.fields.license_number.required readonly=ads_manager.is_locked %}
-                        </div>
-
-                      </fieldset>
+                    <template x-if="!ads_before_2014">
+                      <input type="hidden" name="{{ ads_user_form.status.html_name }}" value="titulaire_exploitant" />
                     </template>
-                    {% for hidden_field in ads_users_formset.empty_form.hidden_fields %}
-                      {{ hidden_field }}
-                    {% endfor %}
-                  </div>
-                </template>
 
-                <button
-                  type="button"
-                  class="fr-btn fr-btn--sm fr-icon-add-circle-line fr-btn--icon-left fr-btn--secondary"
-                  @click="extraADSUserForms++"
-                  x-add-ads-user-button
-                  x-transition
-                  {% if ads_manager.is_locked %}disabled {% endif %}
-                >
-                    Ajouter un nouveau conducteur
-                </button>
+                    <!-- User name -->
+                    <template x-if="ads_before_2014 && status !== 'titulaire_exploitant'">
+                      {% include 'form_fields/string.html' with field=ads_user_form.name field_errors=ads_user_form.errors.name required=ads_user_form.fields.name.required readonly=ads_manager.is_locked %}
+                    </template>
+
+                    <!-- User SIRET -->
+                    <template x-if="ads_before_2014 && status !== 'titulaire_exploitant' && status !== 'legal_representative' && status !== 'salarie' ">
+                      {% include 'form_fields/string.html' with field=ads_user_form.siret field_errors=ads_user_form.errors.siret required=ads_user_form.fields.siret.required readonly=ads_manager.is_locked %}
+                    </template>
+
+                    <!-- Professional licence number -->
+                    {% include 'form_fields/string.html' with field=ads_user_form.license_number field_errors=ads_user_form.errors.license_number required=ads_user_form.fields.license_number.required readonly=ads_manager.is_locked %}
+                  </div>
+                </fieldset>
               </div>
+            </template>
+
+            {% for hidden_field in ads_user_form.hidden_fields %}
+              {{ hidden_field }}
+            {% endfor %}
+          {% endfor %}
+
+          {% comment %}Template to render a new form when user wants to add an ADSUser{% endcomment %}
+          <template x-for="i in extraADSUserForms">
+            <div
+              class="fr-form-group ads-user-form fr-mt-3w"
+            >
+              <fieldset class="fr-fieldset">
+                <legend class="fr-fieldset__legend">Conducteur n°<span x-text="{{ ads_users_formset|length }} + i"></span></legend>
+                <div class="fr-pl-3w" x-data="{'status': ''}">
+                  {% if ads_user_form.non_field_errors %}
+                  <div class="fr-input-group fr-input-group--error">
+                    {% for error in ads_user_form.non_field_errors %}
+                    <!-- Non-field error -->
+                    <p class="fr-error-text">
+                      {{ error }}
+                    </p>
+                    {% endfor %}
+                  </div>
+                  {% endif %}
+
+                  <!-- User status -->
+                  {% include 'form_fields/select.html' with x_model="status" field=ads_users_formset.empty_form.status field_errors=ads_users_formset.empty_form.errors.status required=ads_users_formset.empty_form.fields.status.required readonly=ads_manager.is_locked %}
+
+                  <!-- User name -->
+                  <template x-if="status !== 'titulaire_exploitant'">
+                    {% include 'form_fields/string.html' with field=ads_users_formset.empty_form.name field_errors=ads_users_formset.empty_form.errors.name required=ads_users_formset.empty_form.fields.name.required readonly=ads_manager.is_locked %}
+                  </template>
+
+                  <!-- User SIRET  -->
+                  <template x-if="status !== 'titulaire_exploitant' && status !== 'legal_representative' && status !== 'salarie' ">
+                    {% include 'form_fields/string.html' with field=ads_users_formset.empty_form.siret field_errors=ads_users_formset.empty_form.errors.siret required=ads_users_formset.empty_form.fields.siret.required readonly=ads_manager.is_locked %}
+                  </template>
+
+                  <!-- Professional licence number -->
+                  {% include 'form_fields/string.html' with field=ads_users_formset.empty_form.license_number field_errors=ads_users_formset.empty_form.errors.license_number required=ads_users_formset.empty_form.fields.license_number.required readonly=ads_manager.is_locked %}
+                </div>
+              </fieldset>
+              {% for hidden_field in ads_users_formset.empty_form.hidden_fields %}
+                {{ hidden_field }}
+              {% endfor %}
             </div>
+          </template>
+
+          <template x-if="ads_before_2014">
+            <button
+              type="button"
+              class="fr-btn fr-btn--sm fr-icon-add-circle-line fr-btn--icon-left fr-btn--secondary"
+              @click="extraADSUserForms++"
+              x-add-ads-user-button
+              x-transition
+              {% if ads_manager.is_locked %}disabled {% endif %}
+            >
+              Ajouter un nouveau conducteur
+            </button>
           </template>
         </div>
       </fieldset>
@@ -363,7 +381,6 @@ Enregistrement d'une ADS
 {
   "ads_creation_date": "{{ form.ads_creation_date.value|str_to_date|date:"Y-m-d"|default:"" }}",
   "ads_in_use": "{% if form.ads_in_use.value is True %}true{% elif form.ads_in_use.value is False %}false{% endif %}",
-  "used_by_owner": "{% if form.used_by_owner.value is True %}true{% elif form.used_by_owner.value is False %}false{% else %}unknown{% endif %}",
   "attribution_type": "{{ form.attribution_type.value }}"
 }
 </script>

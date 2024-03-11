@@ -407,26 +407,6 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
                 name="attribution_date_null_for_new_ads",
                 violation_error_message="La date d'attribution ne peut être renseignée que pour les ADS créées avant le 1er octobre 2014.",
             ),
-            # Check used_by_owner:
-            # - For new ADS, used_by_owner should always be null
-            # - For old ADS, used_by_owner can be set or not
-            # - For ADS with an unknown creation date, used_by_owner should be null
-            models.CheckConstraint(
-                check=(
-                    Q(
-                        ads_creation_date__isnull=False,
-                        ads_creation_date__gte=date(2014, 10, 1),
-                        used_by_owner__isnull=True,
-                    )
-                    | Q(
-                        ads_creation_date__isnull=False,
-                        ads_creation_date__lt=date(2014, 10, 1),
-                    )
-                    | Q(ads_creation_date__isnull=True, used_by_owner__isnull=True)
-                ),
-                name="used_by_owner_null_for_new_ads",
-                violation_error_message="Le champ 'ADS exploitée par son titulaire' ne peut être renseigné que pour les ADS créées avant le 1er octobre 2014.",
-            ),
             # Check attribution_type:
             # - For new ADS, attribution_type should always be empty
             # - For old ADS, attribution_type can be set or not
@@ -476,26 +456,6 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
                 name="attribution_reason_empty_for_new_ads",
                 violation_error_message="Le champ 'Raison d'attribution' ne peut être renseigné que pour les ADS créées avant le 1er octobre 2014.",
             ),
-            # Check owner_license_number
-            # - For new ADS, owner_license_number can be set or not
-            # - Otherwise, owner_license_number can only be set if used_by_owner is true
-            models.CheckConstraint(
-                check=(
-                    Q(
-                        ads_creation_date__isnull=False,
-                        ads_creation_date__gte=date(2014, 10, 1),
-                    )
-                    | Q(used_by_owner__isnull=True, owner_license_number="")
-                    | Q(
-                        used_by_owner__isnull=False,
-                        used_by_owner=False,
-                        owner_license_number="",
-                    )
-                    | Q(used_by_owner__isnull=False, used_by_owner=True)
-                ),
-                name="owner_license_number_empty_if_not_used_by_owner",
-                violation_error_message="Le champ 'Numéro de la carte professionnelle du titulaire' doit être vide si l'ADS n'est pas exploitée par son titulaire.",
-            ),
             # Check renewal date nullable:
             # - For new ADS, renew date can be set or not
             # - For old ADS, renew date must always be empty
@@ -532,11 +492,29 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
     def __str__(self):
         return f"ADS {self.id}"
 
-    def save(self, *args, **kwargs):
+    def run_checks(self):
+        """Raise an exception if the ADS is not valid"""
         if self.ads_manager.is_locked:
             raise ValidationError(
                 "Il n'est pas possible d'apporter des modifications sur les ADS d'une administration verrouillée."
             )
+        if self.ads_creation_date and self.ads_creation_date >= date(2014, 10, 1):
+            existing_users = ADSUser.objects.filter(ads=self)
+            if existing_users.count() > 1:
+                raise ValidationError(
+                    "Un seul exploitant peut être déclaré pour une ADS créée après le 1er octobre 2014."
+                )
+            if (
+                existing_users.exists()
+                and existing_users.first().status != "titulaire_exploitant"
+            ):
+                raise ValidationError(
+                    "Le conducteur doit nécessairement être le titulaire de l'ADS (personne physique) pour une ADS créée après le 1er octobre 2014."
+                )
+
+    def save(self, check=True, *args, **kwargs):
+        if check:
+            self.run_checks()
         return super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -552,7 +530,7 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
         """Constraints can have a custom violation error message set with the
         parameter `violation_error_message`. However, it appears that this is
         not possible for UniqueConstraint, which, for backward compatibility
-        reasons (django 4.1), ignore this parameter and instead call
+        reasons (django 4.1), ignores this parameter and instead calls
         unique_error_message.
 
         See https://github.com/django/django/blob/69069a443a906dd4060a8047e683657d40b4c383/django/db/models/constraints.py#L356
@@ -692,13 +670,6 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
         ),
     )
 
-    owner_license_number = models.CharField(
-        max_length=64,
-        blank=True,
-        null=False,
-        verbose_name="Numéro de la carte professionnelle du titulaire",
-    )
-
     owner_phone = models.CharField(
         max_length=128,
         blank=True,
@@ -716,10 +687,6 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
         blank=True,
         null=False,
         verbose_name="Email du titulaire de l'ADS",
-    )
-
-    used_by_owner = models.BooleanField(
-        blank=True, null=True, verbose_name="ADS exploitée par son titulaire ?"
     )
 
 
@@ -791,9 +758,103 @@ class ADSUser(
     class Meta:
         verbose_name = "Exploitant de l'ADS"
         verbose_name_plural = "Exploitants de l'ADS"
+        constraints = [
+            # there can be only one titulaire_exploitant for a given ADS
+            models.UniqueConstraint(
+                fields=("ads", "status"),
+                condition=Q(status="titulaire_exploitant", deleted_at__isnull=True),
+                name="only_one_titulaire_exploitant",
+                violation_error_message="Il ne peut y avoir qu'un seul titulaire par ADS.",
+            ),
+            # name should be empty if status = 'titulaire_exploitant', because the value is expected to be provided in ADS.owner_name
+            models.CheckConstraint(
+                check=(
+                    Q(
+                        deleted_at__isnull=False,
+                    )
+                    | Q(
+                        status="titulaire_exploitant",
+                        name="",
+                    )
+                    | ~Q(
+                        status="titulaire_exploitant",
+                    )
+                ),
+                name="name_empty_for_titulaire_exploitant",
+                violation_error_message="Le nom du conducteur ne peut être renseigné que s'il ne s'agit pas du titulaire de l'ADS.",
+            ),
+            # SIRET should be empty if status = 'titulaire_exploitant', because the value is expected to be provided in ADS.owner_siret
+            models.CheckConstraint(
+                check=(
+                    Q(
+                        deleted_at__isnull=False,
+                    )
+                    | Q(
+                        status="titulaire_exploitant",
+                        siret="",
+                    )
+                    | ~Q(
+                        status="titulaire_exploitant",
+                    )
+                ),
+                name="siret_empty_for_titulaire_exploitant",
+                violation_error_message="Le SIRET du conducteur ne peut pas être renseigné pour le titulaire de l'ADS.",
+            ),
+            # SIRET should be empty if status = 'legal_representative', because the value is expected to be provided in ADS.owner_siret
+            models.CheckConstraint(
+                check=(
+                    Q(
+                        deleted_at__isnull=False,
+                    )
+                    | Q(
+                        status="legal_representative",
+                        siret="",
+                    )
+                    | ~Q(
+                        status="legal_representative",
+                    )
+                ),
+                name="siret_empty_for_legal_representative",
+                violation_error_message="Le SIRET du conducteur ne peut pas être renseigné pour le représentant légal de la société.",
+            ),
+            # SIRET should be empty if status = 'salarie', because employees don't have a SIRET number
+            models.CheckConstraint(
+                check=(
+                    Q(
+                        deleted_at__isnull=False,
+                    )
+                    | Q(
+                        status="salarie",
+                        siret="",
+                    )
+                    | ~Q(
+                        status="salarie",
+                    )
+                ),
+                name="siret_empty_for_salarie",
+                violation_error_message="Le SIRET du conducteur ne peut pas être renseigné pour un salarié.",
+            ),
+        ]
 
     def __str__(self):
         return f"{self.name}"
+
+    def save(self, *args, **kwargs):
+        if (
+            not self.deleted_at
+            and self.ads.ads_creation_date
+            and self.ads.ads_creation_date >= date(2014, 10, 1)
+        ):
+            existing_users = ADSUser.objects.filter(ads=self.ads).exclude(pk=self.pk)
+            if existing_users.exists():
+                raise ValidationError(
+                    "Un seul exploitant peut être déclaré pour une ADS créée après le 1er octobre 2014."
+                )
+            if self.status != "titulaire_exploitant":
+                raise ValidationError(
+                    "Le conducteur doit nécessairement être le titulaire de l'ADS (personne physique) pour une ADS créée après le 1er octobre 2014."
+                )
+        return super().save(*args, **kwargs)
 
     ads = models.ForeignKey(ADS, on_delete=models.CASCADE)
 
@@ -802,11 +863,26 @@ class ADSUser(
     }
 
     ADS_USER_STATUS = [
-        ("titulaire_exploitant", "Titulaire exploitant"),
-        ("cooperateur", "Locataire coopérateur"),
-        ("locataire_gerant", "Locataire gérant"),
-        ("salarie", "Salarié"),
-        ("autre", "Autre"),
+        (
+            "titulaire_exploitant",
+            "Le titulaire de l'ADS (personne physique)",
+        ),
+        (
+            "legal_representative",
+            "Le représentant légal de la société titulaire de l'ADS (gérant ou président non salarié)",
+        ),
+        (
+            "salarie",
+            "Salarié du titulaire de l'ADS",
+        ),
+        (
+            "cooperateur",
+            "Le locataire-coopérateur de l'ADS",
+        ),
+        (
+            "locataire_gerant",
+            "Le locataire-gérant de l'ADS",
+        ),
     ]
 
     status = models.CharField(

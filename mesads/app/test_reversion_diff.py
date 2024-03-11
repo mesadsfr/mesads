@@ -167,7 +167,7 @@ class TestReversionDiff(TestCase):
             ModelHistory(ADSUser()).render_field(
                 ADSUser, "status", "titulaire_exploitant"
             ),
-            "Titulaire exploitant",
+            "Le titulaire de l'ADS (personne physique)",
         )
 
         self.assertEqual(

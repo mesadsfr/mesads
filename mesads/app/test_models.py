@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings, TestCase
@@ -172,6 +174,37 @@ class TestADS(ClientTestCase):
         self.assertRaises(ValidationError, self.ads.save)
         self.assertRaises(ValidationError, self.ads.delete)
 
+    def test_new_ads_more_than_one_user(self):
+        ADSUser.objects.create(
+            ads=self.ads, status="titulaire_exploitant", license_number="Bob"
+        )
+        ADSUser.objects.create(ads=self.ads, status="salarie", license_number="Bob")
+
+        self.ads.ads_creation_date = date(2015, 12, 11)
+        try:
+            self.ads.save()
+        except ValidationError as exc:
+            self.assertEqual(
+                exc.message,
+                "Un seul exploitant peut être déclaré pour une ADS créée après le 1er octobre 2014.",
+            )
+        else:
+            self.fail("Should have raised a ValidationError")
+
+    def test_new_ads_and_user_is_not_titulaire(self):
+        ADSUser.objects.create(ads=self.ads, status="salarie", license_number="Bob")
+
+        self.ads.ads_creation_date = date(2015, 12, 11)
+        try:
+            self.ads.save()
+        except ValidationError as exc:
+            self.assertEqual(
+                exc.message,
+                "Le conducteur doit nécessairement être le titulaire de l'ADS (personne physique) pour une ADS créée après le 1er octobre 2014.",
+            )
+        else:
+            self.fail("Should have raised a ValidationError")
+
 
 class TestADSLegalFile(ClientTestCase):
     def setUp(self):
@@ -206,6 +239,25 @@ class TestADSUser(ClientTestCase):
     def test_str(self):
         ads_user = ADSUser.objects.create(ads=self.ads, name="Bob")
         self.assertEqual(str(ads_user), "Bob")
+
+    def test_new_ads_several_users(self):
+        self.ads.ads_creation_date = date(2015, 12, 11)
+        self.ads.save()
+        ADSUser.objects.create(
+            ads=self.ads, status="titulaire_exploitant", license_number="Bob"
+        )
+        ads_user = ADSUser(
+            ads=self.ads, status="titulaire_exploitant", license_number="Bob2"
+        )
+        try:
+            ads_user.save()
+        except ValidationError as exc:
+            self.assertEqual(
+                exc.message,
+                "Un seul exploitant peut être déclaré pour une ADS créée après le 1er octobre 2014.",
+            )
+        else:
+            self.fail("Should have raised a ValidationError")
 
 
 class TestADSUpdateFile(ClientTestCase):
