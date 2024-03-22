@@ -471,8 +471,6 @@ class ADSView(RevisionMixin, UpdateView):
         ):
             return self.form_invalid(form)
 
-        resp = super().form_valid(form)
-
         if self.request.POST.get(html_name_ads_users_formset):
             self.ads_users_formset.instance = self.object
             try:
@@ -495,8 +493,8 @@ class ADSView(RevisionMixin, UpdateView):
         else:
             ADSLegalFile.objects.filter(ads=self.object).delete()
 
+        resp = super().form_valid(form)
         messages.success(self.request, "Les modifications ont été enregistrées.")
-
         return resp
 
 

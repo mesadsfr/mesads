@@ -251,14 +251,17 @@ Enregistrement d'une ADS
                 <template x-if="ads_before_2014">
                   {% include 'form_fields/select.html' with x_model="status" field=ads_user_form.status field_errors=ads_user_form.errors.status required=ads_user_form.fields.status.required readonly=ads_manager.is_locked %}
                 </template>
+                <template x-if="!ads_before_2014">
+                  <input type="hidden" name="{{ ads_user_form.status.html_name }}" value="titulaire_exploitant" />
+                </template>
 
                 <!-- User name -->
-                <template x-if="status !== 'titulaire_exploitant'">
+                <template x-if="ads_before_2014 && status !== 'titulaire_exploitant'">
                   {% include 'form_fields/string.html' with field=ads_user_form.name field_errors=ads_user_form.errors.name required=ads_user_form.fields.name.required readonly=ads_manager.is_locked %}
                 </template>
 
                 <!-- User SIRET -->
-                <template x-if="status !== 'titulaire_exploitant' && status !== 'legal_representative' && status !== 'salarie' ">
+                <template x-if="ads_before_2014 && status !== 'titulaire_exploitant' && status !== 'legal_representative' && status !== 'salarie' ">
                   {% include 'form_fields/string.html' with field=ads_user_form.siret field_errors=ads_user_form.errors.siret required=ads_user_form.fields.siret.required readonly=ads_manager.is_locked %}
                 </template>
 
