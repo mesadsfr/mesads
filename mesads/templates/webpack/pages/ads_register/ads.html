@@ -248,7 +248,9 @@ Enregistrement d'une ADS
                 {% endif %}
 
                 <!-- User status -->
-                {% include 'form_fields/select.html' with x_model="status" field=ads_user_form.status field_errors=ads_user_form.errors.status required=ads_user_form.fields.status.required readonly=ads_manager.is_locked %}
+                <template x-if="ads_before_2014">
+                  {% include 'form_fields/select.html' with x_model="status" field=ads_user_form.status field_errors=ads_user_form.errors.status required=ads_user_form.fields.status.required readonly=ads_manager.is_locked %}
+                </template>
 
                 <!-- User name -->
                 <template x-if="status !== 'titulaire_exploitant'">
