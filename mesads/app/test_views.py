@@ -676,6 +676,53 @@ class TestADSView(ClientTestCase):
         self.assertEqual(ADSUser.objects.count(), 1)
         self.assertEqual(ADSUser.objects.get().name, "Henri")
 
+    def test_update_invalid_ads_user(self):
+        """Request change for both ADS and ADSUser, but the ADSUser is invalid:
+        the ADS should not be updated, and all the updates should be made in a
+        transaction."""
+        self.ads.owner_name = "Old name"
+        self.ads.save()
+
+        ads_user = ADSUser.objects.create(
+            ads=self.ads, status="titulaire_exploitant", license_number="xxx"
+        )
+        ads_user2 = ADSUser.objects.create(
+            ads=self.ads, status="salarie", license_number="yyy"
+        )
+
+        resp = self.ads_manager_city35_client.post(
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            {
+                "number": self.ads.id,
+                "ads_in_use": "true",
+                "owner_name": "New name",
+                "adsuser_set-TOTAL_FORMS": 10,
+                "adsuser_set-INITIAL_FORMS": 2,
+                "adsuser_set-MIN_NUM_FORMS": 0,
+                "adsuser_set-MAX_NUM_FORMS": 10,
+                "adsuser_set-0-id": ads_user.id,
+                "adsuser_set-0-status": "titulaire_exploitant",
+                "adsuser_set-0-license_number": "xxx",
+                "adsuser_set-1-id": ads_user2.id,
+                "adsuser_set-1-status": "titulaire_exploitant",
+                "adsuser_set-1-license_number": "yyy",
+                "adslegalfile_set-TOTAL_FORMS": 10,
+                "adslegalfile_set-INITIAL_FORMS": 0,
+                "adslegalfile_set-MIN_NUM_FORMS": 0,
+                "adslegalfile_set-MAX_NUM_FORMS": 10,
+            },
+        )
+
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertEqual(
+            resp.context["ads_users_formset"].non_form_errors(),
+            ["Il ne peut y avoir qu'un seul titulaire par ADS."],
+        )
+
+        self.ads.refresh_from_db()
+        self.assertEqual(self.ads.owner_name, "Old name")
+
     def test_strip_ads_user_charfields(self):
         """If all the fields of a ADS user are empty, the entry should be
         removed."""

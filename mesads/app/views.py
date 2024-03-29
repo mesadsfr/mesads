@@ -489,7 +489,10 @@ class ADSView(RevisionMixin, UpdateView):
                     if c.name == "only_one_titulaire_exploitant"
                 ][0].violation_error_message
                 self.ads_users_formset.non_form_errors().append(errmsg)
-                return self.form_invalid(form)
+                resp = self.form_invalid(form)
+                # Revert the transaction: we don't want to save the ADS if we can't save the users.
+                transaction.set_rollback(True)
+                return resp
 
         if not self.request.POST.get(html_name_ads_legal_files_formset):
             ADSLegalFile.objects.filter(ads=self.object).delete()
