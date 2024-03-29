@@ -87,7 +87,6 @@ class ADSForm(forms.ModelForm):
     class Meta:
         model = ADS
         fields = (
-            "epci_commune",
             "number",
             "ads_creation_date",
             "ads_in_use",
@@ -109,7 +108,16 @@ class ADSForm(forms.ModelForm):
 
     def __init__(self, epci=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         if epci:
+            self.Meta.fields = self.Meta.fields + ("epci_commune",)
+            self.fields["epci_commune"] = forms.ModelChoiceField(
+                queryset=None,
+                widget=autocomplete.ListSelect2(),
+                label=ADS.epci_commune.field.verbose_name,
+                help_text=ADS.epci_commune.field.help_text,
+                required=False,
+            )
             self.fields["epci_commune"].queryset = Commune.objects.filter(
                 departement=epci.departement
             )
@@ -123,14 +131,6 @@ class ADSForm(forms.ModelForm):
         self.instance.save(check=check)
         self._save_m2m()
         return self.instance
-
-    epci_commune = forms.ModelChoiceField(
-        queryset=None,
-        widget=autocomplete.ListSelect2(),
-        label=ADS.epci_commune.field.verbose_name,
-        help_text=ADS.epci_commune.field.help_text,
-        required=False,
-    )
 
     ads_in_use = NullBooleanField(
         widget=BooleanSelect(),
