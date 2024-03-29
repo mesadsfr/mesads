@@ -127,9 +127,12 @@ class VehiculeAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
-        "proprietaire",
-        "departement",
-        "commune_localisation",
+        "proprietaire__nom",
+        "proprietaire__siret",
+        "departement__numero",
+        "departement__libelle",
+        "commune_localisation__insee",
+        "commune_localisation__libelle",
     )
 
     autocomplete_fields = (
