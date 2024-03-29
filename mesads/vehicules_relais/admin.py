@@ -20,6 +20,7 @@ class VehiculeCount(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return (
+            ("0", "Aucun véhicule"),
             ("1", ">=1 véhicule"),
             ("5", ">=5 véhicules"),
             ("10", ">=10 véhicules"),
@@ -33,7 +34,10 @@ class VehiculeCount(admin.SimpleListFilter):
             return queryset
 
         queryset = queryset.annotate(vehicule_count=Count("vehicule"))
-        return queryset.filter(vehicule_count__gte=count_filter)
+        if count_filter == 0:
+            return queryset.filter(vehicule_count=count_filter)
+        else:
+            return queryset.filter(vehicule_count__gte=count_filter)
 
 
 @admin.register(Proprietaire)
