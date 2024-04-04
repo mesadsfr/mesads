@@ -244,6 +244,8 @@ class ADSImporter:
                 self.excel.idx("numéro de l'ads", exact=True),
             )
 
+        ads.ads_in_use = True
+
         ads.ads_creation_date = self.parse_date(
             cols,
             self.excel.idx("date de création"),
@@ -290,27 +292,12 @@ class ADSImporter:
             self.excel.idx("email du titulaire"),
         )
 
-        raise RuntimeError(
-            "The field ADS.used_by_owner has been removed. Please update this code if you need to import ADS."
-        )
-        ads.used_by_owner = self.parse_bool(
+        used_by_owner = self.parse_bool(
             cols,
             self.excel.idx("ads exploitée par son titulaire"),
         )
 
-        # ADS without a creation date shoudl not have the field used_by_owner set
-        if not ads.ads_creation_date:
-            ads.used_by_owner = None
-        # New ADS have to be used by the owner. If the ADS is new and the excel
-        # contains true for the column "used by owner", we set the database
-        # field to None to avoid integrity errors.
-        elif (
-            ads.ads_creation_date >= datetime.date(2014, 10, 1)
-            and ads.used_by_owner is True
-        ):
-            ads.used_by_owner = None
-
-        ads.owner_license_number = self.parse_license_number(
+        owner_license_number = self.parse_license_number(
             cols, self.excel.idx("carte professionnelle du titulaire")
         )
 
@@ -319,12 +306,22 @@ class ADSImporter:
         if not ads.attribution_reason:
             ads.attribution_reason = ""
 
-        ads_users = self.load_ads_users(cols, ads)
+        ads_users = self.load_ads_users(cols, ads, used_by_owner, owner_license_number)
         return ads, ads_users
 
-    def load_ads_users(self, cols, ads):
+    def load_ads_users(self, cols, ads, used_by_owner, owner_license_number):
         """Load the ADS users from the excel file"""
         ads_users = []
+
+        if used_by_owner:
+            ads_users.append(
+                ADSUser(
+                    ads=ads,
+                    status="titulaire_exploitant",
+                    license_number=owner_license_number,
+                )
+            )
+
         for i in range(9):
             name_exploitant_idx = self.excel.nidx("nom de l'exploitant", i)
             siret_exploitant_idx = self.excel.nidx("siret de l'exploitant", i)
@@ -338,13 +335,13 @@ class ADSImporter:
             ):
                 continue
 
-            # Content of the first non-empty column set between name, siret and license number
+            # Content of the first non-empty column set between name, siret and license number. Used to report errors.
             first_col_set = (
                 cols[name_exploitant_idx]
                 or cols[siret_exploitant_idx]
                 or (cols[license_number_exploitant_idx])
             )
-            # Index of the first non-empty column
+            # Index of the first non-empty column. Used to report errors.
             first_col_set_idx = (
                 (cols[name_exploitant_idx] and name_exploitant_idx)
                 or (cols[siret_exploitant_idx] and siret_exploitant_idx)
@@ -361,7 +358,7 @@ class ADSImporter:
                     first_col_set_idx,
                 )
 
-            if ads.used_by_owner:
+            if used_by_owner:
                 raise self.fmt_col_error(
                     "L'exploitant de l'ADS ne peut être défini que pour les ADS non exploitées par leur titulaire",
                     first_col_set,
@@ -468,6 +465,8 @@ class ADSImporter:
 
     def parse_siret(self, cols, idx):
         siret = str(cols[idx])
+        if siret == "None":
+            return ""
         if siret:
             try:
                 validate_siret(siret)
