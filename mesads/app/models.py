@@ -890,13 +890,13 @@ class ADSUser(
         choices=ADS_USER_STATUS,
         blank=True,
         null=False,
-        verbose_name="Modalité d'exploitation de l'ADS",
+        verbose_name="Qui est le conducteur du taxi ?",
     )
     name = models.CharField(
         max_length=1024,
         blank=True,
         null=False,
-        verbose_name="Nom de l'exploitant de l'ADS",
+        verbose_name="Nom du conducteur",
     )
     siret = models.CharField(
         max_length=128,
