@@ -301,19 +301,26 @@ class ADSImporter:
             cols, self.excel.idx("carte professionnelle du titulaire")
         )
 
+        if not used_by_owner and owner_license_number:
+            raise self.fmt_col_error(
+                f"ADS {ads_number} a le champ 'ADS exploitée par son titulaire' à Non, mais la carte pro du titulaire est définie",
+                f"used_by_owner={used_by_owner} / owner_license_numer={owner_license_number}",
+                self.excel.idx("ads exploitée par son titulaire"),
+            )
+
         if not ads.attribution_type:
             ads.attribution_type = ""
         if not ads.attribution_reason:
             ads.attribution_reason = ""
 
-        ads_users = self.load_ads_users(cols, ads, used_by_owner, owner_license_number)
+        ads_users = self.load_ads_users(cols, ads, owner_license_number)
         return ads, ads_users
 
-    def load_ads_users(self, cols, ads, used_by_owner, owner_license_number):
+    def load_ads_users(self, cols, ads, owner_license_number):
         """Load the ADS users from the excel file"""
         ads_users = []
 
-        if used_by_owner:
+        if owner_license_number:
             ads_users.append(
                 ADSUser(
                     ads=ads,
@@ -354,13 +361,6 @@ class ADSImporter:
             if ads.ads_creation_date >= datetime.date(2014, 10, 1):
                 raise self.fmt_col_error(
                     "L'exploitant de l'ADS ne peut être défini que pour les anciennes ADS",
-                    first_col_set,
-                    first_col_set_idx,
-                )
-
-            if used_by_owner:
-                raise self.fmt_col_error(
-                    "L'exploitant de l'ADS ne peut être défini que pour les ADS non exploitées par leur titulaire",
                     first_col_set,
                     first_col_set_idx,
                 )
