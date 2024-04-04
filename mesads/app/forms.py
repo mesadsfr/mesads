@@ -87,6 +87,7 @@ class ADSForm(forms.ModelForm):
     class Meta:
         model = ADS
         fields = (
+            "epci_commune",
             "number",
             "ads_creation_date",
             "ads_in_use",
@@ -110,7 +111,6 @@ class ADSForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if epci:
-            self.Meta.fields = self.Meta.fields + ("epci_commune",)
             self.fields["epci_commune"] = forms.ModelChoiceField(
                 queryset=None,
                 widget=autocomplete.ListSelect2(),
