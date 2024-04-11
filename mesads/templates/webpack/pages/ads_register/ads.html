@@ -207,6 +207,10 @@ Enregistrement d'une ADS
     <template x-if="ads_in_use === 'true'">
       <fieldset class="mesads-fieldset fr-mb-3w">
         <legend>Informations conducteur</legend>
+        <div class="fr-text--xs">
+          Pour supprimer ce conducteur, effacez tous les champs de celui-ci et validez le formulaire.
+        </div>
+
         <div class="fr-input-group" x-show="!ads_before_2014" x-transition>
           <div class="fr-alert fr-alert--info fr-mb-3w">
             <p>
