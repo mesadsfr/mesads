@@ -473,6 +473,21 @@ files = [
 Django = ">=2.2"
 
 [[package]]
+name = "django-htmx"
+version = "1.17.3"
+description = "Extensions for using Django with htmx."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "django-htmx-1.17.3.tar.gz", hash = "sha256:a2069219920d7ef0883ddbf5e8d931069db145a0d4a8a032a2708f840c7a68a6"},
+    {file = "django_htmx-1.17.3-py3-none-any.whl", hash = "sha256:0de964ca257eda2a4ebeeaa8181320119378fa5f95a2fc2f2bfbdd35034ed424"},
+]
+
+[package.dependencies]
+asgiref = ">=3.6"
+Django = ">=3.2"
+
+[[package]]
 name = "django-mjml"
 version = "1.0"
 description = "Use MJML in Django templates"
@@ -1519,4 +1534,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "6a38f7515696441df0d64f94c1d619bc6e17343fccb04ab1969455986a27af80"
+content-hash = "f16cc1254d95b6ab4eaad51d136536bc4597bdc6ad77555ff3c7b1249fb0be6c"

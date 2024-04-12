@@ -10,3 +10,5 @@ $("select[data-autocomplete-light-url]").map((idx, el) =>
     );
   })
 );
+
+import "htmx.org";
