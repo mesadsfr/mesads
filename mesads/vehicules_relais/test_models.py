@@ -38,3 +38,13 @@ class TestVehicules(ClientTestCase):
         )
         vehicule.departement = other_departement
         self.assertRaises(ValidationError, Vehicule.clean, vehicule)
+
+    def test_update_immatriculation(self):
+        departement = Prefecture.objects.first()
+        vehicule = Vehicule.objects.create(
+            proprietaire=self.proprietaire,
+            departement=departement,
+            immatriculation="1234",
+        )
+        vehicule.immatriculation = "5678"
+        self.assertRaises(ValidationError, Vehicule.clean, vehicule)

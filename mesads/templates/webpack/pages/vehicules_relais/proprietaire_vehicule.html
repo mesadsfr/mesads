@@ -72,11 +72,14 @@
 
       <strong>{{ object.departement.numero }} - {{ object.departement.libelle }}</strong>
     </div>
+
+    {% comment %} {% include 'form_fields/string.html' with field=form.immatriculation field_errors=form.errors.immatriculation required=form.fields.immatriculation.required readonly=True %} {% endcomment %}
+    {% include 'form_fields/string.html' with field=form.immatriculation field_errors=form.errors.immatriculation required=form.fields.immatriculation.required %}
   {% else %}
     {% include 'form_fields/select-autocomplete.html' with field=form.departement field_errors=form.errors.departement required=form.fields.departement.required %}
+    {% include 'form_fields/string.html' with field=form.immatriculation field_errors=form.errors.immatriculation required=form.fields.immatriculation.required %}
   {% endif %}
 
-  {% include 'form_fields/string.html' with field=form.immatriculation field_errors=form.errors.immatriculation required=form.fields.immatriculation.required %}
   {% include 'form_fields/string.html' with field=form.modele field_errors=form.errors.modele required=form.fields.modele.required %}
   {% include 'form_fields/select.html' with field=form.motorisation field_errors=form.errors.motorisation required=form.fields.motorisation.required %}
   {% include 'form_fields/date.html' with field=form.date_mise_circulation field_errors=form.errors.date_mise_circulation required=form.fields.date_mise_circulation.required %}

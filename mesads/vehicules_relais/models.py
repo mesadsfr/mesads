@@ -84,13 +84,24 @@ class Vehicule(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if hasattr(self, "departement"):
-            self.__initial_departement = self.departement
-        else:
-            self.__initial_departement = None
+        self.__initial_departement = getattr(self, "departement", None)
+        self.__initial_immatriculation = self.immatriculation
 
     def clean(self, *args, **kwargs):
         super().clean(*args, **kwargs)
+
+        if (
+            self.__initial_immatriculation
+            and self.__initial_immatriculation != self.immatriculation
+        ):
+            raise ValidationError(
+                {
+                    "immatriculation": "Une fois le véhicule créé, la plaque d'immatriculation ne peut pas être modifiée. "
+                    "Si vous souhaitez réellement changer la plaque, veuillez supprimer "
+                    "le véhicule et en enregistrer un nouveau, ce qui entrainera la création d'un nouveau numéro de véhicule."
+                }
+            )
+
         if (
             self.__initial_departement
             and self.__initial_departement != self.departement
@@ -153,6 +164,7 @@ class Vehicule(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
         blank=True,
         max_length=32,
         verbose_name="Plaque d'immatriculation du véhicule",
+        help_text="La plaque d'immatriculation du véhicule ne peut pas être modifiée une fois le véhicule enregistré.",
     )
 
     modele = models.CharField(
