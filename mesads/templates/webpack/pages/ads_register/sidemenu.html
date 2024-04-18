@@ -16,19 +16,19 @@
     <div class="fr-collapse" id="fr-sidemenu-wrapper">
       <div class="fr-sidemenu__title" id="fr-sidemenu-title">Registre des ADS</div>
       <ul class="fr-sidemenu__list">
-            {% if user.is_staff %}
-            <li class="fr-sidemenu__item{% if in_dashboards %} fr-sidemenu__item--active{% endif %}">
-              <a class="fr-sidemenu__link" href="{% url 'app.dashboards.list' %}" target="_self"{% if in_dashboards %} aria-current="page"{% endif %}>Dashboards</a>
-            </li>
-            {% endif %}
-          {% if user.adsmanageradministrator_set.all|length > 0 %}
-            <li class="fr-sidemenu__item{% if in_ads_manager_admin %} fr-sidemenu__item--active{% endif %}">
-              <a class="fr-sidemenu__link" href="{% url 'app.ads-manager-admin.index' %}" target="_self"{% if in_ads_manager_admin %} aria-current="page"{% endif %}>Gestion des instructeurs</a>
-            </li>
-          {% endif %}
-          <li class="fr-sidemenu__item{% if in_ads_manager %} fr-sidemenu__item--active{% endif %}">
-            <a class="fr-sidemenu__link" href="{% url 'app.ads-manager.index' %}" target="_self"{% if in_ads_manager %} aria-current="page"{% endif %}>Gestion des ADS</a>
-          </li>
+        {% if user.is_staff %}
+        <li class="fr-sidemenu__item{% if in_dashboards %} fr-sidemenu__item--active{% endif %}">
+          <a class="fr-sidemenu__link" href="{% url 'app.dashboards.list' %}" target="_self"{% if in_dashboards %} aria-current="page"{% endif %}>Dashboards</a>
+        </li>
+        {% endif %}
+        {% if user.adsmanageradministrator_set.all|length > 0 %}
+        <li class="fr-sidemenu__item{% if in_ads_manager_admin %} fr-sidemenu__item--active{% endif %}">
+          <a class="fr-sidemenu__link" href="{% url 'app.ads-manager-admin.index' %}" target="_self"{% if in_ads_manager_admin %} aria-current="page"{% endif %}>Gestion des instructeurs</a>
+        </li>
+        {% endif %}
+        <li class="fr-sidemenu__item{% if in_ads_manager %} fr-sidemenu__item--active{% endif %}">
+          <a class="fr-sidemenu__link" href="{% url 'app.ads-manager.index' %}" target="_self"{% if in_ads_manager %} aria-current="page"{% endif %}>Gestion des ADS</a>
+        </li>
       </ul>
     </div>
   </div>

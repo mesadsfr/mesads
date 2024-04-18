@@ -1279,3 +1279,65 @@ class StatsView(TemplateView):
         )
 
         return ctx
+
+
+class ReglementationView(TemplateView):
+    template_name = "pages/reglementation.html"
+    entries = [
+        {
+            "title": "Principes généraux",
+            "articles": [
+                {
+                    "title": "Le rôle des collectivités",
+                    "template": "pages/reglementation/principes_generaux/role_collectivites.html",
+                },
+                {
+                    "title": "Qu'est-ce qu'une ADS ?",
+                    "template": "pages/reglementation/principes_generaux/qu_est_ce_qu_une_ads.html",
+                },
+                {
+                    "title": "Qui délivre les ADS ?",
+                    "template": "pages/reglementation/principes_generaux/qui_delivre_ads.html",
+                },
+            ],
+        },
+        {
+            "title": "Délivrance d'une ADS",
+            "articles": [
+                {
+                    "menu_title": "Arrêté délimitant le nombre d'ADS",
+                    "title": "Étape 1 : l'arrêté délimitant le nombre d'ADS",
+                    "template": "pages/reglementation/delivrance_ads/arrete_delimitant_ads.html",
+                },
+                {
+                    "menu_title": "Attribution de l'ADS",
+                    "title": "Étape 2 : l'attribution de l'ADS",
+                    "template": "pages/reglementation/delivrance_ads/attribution_ads.html",
+                },
+                {
+                    "menu_title": "L'arrêté municipal",
+                    "title": "Étape 3 : la notification de l'arrêté",
+                    "template": "pages/reglementation/delivrance_ads/notification_arrete.html",
+                },
+                {
+                    "menu_title": "Retrait d'une ADS",
+                    "title": "Étape 4 : le retrait d'une ADS",
+                    "template": "pages/reglementation/delivrance_ads/retrait_ads.html",
+                },
+            ],
+        },
+        {
+            "title": "Registre des taxis relais",
+            "articles": [
+                {
+                    "title": "Qu'est-ce qu'un taxi relais ?",
+                    "template": "pages/reglementation/relais/definition.html",
+                },
+            ],
+        },
+    ]
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["entries"] = self.entries
+        return ctx

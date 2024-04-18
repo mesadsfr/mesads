@@ -34,6 +34,10 @@ urls:
     title: "MesADS: le registre ADS pour les agents préfectoraux"
     description: MesADS permet aux agents préfectoraux de gérer les instructeurs ADS et les ADS aéroports de leur département.
 
+  app.reglementation:
+    title: "MesADS: la réglementation taxi"
+    description: Les questions fréquemment posées sur la réglementation des taxis et des véhicules relais.
+
   ###
   ### Registration
   ###

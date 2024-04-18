@@ -110,4 +110,9 @@ urlpatterns += [
         TemplateView.as_view(template_name="pages/accessibility.html"),
         name="app.accessibility",
     ),
+    path(
+        "reglementation",
+        views.ReglementationView.as_view(),
+        name="app.reglementation",
+    ),
 ]
