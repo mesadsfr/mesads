@@ -1173,7 +1173,7 @@ class TestADSCreateView(ClientTestCase):
         self.assertEqual(legal_files[1].file.read(), b"Second file")
 
 
-class TestExport(ClientTestCase):
+class TestExportPrefecture(ClientTestCase):
     def test_permissions(self):
         for client_name, client, expected_status in (
             ("admin", self.admin_client, 200),
@@ -1255,6 +1255,50 @@ class TestExport(ClientTestCase):
         )
         resp = self.ads_manager_administrator_35_client.get(
             f"/registre_ads/prefectures/{self.ads_manager_administrator_35.prefecture.id}/export"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            resp.headers["Content-Type"],
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+
+
+class TestExportADSManager(ClientTestCase):
+    def test_permissions(self):
+        for client_name, client, expected_status in (
+            ("admin", self.admin_client, 200),
+            ("anonymous", self.anonymous_client, 302),
+            ("auth", self.auth_client, 404),
+            ("ads_manager 35", self.ads_manager_city35_client, 200),
+            ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
+        ):
+            with self.subTest(client_name=client_name, expected_status=expected_status):
+                resp = client.get(
+                    f"/registre_ads/gestion/{self.ads_manager_city35.id}/export"
+                )
+                self.assertEqual(resp.status_code, expected_status)
+
+    def test_export(self):
+        ADS.objects.create(
+            number="1",
+            ads_manager=self.ads_manager_city35,
+            accepted_cpam=True,
+            ads_in_use=True,
+        )
+        ADS.objects.create(
+            number="2",
+            ads_manager=self.ads_manager_city35,
+            ads_in_use=True,
+        )
+        ADS.objects.create(
+            number="3",
+            ads_manager=self.ads_manager_city35,
+            ads_creation_date=datetime.now().date(),
+            ads_in_use=True,
+        )
+
+        resp = self.ads_manager_city35_client.get(
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/export"
         )
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(

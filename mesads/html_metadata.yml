@@ -127,6 +127,9 @@ urls:
   app.exports.prefecture:
     missing: true # Not HTML view
 
+  app.exports.ads-manager:
+    missing: true # Not HTML view
+
   app.ads.history:
     title: "Revue de l'historique de l'ADS {{ ads.number }} chez {{ ads_manager.content_object.display_fulltext }}"
     description: "Consultez le journal des modifications apportées à l'ADS {{ ads.number }} de {{ ads_manager.content_object.display_fulltext }}."

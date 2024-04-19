@@ -30,6 +30,9 @@
 <p>
   ✍️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads.create' manager_id=ads_manager.id %}">Enregistrer une ADS</a>
 </p>
+<p>
+  📗️&nbsp;<a class="fr-link fr-icon-arrow-down-line fr-link--icon-right" href="{% url 'app.exports.ads-manager' manager_id=ads_manager.id %}">Télécharger toutes les ADS au format excel</a>
+</p>
 {% endif %}
 
 {% comment %}

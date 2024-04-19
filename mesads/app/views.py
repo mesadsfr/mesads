@@ -19,7 +19,8 @@ from django.template.defaultfilters import date as date_template_filter
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
-from django.views.generic import RedirectView, TemplateView, UpdateView
+from django.utils.text import slugify
+from django.views.generic import RedirectView, TemplateView, UpdateView, View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, FormView, ProcessFormView
 from django.views.generic.list import ListView
@@ -600,153 +601,199 @@ class ADSCreateView(ADSView, CreateView):
             return super().form_invalid(form)
 
 
-def prefecture_export_ads(request, ads_manager_administrator):
-    prefecture = ads_manager_administrator.prefecture
-    response = HttpResponse(
-        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={
-            "Content-Disposition": f'attachment; filename="ADS_prefecture_{prefecture.numero}.xlsx"'
-        },
-    )
+class ADSExporter:
+    """Generic class to export a list of ADS in an Excel file."""
 
-    workbook = xlsxwriter.Workbook(response)
-    bold_format = workbook.add_format({"bold": True})
-    sheet1 = workbook.add_worksheet("ADS enregistrées")
+    def get_filename(self):
+        raise NotImplementedError
 
-    headers = (
-        "Type d'administration",
-        "Administration",
-        "Numéro de l'ADS",
-        "ADS actuellement exploitée ?",
-        "Date de création de l'ADS",
-        "Date du dernier renouvellement de l'ADS",
-        "Date d'attribution de l'ADS au titulaire actuel",
-        "Véhicule conventionné CPAM ?",
-        "Plaque d'immatriculation du véhicule",
-        "Le véhicule est-il un véhicule électrique/hybride ?",
-        "Véhicule compatible PMR ?",
-        "Titulaire de l'ADS",
-        "SIRET du titulaire de l'ADS",
-        "Téléphone fixe du titulaire de l'ADS",
-        "Téléphone mobile du titulaire de l'ADS",
-        "Email du titulaire de l'ADS",
-    )
-    # If one of the ADS in the list has, let's say, 4 drivers, driver_headers
-    # will be appended 4 times to headers.
-    driver_headers = (
-        "Statut du %s conducteur",
-        "Nom du %s conducteur",
-        "SIRET du %s conducteur",
-        "Numéro de la carte professionnelle du %s conducteur",
-    )
-    # Counts the maximum number of drivers in the list of ADS..
-    max_drivers = 0
+    def get_queryset(self):
+        return (
+            ADS.objects.select_related(
+                "ads_manager__administrator__prefecture",
+            )
+            .prefetch_related(
+                "ads_manager__content_object",
+            )
+            .annotate(
+                ads_users_status=ArrayAgg("adsuser__status"),
+                ads_users_names=ArrayAgg("adsuser__name"),
+                ads_users_sirets=ArrayAgg("adsuser__siret"),
+                ads_users_licenses=ArrayAgg("adsuser__license_number"),
+            )
+        )
 
-    # Applying bold format to headers
-    sheet1.set_row(0, None, bold_format)
-
-    def display_bool(value):
+    def display_bool(self, value):
         if value is None:
             return ""
         return "oui" if value else "non"
 
-    def display_date(value):
+    def display_date(self, value):
         if not value:
             return ""
         return value.strftime("%d/%m/%Y")
 
-    for idx, ads in enumerate(
-        ADS.objects.select_related(
-            "ads_manager__administrator__prefecture",
+    def generate(self):
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={
+                "Content-Disposition": f'attachment; filename="{self.get_filename()}"'
+            },
         )
-        .prefetch_related(
-            "ads_manager__content_object",
+        workbook = xlsxwriter.Workbook(response)
+        self.add_sheets(workbook)
+        workbook.close()
+        return response
+
+    def add_sheets(self, workbook):
+        """Override this method to add more sheets to the workbook."""
+        self.ads_list_sheet(workbook)
+
+    def ads_list_sheet(self, workbook):
+        bold_format = workbook.add_format({"bold": True})
+        sheet = workbook.add_worksheet("ADS enregistrées")
+        headers = (
+            "Type d'administration",
+            "Administration",
+            "Numéro de l'ADS",
+            "ADS actuellement exploitée ?",
+            "Date de création de l'ADS",
+            "Date du dernier renouvellement de l'ADS",
+            "Date d'attribution de l'ADS au titulaire actuel",
+            "Véhicule conventionné CPAM ?",
+            "Plaque d'immatriculation du véhicule",
+            "Le véhicule est-il un véhicule électrique/hybride ?",
+            "Véhicule compatible PMR ?",
+            "Titulaire de l'ADS",
+            "SIRET du titulaire de l'ADS",
+            "Téléphone fixe du titulaire de l'ADS",
+            "Téléphone mobile du titulaire de l'ADS",
+            "Email du titulaire de l'ADS",
         )
-        .filter(ads_manager__administrator=ads_manager_administrator)
-        .annotate(
-            ads_users_status=ArrayAgg("adsuser__status"),
-            ads_users_names=ArrayAgg("adsuser__name"),
-            ads_users_sirets=ArrayAgg("adsuser__siret"),
-            ads_users_licenses=ArrayAgg("adsuser__license_number"),
+        # If one of the ADS in the list has, let's say, 4 drivers, driver_headers
+        # will be appended 4 times to headers.
+        driver_headers = (
+            "Statut du %s conducteur",
+            "Nom du %s conducteur",
+            "SIRET du %s conducteur",
+            "Numéro de la carte professionnelle du %s conducteur",
         )
-    ):
-        # Append driver headers to headers if the current ADS has more drivers
-        # than the previous ones.
-        while max_drivers < len(ads.ads_users_status):
-            for h in driver_headers:
-                headers += (
-                    h % ("1er" if max_drivers == 0 else "%se" % (max_drivers + 1)),
+        # Counts the maximum number of drivers in the list of ADS..
+        max_drivers = 0
+
+        # Applying bold format to headers
+        sheet.set_row(0, None, bold_format)
+
+        for idx, ads in enumerate(self.get_queryset()):
+            # Append driver headers to headers if the current ADS has more drivers
+            # than the previous ones.
+            while max_drivers < len(ads.ads_users_status):
+                for h in driver_headers:
+                    headers += (
+                        h % ("1er" if max_drivers == 0 else "%se" % (max_drivers + 1)),
+                    )
+                max_drivers += 1
+
+            info = (
+                ads.ads_manager.content_object.type_name(),
+                ads.ads_manager.content_object.text(),
+                ads.number,
+                self.display_bool(ads.ads_in_use),
+                self.display_date(ads.ads_creation_date),
+                self.display_date(ads.ads_renew_date),
+                self.display_date(ads.attribution_date),
+                self.display_bool(ads.accepted_cpam),
+                ads.immatriculation_plate,
+                self.display_bool(ads.eco_vehicle),
+                self.display_bool(ads.vehicle_compatible_pmr),
+                ads.owner_name,
+                ads.owner_siret,
+                ads.owner_phone,
+                ads.owner_mobile,
+                ads.owner_email,
+            )
+            for nth, status in enumerate(ads.ads_users_status):
+                # ads_users_status, ads_users_names, ads_users_sirets and
+                # ads_users_licenses have the same length.
+                info += (
+                    dict(ADSUser.status.field.choices).get(
+                        ads.ads_users_status[nth], ""
+                    ),
+                    ads.ads_users_names[nth],
+                    ads.ads_users_sirets[nth],
+                    ads.ads_users_licenses[nth],
                 )
-            max_drivers += 1
+            sheet.write_row(idx + 1, 0, info)
 
-        info = (
-            ads.ads_manager.content_object.type_name(),
-            ads.ads_manager.content_object.text(),
-            ads.number,
-            display_bool(ads.ads_in_use),
-            display_date(ads.ads_creation_date),
-            display_date(ads.ads_renew_date),
-            display_date(ads.attribution_date),
-            display_bool(ads.accepted_cpam),
-            ads.immatriculation_plate,
-            display_bool(ads.eco_vehicle),
-            display_bool(ads.vehicle_compatible_pmr),
-            ads.owner_name,
-            ads.owner_siret,
-            ads.owner_phone,
-            ads.owner_mobile,
-            ads.owner_email,
-        )
-        for nth, status in enumerate(ads.ads_users_status):
-            # ads_users_status, ads_users_names, ads_users_sirets and ads_users_licenses have the same length.
-            info += (
-                dict(ADSUser.status.field.choices).get(ads.ads_users_status[nth], ""),
-                ads.ads_users_names[nth],
-                ads.ads_users_sirets[nth],
-                ads.ads_users_licenses[nth],
-            )
-        sheet1.write_row(idx + 1, 0, info)
+        # Write headers, now that we know the maximum number of drivers.
+        sheet.write_row(0, 0, headers)
+        sheet.autofit()
 
-    # Write headers, now that we know the maximum number of drivers.
-    sheet1.write_row(0, 0, headers)
-    sheet1.autofit()
 
-    sheet2 = workbook.add_worksheet("Gestionnaires ADS")
-    sheet2.write_row(
-        0,
-        0,
-        (
-            "Nom de l'administration",
-            "Nombre d'ADS",
-            "Statut de la gestion des ADS",
-        ),
-    )
-    # Applying bold format to headers
-    sheet2.set_row(0, None, bold_format)
+class ADSManagerExportView(View, ADSExporter):
+    def get(self, request, manager_id):
+        self.ads_manager = get_object_or_404(ADSManager, id=manager_id)
+        return self.generate()
 
-    for idx, ads_manager in enumerate(ads_manager_administrator.adsmanager_set.all()):
-        status = ""
-        if ads_manager.no_ads_declared:
-            status = "L'administration a déclaré ne gérer aucune ADS"
-        elif ads_manager.epci_delegate:
-            status = (
-                "La gestion des ADS est déléguée à %s"
-                % ads_manager.epci_delegate.display_fulltext()
-            )
+    def get_filename(self):
+        administration = self.ads_manager.content_object.display_text()
+        return slugify(f"ADS {administration}") + ".xlsx"
 
-        sheet2.write_row(
-            idx + 1,
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(ads_manager=self.ads_manager)
+
+
+class PrefectureExportView(View, ADSExporter):
+    def get(self, request, ads_manager_administrator):
+        self.ads_manager_administrator = ads_manager_administrator
+        return self.generate()
+
+    def get_filename(self):
+        return f"ADS_prefecture_{self.ads_manager_administrator.prefecture.numero}.xlsx"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(ads_manager__administrator=self.ads_manager_administrator)
+
+    def add_sheets(self, workbook):
+        super().add_sheets(workbook)
+        sheet = workbook.add_worksheet("Gestionnaires ADS")
+        sheet.write_row(
+            0,
             0,
             (
-                ads_manager.content_object.display_text(),
-                ads_manager.ads_set.count() or "",
-                status,
+                "Nom de l'administration",
+                "Nombre d'ADS",
+                "Statut de la gestion des ADS",
             ),
         )
-    sheet2.autofit()
+        # Applying bold format to headers
+        bold_format = workbook.add_format({"bold": True})
+        sheet.set_row(0, None, bold_format)
 
-    workbook.close()
-    return response
+        for idx, ads_manager in enumerate(
+            self.ads_manager_administrator.adsmanager_set.all()
+        ):
+            status = ""
+            if ads_manager.no_ads_declared:
+                status = "L'administration a déclaré ne gérer aucune ADS"
+            elif ads_manager.epci_delegate:
+                status = (
+                    "La gestion des ADS est déléguée à %s"
+                    % ads_manager.epci_delegate.display_fulltext()
+                )
+
+            sheet.write_row(
+                idx + 1,
+                0,
+                (
+                    ads_manager.content_object.display_text(),
+                    ads_manager.ads_set.count() or "",
+                    status,
+                ),
+            )
+        sheet.autofit()
 
 
 class DashboardsView(TemplateView):
