@@ -612,29 +612,36 @@ def prefecture_export_ads(request, ads_manager_administrator):
     workbook = xlsxwriter.Workbook(response)
     bold_format = workbook.add_format({"bold": True})
     sheet1 = workbook.add_worksheet("ADS enregistrées")
-    sheet1.write_row(
-        0,
-        0,
-        (
-            "Identifiant unique",
-            "Type d'administration",
-            "Administration",
-            "Numéro",
-            "Date de création",
-            "Date d'attribution au titulaire actuel",
-            "Type d'attribution",
-            "Raison de l'attribution",
-            "Conventionné CPAM ?",
-            "Plaque d'immatriculation",
-            "Véhicule compatible PMR ?",
-            "Véhicule électrique ou hybride ?",
-            "Nom du titulaire",
-            "SIRET titulaire",
-            "Statuts des exploitants (un par ligne)",
-            "Noms des exploitants (un par ligne)",
-            "SIRET des exploitants (un par ligne)",
-        ),
+
+    headers = (
+        "Type d'administration",
+        "Administration",
+        "Numéro de l'ADS",
+        "ADS actuellement exploitée ?",
+        "Date de création de l'ADS",
+        "Date du dernier renouvellement de l'ADS",
+        "Date d'attribution de l'ADS au titulaire actuel",
+        "Véhicule conventionné CPAM ?",
+        "Plaque d'immatriculation du véhicule",
+        "Le véhicule est-il un véhicule électrique/hybride ?",
+        "Véhicule compatible PMR ?",
+        "Titulaire de l'ADS",
+        "SIRET du titulaire de l'ADS",
+        "Téléphone fixe du titulaire de l'ADS",
+        "Téléphone mobile du titulaire de l'ADS",
+        "Email du titulaire de l'ADS",
     )
+    # If one of the ADS in the list has, let's say, 4 drivers, driver_headers
+    # will be appended 4 times to headers.
+    driver_headers = (
+        "Statut du %s conducteur",
+        "Nom du %s conducteur",
+        "SIRET du %s conducteur",
+        "Numéro de la carte professionnelle du %s conducteur",
+    )
+    # Counts the maximum number of drivers in the list of ADS..
+    max_drivers = 0
+
     # Applying bold format to headers
     sheet1.set_row(0, None, bold_format)
 
@@ -660,57 +667,48 @@ def prefecture_export_ads(request, ads_manager_administrator):
             ads_users_status=ArrayAgg("adsuser__status"),
             ads_users_names=ArrayAgg("adsuser__name"),
             ads_users_sirets=ArrayAgg("adsuser__siret"),
+            ads_users_licenses=ArrayAgg("adsuser__license_number"),
         )
     ):
-        sheet1.write_row(
-            idx + 1,
-            0,
-            (
-                ads.id,
-                ads.ads_manager.content_object.type_name(),
-                ads.ads_manager.content_object.text(),
-                ads.number,
-                display_date(ads.ads_creation_date),
-                display_date(ads.attribution_date),
-                dict(ADS.ATTRIBUTION_TYPES).get(ads.attribution_type, ""),
-                ads.attribution_reason,
-                display_bool(ads.accepted_cpam),
-                ads.immatriculation_plate,
-                display_bool(ads.vehicle_compatible_pmr),
-                display_bool(ads.eco_vehicle),
-                ads.owner_name,
-                ads.owner_siret,
-                "\n".join(
-                    [
-                        f"{idx + 1}. {dict(ADSUser.status.field.choices).get(status, '')}"
-                        for idx, status in enumerate(ads.ads_users_status)
-                        if any(status for status in ads.ads_users_status)
-                    ]
-                ),
-                "\n".join(
-                    [
-                        (
-                            f"{idx + 1}. {name}"
-                            if any(x for x in ads.ads_users_names)
-                            else ""
-                        )
-                        for idx, name in enumerate(ads.ads_users_names)
-                    ]
-                ),
-                "\n".join(
-                    [
-                        (
-                            f"{idx + 1}. {siret}"
-                            if any(x for x in ads.ads_users_sirets)
-                            else ""
-                        )
-                        for idx, siret in enumerate(ads.ads_users_sirets)
-                        if len(ads.ads_users_sirets)
-                    ]
-                ),
-            ),
-        )
+        # Append driver headers to headers if the current ADS has more drivers
+        # than the previous ones.
+        while max_drivers < len(ads.ads_users_status):
+            for h in driver_headers:
+                headers += (
+                    h % ("1er" if max_drivers == 0 else "%se" % (max_drivers + 1)),
+                )
+            max_drivers += 1
 
+        info = (
+            ads.ads_manager.content_object.type_name(),
+            ads.ads_manager.content_object.text(),
+            ads.number,
+            display_bool(ads.ads_in_use),
+            display_date(ads.ads_creation_date),
+            display_date(ads.ads_renew_date),
+            display_date(ads.attribution_date),
+            display_bool(ads.accepted_cpam),
+            ads.immatriculation_plate,
+            display_bool(ads.eco_vehicle),
+            display_bool(ads.vehicle_compatible_pmr),
+            ads.owner_name,
+            ads.owner_siret,
+            ads.owner_phone,
+            ads.owner_mobile,
+            ads.owner_email,
+        )
+        for nth, status in enumerate(ads.ads_users_status):
+            # ads_users_status, ads_users_names, ads_users_sirets and ads_users_licenses have the same length.
+            info += (
+                dict(ADSUser.status.field.choices).get(ads.ads_users_status[nth], ""),
+                ads.ads_users_names[nth],
+                ads.ads_users_sirets[nth],
+                ads.ads_users_licenses[nth],
+            )
+        sheet1.write_row(idx + 1, 0, info)
+
+    # Write headers, now that we know the maximum number of drivers.
+    sheet1.write_row(0, 0, headers)
     sheet1.autofit()
 
     sheet2 = workbook.add_worksheet("Gestionnaires ADS")
