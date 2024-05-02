@@ -326,7 +326,9 @@ def validate_siret(value):
         return
 
     if resp.status_code == 404:
-        raise ValidationError("Ce numéro SIRET est invalide")
+        raise ValidationError(
+            "D'après les données de l'INSEE, ce SIRET est invalide. Si le n° SIRET est récent, il est possible que les données de l'INSEE ne soient pas encore à jour. Dans ce cas, laissez ce champ vide puis complétez le d'ici quelques jours."
+        )
 
     if resp.status_code == 429:
         logging.info(
