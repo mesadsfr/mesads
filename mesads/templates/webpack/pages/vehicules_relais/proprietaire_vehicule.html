@@ -1,4 +1,5 @@
 {% extends "../../base-sidemenu.html" %}
+{% load markdownify %}
 
 {% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
 
@@ -72,6 +73,13 @@
 
       <strong>{{ object.departement.numero }} - {{ object.departement.libelle }}</strong>
     </div>
+
+    {% if disposition_specifique %}
+    <div class="fr-alert fr-alert--error fr-mb-3w">
+      <h3 class="fr-alert__title">Dispositions spécifiques pour {{ object.departement.display_fulltext }}</h3>
+      {{ disposition_specifique.message|markdownify }}
+    </div>
+    {% endif %}
 
     {% comment %} {% include 'form_fields/string.html' with field=form.immatriculation field_errors=form.errors.immatriculation required=form.fields.immatriculation.required readonly=True %} {% endcomment %}
     {% include 'form_fields/string.html' with field=form.immatriculation field_errors=form.errors.immatriculation required=form.fields.immatriculation.required %}

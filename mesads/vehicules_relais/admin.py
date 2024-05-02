@@ -3,7 +3,9 @@ from django.db.models import Count
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from .models import Vehicule, Proprietaire
+from markdownx.admin import MarkdownxModelAdmin
+
+from .models import Vehicule, Proprietaire, DispositionSpecifique
 
 
 class UsersInline(admin.TabularInline):
@@ -146,3 +148,26 @@ class VehiculeAdmin(admin.ModelAdmin):
     )
 
     list_filter = ("departement",)
+
+
+@admin.register(DispositionSpecifique)
+class DispositionSpecifiqueAdmin(MarkdownxModelAdmin):
+    list_display = (
+        "departement",
+        "short_message",
+    )
+
+    def short_message(self, obj):
+        return obj.message[:200] + "..." if len(obj.message) > 200 else obj.message
+
+    fields = (
+        "departement",
+        "message",
+    )
+
+    search_fields = (
+        "departement__numero",
+        "departement__libelle",
+    )
+
+    autocomplete_fields = ("departement",)

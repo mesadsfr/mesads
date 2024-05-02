@@ -4,6 +4,8 @@ from django.db import models
 
 import reversion
 
+from markdownx.models import MarkdownxField
+
 from mesads.fradm.models import Commune, Prefecture
 from mesads.app.models import (
     SmartValidationMixin,
@@ -221,4 +223,28 @@ class Vehicule(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
         null=True,
         blank=True,
         verbose_name="Commune où est situé le véhicule",
+    )
+
+
+@reversion.register
+class DispositionSpecifique(CharFieldsStripperMixin, models.Model):
+    """DispositionSpecifique stores a message that can be displayed on the
+    Vehicule form registered to a specific departement."""
+
+    class Meta:
+        verbose_name = "Disposition spécifique"
+        verbose_name_plural = "Dispositions spécifiques"
+
+    departement = models.OneToOneField(
+        Prefecture,
+        on_delete=models.RESTRICT,
+        null=False,
+        verbose_name="Département concerné",
+    )
+
+    message = MarkdownxField(
+        null=False,
+        blank=True,
+        verbose_name="Message à afficher sur le formulaire de création de véhicule",
+        help_text="Format Markdown autorisé",
     )

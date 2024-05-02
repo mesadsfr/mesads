@@ -19,7 +19,7 @@ from mesads.fradm.models import Prefecture
 
 from mesads.app.reversion_diff import ModelHistory
 
-from .models import Proprietaire, Vehicule
+from .models import Proprietaire, Vehicule, DispositionSpecifique
 from .forms import (
     ProprietaireDeleteForm,
     ProprietaireForm,
@@ -190,6 +190,12 @@ class ProprietaireVehiculeUpdateView(RevisionMixin, UpdateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["proprietaire"] = self.kwargs["proprietaire"]
+
+        if ctx.get("vehicule"):
+            ctx["disposition_specifique"] = DispositionSpecifique.objects.filter(
+                departement=ctx["vehicule"].departement
+            ).first()
+
         return ctx
 
     def get_object(self):
