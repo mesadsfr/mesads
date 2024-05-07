@@ -2,7 +2,7 @@
   "dependencies": {
     "@gouvfr/dsfr": "^1.5.1",
     "alpinejs": "^3.10.3",
-    "chart.js": "^4.4.0",
+    "chart.js": "^4.4.2",
     "jquery": "^3.7.0",
     "leaflet": "^1.9.3",
     "mjml": "^4.13.0"
