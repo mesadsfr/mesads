@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@gouvfr/dsfr": "^1.5.1",
+    "@gouvfr/dsfr": "^1.11.2",
     "alpinejs": "^3.10.3",
     "chart.js": "^4.4.0",
     "jquery": "^3.7.0",
