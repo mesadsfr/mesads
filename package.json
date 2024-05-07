@@ -4,7 +4,7 @@
     "alpinejs": "^3.10.3",
     "chart.js": "^4.4.0",
     "jquery": "^3.7.0",
-    "leaflet": "^1.9.3",
+    "leaflet": "^1.9.4",
     "mjml": "^4.13.0"
   },
   "scripts": {
