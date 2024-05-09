@@ -58,7 +58,16 @@
 {% endif %}
 
 {% for ads_manager_administrator in ads_managers_administrators %}
-<div class="fr-table">
+
+<h4>{{ ads_manager_administrator.prefecture.display_text|capfirst }}</h4>
+
+<p>
+  📊&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.exports.prefecture' prefecture_id=ads_manager_administrator.prefecture.id %}">
+    Exporter les données au format excel
+  </a>
+</p>
+
+<div class="fr-table fr-table--no-caption">
   <table x-data="{ displayExtra: false }">
       <caption>{{ ads_manager_administrator.prefecture.display_text|capfirst }}</caption>
     <thead>
@@ -90,14 +99,6 @@
     </tbody>
   </table>
 </div>
-
-<ul class="fr-btns-group fr-btns-group--inline fr-m-3w">
-  <li>
-    <a class="fr-btn fr-btn--secondary fr-btn--sm" href="{% url 'app.exports.prefecture' prefecture_id=ads_manager_administrator.prefecture.id %}">
-      Export CSV
-    </a>
-  </li>
-</ul>
 {% endfor %}
 
 <hr>
