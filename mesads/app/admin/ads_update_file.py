@@ -15,6 +15,8 @@ class ADSUpdateFileAdmin(admin.ModelAdmin):
         "imported",
     )
 
+    autocomplete_fields = ("user",)
+
     list_filter = ("imported",)
 
     readonly_fields = (
