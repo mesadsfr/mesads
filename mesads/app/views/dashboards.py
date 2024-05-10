@@ -1,6 +1,8 @@
 from datetime import timedelta
 import collections
 
+from django.contrib.contenttypes.models import ContentType
+from django.db import connection
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import Coalesce
 from django.utils import timezone
@@ -8,6 +10,7 @@ from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 
 from ..models import (
+    ADS,
     ADSManager,
     ADSManagerAdministrator,
 )
@@ -19,7 +22,97 @@ class DashboardsView(TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["stats"], ctx["stats_total"] = self.get_stats()
+        ctx["ads_updates_stats"] = self.ads_updates_stats()
         return ctx
+
+    def ads_updates_stats(self):
+        """This function uses a raw SQL query to retrieve the list of ADS ids
+        that have been updated, grouped by date.
+
+        It is using the reversion_version to identify the updates.
+
+        The query built is the following (pseudo-code)
+
+        1. list all the updates in the ADS table
+
+            subq = SELECT object_id, date_created
+            FROM reversion_version JOIN reversion_revision
+            WHERE reversion_version.content_type_id = <content type of ADS>
+
+        2. for each object with a foreign key to an ADS (ADSLegalFile, ADSUser),
+           also list the updates and append to the previous list
+
+            subq = subq + 'UNION' + SELECT serialized_data->0->'fields'->>'ads', date_created
+            FROM reversion_version JOIN reversion_revision
+            WHERE reversion_version.content_type_id = <content type of related model>
+
+        3. the list built might contains duplicates (if the model and the
+           related model have both been updated at the same time). We group by
+           ads id and by date.
+        """
+        # For each update of an ADS, retrieve the date of the update and the ADS id
+        subq = f"""
+            SELECT
+                reversion_version.object_id AS ads_id,
+                reversion_revision.date_created AS "when"
+            FROM
+                reversion_version
+            JOIN reversion_revision
+                ON reversion_version.revision_id = reversion_revision.id
+            WHERE reversion_version.content_type_id = {ContentType.objects.get_for_model(ADS).id}
+        """
+
+        # For each object with a foreign key to an ADS, retrieve the date of the
+        # update and the ADS id, and make a union with the previous query.
+        for related_object in ADS._meta.related_objects:
+            subq += f"""
+            UNION
+
+            SELECT
+                reversion_version.serialized_data::jsonb->0->'fields'->>'{related_object.field.name}' AS ads_id,
+                reversion_revision.date_created AS "when"
+            FROM
+                reversion_version
+            JOIN reversion_revision
+                ON reversion_version.revision_id = reversion_revision.id
+
+            WHERE reversion_version.content_type_id = {ContentType.objects.get_for_model(related_object.related_model).id}
+            """
+
+        # Group by day, limit to the last 30 days
+        query_by_day = f"""
+        WITH updates_by_date AS ({subq})
+        SELECT
+            DATE_TRUNC('day', updates_by_date."when") AS "when",
+            ARRAY_AGG(updates_by_date.ads_id) AS "ads_list"
+        FROM updates_by_date
+        WHERE updates_by_date."when" >= NOW() - INTERVAL '30 day'
+        GROUP BY
+            DATE_TRUNC('day', updates_by_date."when")
+        ORDER BY
+            DATE_TRUNC('day', updates_by_date."when")
+        ;
+        """
+        query_by_month = f"""
+        WITH updates_by_date AS ({subq})
+        SELECT
+            DATE_TRUNC('month', updates_by_date."when") AS "when",
+            ARRAY_AGG(updates_by_date.ads_id) AS "ads_list"
+        FROM updates_by_date
+        GROUP BY
+            DATE_TRUNC('month', updates_by_date."when")
+        ORDER BY
+            DATE_TRUNC('month', updates_by_date."when")
+        ;
+        """
+        ret = {}
+        with connection.cursor() as cursor:
+            cursor.execute(query_by_day)
+            ret["by_day"] = ((row[0], row[1]) for row in cursor.fetchall())
+
+            cursor.execute(query_by_month)
+            ret["by_month"] = ((row[0], row[1]) for row in cursor.fetchall())
+        return ret
 
     def get_stats(self):
         """This function returns a tuple of two values:
