@@ -100,7 +100,7 @@ class TestValidateSiret(TestCase):
     @override_settings(INSEE_TOKEN="xxx")
     def test_validate_siret_insee(self):
         siret = "12345678901234"
-        api_url = f"https://api.insee.fr/entreprises/sirene/V3/siret/{siret}"
+        api_url = f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siret}"
 
         with requests_mock.Mocker() as m:
             # Setup mock to return return HTTP/200: valid SIRET
