@@ -69,7 +69,7 @@ class ADSManagerDecreeInline(admin.StackedInline):
     extra = 0
 
 
-class Toto(admin.SimpleListFilter):
+class AdministrationTypeFilter(admin.SimpleListFilter):
     title = "Type d'administration"
     parameter_name = "content_type"
 
@@ -110,7 +110,7 @@ class ADSManagerAdmin(admin.ModelAdmin):
     list_filter = (
         ADSCount,
         ADSManagerRequestCount,
-        Toto,
+        AdministrationTypeFilter,
     )
 
     ordering = ("commune__libelle",)
