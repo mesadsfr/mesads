@@ -9,6 +9,7 @@ from ..models import (
     ADSManager,
     ADSManagerRequest,
 )
+from mesads.vehicules_relais.models import Proprietaire, Vehicule
 
 
 class HTTP500View(TemplateView):
@@ -76,6 +77,44 @@ class StatsView(TemplateView):
             ADSManager.objects.annotate(ads_count=Count("ads"))
             .filter(ads_count__gt=0)
             .count()
+        )
+
+        ctx["relais_proprietaires_count"] = (
+            Proprietaire.objects.annotate(vehicules_count=Count("vehicule"))
+            .filter(vehicules_count__gt=0)
+            .count()
+        )
+        ctx["relais_vehicules_count"] = Vehicule.objects.count()
+
+        relais_proprietaires_by_month = (
+            Proprietaire.objects.filter(vehicule__isnull=False)
+            .annotate(month=TruncMonth("created_at"))
+            .values("month")
+            .annotate(count=Count("id", distinct=True))
+            .order_by("month")
+        )
+        ctx["relais_proprietaires_by_month"] = json.dumps(
+            dict(
+                (
+                    (row["month"].isoformat(), row["count"])
+                    for row in relais_proprietaires_by_month
+                )
+            )
+        )
+
+        relais_vehicules_by_month = (
+            Vehicule.objects.annotate(month=TruncMonth("created_at"))
+            .values("month")
+            .annotate(count=Count("id"))
+            .order_by("month")
+        )
+        ctx["relais_vehicules_by_month"] = json.dumps(
+            dict(
+                (
+                    (row["month"].isoformat(), row["count"])
+                    for row in relais_vehicules_by_month
+                )
+            )
         )
 
         return ctx

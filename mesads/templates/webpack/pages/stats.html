@@ -68,6 +68,32 @@
   </div>
 </div>
 
+<h2 class="fr-mt-3w">Les statistiques du registre des véhicules relais</h2>
+
+<div class="fr-grid-row fr-grid-row--gutters">
+  <div class="stats-card fr-col-12 fr-col-md-4">
+    <div class="stats-card-content">
+      <div class="stats-card-number">
+        {{ relais_proprietaires_count }}
+      </div>
+      <div class="stats-card-description">
+        propriétaires de véhicules relais enregistrés <small>ayant enregistré au moins un véhicule relais</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-card fr-col-12 fr-col-md-4">
+    <div class="stats-card-content">
+      <div class="stats-card-number">
+        {{ relais_vehicules_count }}
+      </div>
+      <div class="stats-card-description">
+        véhicules relais enregistrés
+      </div>
+    </div>
+  </div>
+</div>
+
 <hr class="fr-mt-3w" />
 
 <h2>Carte de déploiement du registre ADS au niveau national</h2>
@@ -81,7 +107,7 @@
 
 <hr class="fr-mt-3w" />
 
-<h2>Les courbes d'utilisation de MesADS</h2>
+<h2>Les courbes d'utilisation du registre ADS</h2>
 
 <p>
   Ces graphiques montrent l'évolution du nombre d'ADS enregistrées sur la plateforme, ainsi que le nombre de gestionnaires ADS enregistrés sur la plateforme depuis son lancement.
@@ -93,7 +119,7 @@
     <canvas id="ads-count"></canvas>
 
     <p class="fr-mt-3w fr-text--xs">
-      Ce graphique montre l'évolution du nombre d'ADS enregistrées sur la plateforme depuis son lancement.
+      Évolution du nombre d'ADS enregistrées sur la plateforme depuis son lancement.
     </p>
   </div>
 
@@ -102,7 +128,33 @@
     <canvas id="ads-manager-requests-count"></canvas>
 
     <p class="fr-mt-3w fr-text--xs">
-      Ce graphique montre l'évolution du nombre de comptes instructeurs créés sur la plateforme depuis son lancement. Un compte instructeur a la possibilité d'enregistrer des ADS pour son administration.
+      Évolution du nombre de comptes instructeurs créés sur la plateforme depuis son lancement. Un compte instructeur a la possibilité d'enregistrer des ADS pour son administration.
+    </p>
+  </div>
+</div>
+
+<h2>Les courbes d'utilisation du registre des véhicules relais</h2>
+
+<p>
+  Ces graphiques montrent l'évolution de l'utilisation du registre des véhicules relais.
+</p>
+
+<div class="fr-grid-row fr-grid-row--gutters">
+  <div class="fr-col-12">
+    <h3>Nombre de propriétaires de véhicules relais enregistrés</h3>
+    <canvas id="relais-proprietaires-count"></canvas>
+
+    <p class="fr-mt-3w fr-text--xs">
+      Évolution du nombre de propriétaires de véhicules relais ayant enregistré au moins un véhicule.
+    </p>
+  </div>
+
+  <div class="fr-col-12">
+    <h3>Nombre de propriétaires de véhicules relais enregistrés</h3>
+    <canvas id="relais-vehicules-count"></canvas>
+
+    <p class="fr-mt-3w fr-text--xs">
+      Évolution du nombre de véhicules relais enregistrés.
     </p>
   </div>
 </div>
@@ -110,7 +162,9 @@
 <script id="data" type="application/json">
 {
   "ads_by_month": {{ ads_count_by_month|safe }},
-  "ads_manager_requests_by_month": {{ ads_manager_requests_by_month|safe }}
+  "ads_manager_requests_by_month": {{ ads_manager_requests_by_month|safe }},
+  "relais_proprietaires_by_month": {{ relais_proprietaires_by_month|safe }},
+  "relais_vehicules_by_month": {{ relais_vehicules_by_month|safe }}
 }
 </script>
 

@@ -113,6 +113,8 @@ function DisplayLineChart(
 type DataType = {
   ads_by_month: Record<string, number>;
   ads_manager_requests_by_month: Record<string, number>;
+  relais_proprietaires_by_month: Record<string, number>;
+  relais_vehicules_by_month: Record<string, number>;
 };
 
 const data = JSON.parse(
@@ -135,4 +137,24 @@ DisplayLineChart(
   document.getElementById("ads-manager-requests-count") as HTMLCanvasElement,
   Object.keys(requestsByTrimester),
   AccumulateValues(requestsByTrimester)
+);
+
+const relaisProprietairesByTrimester = GroupDataByTrimester(
+  data.relais_proprietaires_by_month
+);
+
+DisplayLineChart(
+  document.getElementById("relais-proprietaires-count") as HTMLCanvasElement,
+  Object.keys(relaisProprietairesByTrimester),
+  AccumulateValues(relaisProprietairesByTrimester)
+);
+
+const relaisVehiculesByTrimester = GroupDataByTrimester(
+  data.relais_vehicules_by_month
+);
+
+DisplayLineChart(
+  document.getElementById("relais-vehicules-count") as HTMLCanvasElement,
+  Object.keys(relaisVehiculesByTrimester),
+  AccumulateValues(relaisVehiculesByTrimester)
 );
