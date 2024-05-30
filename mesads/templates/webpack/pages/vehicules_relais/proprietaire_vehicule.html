@@ -35,11 +35,14 @@
     </a>
   </p>
   {% endif %}
+
+  {% if user.is_staff %}
   <p>
     🧾&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'vehicules-relais.proprietaire.vehicule.recepisse' proprietaire_id=proprietaire.id vehicule_numero=object.numero %}">
       Télécharger le récépissé d'enregistrement du véhicule relais
     </a>
   </p>
+  {% endif %}
 
   <h1>Modification véhicule relais {{ object.numero }}</h1>
 {% else %}
