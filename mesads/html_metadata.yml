@@ -197,3 +197,6 @@ urls:
   vehicules-relais.proprietaire.vehicule.history:
     title: "Historique du taxi relais n°{{ vehicule.numero }}"
     description: "Consultez l'historique des modifications apportées au taxi relais n°{{ vehicule.numero }} de {{ proprietaire.nom }}."
+
+  vehicules-relais.proprietaire.vehicule.recepisse:
+    missing: true # Not HTML view

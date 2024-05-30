@@ -1,0 +1,167 @@
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Récépissé enregistrement véhicule relais</title>
+    <style>
+      @media print {
+        .page {
+          page-break-before: always;
+        }
+      }
+
+      @page :first {
+        size: A4 landscape;
+      }
+
+      @page {
+        size: A4 portrait;
+      }
+
+      @font-face {
+        font-family: "Marianne";
+        src: url("file://{{ path_font_marianne_regular }}") format("woff2");
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: "Marianne";
+        src: url("file://{{ path_font_marianne_bold }}") format("woff2");
+        font-weight: bold;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: "Marianne";
+        src: url("file://{{ path_font_marianne_italic }}") format("woff2");
+        font-weight: normal;
+        font-style: italic;
+      }
+
+      body {
+        font-size: 12px;
+        font-family: "Marianne";
+      }
+
+      #recipisse {
+        border: 1px solid black;
+        padding: 20px;
+      }
+
+      h1, h2 {
+        text-align: center;
+      }
+
+      h2 {
+        font-size: 2rem;
+      }
+
+      i {
+        font-size: 1.02rem;
+      }
+
+      .warning {
+        color: red;
+        font-weight: bold;
+      }
+
+      .center {
+        text-align: center;
+      }
+    
+      .underline {
+        text-decoration: underline;
+      }
+
+      .logo {
+        width: 80px;
+        height: 80px;
+        background-image: url("file://{{ path_logo_svg }}");
+      }
+
+      .qrcode {
+
+        width: 90px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="logo"></div>
+
+      <div id="recipisse">
+
+        <h1>RÉCÉPISSÉ D'ENREGISTREMENT D'UN TAXI RELAIS</h1>
+
+        <p>
+          Le véhicule <i>{{ vehicule.modele }}</i> immatriculé <i>{{ vehicule.immatriculation }}</i>, dont le détenteur est <i>{{ vehicule.proprietaire.nom }}</i> a été déclaré le <i>{{ vehicule.created_at|date:"d/m/Y"}}</i> au registre des taxis relais du département <i>{{ vehicule.departement.libelle }}</i> conformément aux dispositions de l'arrêté du 28 juillet 2023.
+        </p>
+
+        <p>
+          Le numéro unique qui lui a été attribué lors de l'enregistrement est le :
+        </p>
+
+        <h2>
+          {{ vehicule.numero }}
+        </h2>
+
+        <p>
+          Ce numéro, complétant la mention « TAXI RELAIS » ou « RELAIS » est affiché de manière visible depuis l'extérieur, sur le véhicule.
+        </p>
+
+        <div class="center">
+          <img class="qrcode" src="data:image/png;base64,{{ qrcode }}" alt="QR Code" />
+          <br />
+        </div>
+
+        <p class="warning center">
+          ⚠ Ce document a été édité sur la base des déclarations du détenteur du véhicule relais ⚠
+          <br />
+          Il est destiné à faciliter les contrôles et justifie uniquement du respect de l'obligation de déclaration.
+        </p>
+      </div>
+    </div>
+
+    <div class="page">
+      <p>
+        <strong class="underline">Conformément à l'arrêté du 28 juillet 2023, nous vous rappelons que:</strong>
+      </p>
+
+      <p>
+        Un « taxi relais » est un véhicule utilisé temporairement en cas d'immobilisation d'origine mécanique, à la suite d'une panne ou d'un accident, ou de vol d'un véhicule taxi ou de ses équipements spéciaux.
+      </p>
+
+      <p>
+        <strong>Le taxi relais doit disposer des équipements taxis énumérés à l'article R. 3121-1 du code des transports.</strong>
+      </p>
+
+      <p>
+        L'autorisation de stationnement utilisée pour exercer avec le taxi relais est celle du taxi immobilisé dont il prend le relais. <strong>Une plaque correspondant à celle portant le numéro de l'autorisation de stationnement du taxi remplacé doit être apposée sur le taxi relais.</strong> Cette plaque doit respecter les formats et dimensions définis par arrêté du préfet de département.
+      </p>
+
+      <p>
+        Le taxi relais respecte les exigences fixées par le préfet de département en application de l'article R. 3121-3 du code des transports, en matière de contrôle technique et de caractéristiques, notamment en matière d'ancienneté maximale ou de dimension minimale, sauf s'il s'agit des véhicules hybrides et électrique mentionnés à l'article L. 3120-5.
+      </p>
+
+      <p>
+        <strong>Le taxi relais doit utiliser le même paramétrage tarifaire que le taxi remplacé.</strong>
+      </p>
+
+
+      <p>
+        <strong>La mention « TAXI RELAIS » ou « RELAIS » est affichée de manière visible depuis l'extérieur, sur le véhicule relais. Cette mention est complétée du numéro d'ordre du véhicule dans le répertoire mentionné au deuxième alinéa de l'article 3.</strong> Le dispositif d'affichage est constitué de deux autocollants rectangulaires, non repositionnables, dont l'impression se fait sur fond transparent avec des caractères de couleur noire pour les vitrages transparents et blancs pour les vitrages teintés. Ces autocollants, de dimension 148 × 105 millimètres, sont apposés, pour l'un, en haut à droite sur le pare-brise avant et pour l'autre, sur la lunette arrière, en bas, côté droit. Les caractères sont écrits avec une police Arial de taille minimale 90.
+      </p>
+
+        <p>
+        <strong>Doivent-être conservés à bord du taxi relais pour présentation aux agents chargés des contrôles :</strong>
+        <ul>
+          <li>l'arrêté portant autorisation de stationnement du véhicule remplacé ou, l'original de la carte de stationnement du véhicule remplacé sur le territoire de compétence du préfet de police de Paris ;</li>
+          <li>l'original ou la copie du certificat d'immatriculation du véhicule remplacé ;</li>
+          <li>le justificatif d'assurance mentionné à l'article R. 3120-4 du code des transports ;</li>
+          <li>tout document attestant de l'indisponibilité du taxi dont le véhicule de remplacement prend le relais notamment le justificatif de dépôt dans un garage de réparation automobile ou en cas de vol, la déclaration de vol auprès des forces de l'ordre ;</li>
+          <li>en cas de location du taxi relais, le contrat de location.</li>
+        </ul>
+      </p>
+    </div>
+  </body>
+</html>

@@ -1,5 +1,11 @@
+import base64
+from io import BytesIO
+
 from django.contrib import messages
+from django.contrib.staticfiles.finders import find
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
+from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -10,9 +16,14 @@ from django.views.generic import (
     RedirectView,
     TemplateView,
     UpdateView,
+    View,
 )
 
+from weasyprint import HTML
+
 from reversion.views import RevisionMixin
+
+import qrcode
 
 from mesads.fradm.forms import PrefectureForm
 from mesads.fradm.models import Prefecture
@@ -285,3 +296,65 @@ class ProprietaireVehiculeHistoryView(DetailView):
         )
         ctx["proprietaire"] = self.kwargs["proprietaire"]
         return ctx
+
+
+def create_qrcode_base64(data):
+    qr = qrcode.QRCode(
+        version=1,
+        # Low error correction level.
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=4,
+        border=1,
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
+    img = qr.make_image(fill="black", back_color="white")
+
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    return base64.b64encode(buffer.getvalue()).decode()
+
+
+class ProprietaireVehiculeRecepisseView(View):
+    def get(
+        self,
+        request,
+        proprietaire=None,
+        proprietaire_id=None,
+        vehicule_numero=None,
+    ):
+        vehicule = get_object_or_404(
+            Vehicule,
+            numero=self.kwargs["vehicule_numero"],
+            proprietaire=proprietaire,
+        )
+        response = HttpResponse(
+            content_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="récépissé-vehicule-{vehicule_numero}.pdf"'
+            },
+        )
+
+        vehicule_public_url = request.build_absolute_uri(
+            reverse("vehicules-relais.vehicule", kwargs={"numero": vehicule.numero})
+        )
+
+        html = render_to_string(
+            "recepisse.html",
+            {
+                "path_logo_svg": find("images/Republique-francaise-logo.svg"),
+                "path_font_marianne_regular": find(
+                    "@gouvfr/fonts/Marianne-Regular.woff2"
+                ),
+                "path_font_marianne_bold": find("@gouvfr/fonts/Marianne-Bold.woff2"),
+                "path_font_marianne_italic": find(
+                    "@gouvfr/fonts/Marianne-Regular_Italic.woff2"
+                ),
+                "vehicule": vehicule,
+                "qrcode": create_qrcode_base64(vehicule_public_url),
+                "vehicule_public_url": vehicule_public_url,
+            },
+        )
+        HTML(string=html).write_pdf(response)
+
+        return response
