@@ -61,14 +61,27 @@ else:
             send_default_pii=True,
         )
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
 # Upload to S3 in production, or if S3 is defined in debug mode
 if not DEBUG or os.environ.get("AWS_S3_ENDPOINT_URL"):
-    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-    AWS_S3_ENDPOINT_URL = os.environ["AWS_S3_ENDPOINT_URL"]
-    AWS_S3_ACCESS_KEY_ID = os.environ["AWS_S3_ACCESS_KEY_ID"]
-    AWS_S3_SECRET_ACCESS_KEY = os.environ["AWS_S3_SECRET_ACCESS_KEY"]
-    AWS_STORAGE_BUCKET_NAME = os.environ["AWS_STORAGE_BUCKET_NAME"]
+    STORAGES["default"] = {
+        # See documentation in s3storage.py to understand why we use this custom storage.
+        "BACKEND": "mesads.s3storage.HackishS3Boto3Storage",
+        "OPTIONS": {
+            "bucket_name": os.environ["AWS_STORAGE_BUCKET_NAME"],
+            "access_key": os.environ["AWS_S3_ACCESS_KEY_ID"],
+            "secret_key": os.environ["AWS_S3_SECRET_ACCESS_KEY"],
+            "endpoint_url": os.environ["AWS_S3_ENDPOINT_URL"],
+        },
+    }
 
 
 ALLOWED_HOSTS = [part for part in os.getenv("ALLOWED_HOSTS", "").split(";") if part]
