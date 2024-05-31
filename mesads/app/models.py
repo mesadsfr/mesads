@@ -501,7 +501,7 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
                 "Il n'est pas possible d'apporter des modifications sur les ADS d'une administration verrouillée."
             )
         if self.ads_creation_date and self.ads_creation_date >= date(2014, 10, 1):
-            existing_users = ADSUser.objects.filter(ads=self)
+            existing_users = ADSUser.objects.filter(ads_id=self.id)
             if existing_users.count() > 1:
                 raise ValidationError(
                     "Un seul exploitant peut être déclaré pour une ADS créée après le 1er octobre 2014."

@@ -35,3 +35,6 @@ test:
 # Tests without coverage
 fasttest:
 	pytest --testmon -v -x -s
+
+update-requirements:
+	for package in $$(poetry show --outdated --only main | awk '{print $$1}'); do poetry add "$$package@latest"; done
