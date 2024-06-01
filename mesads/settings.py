@@ -254,9 +254,6 @@ if DEBUG:
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS = [ip[:-1] + "1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
 
-# Upload files to S3: https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
 MESADS_CONTACT_EMAIL = "equipe@mesads.beta.gouv.fr"
 
 DEFAULT_FROM_EMAIL = MESADS_CONTACT_EMAIL
