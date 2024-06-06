@@ -14,6 +14,7 @@ from .models import (
     ADSUser,
     ADSUpdateFile,
     ADSManagerDecree,
+    Notification,
     get_legal_filename,
     validate_no_ads_declared,
 )
@@ -271,3 +272,9 @@ class TestADSUpdateFile(ClientTestCase):
         self.assertIn("ADS_UPDATES", filename)
         self.assertIn(self.admin_user.email, filename)
         self.assertIn("superfile.txt", filename)
+
+
+class TestNotification(ClientTestCase):
+    def test_str(self):
+        notification = Notification(user=self.admin_user)
+        self.assertIn(self.admin_user.email, str(notification))

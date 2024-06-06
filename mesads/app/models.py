@@ -966,3 +966,24 @@ class ADSUpdateFile(models.Model):
     import_output = models.TextField(
         blank=True, null=False, verbose_name="Output du script d'import du fichier"
     )
+
+
+class Notification(models.Model):
+    class Meta:
+        verbose_name = "Notification"
+        verbose_name_plural = "Notifications"
+
+    def __str__(self):
+        return f"Notifications pour l'utilisateur {self.user.email}"
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name="Utilisateur",
+    )
+
+    ads_manager_requests = models.BooleanField(
+        default=True,
+        null=False,
+        verbose_name="Recevoir une notification lorsqu'une demande pour devenir gestionnaire ADS est créée",
+    )

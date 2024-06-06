@@ -6,6 +6,7 @@ from mesads.fradm.models import EPCI, Prefecture
 from ..models import (
     ADSManager,
     ADSManagerRequest,
+    Notification,
 )
 from ..unittest import ClientTestCase
 
@@ -145,6 +146,41 @@ class TestADSManagerRequestView(ClientTestCase):
         self.assertEqual(len(resp.context["messages"]), 1)
         self.assertEqual(list(resp.context["messages"])[0].level, messages.WARNING)
         # No new email
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_create_commune_notification_false(self):
+        """The ADSManagerAdministrator of self.commune_melesse is linked to the
+        user ads_manager_administrator_35_user, which has a Notification object
+        set to False: no email should be sent when a request is made."""
+        Notification.objects.create(
+            user=self.ads_manager_administrator_35_user,
+            ads_manager_requests=False,
+        )
+        self.auth_client.post(
+            "/registre_ads/gestion", {"commune": self.commune_melesse.id}
+        )
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_create_commune_notification_true(self):
+        """The ADSManagerAdministrator of self.commune_melesse is linked to the
+        user ads_manager_administrator_35_user, which has a Notification object
+        set to False: an email should be sent when a request is made."""
+        Notification.objects.create(
+            user=self.ads_manager_administrator_35_user,
+            ads_manager_requests=True,
+        )
+        self.auth_client.post(
+            "/registre_ads/gestion", {"commune": self.commune_melesse.id}
+        )
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_create_commune_notification_empty(self):
+        """The ADSManagerAdministrator of self.commune_melesse is linked to the
+        user ads_manager_administrator_35_user, but no Notification is linked to the user. By default, we should send an email.
+        """
+        self.auth_client.post(
+            "/registre_ads/gestion", {"commune": self.commune_melesse.id}
+        )
         self.assertEqual(len(mail.outbox), 1)
 
     def test_create_request_epci(self):

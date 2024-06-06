@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.db.models import Count
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -137,6 +138,7 @@ class ADSManagerRequestView(FormView):
         )
         return ctx
 
+    @transaction.atomic
     def form_valid(self, form):
         _, created = ADSManagerRequest.objects.get_or_create(
             user=self.request.user,
@@ -185,14 +187,17 @@ class ADSManagerRequestView(FormView):
                 for administrator_user in form.cleaned_data[
                     "ads_manager"
                 ].administrator.users.all():
-                    send_mail(
-                        email_subject,
-                        email_content,
-                        settings.MESADS_CONTACT_EMAIL,
-                        [administrator_user],
-                        fail_silently=True,
-                        html_message=email_content_html,
-                    )
+                    notifications = getattr(administrator_user, "notification", None)
+                    if not notifications or notifications.ads_manager_requests:
+                        print("send mail to:", administrator_user)
+                        send_mail(
+                            email_subject,
+                            email_content,
+                            settings.MESADS_CONTACT_EMAIL,
+                            [administrator_user],
+                            fail_silently=True,
+                            html_message=email_content_html,
+                        )
 
         return super().form_valid(form)
 
