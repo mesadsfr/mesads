@@ -189,7 +189,6 @@ class ADSManagerRequestView(FormView):
                 ].administrator.users.all():
                     notifications = getattr(administrator_user, "notification", None)
                     if not notifications or notifications.ads_manager_requests:
-                        print("send mail to:", administrator_user)
                         send_mail(
                             email_subject,
                             email_content,
