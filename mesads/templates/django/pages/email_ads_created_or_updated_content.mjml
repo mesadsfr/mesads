@@ -1,0 +1,41 @@
+{% extends "base_mail.mjml" %}
+
+{% block title %}
+{% if is_new_ads %}
+Nouvelle ADS enregistrée
+{% else %}
+ADS existante mise à jour
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if is_new_ads %}
+<mj-column>
+  <mj-text>
+    <p>
+        L'utilisateur <strong>{{ user.email }}</strong> a enregistré la nouvelle ADS nº<strong>{{ ads.number }}</strong> pour <strong>{{ ads.ads_manager.content_object.display_fulltext|safe }}</strong>.
+    </p>
+  </mj-text>
+
+  <mj-button
+    href="{{ request.scheme }}://{{ request.get_host }}{% url 'app.ads.detail' manager_id=ads.ads_manager.id ads_id=ads.id %}"
+  >
+    Consulter l'ADS
+  </mj-button>
+</mj-column>
+{% else %}
+<mj-column>
+  <mj-text>
+    <p>
+        L'utilisateur <strong>{{ user.email }}</strong> a mis à jour l'ADS nº<strong>{{ ads.number }}</strong> pour <strong>{{ ads.ads_manager.content_object.display_fulltext|safe }}</strong>.
+    </p>
+  </mj-text>
+
+  <mj-button
+    href="{{ request.scheme }}://{{ request.get_host }}{% url 'app.ads.history' manager_id=ads.ads_manager.id ads_id=ads.id %}"
+  >
+    Consulter l'historique des changements effectués
+  </mj-button>
+</mj-column>
+{% endif %}
+{% endblock %}

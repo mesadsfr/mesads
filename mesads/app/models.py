@@ -985,5 +985,11 @@ class Notification(models.Model):
     ads_manager_requests = models.BooleanField(
         default=True,
         null=False,
-        verbose_name="Recevoir une notification lorsqu'une demande pour devenir gestionnaire ADS est créée",
+        verbose_name="Recevoir une notification lorsqu'une demande pour devenir gestionnaire ADS est créée (pour les préfectures uniquement)",
+    )
+
+    ads_created_or_updated = models.BooleanField(
+        default=False,
+        null=False,
+        verbose_name="Recevoir une notification lorsqu'une ADS d'une administration gérée est créée ou modifiée (pour les préfectures uniquement)",
     )

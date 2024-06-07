@@ -1,0 +1,5 @@
+{% if is_new_ads %}
+Nouvelle ADS, {{ ads.ads_manager.content_object.display_text|safe }}
+{% else %}
+ADS modifiée, {{ ads.ads_manager.content_object.display_text|safe }}
+{% endif %}

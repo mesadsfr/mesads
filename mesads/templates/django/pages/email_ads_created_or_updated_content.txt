@@ -1,0 +1,13 @@
+{% extends "base_mail.txt" %}
+
+{% block body %}
+{% if is_new_ads %}
+L'utilisateur {{ user.email }} a enregistré la nouvelle ADS nº{{ ads.number }} pour {{ ads.ads_manager.content_object.display_fulltext|safe }}.
+
+Vous pouvez consulter l'ADS sur {{ request.scheme }}://{{ request.get_host }}{% url 'app.ads.detail' manager_id=ads.ads_manager.id ads_id=ads.id %}.
+{% else %}
+L'utilisateur {{ user.email }} a mis à jour l'ADS nº{{ ads.number }} pour {{ ads.ads_manager.content_object.display_fulltext|safe }}.
+
+Vous pouvez consulter l'historique des changements effectués sur {{ request.scheme }}://{{ request.get_host }}{% url 'app.ads.history' manager_id=ads.ads_manager.id ads_id=ads.id %}.
+{% endif %}
+{% endblock %}

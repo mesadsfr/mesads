@@ -2,12 +2,15 @@ from datetime import date, datetime, timedelta
 
 from docxtpl import DocxTemplate
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.staticfiles import finders
+from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import date as date_template_filter
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.generic import UpdateView
 from django.views.generic.detail import DetailView
@@ -151,8 +154,58 @@ class ADSView(RevisionMixin, UpdateView):
 
         self.object.run_checks()
 
+        for user in self.object.ads_manager.administrator.users.all():
+            notification = getattr(user, "notification", None)
+            if notification and notification.ads_created_or_updated:
+                assert self.request.resolver_match.url_name in (
+                    "app.ads.detail",
+                    "app.ads.create",
+                )
+                self.send_notification(
+                    user,
+                    self.object,
+                    self.request.resolver_match.url_name == "app.ads.create",
+                )
+
         messages.success(self.request, "Les modifications ont été enregistrées.")
         return HttpResponseRedirect(self.get_success_url())
+
+    def send_notification(self, user, ads, is_new_ads):
+        email_subject = render_to_string(
+            "pages/email_ads_created_or_updated_subject.txt",
+            {
+                "user": self.request.user,
+                "ads": ads,
+                "is_new_ads": is_new_ads,
+            },
+            request=self.request,
+        ).strip()
+        email_content = render_to_string(
+            "pages/email_ads_created_or_updated_content.txt",
+            {
+                "user": self.request.user,
+                "ads": ads,
+                "is_new_ads": is_new_ads,
+            },
+            request=self.request,
+        )
+        email_content_html = render_to_string(
+            "pages/email_ads_created_or_updated_content.mjml",
+            {
+                "user": self.request.user,
+                "ads": ads,
+                "is_new_ads": is_new_ads,
+            },
+            request=self.request,
+        )
+        send_mail(
+            email_subject,
+            email_content,
+            settings.MESADS_CONTACT_EMAIL,
+            [user.email],
+            fail_silently=True,
+            html_message=email_content_html,
+        )
 
 
 class ADSDeleteView(DeleteView):
