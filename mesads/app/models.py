@@ -140,7 +140,7 @@ class ADSManager(SmartValidationMixin, models.Model):
         return f"{self.content_type.name} - {self.content_object}"
 
     administrator = models.ForeignKey(
-        "ADSManagerAdministrator", on_delete=models.RESTRICT, null=True
+        "ADSManagerAdministrator", on_delete=models.RESTRICT, null=False
     )
 
     content_type = models.ForeignKey(

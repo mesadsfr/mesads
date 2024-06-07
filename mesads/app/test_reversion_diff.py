@@ -10,17 +10,23 @@ from reversion.models import Revision
 from mesads.fradm.models import Commune
 from mesads.users.models import User
 
-from .models import ADS, ADSUser, ADSManager, ADSLegalFile
+from .models import ADS, ADSUser, ADSManager, ADSLegalFile, ADSManagerAdministrator
+from ..fradm.models import Prefecture
 from .reversion_diff import ModelHistory, Diff
 
 
 class TestReversionDiff(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(email="test@test.com")
-        self.commune = Commune.objects.create(libelle="Prague")
+        self.commune = Commune.objects.create(
+            libelle="Melesse", insee="35173", departement="35"
+        )
+        prefecture = Prefecture.objects.create(numero="35", libelle="Ille-et-Vilaine")
+        administrator = ADSManagerAdministrator.objects.create(prefecture=prefecture)
         self.ads_manager = ADSManager.objects.create(
             content_type=ContentType.objects.get_for_model(self.commune),
             object_id=self.commune.id,
+            administrator=administrator,
         )
         self.ads = ADS.objects.create(
             number=1, ads_manager=self.ads_manager, ads_in_use=True

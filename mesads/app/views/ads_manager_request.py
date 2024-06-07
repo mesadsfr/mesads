@@ -201,15 +201,6 @@ class ADSManagerRequestView(FormView):
         return super().form_valid(form)
 
     def get_message_for_existing_request(self, ads_manager):
-        if not ads_manager.administrator:
-            return """
-                Vous avez déjà effectué une demande pour gérer les ADS de %(administration)s, et notre équipe va y répondre dans les plus brefs délais.<br /><br />
-
-                Si vous n'avez eu aucun retour depuis plusieurs jours, n'hésitez pas à contacter notre équipe par email à <a href="mailto:%(email)s">%(email)s</a> ou via notre module de tchat.
-            """ % {
-                "email": settings.MESADS_CONTACT_EMAIL,
-                "administration": ads_manager.content_object.display_fulltext(),
-            }
         return """
             Vous avez déjà effectué une demande pour gérer les ADS de %(administration)s. Cette demande a été envoyée à %(prefecture)s qui devrait y répondre rapidement.<br /><br />
 
@@ -223,28 +214,14 @@ class ADSManagerRequestView(FormView):
         }
 
     def get_message_for_new_request(self, ads_manager):
-        # Request for EPCI or prefectures
-        if not ads_manager.administrator:
-            return """
-                Votre demande vient d’être envoyée à notre équipe. Vous recevrez une confirmation de validation de votre
-                accès par mail.<br /><br />
-
-                En cas de difficulté ou si vous n’obtenez pas de validation de votre demande vous pouvez contacter par email à
-                <a href="mailto:%(email)s">%(email)s</a> ou via notre module de tchat.<br /><br />
-
-                Vous pouvez également demander un accès pour la gestion des ADS d’une autre collectivité.
-            """ % {
-                "email": settings.MESADS_CONTACT_EMAIL
-            }
-
         return """
-            Votre demande vient d’être envoyée à %(prefecture)s. Vous recevrez une confirmation de validation de votre
+            Votre demande vient d'être envoyée à %(prefecture)s. Vous recevrez une confirmation de validation de votre
             accès par mail.<br /><br />
 
-            En cas de difficulté ou si vous n’obtenez pas de validation de votre demande vous pouvez
+            En cas de difficulté ou si vous n'obtenez pas de validation de votre demande vous pouvez
             contacter par email à <a href="mailto:%(email)s">%(email)s</a> ou via notre module de tchat.<br /><br />
 
-            Vous pouvez également demander un accès pour la gestion des ADS d’une autre collectivité.
+            Vous pouvez également demander un accès pour la gestion des ADS d'une autre collectivité.
         """ % {
             "prefecture": ads_manager.administrator.prefecture.display_fulltext(),
             "email": settings.MESADS_CONTACT_EMAIL,

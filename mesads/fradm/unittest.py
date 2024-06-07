@@ -22,10 +22,13 @@ class ClientTestCase(BaseClientTestCase):
 
     PREFECTURES = (
         ("01", "Ain"),
+        ("13", "Bouches-du-Rhône"),
         ("33", "Gironde"),
         ("35", "Ille-et-Vilaine"),
         ("73", "Savoie"),
         ("75", "Préfecture de Police de Paris"),
+        ("95", "Val-d'Oise"),
+        ("976", "Mayotte"),
     )
 
     def setUp(self):

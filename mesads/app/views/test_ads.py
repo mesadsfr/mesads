@@ -12,6 +12,7 @@ from ..models import (
     ADS,
     ADSLegalFile,
     ADSManager,
+    ADSManagerAdministrator,
     ADSUser,
 )
 from ..unittest import ClientTestCase
@@ -494,7 +495,10 @@ class TestADSView(ClientTestCase):
             departement="xx",
             libelle="xx",
         )
-        ads_manager = ADSManager.objects.create(content_object=commune)
+        ads_manager = ADSManager.objects.create(
+            content_object=commune,
+            administrator=ADSManagerAdministrator.objects.first(),
+        )
         resp = self.admin_client.get(
             f"/registre_ads/gestion/{ads_manager.id}/ads/{self.ads.id}",
         )

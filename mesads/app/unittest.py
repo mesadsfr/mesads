@@ -64,30 +64,29 @@ class ClientTestCase(BaseClientTestCase):
         """
         super().create_fixtures()
 
-        # Create a ADSManager entry for each commune
-        for commune in self.fixtures_communes:
-            ADSManager.objects.create(content_object=commune)
-
-        # Create a ADSManager entry for each EPCI
-        for epci in self.fixtures_epci:
-            ADSManager.objects.create(content_object=epci)
-
-        # For each prefecture, create a ADSManager entry
-        # Also create a ADSManagerAdministrator entry
+        # For each prefecture, create a ADSManager entry and a ADSManagerAdministrator entry.
         # Also, for each commune of the prefecture, configures
         for prefecture in self.fixtures_prefectures:
-            ads_manager = ADSManager.objects.create(content_object=prefecture)
             ads_manager_administrator = ADSManagerAdministrator.objects.create(
                 prefecture=prefecture
             )
-            ads_manager.administrator = ads_manager_administrator
+            ads_manager = ADSManager.objects.create(
+                content_object=prefecture, administrator=ads_manager_administrator
+            )
             ads_manager.save()
 
-            for commune in self.fixtures_communes:
-                if commune.departement == prefecture.numero:
-                    ads_manager = ADSManager.objects.filter(
-                        content_type=ContentType.objects.get_for_model(commune),
-                        object_id=commune.id,
-                    ).get()
-                    ads_manager.administrator = ads_manager_administrator
-                    ads_manager.save()
+        # Create a ADSManager entry for each commune
+        for commune in self.fixtures_communes:
+            administrator = ADSManagerAdministrator.objects.filter(
+                prefecture__numero=commune.departement
+            ).get()
+            ADSManager.objects.create(
+                content_object=commune, administrator=administrator
+            )
+
+        # Create a ADSManager entry for each EPCI
+        for epci in self.fixtures_epci:
+            administrator = ADSManagerAdministrator.objects.filter(
+                prefecture__numero=epci.departement
+            ).get()
+            ADSManager.objects.create(content_object=epci, administrator=administrator)
