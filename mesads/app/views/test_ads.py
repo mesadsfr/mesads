@@ -2,6 +2,7 @@ import re
 
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core import mail
 from django.db.models import Q
 
 from freezegun import freeze_time
@@ -14,6 +15,7 @@ from ..models import (
     ADSManager,
     ADSManagerAdministrator,
     ADSUser,
+    Notification,
 )
 from ..unittest import ClientTestCase
 
@@ -68,6 +70,35 @@ class TestADSView(ClientTestCase):
         )
         self.ads.refresh_from_db()
         self.assertEqual(self.ads.owner_name, "Jean-Jacques Goldman")
+
+    def test_update_with_notification(self):
+        # Add admin user to the ADSManagerAdministrator
+        self.ads.ads_manager.administrator.users.add(self.admin_user)
+
+        # Setup notification
+        Notification.objects.create(
+            user=self.admin_user,
+            ads_created_or_updated=True,
+        )
+
+        resp = self.ads_manager_city35_client.post(
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
+            {
+                "number": self.ads.id,
+                "ads_in_use": "true",
+                "owner_name": "Jean-Jacques Goldman",
+                "adsuser_set-TOTAL_FORMS": 10,
+                "adsuser_set-INITIAL_FORMS": 0,
+                "adsuser_set-MIN_NUM_FORMS": 0,
+                "adsuser_set-MAX_NUM_FORMS": 10,
+                "adslegalfile_set-TOTAL_FORMS": 10,
+                "adslegalfile_set-INITIAL_FORMS": 0,
+                "adslegalfile_set-MIN_NUM_FORMS": 0,
+                "adslegalfile_set-MAX_NUM_FORMS": 10,
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(len(mail.outbox), 1)
 
     def test_update_invalid_ads_users_formset(self):
         """Missing INITIAL_FORMS, MIN_NUM_FORMS and MAX_NUM_FORMS."""
