@@ -24,11 +24,12 @@
     Voir l'historique des modifications <small>(lien uniquement dispo pour l'équipe MesADS)</small>
   </a>
 </p>
-  {% if deletable %}
-  <p>
-    <a class="fr-link fr-icon-delete-line fr-link--icon-left" href="{% url 'vehicules-relais.proprietaire.delete' proprietaire_id=object.id %}" style="color: var(--text-default-error)">Supprimer mon espace propriétaire</a>
-  </p>
-  {% endif %}
+{% endif %}
+
+{% if deletable %}
+<p>
+  <a class="fr-link fr-icon-delete-line fr-link--icon-left" href="{% url 'vehicules-relais.proprietaire.delete' proprietaire_id=object.id %}" style="color: var(--text-default-error)">Supprimer mon espace propriétaire</a>
+</p>
 {% endif %}
 
 <h1>Mon espace propriétaire — {{ object.nom }}</h1>
