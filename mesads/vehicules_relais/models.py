@@ -184,6 +184,7 @@ class Vehicule(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
         ("electrique", "Electrique"),
         ("GPL", "GPL"),
         ("E85", "E85"),
+        ("h2", "Hydrogène"),
     )
 
     motorisation = models.CharField(
