@@ -25,6 +25,11 @@ class AdministrationModel(models.Model):
         raise NotImplementedError
 
 
+class CommuneManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(type_commune="COM")
+
+
 class Commune(AdministrationModel):
     """Communes of France. Inserted by the django admin command
     "load_communes".
@@ -39,8 +44,11 @@ class Commune(AdministrationModel):
         CSV file provided by insee.
     """
 
+    objects = CommuneManager()
+    all_objects = models.Manager()
+
     class Meta:
-        unique_together = (("departement", "libelle"),)
+        unique_together = (("type_commune", "insee"),)
 
     def type_name(self):
         return "commune"
@@ -59,7 +67,22 @@ class Commune(AdministrationModel):
     def __str__(self):
         return f"{self.departement} - {self.libelle} (INSEE: {self.insee})"
 
-    insee = models.CharField(max_length=16, null=False, blank=False, unique=True)
+    TYPE_COMMUNE = (
+        ("COM", "Commune"),
+        ("COMA", "Commune associée"),
+        ("COMD", "Commune déléguée"),
+        ("ARM", "Arrondissement municipal"),
+    )
+
+    type_commune = models.CharField(
+        max_length=16,
+        choices=TYPE_COMMUNE,
+        blank=False,
+        null=False,
+        verbose_name="Type de commune",
+    )
+
+    insee = models.CharField(max_length=16, null=False, blank=False)
     departement = models.CharField(max_length=16, blank=False, null=False)
     libelle = models.CharField(max_length=255, null=False, blank=False)
 

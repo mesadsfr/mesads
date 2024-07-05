@@ -19,7 +19,7 @@ class TestReversionDiff(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(email="test@test.com")
         self.commune = Commune.objects.create(
-            libelle="Melesse", insee="35173", departement="35"
+            type_commune="COM", libelle="Melesse", insee="35173", departement="35"
         )
         prefecture = Prefecture.objects.create(numero="35", libelle="Ille-et-Vilaine")
         administrator = ADSManagerAdministrator.objects.create(prefecture=prefecture)
