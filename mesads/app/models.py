@@ -369,6 +369,7 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
     class Meta:
         verbose_name = "ADS"
         verbose_name_plural = "ADS"
+
         constraints = [
             # To understand why we do not define violation_error_message here,
             # see the documentation of the method `unique_error_message`

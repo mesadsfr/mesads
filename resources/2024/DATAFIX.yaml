@@ -1,0 +1,198 @@
+communes:
+  121:
+    insee: "01138"
+    libelle: Culoz
+    new_owner:
+      insee: "01138"
+      libelle: Culoz-Béon
+
+  27127:
+    insee: "69149"
+    libelle: Oullins
+    new_owner:
+      insee: "69149"
+      libelle: Oullins-Pierre-Bénite
+
+  1546:
+    insee: "04045"
+    libelle: Céreste
+    new_owner:
+      insee: "04045"
+      libelle: Céreste-en-Luberon
+
+  3017:
+    insee: "09207"
+    libelle: Montgaillard
+    new_owner:
+      insee: "09207"
+      libelle: Montgailhard
+
+  5371:
+    insee: "16206"
+    libelle: Mansle
+    new_owner:
+      insee: "16206"
+      libelle: Mansle-les-Fontaines
+
+  6442:
+    insee: "19143"
+    libelle: Montaignac-Saint-Hippolyte
+    new_owner:
+      insee: "19143"
+      libelle: Montaignac-sur-Doustre
+
+  7353:
+    insee: "22084"
+    libelle: Jugon-les-Lacs - Commune nouvelle
+    new_owner:
+      insee: "22084"
+      libelle: Jugon-les-Lacs
+      type: COM
+
+  8640:
+    insee: "25282"
+    libelle: Goux-les-Usiers
+    new_owner:
+      insee: "25060"
+      libelle: "Val-d'Usiers"
+
+  9378:
+    insee: "27058"
+    libelle: Les Trois Lacs
+    new_owner:
+      insee: "27676"
+      libelle: Les Trois Lacs
+
+  9920:
+    insee: "28012"
+    libelle: "Commune nouvelle d'Arrou"
+    new_owner:
+      insee: "28012"
+      libelle: "Vald'Yerre"
+
+  12390:
+    insee: "33081"
+    libelle: Cadillac
+    new_owner:
+      insee: "33081"
+      libelle: Cadillac-sur-Garonne
+
+  13243:
+    insee: "35062"
+    libelle: La Chapelle-Janson
+    new_owner:
+      insee: "35062"
+      libelle: La Chapelle-Fleurigné
+
+  13289:
+    insee: "35112"
+    libelle: Fleurigné
+    new_owner:
+      insee: "35062"
+      libelle: La Chapelle-Fleurigné
+
+  16270:
+    insee: "44066"
+    libelle: Grandchamps-des-Fontaines
+    new_owner:
+      insee: "44066"
+      libelle: Grandchamp-des-Fontaines
+
+  16804:
+    insee: "46063"
+    libelle: Castelnau Montratier-Sainte Alauzie
+    new_owner:
+      insee: "46063"
+      libelle: Castelnau-Montratier
+      type: COM
+
+  17600:
+    insee: "49160"
+    libelle: Ingrandes-Le Fresne sur Loire
+    new_owner:
+      insee: "49160"
+      libelle: Ingrandes-le-Fresne-sur-Loire
+
+  17671:
+    insee: "49321"
+    libelle: Saint-Sigismond
+    new_owner:
+      insee: "49160"
+      libelle: Ingrandes-le-Fresne-sur-Loire
+
+  20722:
+    insee: "56213"
+    libelle: Saint-Gérand
+    new_owner:
+      insee: "56213"
+      libelle: Saint-Gérand-Croixanvec
+
+  20769:
+    insee: "56262"
+    libelle: Bono
+    new_owner:
+      insee: "56262"
+      libelle: Le Bono
+
+  21743:
+    insee: "58251"
+    libelle: Saint-Loup
+    new_owner:
+      insee: "58251"
+      libelle: Saint-Loup-des-Bois
+
+  24634:
+    insee: "63233"
+    libelle: Montaigut
+    new_owner:
+      insee: "63233"
+      libelle: Montaigut-en-Combraille
+
+  26081:
+    insee: "66202"
+    libelle: Targassonne
+    new_owner:
+      insee: "66202"
+      libelle: Targasonne
+
+  27129:
+    insee: "69152"
+    libelle: Pierre-Bénite
+    new_owner:
+      insee: "69149"
+      libelle: Oullins-Pierre-Bénite
+
+  28595:
+    insee: "72253"
+    libelle: Roézé-sur-Sarthe
+    new_owner:
+      insee: "72253"
+      libelle: Roëzé-sur-Sarthe
+
+  28937:
+    insee: "73269"
+    libelle: Saint-Paul
+    new_owner:
+      insee: "73269"
+      libelle: Saint-Paul-sur-Yenne
+
+  32654:
+    insee: "85084"
+    libelle: Essarts en Bocage
+    new_owner:
+      insee: "85084"
+      libelle: Essarts-en-Bocage
+
+  32918:
+    insee: "86084"
+    libelle: Coulonges
+    new_owner:
+      insee: "86084"
+      libelle: Coulonges-les-Hérolles
+
+  33051:
+    insee: "86231"
+    libelle: Saint-Macoux
+    new_owner:
+      insee: "86247"
+      libelle: Val-de-Comporté

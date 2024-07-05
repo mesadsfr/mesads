@@ -522,6 +522,7 @@ class TestADSView(ClientTestCase):
         existing ADSManager, but not the one of the ADS, we want to make sure
         the user is redirected to the correct page."""
         commune = Commune.objects.create(
+            type_commune="COM",
             insee="xx",
             departement="xx",
             libelle="xx",

@@ -44,7 +44,10 @@ class ClientTestCase(BaseClientTestCase):
 
         for insee, departement, libelle in self.COMMUNES:
             obj = Commune.objects.create(
-                insee=insee, departement=departement, libelle=libelle
+                type_commune="COM",
+                insee=insee,
+                departement=departement,
+                libelle=libelle,
             )
             self.fixtures_communes.append(obj)
 
