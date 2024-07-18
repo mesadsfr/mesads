@@ -22,34 +22,40 @@
 {% if user_ads_manager_requests|length > 0 %}
 <h2>Vos administrations en gestion</h2>
 
-<div class="fr-table fr-table--no-caption">
-  <table>
-    <caption>Administrations en gestion</caption>
-    <thead>
-      <tr>
-        <th>🏢 Administration</th>
-        <th>💯 Nombre d'ADS<br />enregistrées</th>
-        <th>👌 Statut</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for request in user_ads_manager_requests %}
-      <tr>
-        <td>{{ request.ads_manager.content_object.display_text|capfirst }}</td>
-        <td>{% if request.ads_count %}{{ request.ads_count }}{% elif request.ads_manager.no_ads_declared %}<small>Ne gère aucune ADS<small>{% elif request.ads_manager.epci_delegate %}<small>ADS gérées par l'EPCI<br /><i>{{ request.ads_manager.epci_delegate }}</i></small>{% else %}-{% endif %}</td>
-        <td>
-          {% if request.accepted is None %}
-          ⏱ En attente de validation par la préfecture
-          {% elif request.accepted is False %}
-          🚫 Demande refusée
-          {% elif request.accepted is True %}
-          <a class="fr-btn fr-btn--sm" href="{% url 'app.ads-manager.detail' manager_id=request.ads_manager.id %}">Gérez les ADS</a>
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="fr-table fr-table--lg fr-table--no-scroll fr-table--no-caption" id="table-administrations">
+  <div class="fr-table__wrapper">
+    <div class="fr-table__container">
+      <div class="fr-table__content">
+        <table id="table-administrations">
+          <caption>Administrations en gestion</caption>
+          <thead>
+            <tr>
+              <th>🏢 Administration</th>
+              <th>💯 Nombre d'ADS<br />enregistrées</th>
+              <th>👌 Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for request in user_ads_manager_requests %}
+            <tr>
+              <td>{{ request.ads_manager.content_object.display_text|capfirst }}</td>
+              <td>{% if request.ads_count %}{{ request.ads_count }}{% elif request.ads_manager.no_ads_declared %}<small>Ne gère aucune ADS<small>{% elif request.ads_manager.epci_delegate %}<small>ADS gérées par l'EPCI<br /><i>{{ request.ads_manager.epci_delegate }}</i></small>{% else %}-{% endif %}</td>
+              <td>
+                {% if request.accepted is None %}
+                ⏱ En attente de validation par la préfecture
+                {% elif request.accepted is False %}
+                🚫 Demande refusée
+                {% elif request.accepted is True %}
+                <a class="fr-btn fr-btn--sm" href="{% url 'app.ads-manager.detail' manager_id=request.ads_manager.id %}">Gérez les ADS</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 {% endif %}
 
@@ -67,37 +73,43 @@
   </a>
 </p>
 
-<div class="fr-table fr-table--no-caption">
-  <table x-data="{ displayExtra: false }">
-      <caption>{{ ads_manager_administrator.prefecture.display_text|capfirst }}</caption>
-    <thead>
-      <tr>
-        <th>🏢 Administration</th>
-        <th>💯 Nombre d'ADS<br />enregistrées</th>
-        <th>👌 Statut</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for ads_manager in ads_manager_administrator.ordered_adsmanager_set  %}
-      <tr x-show="displayExtra || {{ forloop.counter0 }} < 5" x-transition>
-        <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
-        <td>
-          {% if ads_manager.ads_set.count > 0 %}{{ ads_manager.ads_set.count }}{% elif ads_manager.no_ads_declared %}<small>Ne gère aucune ADS</small>{% elif ads_manager.epci_delegate %}<small>ADS gérées par l'EPCI<br /><i>{{ ads_manager.epci_delegate }}</i></small>{% else %}-{% endif %}
-        </td>
-        <td>
-          <a class="fr-btn fr-btn--sm" href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">Gérez les ADS</a>
-        </td>
-      </tr>
-      {% endfor %}
-      <tr x-show="{{ ads_manager_administrator.adsmanager_set.count }} > 5 && !displayExtra">
-        <td colspan="3">
-          <button class="fr-btn fr-btn--secondary fr-btn--sm" x-on:click="displayExtra = true">
-            Afficher les {{ ads_manager_administrator.adsmanager_set.count|add:"-5" }} autres entrées du tableau...
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+<div class="fr-table fr-table--lg fr-table--no-scroll fr-table--no-caption" id="table-administration-{{ ads_manager_administrator.id }}">
+  <div class="fr-table__wrapper">
+    <div class="fr-table__container">
+      <div class="fr-table__content">
+        <table id="table-administration-{{ ads_manager_administrator.id }}" x-data="{ displayExtra: false }">
+          <caption>{{ ads_manager_administrator.prefecture.display_text|capfirst }}</caption>
+          <thead>
+            <tr>
+              <th>🏢 Administration</th>
+              <th>💯 Nombre d'ADS<br />enregistrées</th>
+              <th>👌 Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ads_manager in ads_manager_administrator.ordered_adsmanager_set  %}
+            <tr x-show="displayExtra || {{ forloop.counter0 }} < 5" x-transition>
+              <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
+              <td>
+                {% if ads_manager.ads_set.count > 0 %}{{ ads_manager.ads_set.count }}{% elif ads_manager.no_ads_declared %}<small>Ne gère aucune ADS</small>{% elif ads_manager.epci_delegate %}<small>ADS gérées par l'EPCI<br /><i>{{ ads_manager.epci_delegate }}</i></small>{% else %}-{% endif %}
+              </td>
+              <td>
+                <a class="fr-btn fr-btn--sm" href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">Gérez les ADS</a>
+              </td>
+            </tr>
+            {% endfor %}
+            <tr x-show="{{ ads_manager_administrator.adsmanager_set.count }} > 5 && !displayExtra">
+              <td colspan="3">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm" x-on:click="displayExtra = true">
+                  Afficher les {{ ads_manager_administrator.adsmanager_set.count|add:"-5" }} autres entrées du tableau...
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 {% endfor %}
 
