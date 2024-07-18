@@ -36,34 +36,39 @@
 
 <h1>Informations du taxi relais n°{{ vehicule.numero }}</h1>
 
-<div class="fr-grid-row">
-  <div class="fr-col-12">
-    <div class="fr-table fr-table--bordered">
-      <table>
-        <caption>ℹ️ Informations sur le propriétaire du véhicule</caption>
-        <tr>
-          <th>Nom</th>
-          <td>{{ vehicule.proprietaire.nom }}</td>
-        </tr>
-        <tr>
-          <th>SIRET</th>
-          <td>{{ vehicule.proprietaire.siret|default:"-" }}</td>
-        </tr>
-        <tr>
-          <th>Tél.</th>
-          <td>{{ vehicule.proprietaire.telephone|default:"-" }}</td>
-        </tr>
-        <tr>
-          <th>Email</th>
-          <td>{{ vehicule.proprietaire.email|default:"-" }}</td>
-        </tr>
-      </table>
+<div class="fr-table fr-table--lg" id="table-proprietaire">
+  <div class="fr-table__wrapper">
+    <div class="fr-table__container">
+      <div class="fr-table__content">
+        <table id="table-proprietaire">
+          <caption>ℹ️ Informations sur le propriétaire du véhicule</caption>
+          <tr>
+            <th>Nom</th>
+            <td>{{ vehicule.proprietaire.nom }}</td>
+          </tr>
+          <tr>
+            <th>SIRET</th>
+            <td>{{ vehicule.proprietaire.siret|default:"-" }}</td>
+          </tr>
+          <tr>
+            <th>Tél.</th>
+            <td>{{ vehicule.proprietaire.telephone|default:"-" }}</td>
+          </tr>
+          <tr>
+            <th>Email</th>
+            <td>{{ vehicule.proprietaire.email|default:"-" }}</td>
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
+</div>
 
-  <div class="fr-col-12">
-    <div class="fr-table fr-table--bordered">
-      <table>
+<div class="fr-table fr-table--lg" id="table-localisation-vehicule">
+  <div class="fr-table__wrapper">
+    <div class="fr-table__container">
+      <div class="fr-table__content">
+        <table id="table-localisation-vehicule">
         <caption>🔎 Localisation du véhicule</caption>
         <tr>
           <th>Ville</th>
@@ -78,10 +83,13 @@
       </table>
     </div>
   </div>
+</div>
 
-  <div class="fr-col-12">
-    <div class="fr-table fr-table--bordered">
-      <table>
+<div class="fr-col-12 fr-table fr-table--lg" id="table-caracteristiques-vehicule">
+  <div class="fr-table__wrapper">
+    <div class="fr-table__container">
+      <div class="fr-table__content">
+        <table id="table-caracteristiques-vehicule">
         <caption>🚖 Caractéristiques du véhicule</caption>
         <tr>
           <th>Numéro du taxi relais</th>
