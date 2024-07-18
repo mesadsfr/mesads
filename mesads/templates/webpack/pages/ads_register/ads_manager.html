@@ -104,43 +104,49 @@
   </div>
 </div>
 
-<div class="fr-table">
-  <table>
-    <thead>
-      <tr>
-        {% if ads_manager.content_type.name == 'EPCI' %}
-        <th>🌆 Commune</th>
-        {% endif %}
-        <th>♯ Numéro</th>
-        <th>📜 Date de création</th>
-        <th>🗓 Date d'attribution<br />au titulaire actuel</th>
-        <th>🚑 Conventionné<br />CPAM ?</th>
-        <th>🤴 Titulaire</th>
-        <th>🔎 Action</th>
-    </thead>
-    <tbody>
-      {% for ads in ads_list %}
-      <tr>
-        {% if ads_manager.content_type.name == 'EPCI' %}
-        <td>{{ ads.epci_commune.libelle|default:"" }}</td>
-        {% endif %}
-        <td><a href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}">{{ ads.number }}</a></td>
-        <td>{{ ads.ads_creation_date|default:"" }}</td>
-        <td>{{ ads.attribution_date|default:"" }}</td>
-        <td>{% if ads.accepted_cpam is None %}⁉️  Inconnu{% elif ads.accepted_cpam is True %}👍 Oui{% else %}❌ Non{% endif %}</td>
-        <td>{{ ads.owner_name }}</td>
-        <td>
-          <a class="fr-btn fr-btn--sm" href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}">Détails</a>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="{% if ads_manager.content_type.name == 'EPCI' %}7{% else %}6{% endif %}">Aucun résultat</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% show_pagination_links page_obj %}
+<div class="fr-table fr-table--lg fr-table--no-scroll" id="table-stats-pref">
+  <div class="fr-table__wrapper">
+    <div class="fr-table__container">
+      <div class="fr-table__content">
+        <table id="table-stats-pref">
+          <thead>
+            <tr>
+              {% if ads_manager.content_type.name == 'EPCI' %}
+              <th>🌆 Commune</th>
+              {% endif %}
+              <th>♯ Numéro</th>
+              <th>📜 Date de création</th>
+              <th>🗓 Date d'attribution<br />au titulaire actuel</th>
+              <th>🚑 Conventionné<br />CPAM ?</th>
+              <th>🤴 Titulaire</th>
+              <th>🔎 Action</th>
+          </thead>
+          <tbody>
+            {% for ads in ads_list %}
+            <tr>
+              {% if ads_manager.content_type.name == 'EPCI' %}
+              <td>{{ ads.epci_commune.libelle|default:"" }}</td>
+              {% endif %}
+              <td><a href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}">{{ ads.number }}</a></td>
+              <td>{{ ads.ads_creation_date|default:"" }}</td>
+              <td>{{ ads.attribution_date|default:"" }}</td>
+              <td>{% if ads.accepted_cpam is None %}⁉️  Inconnu{% elif ads.accepted_cpam is True %}👍 Oui{% else %}❌ Non{% endif %}</td>
+              <td>{{ ads.owner_name }}</td>
+              <td>
+                <a class="fr-btn fr-btn--sm" href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}">Détails</a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="{% if ads_manager.content_type.name == 'EPCI' %}7{% else %}6{% endif %}">Aucun résultat</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% show_pagination_links page_obj %}
+      </div>
+    </div>
+  </div>
 </div>
 
 {% comment %}No ADS registered for this ADSManager{% endcomment %}
