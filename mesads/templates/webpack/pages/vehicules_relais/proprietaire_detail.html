@@ -42,28 +42,33 @@
   </a>
 </p>
 
-<div class="fr-table fr-table--no-caption">
-  <table>
-    <caption>Mes coordonnées</caption>
-    <tr>
-      <th>Nom</th>
-      <td>{{ object.nom }}</td>
-    </tr>
-    <tr>
-      <th>Numéro SIRET</th>
-      <td>{{ object.siret|default:"-" }}</td>
-    </tr>
-    <tr>
-      <th>Numéro de tel</th>
-      <td>{{ object.telephone|default:"-" }}</td>
-    </tr>
-    <tr>
-      <th>Adresse mail de contact</th>
-      <td>{{ object.email|default:"-" }}</td>
-    </tr>
-  </table>
+<div class="fr-table fr-table--md fr-table--no-caption" id="table-contact">
+  <div class="fr-table__wrapper">
+    <div class="fr-table__container">
+      <div class="fr-table__content">
+        <table id="table-contact">
+          <caption>Mes coordonnées</caption>
+          <tr>
+            <th>Nom</th>
+            <td>{{ object.nom }}</td>
+          </tr>
+          <tr>
+            <th>Numéro SIRET</th>
+            <td>{{ object.siret|default:"-" }}</td>
+          </tr>
+          <tr>
+            <th>Numéro de tel</th>
+            <td>{{ object.telephone|default:"-" }}</td>
+          </tr>
+          <tr>
+            <th>Adresse mail de contact</th>
+            <td>{{ object.email|default:"-" }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
-
 
 <h2 class="fr-h4">Mes véhicules enregistrés</h2>
 
@@ -73,35 +78,40 @@
   </a>
 </p>
 
-<div class="fr-table fr-table--no-caption">
-  <table>
-    <caption>Mes véhicules enregistrés</caption>
-    <thead>
-      <tr>
-        <th>Département</th>
-        <th>Numéro du véhicule</th>
-        <th>Marque et modèle</th>
-        <th>Immatriculation</th>
-        <th>Détails</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for vehicule in object_list %}
-      <tr>
-        <td>{{ vehicule.departement.numero }} - {{ vehicule.departement.libelle }}</td>
-        <td>{{ vehicule.numero }}</td>
-        <td>{{ vehicule.modele|default:"-" }}</td>
-        <td>{{ vehicule.immatriculation|default:"-" }}</td>
-        <td><a href="{% url 'vehicules-relais.proprietaire.vehicule.edit' proprietaire_id=vehicule.proprietaire_id vehicule_numero=vehicule.numero %}">Afficher les détails</a></td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="5">Aucun véhicule enregistré</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
+<div class="fr-table fr-table--md fr-table--no-scroll fr-table--no-caption" id="table-vehicules">
+  <div class="fr-table__wrapper">
+    <div class="fr-table__container">
+      <div class="fr-table__content">
+        <table id="table-vehicules">
+          <caption>Mes véhicules enregistrés</caption>
+          <thead>
+            <tr>
+              <th>Département</th>
+              <th>Numéro du véhicule</th>
+              <th>Marque et modèle</th>
+              <th>Immatriculation</th>
+              <th>Détails</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for vehicule in object_list %}
+            <tr>
+              <td>{{ vehicule.departement.numero }} - {{ vehicule.departement.libelle }}</td>
+              <td>{{ vehicule.numero }}</td>
+              <td>{{ vehicule.modele|default:"-" }}</td>
+              <td>{{ vehicule.immatriculation|default:"-" }}</td>
+              <td><a href="{% url 'vehicules-relais.proprietaire.vehicule.edit' proprietaire_id=vehicule.proprietaire_id vehicule_numero=vehicule.numero %}">Afficher les détails</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5">Aucun véhicule enregistré</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
   {% show_pagination_links page_obj %}
 </div>
 {% endblock %}
