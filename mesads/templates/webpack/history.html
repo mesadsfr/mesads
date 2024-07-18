@@ -6,8 +6,11 @@
 {% for revision, objects in history.get_revisions %}
   {% for cls, objects_ids in objects.items %}
     {% for object_id, diff in objects_ids.items %}
-      <div class="fr-table fr-table--bordered">
-          <table>
+    <div class="fr-table fr-table--lg" id="table-history">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table id="table-history">
               <caption>Changement du {{ revision.date_created|date:"d/m/Y" }} par {{ revision.user.email }}</caption>
               <thead>
                 {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
@@ -64,8 +67,11 @@
                     {% endfor %}
                 {% endif %}
               </tbody>
-          </table>
+            </table >
+          </div>
+        </div>
       </div>
+    </div>
     {% endfor %}
   {% endfor %}
 {% empty %}
