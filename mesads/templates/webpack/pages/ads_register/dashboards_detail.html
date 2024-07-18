@@ -21,16 +21,20 @@
   Cette page n'est accessible qu'aux membres de l'équipe <i>Mes ADS</i>. Elle présente des statistiques utiles au déploiement du projet.
 </p>
 
-<div class="fr-table fr-table--bordered">
-    <table>
-        <caption>Statistiques de {{ object.prefecture.display_fulltext }}</caption>
-        <thead>
-            <tr>
+<div class="fr-grid-row">
+  <div class="fr-table fr-table--md" id="stats-pref">
+    <div class="fr-table__wrapper">
+      <div class="fr-table__container">
+        <div class="fr-table__content">
+          <table id="stats-pref">
+            <caption>Statistiques de {{ object.prefecture.display_fulltext }}</caption>
+            <thead>
+              <tr>
                 <th>&nbsp;</th>
                 <th style="text-align:center; border-bottom:1px solid #000" colspan="4">Nombre d'ADS</th>
                 <th style="text-align:center; border-bottom:1px solid #000" colspan="4">Nombre de gestionnaires</th>
-            </tr>
-            <tr>
+              </tr>
+              <tr>
                 <th></th>
 
                 <th>Ajd.</th>
@@ -42,11 +46,11 @@
                 <th>Il y a 3 mois</th>
                 <th>… 6 mois</th>
                 <th>… 12 mois</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in stats %}
-            <tr>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in stats %}
+              <tr>
                 <td><a href="{% url 'app.ads-manager.detail' manager_id=row.obj.id %}">{{ row.obj.content_object.display_text|capfirst }}</a></td>
 
                 <td>
@@ -64,9 +68,13 @@
                 <td><small>{{ row.users.3_months|default:"" }}</small></td>
                 <td><small>{{ row.users.6_months|default:"" }}</small></td>
                 <td><small>{{ row.users.12_months|default:"" }}</small></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
