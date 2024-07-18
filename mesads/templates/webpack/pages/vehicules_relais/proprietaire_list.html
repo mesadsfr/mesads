@@ -40,27 +40,33 @@
   </a>
 </p>
 
-<div class="fr-table">
-  <table>
-    <thead>
-      <tr>
-        <th scope="col">Nom</th>
-        <th scope="col">SIRET</th>
-        <th scope="col">Details</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for row in object_list %}
-      <tr>
-        <td>{{ row.nom }}</td>
-        <td>{{ row.siret|default:"-" }}</td>
-        <td><a href="{% url 'vehicules-relais.proprietaire.detail' proprietaire_id=row.id %}">Afficher les détails</a></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="fr-table fr-table--lg" id="table-proprietaires-list">
+  <div class="fr-table__wrapper">
+    <div class="fr-table__container">
+      <div class="fr-table__content">
+        <table id="table-proprietaires-list">
+          <thead>
+            <tr>
+              <th scope="col">Nom</th>
+              <th scope="col">SIRET</th>
+              <th scope="col">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in object_list %}
+            <tr>
+              <td>{{ row.nom }}</td>
+              <td>{{ row.siret|default:"-" }}</td>
+              <td><a href="{% url 'vehicules-relais.proprietaire.detail' proprietaire_id=row.id %}">Afficher les détails</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
 
-  {% show_pagination_links page_obj %}
+        {% show_pagination_links page_obj %}
+      </div>
+    </div>
+  </div>
 </div>
 {% endif %}
 {% endblock %}
