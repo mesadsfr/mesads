@@ -19,61 +19,59 @@
   Cette page n'est accessible qu'aux membres de l'équipe <i>MesADS</i>. Elle présente des statistiques utiles au déploiement du projet.
 </p>
 
-<div class="fr-grid-row fr-grid-row--gutters">
-  <div class="fr-col-6 fr-table fr-table--md" id="table-ads-updates-per-month">
-    <div class="fr-table__wrapper">
-      <div class="fr-table__container">
-        <div class="fr-table__content">
-          <table id="table-ads-updates-per-month">
-            <caption>Nombre de modifications ADS par mois</caption>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Nombre d'ADS modifiées</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for date, ads_list in ads_updates_stats.by_month %}
-              <tr>
-                <td>{{ date|date:"m/Y" }}</td>
-                <td>{{ ads_list|length }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="fr-col-6 fr-table fr-table--md" id="table-ads-updates-recently">
-    <div class="fr-table__wrapper">
-      <div class="fr-table__container">
-        <div class="fr-table__content">
-          <table id="table-ads-updates-recently">
-            <caption>Nombre de modifications ADS par jour ces derniers jours</caption>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Nombre d'ADS modifiées</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for date, ads_list in ads_updates_stats.by_day %}
-              <tr>
-                <td>{{ date|date:"d/m/Y" }}</td>
-                <td>{{ ads_list|length }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+<div class="fr-table fr-table--md fr-table--no-scroll fr-table--bordered" id="table-ads-updates-per-month">
+  <div class="fr-table__wrapper">
+    <div class="fr-table__container">
+      <div class="fr-table__content">
+        <table id="table-ads-updates-per-month">
+          <caption>Nombre de modifications ADS par mois</caption>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Nombre d'ADS modifiées</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for date, ads_list in ads_updates_stats.by_month %}
+            <tr>
+              <td>{{ date|date:"m/Y" }}</td>
+              <td>{{ ads_list|length }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 </div>
 
-<div class="fr-table fr-table--md" id="table-stats-per-pref">
+<div class="fr-table fr-table--md fr-table--no-scroll fr-table--bordered" id="table-ads-updates-recently">
+  <div class="fr-table__wrapper">
+    <div class="fr-table__container">
+      <div class="fr-table__content">
+        <table id="table-ads-updates-recently">
+          <caption>Nombre de modifications ADS par jour ces derniers jours</caption>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Nombre d'ADS modifiées</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for date, ads_list in ads_updates_stats.by_day %}
+            <tr>
+              <td>{{ date|date:"d/m/Y" }}</td>
+              <td>{{ ads_list|length }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fr-table fr-table--md fr-table--no-scroll" id="table-stats-per-pref">
   <div class="fr-table__wrapper">
     <div class="fr-table__container">
       <div class="fr-table__content">
