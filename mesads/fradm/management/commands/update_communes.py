@@ -73,6 +73,10 @@ class Command(BaseCommand):
             # This case is for a commune that has not been found in the existing
             # communes. We need to insert it.
             else:
+                if row["DEP"] == "":
+                    raise ValueError(
+                        f"La commune {row['COM']} n'a pas de département. Impossible de l'ajouter."
+                    )
                 new_commune = Commune(
                     insee=row["COM"],
                     departement=row["DEP"],
