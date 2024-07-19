@@ -80,5 +80,5 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
             reverse("admin:app_adsmanager_changelist") + "?administrator=" + str(obj.id)
         )
         return mark_safe(
-            f'<a href="{ads_managers_url}">Voir les {obj.adsmanager_set.count()} gestionnaires ADS</a>'
+            f'<a href="{ads_managers_url}">Voir les {obj.ordered_adsmanager_set().count()} gestionnaires ADS</a>'
         )

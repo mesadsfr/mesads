@@ -52,7 +52,7 @@ class PrefectureExportView(View, ADSExporter):
         sheet.set_row(0, None, bold_format)
 
         for idx, ads_manager in enumerate(
-            self.ads_manager_administrator.adsmanager_set.all()
+            self.ads_manager_administrator.ordered_adsmanager_set()
         ):
             status = ""
             if ads_manager.no_ads_declared:

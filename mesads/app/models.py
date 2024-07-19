@@ -289,9 +289,11 @@ class ADSManagerAdministrator(models.Model):
     def ordered_adsmanager_set(self):
         """Function helper to get the adsmanager set order by the administration
         name."""
-        return self.adsmanager_set.prefetch_related(
-            "content_object", "ads_set"
-        ).order_by("commune__libelle", "epci__name", "prefecture__libelle")
+        return (
+            self.adsmanager_set.prefetch_related("content_object", "ads_set")
+            .filter(Q(commune__type_commune="COM") | Q(commune__isnull=True))
+            .order_by("commune__libelle", "epci__name", "prefecture__libelle")
+        )
 
 
 def validate_siret(value):

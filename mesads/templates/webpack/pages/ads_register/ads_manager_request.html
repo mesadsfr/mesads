@@ -98,10 +98,10 @@
               </td>
             </tr>
             {% endfor %}
-            <tr x-show="{{ ads_manager_administrator.adsmanager_set.count }} > 5 && !displayExtra">
+            <tr x-show="{{ ads_manager_administrator.ordered_adsmanager_set.count }} > 5 && !displayExtra">
               <td colspan="3">
                 <button class="fr-btn fr-btn--secondary fr-btn--sm" x-on:click="displayExtra = true">
-                  Afficher les {{ ads_manager_administrator.adsmanager_set.count|add:"-5" }} autres entrées du tableau...
+                  Afficher les {{ ads_manager_administrator.ordered_adsmanager_set.count|add:"-5" }} autres entrées du tableau...
                 </button>
               </td>
             </tr>
