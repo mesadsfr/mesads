@@ -2,7 +2,6 @@ import argparse
 import csv
 import os
 import re
-import sys
 import traceback
 import yaml
 
@@ -43,7 +42,7 @@ class Command(BaseCommand):
 
                 try:
                     self.update_communes(options["communes_file"], datafix)
-                except Exception as exc:
+                except Exception:
                     if options["shell"]:
                         traceback.print_exc()
                         breakpoint()
