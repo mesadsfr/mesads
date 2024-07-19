@@ -1,10 +1,11 @@
 #
 # Javascript builder for static files
 #
-FROM node AS node-builder
+FROM node:20 AS node-builder
 
 WORKDIR /app
 COPY package.json package-lock.json /app/
+
 RUN npm install
 
 #
