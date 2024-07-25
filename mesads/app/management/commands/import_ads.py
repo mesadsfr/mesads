@@ -89,120 +89,210 @@ class ADSImporter:
         # Col 2: C
         "Numéro de l'ADS",
         # Col 3: D
-        "Date de création de l'ADS\ndate à laquelle l'ADS a été attribuée pour la première fois",
+        'ADS actuellement exploitée ?\n\nMettre "oui" ou "non". Ce champ est obligatoire.',
         # Col 4: E
-        "Date du dernier renouvellement de l'ADS\nRemplir seulement si l'ADS a été attribuée pour la première fois après le 01/10/2014 : Les ADS créées depuis le 1er octobre 2014 sont valables 5 ans et doivent être renouvelées.",
+        "Date de création de l'ADS\n\ndate à laquelle l'ADS a été attribuée pour la première fois",
         # Col 5: F
-        "Date d'attribution de l'ADS au titulaire actuel\nLaissez ce champ vide si le titulaire n'a pas changé depuis la création de l'ADS. Ne remplir que si l'ADS a été attribuée pour la première fois avant le 01/10/2014",
+        "Date du dernier renouvellement de l'ADS\nRemplir seulement si l'ADS a été attribuée pour la première fois après le 01/10/2014 : Les ADS créées depuis le 1er octobre 2014 sont valables 5 ans et doivent être renouvelées.",
         # Col 6: G
-        'Véhicule conventionné CPAM ?\nMettre "oui" ou "non". Laissez vide si vous ne savez pas.',
+        "Date d'attribution de l'ADS au titulaire actuel\nLaissez ce champ vide si le titulaire n'a pas changé depuis la création de l'ADS. Ne remplir que si l'ADS a été attribuée pour la première fois avant le 01/10/2014",
         # Col 7: H
-        "Plaque d'immatriculation",
+        'Véhicule conventionné CPAM ?\nMettre "oui" ou "non". Laissez vide si vous ne savez pas.',
         # Col 8: I
-        'Véhicule compatible PMR ?\nMettre "oui" ou "non", laissez vide si vous ne savez pas',
+        "Plaque d'immatriculation du véhicule",
         # Col 9: J
-        "Titulaire de l'ADS\nS'il s'agit d'une personne physique, précisez le nom et le prénom du titulaire de l'ADS. S'il s'agit d'une personne morale, indiquez sa raison sociale.",
+        'Le véhicule est-il un véhicule électrique/hybride ?\nMettre "oui" ou "non", laissez vide si vous ne savez pas',
         # Col 10: K
-        "SIRET du titulaire de l'ADS",
+        'Véhicule compatible PMR ?\nMettre "oui" ou "non", laissez vide si vous ne savez pas',
         # Col 11: L
-        "Téléphone fixe du titulaire de l'ADS",
+        "Titulaire de l'ADS\nS'il s'agit d'une personne physique, précisez le nom et le prénom du titulaire de l'ADS. S'il s'agit d'une personne morale, indiquez sa raison sociale.",
         # Col 12: M
-        "Téléphone mobile du titulaire de l'ADS",
+        "SIRET du titulaire de l'ADS",
         # Col 13: N
-        "Email du titulaire de l'ADS",
+        "Téléphone fixe du titulaire de l'ADS",
         # Col 14: O
-        "ADS exploitée par son titulaire ?",
+        "Téléphone mobile du titulaire de l'ADS",
         # Col 15: P
-        "Numéro de la carte professionnelle du titulaire\nÀ remplir UNIQUEMENT si l'ADS est exploitée par le titulaire",
+        "Email du titulaire de l'ADS",
+        ###
+        ### 1er conducteur
+        ###
         # Col 16: Q
-        "Les colonnes suivantes ne doivent être remplies que si l'ADS n'est PAS exploitée par son titulaire\n\nEntrez dans les 4 colonnes à droite les informations du 1er exploitant",
+        "Entrez dans les 4 colonnes à droite les informations du 1e conducteur",
         # Col 17: R
-        'Modalité d\'exploitation de l\'ADS\n"Salarié", "Locataire gérant", "Locataire coopérateur", "Titulaire exploitant" ou "Autre"',
+        "Qui est le conducteur du véhicule ? Remplir avec une des valeurs suivantes :\n"
+        "TITULAIRE si le conducteur est le titulaire de l'ADS (personne physique). Dans ce cas, renseignez uniquement le numéro de la carte professionnelle.\n"
+        "REPRESENTANT si le conducteur est le représentant légal de la société titulaire de l'ADS (gérant ou président non salarié)\n"
+        "SALARIE si le conducteur est salarié du titulaire de l'ADS\n"
+        "LOCATAIRE COOPERATEUR si le conducteur est locataire coopérateur\n"
+        "LOCATAIRE GERANT si le conducteur est locataire gérant",
         # Col 18: S
-        "Nom de l'exploitant de l'ADS",
+        "Nom du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 19: T
-        "SIRET de l'exploitant de l'ADS",
+        "SIRET du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 20: U
         "Numéro de la carte professionnelle",
+        ###
+        ### 2e conducteur
+        ###
         # Col 21: V
-        "Entrez dans les 4 colonnes à droite les informations du 2e exploitant",
+        "Entrez dans les 4 colonnes à droite les informations du 2e conducteur",
         # Col 22: W
-        'Modalité d\'exploitation de l\'ADS\n"Salarié", "Locataire gérant", "Locataire coopérateur", "Titulaire exploitant" ou "Autre"',
+        "Qui est le conducteur du véhicule ? Remplir avec une des valeurs suivantes :\n"
+        "TITULAIRE si le conducteur est le titulaire de l'ADS (personne physique). Dans ce cas, renseignez uniquement le numéro de la carte professionnelle.\n"
+        "REPRESENTANT si le conducteur est le représentant légal de la société titulaire de l'ADS (gérant ou président non salarié)\n"
+        "SALARIE si le conducteur est salarié du titulaire de l'ADS\n"
+        "LOCATAIRE COOPERATEUR si le conducteur est locataire coopérateur\n"
+        "LOCATAIRE GERANT si le conducteur est locataire gérant",
         # Col 23: X
-        "Nom de l'exploitant de l'ADS",
+        "Nom du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 24: Y
-        "SIRET de l'exploitant de l'ADS",
+        "SIRET du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 25: Z
         "Numéro de la carte professionnelle",
+        ###
+        ### 3e conducteur
+        ###
         # Col 26: AA
-        "Entrez dans les 4 colonnes à droite les informations du 3e exploitant",
+        "Entrez dans les 4 colonnes à droite les informations du 3e conducteur",
         # Col 27: AB
-        'Modalité d\'exploitation de l\'ADS\n"Salarié", "Locataire gérant", "Locataire coopérateur", "Titulaire exploitant" ou "Autre"',
+        "Qui est le conducteur du véhicule ? Remplir avec une des valeurs suivantes :\n"
+        "TITULAIRE si le conducteur est le titulaire de l'ADS (personne physique). Dans ce cas, renseignez uniquement le numéro de la carte professionnelle.\n"
+        "REPRESENTANT si le conducteur est le représentant légal de la société titulaire de l'ADS (gérant ou président non salarié)\n"
+        "SALARIE si le conducteur est salarié du titulaire de l'ADS\n"
+        "LOCATAIRE COOPERATEUR si le conducteur est locataire coopérateur\n"
+        "LOCATAIRE GERANT si le conducteur est locataire gérant",
         # Col 28: AC
-        "Nom de l'exploitant de l'ADS",
+        "Nom du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 29: AD
-        "SIRET de l'exploitant de l'ADS",
+        "SIRET du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 30: AE
         "Numéro de la carte professionnelle",
+        ###
+        ### 4e conducteur
+        ###
         # Col 31: AF
-        "Entrez dans les 4 colonnes à droite les informations du 4e exploitant",
+        "Entrez dans les 4 colonnes à droite les informations du 4e conducteur",
         # Col 32: AG
-        'Modalité d\'exploitation de l\'ADS\n"Salarié", "Locataire gérant", "Locataire coopérateur", "Titulaire exploitant" ou "Autre"',
+        "Qui est le conducteur du véhicule ? Remplir avec une des valeurs suivantes :\n"
+        "TITULAIRE si le conducteur est le titulaire de l'ADS (personne physique). Dans ce cas, renseignez uniquement le numéro de la carte professionnelle.\n"
+        "REPRESENTANT si le conducteur est le représentant légal de la société titulaire de l'ADS (gérant ou président non salarié)\n"
+        "SALARIE si le conducteur est salarié du titulaire de l'ADS\n"
+        "LOCATAIRE COOPERATEUR si le conducteur est locataire coopérateur\n"
+        "LOCATAIRE GERANT si le conducteur est locataire gérant",
         # Col 33: AH
-        "Nom de l'exploitant de l'ADS",
+        "Nom du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 34: AI
-        "SIRET de l'exploitant de l'ADS",
+        "SIRET du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 35: AJ
         "Numéro de la carte professionnelle",
+        ###
+        ### 5e conducteur
+        ###
+        # Col 35: AK
+        "Entrez dans les 4 colonnes à droite les informations du 5e conducteur",
+        # Col 36: AL
+        "Qui est le conducteur du véhicule ? Remplir avec une des valeurs suivantes :\n"
+        "TITULAIRE si le conducteur est le titulaire de l'ADS (personne physique). Dans ce cas, renseignez uniquement le numéro de la carte professionnelle.\n"
+        "REPRESENTANT si le conducteur est le représentant légal de la société titulaire de l'ADS (gérant ou président non salarié)\n"
+        "SALARIE si le conducteur est salarié du titulaire de l'ADS\n"
+        "LOCATAIRE COOPERATEUR si le conducteur est locataire coopérateur\n"
+        "LOCATAIRE GERANT si le conducteur est locataire gérant",
+        # Col 37: AM
+        "Nom du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
+        # Col 38: AN
+        "SIRET du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
+        # Col 30: AE
+        "Numéro de la carte professionnelle",
+        ###
+        ### 6e conducteur
+        ###
+        # Col 31: AF
+        "Entrez dans les 4 colonnes à droite les informations du 6e conducteur",
+        # Col 32: AG
+        "Qui est le conducteur du véhicule ? Remplir avec une des valeurs suivantes :\n"
+        "TITULAIRE si le conducteur est le titulaire de l'ADS (personne physique). Dans ce cas, renseignez uniquement le numéro de la carte professionnelle.\n"
+        "REPRESENTANT si le conducteur est le représentant légal de la société titulaire de l'ADS (gérant ou président non salarié)\n"
+        "SALARIE si le conducteur est salarié du titulaire de l'ADS\n"
+        "LOCATAIRE COOPERATEUR si le conducteur est locataire coopérateur\n"
+        "LOCATAIRE GERANT si le conducteur est locataire gérant",
+        # Col 33: AH
+        "Nom du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
+        # Col 34: AI
+        "SIRET du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
+        # Col 35: AJ
+        "Numéro de la carte professionnelle",
+        ###
+        ### 7e conducteur
+        ###
         # Col 36: AK
-        "Entrez dans les 4 colonnes à droite les informations du 5e exploitant",
+        "Entrez dans les 4 colonnes à droite les informations du 7e conducteur",
         # Col 37: AL
-        'Modalité d\'exploitation de l\'ADS\n"Salarié", "Locataire gérant", "Locataire coopérateur", "Titulaire exploitant" ou "Autre"',
+        "Qui est le conducteur du véhicule ? Remplir avec une des valeurs suivantes :\n"
+        "TITULAIRE si le conducteur est le titulaire de l'ADS (personne physique). Dans ce cas, renseignez uniquement le numéro de la carte professionnelle.\n"
+        "REPRESENTANT si le conducteur est le représentant légal de la société titulaire de l'ADS (gérant ou président non salarié)\n"
+        "SALARIE si le conducteur est salarié du titulaire de l'ADS\n"
+        "LOCATAIRE COOPERATEUR si le conducteur est locataire coopérateur\n"
+        "LOCATAIRE GERANT si le conducteur est locataire gérant",
         # Col 38: AM
-        "Nom de l'exploitant de l'ADS",
+        "Nom du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 39: AN
-        "SIRET de l'exploitant de l'ADS",
+        "SIRET du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 40: AO
         "Numéro de la carte professionnelle",
+        ###
+        ### 8e conducteur
+        ###
         # Col 41: AP
-        "Entrez dans les 4 colonnes à droite les informations du 6e exploitant",
+        "Entrez dans les 4 colonnes à droite les informations du 8e conducteur",
         # Col 42: AQ
-        'Modalité d\'exploitation de l\'ADS\n"Salarié", "Locataire gérant", "Locataire coopérateur", "Titulaire exploitant" ou "Autre"',
+        "Qui est le conducteur du véhicule ? Remplir avec une des valeurs suivantes :\n"
+        "TITULAIRE si le conducteur est le titulaire de l'ADS (personne physique). Dans ce cas, renseignez uniquement le numéro de la carte professionnelle.\n"
+        "REPRESENTANT si le conducteur est le représentant légal de la société titulaire de l'ADS (gérant ou président non salarié)\n"
+        "SALARIE si le conducteur est salarié du titulaire de l'ADS\n"
+        "LOCATAIRE COOPERATEUR si le conducteur est locataire coopérateur\n"
+        "LOCATAIRE GERANT si le conducteur est locataire gérant",
         # Col 43: AR
-        "Nom de l'exploitant de l'ADS",
+        "Nom du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 44: AS
-        "SIRET de l'exploitant de l'ADS",
+        "SIRET du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 45: AT
         "Numéro de la carte professionnelle",
+        ###
+        ### 9e conducteur
+        ###
         # Col 46: AU
-        "Entrez dans les 4 colonnes à droite les informations du 7e exploitant",
+        "Entrez dans les 4 colonnes à droite les informations du 9e conducteur",
         # Col 47: AV
-        'Modalité d\'exploitation de l\'ADS\n"Salarié", "Locataire gérant", "Locataire coopérateur", "Titulaire exploitant" ou "Autre"',
+        "Qui est le conducteur du véhicule ? Remplir avec une des valeurs suivantes :\n"
+        "TITULAIRE si le conducteur est le titulaire de l'ADS (personne physique). Dans ce cas, renseignez uniquement le numéro de la carte professionnelle.\n"
+        "REPRESENTANT si le conducteur est le représentant légal de la société titulaire de l'ADS (gérant ou président non salarié)\n"
+        "SALARIE si le conducteur est salarié du titulaire de l'ADS\n"
+        "LOCATAIRE COOPERATEUR si le conducteur est locataire coopérateur\n"
+        "LOCATAIRE GERANT si le conducteur est locataire gérant",
         # Col 48: AW
-        "Nom de l'exploitant de l'ADS",
+        "Nom du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 49: AX
-        "SIRET de l'exploitant de l'ADS",
+        "SIRET du conducteur de l'ADS\n"
+        "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 50: AY
-        "Numéro de la carte professionnelle",
-        # Col 51: AZ
-        "Entrez dans les 4 colonnes à droite les informations du 8e exploitant",
-        # Col 52: BA
-        'Modalité d\'exploitation de l\'ADS\n"Salarié", "Locataire gérant", "Locataire coopérateur", "Titulaire exploitant" ou "Autre"',
-        # Col 53: BB
-        "Nom de l'exploitant de l'ADS",
-        # Col 54: BC
-        "SIRET de l'exploitant de l'ADS",
-        # Col 55: BD
-        "Numéro de la carte professionnelle",
-        # Col 56: BE
-        "Entrez dans les 4 colonnes à droite les informations du 9e exploitant",
-        # Col 57: BF
-        'Modalité d\'exploitation de l\'ADS\n"Salarié", "Locataire gérant", "Locataire coopérateur", "Titulaire exploitant" ou "Autre"',
-        # Col 58: BG
-        "Nom de l'exploitant de l'ADS",
-        # Col 59: BH
-        "SIRET de l'exploitant de l'ADS",
-        # Col 60: BI
         "Numéro de la carte professionnelle",
     )
 
@@ -210,11 +300,22 @@ class ADSImporter:
         self.excel = Excel(self.COLUMNS)
 
     def check_header(self, cols):
-        """Make sure the header has the columns we expect."""
+        """Make sure the header has the columns we expect. We ignore minimal differences (case, spaces, etc.)"""
         for idx, (col, exp) in enumerate(itertools.zip_longest(cols, self.COLUMNS)):
-            if col == exp or col.strip() == exp.strip():
+            sanitized_col = (
+                (col or "").strip().lower().replace("\n", "").replace(" ", "")
+            )
+            sanitized_exp = (
+                (exp or "").strip().lower().replace("\n", "").replace(" ", "")
+            )
+
+            if sanitized_col == sanitized_exp:
                 continue
-            raise self.fmt_col_error(f'valeur attendue: "{exp}"', col, idx)
+            raise self.fmt_col_error(
+                f"valeur attendue\nvvvvvvvvvvvvvvvvvvvvvvvv\n{exp}\n^^^^^^^^^^^^^^^^^^^^^^^^\n",
+                col,
+                idx,
+            )
 
     def fmt_col_error(self, msg, value, idx):
         return ValueError(f"{msg}. Colonne {self.excel.idx_to_colname(idx)}: {value}")
@@ -244,7 +345,10 @@ class ADSImporter:
                 self.excel.idx("numéro de l'ads", exact=True),
             )
 
-        ads.ads_in_use = True
+        ads.ads_in_use = self.parse_bool(
+            cols,
+            self.excel.idx("ADS actuellement exploitée ?"),
+        )
 
         ads.ads_creation_date = self.parse_date(
             cols,
@@ -265,8 +369,7 @@ class ADSImporter:
         ads.immatriculation_plate = self.parse_license_plate(
             cols,
             self.excel.idx(
-                "plaque d'immatriculation",
-                exact=True,
+                "immatriculation du véhicule",
             ),
         )
         ads.vehicle_compatible_pmr = self.parse_bool(
@@ -292,65 +395,46 @@ class ADSImporter:
             self.excel.idx("email du titulaire"),
         )
 
-        used_by_owner = self.parse_bool(
-            cols,
-            self.excel.idx("ads exploitée par son titulaire"),
-        )
-
-        owner_license_number = self.parse_license_number(
-            cols, self.excel.idx("carte professionnelle du titulaire")
-        )
-
-        if not used_by_owner and owner_license_number:
-            raise self.fmt_col_error(
-                f"ADS {ads_number} a le champ 'ADS exploitée par son titulaire' à Non, mais la carte pro du titulaire est définie",
-                f"used_by_owner={used_by_owner} / owner_license_numer={owner_license_number}",
-                self.excel.idx("ads exploitée par son titulaire"),
-            )
-
         if not ads.attribution_type:
             ads.attribution_type = ""
         if not ads.attribution_reason:
             ads.attribution_reason = ""
 
-        ads_users = self.load_ads_users(cols, ads, owner_license_number)
+        ads_users = self.load_ads_users(cols, ads)
         return ads, ads_users
 
-    def load_ads_users(self, cols, ads, owner_license_number):
+    def load_ads_users(self, cols, ads):
         """Load the ADS users from the excel file"""
         ads_users = []
-
-        if owner_license_number:
-            ads_users.append(
-                ADSUser(
-                    ads=ads,
-                    status="titulaire_exploitant",
-                    license_number=owner_license_number,
-                )
-            )
-
         for i in range(9):
-            name_exploitant_idx = self.excel.nidx("nom de l'exploitant", i)
-            siret_exploitant_idx = self.excel.nidx("siret de l'exploitant", i)
+            status_exploitant_idx = self.excel.nidx(
+                "Qui est le conducteur du véhicule ? Remplir avec une des valeurs suivantes :",
+                i,
+            )
+            name_exploitant_idx = self.excel.nidx("nom du conducteur", i)
+            siret_exploitant_idx = self.excel.nidx("siret du conducteur", i)
             license_number_exploitant_idx = self.excel.nidx(
                 "numéro de la carte professionnelle", i, exact=True
             )
             if (
-                not cols[name_exploitant_idx]
-                and not cols[siret_exploitant_idx]
-                and not cols[license_number_exploitant_idx]
+                self.is_empty(cols[status_exploitant_idx])
+                and self.is_empty(cols[name_exploitant_idx])
+                and self.is_empty(cols[siret_exploitant_idx])
+                and self.is_empty(cols[license_number_exploitant_idx])
             ):
                 continue
 
             # Content of the first non-empty column set between name, siret and license number. Used to report errors.
             first_col_set = (
-                cols[name_exploitant_idx]
+                cols[status_exploitant_idx]
+                or cols[name_exploitant_idx]
                 or cols[siret_exploitant_idx]
                 or (cols[license_number_exploitant_idx])
             )
             # Index of the first non-empty column. Used to report errors.
             first_col_set_idx = (
-                (cols[name_exploitant_idx] and name_exploitant_idx)
+                (cols[status_exploitant_idx] and status_exploitant_idx)
+                or (cols[name_exploitant_idx] and name_exploitant_idx)
                 or (cols[siret_exploitant_idx] and siret_exploitant_idx)
                 or (
                     cols[license_number_exploitant_idx]
@@ -358,27 +442,48 @@ class ADSImporter:
                 )
             )
 
-            if ads.ads_creation_date >= datetime.date(2014, 10, 1):
+            if ads.ads_creation_date >= datetime.date(2014, 10, 1) and i > 1:
                 raise self.fmt_col_error(
-                    "L'exploitant de l'ADS ne peut être défini que pour les anciennes ADS",
+                    "Un seul exploitant peut être défini pour les nouvelles ADS",
                     first_col_set,
                     first_col_set_idx,
                 )
 
-            count = ADSUser.objects.filter(ads=ads).count()
-            if count:
-                raise self.fmt_col_error(
-                    f"L'ADS {ads.number} a déjà {count} exploitants définis. Ce script ne permet pas de modifier les exploitants d'une ADS",
-                    first_col_set,
-                    first_col_set_idx,
-                )
+            status = self.parse_exploitant_status(cols, status_exploitant_idx)
+
+            name = cols[name_exploitant_idx] or ""
+            if name and status == "titulaire_exploitant":
+                if name.replace(" ", "") == ads.owner_name.replace(" ", ""):
+                    name = ""
+                else:
+                    raise self.fmt_col_error(
+                        'Pour les titulaires exploitants, le nom doit être vide et rempli dans le champ "Titulaire de l\'ADS"',
+                        first_col_set,
+                        first_col_set_idx,
+                    )
+
+            siret = cols[siret_exploitant_idx] or ""
+            if siret and (
+                status == "titulaire_exploitant" or status == "legal_representative"
+            ):
+                if siret == ads.owner_siret:
+                    siret = ""
+                else:
+                    raise self.fmt_col_error(
+                        'Pour les titulaires exploitants et les représentants légaux, le SIRET doit être vide et rempli dans le champ "SIRET du titulaire de l\'ADS"',
+                        first_col_set,
+                        first_col_set_idx,
+                    )
+
+            license_number = cols[license_number_exploitant_idx] or ""
 
             ads_users.append(
                 ADSUser(
                     ads=ads,
-                    name=cols[name_exploitant_idx] or "",
-                    siret=cols[siret_exploitant_idx] or "",
-                    license_number=cols[license_number_exploitant_idx] or "",
+                    status=status,
+                    name=name,
+                    siret=siret,
+                    license_number=license_number,
                 )
             )
         return ads_users
@@ -464,7 +569,7 @@ class ADSImporter:
         return cols[idx] or ""
 
     def parse_siret(self, cols, idx):
-        siret = str(cols[idx])
+        siret = str(cols[idx]).strip()
         if siret == "None":
             return ""
         if siret:
@@ -477,7 +582,7 @@ class ADSImporter:
     def parse_phone(self, cols, idx, mobile=False):
         if not cols[idx]:
             return ""
-        phone = "".join(str(cols[idx]).split())
+        phone = "".join(str(cols[idx]).replace(".", "").split())
         # Accept 9 digits phone numbers
         if len(phone) == 9:
             phone = "0" + phone
@@ -515,6 +620,24 @@ class ADSImporter:
 
     def parse_license_number(self, cols, idx):
         return cols[idx] or ""
+
+    def parse_exploitant_status(self, cols, idx):
+        choices = {
+            "titulaire": "titulaire_exploitant",
+            "représentant": "legal_representative",
+            "salarié": "salarie",
+            "locataire coopérateur": "cooperateur",
+            "locataire gérant": "locataire_gerant",
+        }
+        ret = choices.get((cols[idx] or "").lower().strip())
+        if not ret:
+            raise self.fmt_col_error("Statut de l'exploitant invalide", cols[idx], idx)
+        return ret
+
+    def is_empty(self, value):
+        if value is None:
+            return True
+        return value.strip() == ""
 
 
 class Command(BaseCommand):
@@ -610,7 +733,7 @@ class Command(BaseCommand):
                         last_exc = exc
                         self._log(
                             self.style.ERROR,
-                            f"Ligne {idx+1}: échec de l'import de l'ADS {ads['ads'].number}: {exc}",
+                            f"Ligne {idx+2}: échec de l'import de l'ADS {ads['ads'].number}: {exc}",
                         )
 
                 if last_exc:
