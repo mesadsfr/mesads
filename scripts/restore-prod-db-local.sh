@@ -18,21 +18,21 @@ if [[ "${REUSE:-y}" =~ ^[yY]$ ]]; then
 fi
 
 echo "==> Start db container"
-docker-compose up -d db
+docker compose up -d db
 sleep 1
 
 echo "==> Kill all db connections"
-docker-compose exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid != pg_backend_pid()'
+docker compose exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid != pg_backend_pid()'
 
 echo "==> Drop and recreate database"
-docker-compose exec db psql -U postgres -c "DROP DATABASE IF EXISTS ${LOCAL_DATABASE}"
-docker-compose exec db psql -U postgres -c "CREATE DATABASE ${LOCAL_DATABASE}"
+docker compose exec db psql -U postgres -c "DROP DATABASE IF EXISTS ${LOCAL_DATABASE}"
+docker compose exec db psql -U postgres -c "CREATE DATABASE ${LOCAL_DATABASE}"
 
 echo "==> Restore data"
-docker-compose exec -T db psql -U postgres "${LOCAL_DATABASE}" < "$DATA_FILE"
+docker compose exec -T db psql -U postgres "${LOCAL_DATABASE}" < "$DATA_FILE"
 
 echo "==> Create superuser"
-cat<<EOF | docker-compose run -T --no-deps --rm app poetry run python manage.py shell
+cat<<EOF | docker compose run -T --no-deps --rm app poetry run python manage.py shell
 from mesads.users.models import User
 
 User.objects.create_superuser('${SUPERUSER_USERNAME}', '${SUPERUSER_PASSWORD}')
@@ -41,7 +41,7 @@ EOF
 echo "==> Give ADSManagerAdministrator permissions to the new user"
 for id in ${DEFAULT_ADS_MANAGER_ADMINISTRATOR}; do
     echo "==> ... For ADSManagerAdministrator ${id}"
-    cat<<EOF | docker-compose run -T --no-deps --rm app poetry run python manage.py shell
+    cat<<EOF | docker compose run -T --no-deps --rm app poetry run python manage.py shell
 
 from mesads.app.models import ADSManagerAdministrator
 from mesads.users.models import User
@@ -57,7 +57,7 @@ done
 echo "==> Give ADSManager permissions to the new user"
 for id in ${DEFAULT_ADS_MANAGER}; do
     echo "==> ... For ADSManager ${id}"
-    cat<<EOF | docker-compose run -T --no-deps --rm app poetry run python manage.py shell
+    cat<<EOF | docker compose run -T --no-deps --rm app poetry run python manage.py shell
 
 from mesads.app.models import ADSManager, ADSManagerRequest
 from mesads.users.models import User
