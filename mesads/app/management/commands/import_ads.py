@@ -569,7 +569,7 @@ class ADSImporter:
         return cols[idx] or ""
 
     def parse_siret(self, cols, idx):
-        siret = str(cols[idx]).strip()
+        siret = "".join(str(cols[idx]).strip().split())
         if siret == "None":
             return ""
         if siret:
