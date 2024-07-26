@@ -59,6 +59,49 @@ class TestSearchDepartementView(ClientTestCase):
             self.assertEqual(resp.context["prefecture"].numero, "33")
             self.assertEqual(resp.context["object_list"].count(), 1)
 
+    def test_ordering(self):
+        """Ensure vehicules are ordered by numero"""
+        resp = self.admin_client.get(
+            "/registre_vehicules_relais/consulter/departements/75"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context["prefecture"].numero, "75")
+        self.assertEqual(resp.context["object_list"].count(), 0)
+
+        paris = Prefecture.objects.filter(numero="75").get()
+        for numero in (
+            "75-01",
+            "75-02",
+            "75-101",
+            "75-12",
+            "75-03",
+        ):
+            vehicule = Vehicule.objects.create(
+                proprietaire=self.proprietaire,
+                departement=paris,
+                immatriculation="666-666-666",
+                modele="Range rover",
+                motorisation="essence",
+                date_mise_circulation=datetime.date(2020, 5, 1),
+                nombre_places=4,
+                pmr=True,
+                commune_localisation=None,
+            )
+            vehicule.numero = numero
+            vehicule.save()
+
+        resp = self.admin_client.get(
+            "/registre_vehicules_relais/consulter/departements/75"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context["prefecture"].numero, "75")
+        self.assertEqual(resp.context["object_list"].count(), 5)
+        self.assertEqual(resp.context["object_list"][0].numero, "75-01")
+        self.assertEqual(resp.context["object_list"][1].numero, "75-02")
+        self.assertEqual(resp.context["object_list"][2].numero, "75-03")
+        self.assertEqual(resp.context["object_list"][3].numero, "75-12")
+        self.assertEqual(resp.context["object_list"][4].numero, "75-101")
+
 
 class TestVehiculeView(ClientTestCase):
     def test_get(self):
@@ -157,6 +200,48 @@ class TestProprietaireDetailView(ClientTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(proprietaire_without_vehicules.id, resp.context["object"].id)
         self.assertTrue(resp.context["deletable"])
+
+    def test_ordering(self):
+        """Ensure vehicules are ordered by numero"""
+        proprietaire = Proprietaire.objects.create(nom="Propriétaire sans véhicules")
+        resp = self.admin_client.get(
+            f"/registre_vehicules_relais/proprietaire/{proprietaire.id}"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context["object_list"].count(), 0)
+
+        paris = Prefecture.objects.filter(numero="75").get()
+        for numero in (
+            "75-01",
+            "75-02",
+            "75-101",
+            "75-12",
+            "75-03",
+        ):
+            vehicule = Vehicule.objects.create(
+                proprietaire=proprietaire,
+                departement=paris,
+                immatriculation="666-666-666",
+                modele="Range rover",
+                motorisation="essence",
+                date_mise_circulation=datetime.date(2020, 5, 1),
+                nombre_places=4,
+                pmr=True,
+                commune_localisation=None,
+            )
+            vehicule.numero = numero
+            vehicule.save()
+
+        resp = self.admin_client.get(
+            f"/registre_vehicules_relais/proprietaire/{proprietaire.id}"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context["object_list"].count(), 5)
+        self.assertEqual(resp.context["object_list"][0].numero, "75-01")
+        self.assertEqual(resp.context["object_list"][1].numero, "75-02")
+        self.assertEqual(resp.context["object_list"][2].numero, "75-03")
+        self.assertEqual(resp.context["object_list"][3].numero, "75-12")
+        self.assertEqual(resp.context["object_list"][4].numero, "75-101")
 
 
 class TestProprietaireDeleteView(ClientTestCase):

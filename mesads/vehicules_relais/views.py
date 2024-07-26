@@ -3,6 +3,8 @@ from io import BytesIO
 
 from django.contrib import messages
 from django.contrib.staticfiles.finders import find
+from django.db.models.functions import Cast
+from django.db.models import Func, IntegerField, Value
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
@@ -39,6 +41,14 @@ from .forms import (
 )
 
 
+class SplitPart(Func):
+    """The SPLIT_PART PostgreSQL function is not available in Django. Create a
+    custom function to use it."""
+
+    function = "SPLIT_PART"
+    output_field = IntegerField()
+
+
 class IndexView(RedirectView):
     url = reverse_lazy("vehicules-relais.search")
 
@@ -69,9 +79,15 @@ class SearchDepartementView(ListView):
     paginate_by = 100
 
     def get_queryset(self):
+        # .order_by("numero") doesn't work because with a string ordering, 75-2 is higher than 75-100.
+        # Instead we split the numero field and order by the first and second part.
         return (
             Vehicule.objects.filter(departement__numero=self.kwargs["departement"])
-            .order_by("numero")
+            .annotate(
+                part1=Cast(SplitPart("numero", Value("-"), Value(1)), IntegerField()),
+                part2=Cast(SplitPart("numero", Value("-"), Value(2)), IntegerField()),
+            )
+            .order_by("part1", "part2")
             .select_related("proprietaire")
         )
 
@@ -141,10 +157,16 @@ class ProprietaireDetailView(ListView):
     paginate_by = 50
 
     def get_queryset(self):
+        # .order_by("numero") doesn't work because with a string ordering, 75-2 is higher than 75-100.
+        # Instead we split the numero field and order by the first and second part.
         return (
             Vehicule.objects.filter(proprietaire=self.kwargs["proprietaire_id"])
+            .annotate(
+                part1=Cast(SplitPart("numero", Value("-"), Value(1)), IntegerField()),
+                part2=Cast(SplitPart("numero", Value("-"), Value(2)), IntegerField()),
+            )
             .select_related("departement")
-            .order_by(("numero"))
+            .order_by("part1", "part2")
         )
 
     def get_context_data(self, **kwargs):

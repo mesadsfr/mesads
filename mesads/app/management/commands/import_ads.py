@@ -114,9 +114,9 @@ class ADSImporter:
         "Téléphone mobile du titulaire de l'ADS",
         # Col 15: P
         "Email du titulaire de l'ADS",
-        ###
-        ### 1er conducteur
-        ###
+        #
+        # 1er conducteur
+        #
         # Col 16: Q
         "Entrez dans les 4 colonnes à droite les informations du 1e conducteur",
         # Col 17: R
@@ -134,9 +134,9 @@ class ADSImporter:
         "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 20: U
         "Numéro de la carte professionnelle",
-        ###
-        ### 2e conducteur
-        ###
+        #
+        # 2e conducteur
+        #
         # Col 21: V
         "Entrez dans les 4 colonnes à droite les informations du 2e conducteur",
         # Col 22: W
@@ -154,9 +154,9 @@ class ADSImporter:
         "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 25: Z
         "Numéro de la carte professionnelle",
-        ###
-        ### 3e conducteur
-        ###
+        #
+        # 3e conducteur
+        #
         # Col 26: AA
         "Entrez dans les 4 colonnes à droite les informations du 3e conducteur",
         # Col 27: AB
@@ -174,9 +174,9 @@ class ADSImporter:
         "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 30: AE
         "Numéro de la carte professionnelle",
-        ###
-        ### 4e conducteur
-        ###
+        #
+        # 4e conducteur
+        #
         # Col 31: AF
         "Entrez dans les 4 colonnes à droite les informations du 4e conducteur",
         # Col 32: AG
@@ -194,9 +194,9 @@ class ADSImporter:
         "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 35: AJ
         "Numéro de la carte professionnelle",
-        ###
-        ### 5e conducteur
-        ###
+        #
+        # 5e conducteur
+        #
         # Col 35: AK
         "Entrez dans les 4 colonnes à droite les informations du 5e conducteur",
         # Col 36: AL
@@ -214,9 +214,9 @@ class ADSImporter:
         "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 30: AE
         "Numéro de la carte professionnelle",
-        ###
-        ### 6e conducteur
-        ###
+        #
+        # 6e conducteur
+        #
         # Col 31: AF
         "Entrez dans les 4 colonnes à droite les informations du 6e conducteur",
         # Col 32: AG
@@ -234,9 +234,9 @@ class ADSImporter:
         "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 35: AJ
         "Numéro de la carte professionnelle",
-        ###
-        ### 7e conducteur
-        ###
+        #
+        # 7e conducteur
+        #
         # Col 36: AK
         "Entrez dans les 4 colonnes à droite les informations du 7e conducteur",
         # Col 37: AL
@@ -254,9 +254,9 @@ class ADSImporter:
         "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 40: AO
         "Numéro de la carte professionnelle",
-        ###
-        ### 8e conducteur
-        ###
+        #
+        # 8e conducteur
+        #
         # Col 41: AP
         "Entrez dans les 4 colonnes à droite les informations du 8e conducteur",
         # Col 42: AQ
@@ -274,9 +274,9 @@ class ADSImporter:
         "À remplir uniquement si le conducteur n'est pas TITULAIRE",
         # Col 45: AT
         "Numéro de la carte professionnelle",
-        ###
-        ### 9e conducteur
-        ###
+        #
+        # 9e conducteur
+        #
         # Col 46: AU
         "Entrez dans les 4 colonnes à droite les informations du 9e conducteur",
         # Col 47: AV
