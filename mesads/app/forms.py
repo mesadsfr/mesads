@@ -93,9 +93,6 @@ class ADSForm(forms.ModelForm):
             "ads_in_use",
             "ads_renew_date",
             "attribution_date",
-            "attribution_type",
-            "transaction_identifier",
-            "attribution_reason",
             "accepted_cpam",
             "immatriculation_plate",
             "vehicle_compatible_pmr",
@@ -105,6 +102,7 @@ class ADSForm(forms.ModelForm):
             "owner_phone",
             "owner_mobile",
             "owner_email",
+            "notes",
         )
 
     def __init__(self, epci=None, *args, **kwargs):

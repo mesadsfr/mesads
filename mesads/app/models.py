@@ -412,55 +412,6 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
                 name="attribution_date_null_for_new_ads",
                 violation_error_message="La date d'attribution ne peut être renseignée que pour les ADS créées avant le 1er octobre 2014.",
             ),
-            # Check attribution_type:
-            # - For new ADS, attribution_type should always be empty
-            # - For old ADS, attribution_type can be set or not
-            # - For ADS with an unknown creation date, attribution_type should be empty
-            models.CheckConstraint(
-                check=(
-                    Q(
-                        ads_creation_date__isnull=False,
-                        ads_creation_date__gte=date(2014, 10, 1),
-                        attribution_type="",
-                    )
-                    | Q(
-                        ads_creation_date__isnull=False,
-                        ads_creation_date__lt=date(2014, 10, 1),
-                    )
-                    | Q(ads_creation_date__isnull=True, attribution_type="")
-                ),
-                name="attribution_type_empty_for_new_ads",
-                violation_error_message="Le champ 'Type d'attribution de l'ADS' ne peut être renseigné que pour les ADS créées avant le 1er octobre 2014.",
-            ),
-            # Check transaction_identifier: the field can only be set if attribution_type is "paid"
-            models.CheckConstraint(
-                check=(
-                    Q(attribution_type="paid")
-                    | Q(~Q(attribution_type="paid"), transaction_identifier="")
-                ),
-                name="transaction_identifier_empty_for_non_paid_ads",
-                violation_error_message="Le champ 'Numéro d'identification lié au registre des transactions' ne peut être renseigné que pour les ADS dont le type d'attribution est 'Cession à titre onéreux'.",
-            ),
-            # Check attribution_reason:
-            # - For new ADS, attribution_reason should always be empty
-            # - For old ADS, attribution_reason can be set or not
-            # - For ADS with an unknown creation date, attribution_reason should be empty
-            models.CheckConstraint(
-                check=(
-                    Q(
-                        ads_creation_date__isnull=False,
-                        ads_creation_date__gte=date(2014, 10, 1),
-                        attribution_reason="",
-                    )
-                    | Q(
-                        ads_creation_date__isnull=False,
-                        ads_creation_date__lt=date(2014, 10, 1),
-                    )
-                    | Q(ads_creation_date__isnull=True, attribution_reason="")
-                ),
-                name="attribution_reason_empty_for_new_ads",
-                violation_error_message="Le champ 'Raison d'attribution' ne peut être renseigné que pour les ADS créées avant le 1er octobre 2014.",
-            ),
             # Check renewal date nullable:
             # - For new ADS, renew date can be set or not
             # - For old ADS, renew date must always be empty
@@ -590,36 +541,6 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
         help_text="Laissez ce champ vide si le titulaire n'a pas changé depuis la création de l'ADS.",
     )
 
-    ATTRIBUTION_TYPES = [
-        ("free", "Délivrée par l'autorité compétente"),
-        ("paid", "Cession à titre onéreux"),
-        ("other", "Autre"),
-    ]
-
-    attribution_type = models.CharField(
-        max_length=16,
-        choices=ATTRIBUTION_TYPES,
-        blank=True,
-        null=False,
-        verbose_name="Type d'attribution de l'ADS au titulaire actuel",
-    )
-
-    transaction_identifier = models.CharField(
-        max_length=64,
-        blank=True,
-        null=False,
-        verbose_name="Numéro d'identification lié au registre des transactions",
-        help_text="Ne renseignez ce numéro que dans le cas où, au sein de votre commune, vous tenez un registre relatif à l'ensemble des transactions officielles. Si vous ne tenez pas un tel registre, il n'est pas nécessaire de renseigner ce champ.",
-    )
-
-    attribution_reason = models.CharField(
-        max_length=4096,
-        blank=True,
-        null=False,
-        verbose_name="Raison d'attribution",
-        help_text="Ce champ est optionnel. Il peut être utilisé pour préciser les raisons de l'attribution de l'ADS au titulaire actuel. Par exemple : « changement du gérant de la société », « achat », …",
-    )
-
     accepted_cpam = models.BooleanField(
         blank=True, null=True, verbose_name="Véhicule conventionné CPAM ?"
     )
@@ -692,6 +613,15 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
         blank=True,
         null=False,
         verbose_name="Email du titulaire de l'ADS",
+    )
+
+    notes = models.TextField(
+        blank=True,
+        null=False,
+        verbose_name="Notes sur l'ADS",
+        help_text=(
+            "Champ libre pour les informations complémentaires utiles (numéro d'enregistrement dans le registre des transactions, informations importantes concernant la délivrance ou la cession de l'ADS, etc…)"
+        ),
     )
 
 

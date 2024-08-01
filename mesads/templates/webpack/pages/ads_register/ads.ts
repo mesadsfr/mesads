@@ -5,7 +5,6 @@ SetupFormsetFiles();
 
 type DataType = {
   ads_creation_date: string;
-  attribution_type: string;
   ads_in_use: string;
 };
 
@@ -30,8 +29,6 @@ Alpine.data("get_x_data", () => ({
   },
 
   ads_in_use: data.ads_in_use,
-
-  attribution_type: data.attribution_type,
 
   extraADSUserForms: 0,
 }));

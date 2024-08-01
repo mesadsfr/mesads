@@ -170,7 +170,6 @@ class ADSAdmin(CompareVersionAdmin):
         ADSPeriodListFilter,
         "adsuser__status",
         ADSUsersCount,
-        "attribution_type",
         "accepted_cpam",
     ]
 

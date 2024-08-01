@@ -395,11 +395,6 @@ class ADSImporter:
             self.excel.idx("email du titulaire"),
         )
 
-        if not ads.attribution_type:
-            ads.attribution_type = ""
-        if not ads.attribution_reason:
-            ads.attribution_reason = ""
-
         ads_users = self.load_ads_users(cols, ads)
         return ads, ads_users
 

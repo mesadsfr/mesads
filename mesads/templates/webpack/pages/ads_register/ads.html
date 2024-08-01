@@ -147,21 +147,6 @@ Enregistrement d'une ADS
         </div>
       </template>
 
-      <template x-if="ads_in_use === 'true' && ads_before_2014">
-        <div x-show="ads_before_2014" x-transition class="fr-input-group">
-          <!-- ADS attribution type -->
-          {% include 'form_fields/select.html' with x_model="attribution_type" field=form.attribution_type field_errors=form.errors.attribution_type required=form.fields.attribution_type.required readonly=ads_manager.is_locked %}
-
-          <!-- Transaction identifier -->
-          <template x-if="attribution_type === 'paid'">
-            {% include 'form_fields/string.html' with x_transition=True field=form.transaction_identifier field_errors=form.errors.transaction_identifier required=form.fields.transaction_identifier.required readonly=ads_manager.is_locked %}
-          </template>
-
-          <!-- ADS attribution reason -->
-          {% include 'form_fields/string.html' with field=form.attribution_reason field_errors=form.errors.attribution_reason required=form.fields.attribution_reason.required readonly=ads_manager.is_locked %}
-        </div>
-      </template>
-
       <!-- Accepted by CPAM -->
       <template x-if="ads_in_use === 'true'">
         {% include 'form_fields/select.html' with field=form.accepted_cpam field_errors=form.errors.accepted_cpam required=form.fields.accepted_cpam.required readonly=ads_manager.is_locked %}
@@ -354,6 +339,11 @@ Enregistrement d'une ADS
       </fieldset>
     </template>
 
+    <fieldset class="mesads-fieldset fr-mb-3w">
+      <legend>Informations complémentaires</legend>
+      {% include 'form_fields/textarea.html' with field=form.notes field_errors=form.errors.notes required=form.fields.notes.required %}
+    </fieldset>
+
     <!-- Submit buttons -->
     <div class="fr-input-group">
       {% if ads %}
@@ -384,8 +374,7 @@ Enregistrement d'une ADS
 <script id="data" type="application/json">
 {
   "ads_creation_date": "{{ form.ads_creation_date.value|str_to_date|date:"Y-m-d"|default:"" }}",
-  "ads_in_use": "{% if form.ads_in_use.value is True %}true{% elif form.ads_in_use.value is False %}false{% endif %}",
-  "attribution_type": "{{ form.attribution_type.value }}"
+  "ads_in_use": "{% if form.ads_in_use.value is True %}true{% elif form.ads_in_use.value is False %}false{% endif %}"
 }
 </script>
 <script src="./ads.ts"></script>

@@ -142,21 +142,10 @@ class Command(BaseCommand):
             ads.vehicle_compatible_pmr = True
         else:
             ads.vehicle_compatible_pmr = None
-            # New ADS always have empty attribution type, reason and identifier.
             if not ads.ads_creation_date or ads.ads_creation_date >= date(2014, 10, 1):
-                ads.attribution_type = ""
-                ads.attribution_reason = ""
-                ads.transaction_identifier = ""
+                ads.notes = ""
             else:
-                if row["type_ads"] == "Payante":
-                    ads.attribution_type = "paid"
-                elif row["type_ads"] in ("Gratuite cessible", "Gratuite non cessible"):
-                    ads.attribution_type = "free"
-                else:
-                    ads.attribution_type = ""
-                    ads.attribution_reason = ""
-                if row["type_ads"] == "Relais":
-                    ads.attribution_reason = "Relais"
+                ads.notes = f'Type d\'ADS : {row["type_ads"]}'
 
         ads.immatriculation_plate = row["immatriculation"]
 
