@@ -1,7 +1,6 @@
 from django.apps import apps
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
-from django.contrib.postgres.fields import CITextField
 from django.core.mail import send_mail
 from django.db import models
 from django.utils import timezone
@@ -51,8 +50,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     authentication instead of username authentication.
     """
 
-    email = CITextField(
+    email = models.TextField(
         _("email address"),
+        db_collation="case_insensitive",
         unique=True,
         error_messages={
             "unique": "Un utilisateur avec cet email existe déjà.",
