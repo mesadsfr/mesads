@@ -2,6 +2,9 @@ import json
 
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.views.generic import TemplateView
 
 from ..models import (
@@ -36,10 +39,36 @@ class FAQView(TemplateView):
 class StatsView(TemplateView):
     template_name = "pages/stats.html"
 
+    def get(self, request, *args, **kwargs):
+        try:
+            q = [int(v) for v in self.request.GET.getlist("q")]
+        except ValueError:
+            messages.error(
+                self.request,
+                "Paramètre de filtre sur les gestionnaires d'ADS invalide, redirection vers la page de statistiques sans filtre.",
+            )
+            return redirect(reverse("app.stats"))
+
+        self.ads_managers_filter = ADSManager.objects.filter(id__in=q).all()
+
+        if len(self.ads_managers_filter) != len(q):
+            messages.error(
+                self.request,
+                "Certains gestionnaires d'ADS demandés n'existent pas, redirection vers la page de statistiques sans filtre.",
+            )
+            return redirect(reverse("app.stats"))
+
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
 
+        ctx["ads_managers_filter"] = self.ads_managers_filter
+
         ctx["ads_count"] = ADS.objects.count()
+        ctx["ads_count_filtered"] = ADS.objects.filter(
+            ads_manager__in=self.ads_managers_filter
+        ).count()
 
         ads_count_by_month = (
             ADS.objects.annotate(month=TruncMonth("creation_date"))
@@ -53,8 +82,27 @@ class StatsView(TemplateView):
             )
         )
 
+        ads_count_by_month_filtered = (
+            ADS.objects.filter(ads_manager__in=self.ads_managers_filter)
+            .annotate(month=TruncMonth("creation_date"))
+            .values("month")
+            .annotate(count=Count("id"))
+            .order_by("month")
+        )
+        ctx["ads_count_by_month_filtered"] = json.dumps(
+            dict(
+                (
+                    (row["month"].isoformat(), row["count"])
+                    for row in ads_count_by_month_filtered
+                )
+            )
+        )
+
         ctx["ads_manager_requests_count"] = ADSManagerRequest.objects.filter(
             accepted=True
+        ).count()
+        ctx["ads_manager_requests_count_filtered"] = ADSManagerRequest.objects.filter(
+            accepted=True, ads_manager__in=self.ads_managers_filter
         ).count()
 
         ads_manager_requests_by_month = (
@@ -73,8 +121,31 @@ class StatsView(TemplateView):
             )
         )
 
+        ads_manager_requests_by_month_filtered = (
+            ADSManagerRequest.objects.filter(ads_manager__in=self.ads_managers_filter)
+            .filter(accepted=True)
+            .annotate(month=TruncMonth("created_at"))
+            .values("month")
+            .annotate(count=Count("id"))
+            .order_by("month")
+        )
+        ctx["ads_manager_requests_by_month_filtered"] = json.dumps(
+            dict(
+                (
+                    (row["month"].isoformat(), row["count"])
+                    for row in ads_manager_requests_by_month_filtered
+                )
+            )
+        )
+
         ctx["ads_managers_count"] = (
             ADSManager.objects.annotate(ads_count=Count("ads"))
+            .filter(ads_count__gt=0)
+            .count()
+        )
+        ctx["ads_managers_count_filtered"] = (
+            ADSManager.objects.filter(id__in=self.ads_managers_filter)
+            .annotate(ads_count=Count("ads"))
             .filter(ads_count__gt=0)
             .count()
         )

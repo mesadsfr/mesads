@@ -119,7 +119,9 @@ function DisplayLineChart(
 // The type of data given to this script by the Django template.
 type DataType = {
   ads_by_month: Record<string, number>;
+  ads_by_month_filtered: Record<string, number>;
   ads_manager_requests_by_month: Record<string, number>;
+  ads_manager_requests_by_month_filtered: Record<string, number>;
   relais_proprietaires_by_month: Record<string, number>;
   relais_vehicules_by_month: Record<string, number>;
 };
@@ -136,6 +138,14 @@ DisplayLineChart(
   AccumulateValues(adsByTimester)
 );
 
+const adsByTimesterFiltered = GroupDataByTrimester(data.ads_by_month_filtered);
+
+DisplayLineChart(
+  document.getElementById("ads-count-filtered") as HTMLCanvasElement,
+  Object.keys(adsByTimesterFiltered),
+  AccumulateValues(adsByTimesterFiltered)
+);
+
 const requestsByTrimester = GroupDataByTrimester(
   data.ads_manager_requests_by_month
 );
@@ -144,6 +154,18 @@ DisplayLineChart(
   document.getElementById("ads-manager-requests-count") as HTMLCanvasElement,
   Object.keys(requestsByTrimester),
   AccumulateValues(requestsByTrimester)
+);
+
+const requestsByTrimesterFiltered = GroupDataByTrimester(
+  data.ads_manager_requests_by_month_filtered
+);
+
+DisplayLineChart(
+  document.getElementById(
+    "ads-manager-requests-count-filtered"
+  ) as HTMLCanvasElement,
+  Object.keys(requestsByTrimesterFiltered),
+  AccumulateValues(requestsByTrimesterFiltered)
 );
 
 const relaisProprietairesByTrimester = GroupDataByTrimester(
