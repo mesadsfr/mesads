@@ -43,11 +43,12 @@ function GroupDataByTrimester(data: Record<string, number>) {
 function AccumulateValues(data: Record<string, number>) {
   // Accumulate values to have a graph that shows the total number of ads over time
   let sum = 0;
-  return Object.values(data).reduce((acc: number[], curr: number) => {
+  const ret = Object.values(data).reduce((acc: number[], curr: number) => {
     sum += curr;
     acc.push(sum);
     return acc;
   }, []);
+  return ret;
 }
 
 function DisplayLineChart(
@@ -55,6 +56,12 @@ function DisplayLineChart(
   labels: string[],
   data: number[]
 ) {
+  // Case where there is only one data point, we duplicate it to have a line.
+  if (labels.length === 1 && data.length === 1) {
+    labels = [...labels, "Aujourd'hui"];
+    data = [data[0], data[0]];
+  }
+
   // All labels and data except the last one.
   const completedLabels = labels.slice(0, -1);
   const completedData = data.slice(0, -1);
