@@ -56,8 +56,13 @@ function DisplayLineChart(
   labels: string[],
   data: number[]
 ) {
+  // Case where there are no data points
+  if (labels.length === 0 && data.length === 0) {
+    labels = ["", ""];
+    data = [0, 0];
+  }
   // Case where there is only one data point, we duplicate it to have a line.
-  if (labels.length === 1 && data.length === 1) {
+  else if (labels.length === 1 && data.length === 1) {
     labels = [...labels, "Aujourd'hui"];
     data = [data[0], data[0]];
   }
