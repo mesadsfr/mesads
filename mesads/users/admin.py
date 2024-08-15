@@ -1,8 +1,9 @@
 from django import forms
 from django.contrib import admin
-from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.db.models import Count
+from django.contrib.auth.forms import UserChangeForm
+from django.db.models import Count, F, Q
+from django.db.models.functions import Collate
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -107,6 +108,27 @@ class UserAdmin(BaseUserAdmin):
         "email",
         "adsmanageradministrator__prefecture__libelle",
     )
+
+    def get_search_results(self, request, queryset, search_term):
+        """The field Users.email uses a non-deterministic collation, which makes
+        it impossible to perform a LIKE query on it.
+
+        By overriding this method, we can specify the collation to use for the search.
+        """
+        use_distinct = True
+        queryset = queryset.annotate(collated_email=Collate(F("email"), "C"))
+        queryset = queryset.filter(
+            Q(
+                collated_email__icontains=search_term,
+            )
+            | Q(
+                adsmanageradministrator__prefecture__libelle__icontains=search_term,
+            )
+        )
+        return (
+            queryset,
+            use_distinct,
+        )
 
     def get_queryset(self, request):
         req = super().get_queryset(request)
