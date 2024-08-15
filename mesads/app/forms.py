@@ -394,3 +394,18 @@ class ADSDecreeForm3(forms.Form):
 
 class ADSDecreeForm4(forms.Form):
     STEP_TITLE = "Téléchargement de l'arrêté"
+
+
+class ADSManagerMultipleChoiceField(forms.ModelMultipleChoiceField):
+    widget = autocomplete.ModelSelect2Multiple(url="app.autocomplete.ads-manager")
+
+    def label_from_instance(self, ads_manager):
+        return ads_manager.human_name()
+
+
+class ADSManagerAutocompleteForm(forms.Form):
+    q = ADSManagerMultipleChoiceField(
+        queryset=ADSManager.objects,
+        label="Gestionnaires ADS",
+        required=True,
+    )

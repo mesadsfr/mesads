@@ -68,56 +68,6 @@
   </div>
 </div>
 
-{% if ads_managers_filter %}
-<h2 class="fr-mt-3w">Les statistiques du registre ADS en détails</h2>
-
-<div class="fr-highlight">
-  <p class="fr-text--sm">Les statistiques ci-dessous concernent uniquement les ADS gérées par les administrations sélectionnées dans le haut de la page :</p>
-  <ul class="fr-text--sm">
-    {% for ads_manager_filter in ads_managers_filter %}
-    <li>{{ ads_manager_filter.content_object.text }}</li>
-    {% endfor %}
-  </ul>
-</div>
-</ul>
-
-<div class="fr-grid-row fr-grid-row--gutters">
-  <div class="stats-card fr-col-12 fr-col-md-4">
-    <div class="stats-card-content">
-      <div class="stats-card-number">
-        {{ ads_count_filtered }}
-      </div>
-      <div class="stats-card-description">
-        ADS enregistrées ce jour
-      </div>
-    </div>
-  </div>
-
-  <div class="stats-card fr-col-12 fr-col-md-4">
-    <div class="stats-card-content">
-      <div class="stats-card-number">
-        {{ ads_manager_requests_count_filtered }}
-      </div>
-      <div class="stats-card-description">
-        instructeurs enregistrés pour gérer les ADS
-      </div>
-    </div>
-  </div>
-
-  <div class="stats-card fr-col-12 fr-col-md-4">
-    <div class="stats-card-content">
-      <div class="stats-card-number">
-        {{ ads_managers_count_filtered }}
-      </div>
-      <div class="stats-card-description">
-        différentes administrations gérant des ADS
-      </div>
-    </div>
-  </div>
-</div>
-{% endif %}
-
-
 <h2 class="fr-mt-3w">Les statistiques du registre des véhicules relais</h2>
 
 <div class="fr-grid-row fr-grid-row--gutters">
@@ -183,40 +133,7 @@
   </div>
 </div>
 
-{% if ads_managers_filter %}
-<h2>Les courbes d'utilisation du registre ADS en détails</h2>
-
-<div class="fr-highlight">
-  <p class="fr-text--sm">Les statistiques ci-dessous concernent uniquement les ADS gérées par les administrations sélectionnées dans le haut de la page :</p>
-  <ul class="fr-text--sm">
-    {% for ads_manager_filter in ads_managers_filter %}
-    <li>{{ ads_manager_filter.content_object.text }}</li>
-    {% endfor %}
-  </ul>
-</div>
-</ul>
-
-<div class="fr-grid-row fr-grid-row--gutters">
-  <div class="fr-col-12">
-    <h3>Nombre d'ADS enregistrées</h3>
-    <canvas id="ads-count-filtered"></canvas>
-
-    <p class="fr-mt-3w fr-text--xs">
-      Évolution du nombre d'ADS enregistrées sur la plateforme depuis son lancement.
-    </p>
-  </div>
-
-  <div class="fr-col-12">
-    <h3>Nombre de gestionnaires ADS</h3>
-    <canvas id="ads-manager-requests-count-filtered"></canvas>
-
-    <p class="fr-mt-3w fr-text--xs">
-      Évolution du nombre de comptes instructeurs créés sur la plateforme depuis son lancement. Un compte instructeur a la possibilité d'enregistrer des ADS pour son administration.
-    </p>
-  </div>
-</div>
-{% endif %}
-
+<hr class="fr-mt-3w" />
 
 <h2>Les courbes d'utilisation du registre des véhicules relais</h2>
 
@@ -244,6 +161,90 @@
   </div>
 </div>
 
+<hr class="fr-mt-3w" />
+
+<h2>Les statistiques du registre ADS en détails</h2>
+
+<div class="fr-alert fr-alert--info fr-mb-3w">
+  Renseignez un ou plusieurs gestionnaires ADS pour afficher ses statistiques en détails.
+</div>
+
+<form  method="get" id="details" action="#details">
+  {% if form.non_field_errors %}
+    <div class="fr-input-group fr-input-group--error">
+      {% for error in ads_managers_select_form.non_field_errors %}
+      <!-- Non-field error -->
+      <p class="fr-error-text">
+        {{ error }}
+      </p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% include 'form_fields/select-autocomplete.html' with field=ads_managers_select_form.q field_errors=ads_managers_select_form.errors.q %}
+
+  <button type="submit" class="fr-btn">Filtrer les statistiques</button>
+</form>
+
+{% if ads_managers_select_form.q.value %}
+<div class="fr-mt-3w fr-grid-row fr-grid-row--gutters">
+  <div class="stats-card fr-col-12 fr-col-md-4">
+    <div class="stats-card-content">
+      <div class="stats-card-number">
+        {{ ads_count_filtered }}
+      </div>
+      <div class="stats-card-description">
+        ADS enregistrées ce jour
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-card fr-col-12 fr-col-md-4">
+    <div class="stats-card-content">
+      <div class="stats-card-number">
+        {{ ads_manager_requests_count_filtered }}
+      </div>
+      <div class="stats-card-description">
+        instructeurs enregistrés pour gérer les ADS
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-card fr-col-12 fr-col-md-4">
+    <div class="stats-card-content">
+      <div class="stats-card-number">
+        {{ ads_managers_count_filtered }}
+      </div>
+      <div class="stats-card-description">
+        différentes administrations gérant des ADS
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 class="fr-mt-3w">Les courbes d'utilisation du registre ADS en détails</h2>
+
+<div class="fr-grid-row fr-grid-row--gutters">
+  <div class="fr-col-12">
+    <h3>Nombre d'ADS enregistrées</h3>
+    <canvas id="ads-count-filtered"></canvas>
+
+    <p class="fr-mt-3w fr-text--xs">
+      Évolution du nombre d'ADS enregistrées sur la plateforme depuis son lancement.
+    </p>
+  </div>
+
+  <div class="fr-col-12">
+    <h3>Nombre de gestionnaires ADS</h3>
+    <canvas id="ads-manager-requests-count-filtered"></canvas>
+
+    <p class="fr-mt-3w fr-text--xs">
+      Évolution du nombre de comptes instructeurs créés sur la plateforme depuis son lancement. Un compte instructeur a la possibilité d'enregistrer des ADS pour son administration.
+    </p>
+  </div>
+</div>
+{% endif %}
+
 <script id="data" type="application/json">
 {
   "ads_by_month": {{ ads_count_by_month|safe }},
@@ -256,4 +257,10 @@
 </script>
 
 <script src="./stats.ts"></script>
+{% endblock %}
+
+{% block endbody %}
+  {{ block.super }}
+  {% comment %}Extra javascript required to display ads_managers_select_form{% endcomment %}
+  {{ ads_managers_select_form.media }}
 {% endblock %}

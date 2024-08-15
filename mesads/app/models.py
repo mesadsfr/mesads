@@ -139,6 +139,20 @@ class ADSManager(SmartValidationMixin, models.Model):
     def __str__(self):
         return f"{self.content_type.name} - {self.content_object}"
 
+    def human_name(self):
+        if issubclass(self.content_type.model_class(), EPCI):
+            return (
+                f"EPCI — {self.content_object.name} ({self.content_object.departement})"
+            )
+        elif issubclass(self.content_type.model_class(), Prefecture):
+            return f"Préfecture — {self.content_object.libelle} ({self.content_object.numero})"
+        elif issubclass(self.content_type.model_class(), Commune):
+            return (
+                f"Commune — {self.content_object.libelle} ({self.content_object.insee})"
+            )
+        # Never reached
+        return str(self)
+
     administrator = models.ForeignKey(
         "ADSManagerAdministrator", on_delete=models.RESTRICT, null=False
     )

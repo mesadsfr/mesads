@@ -8,7 +8,11 @@ from .ads import (  # noqa: F401
     ADSDeleteView,
     ADSView,
 )
-from .ads_manager import ADSManagerView, ads_manager_decree_view  # noqa: F401
+from .ads_manager import (  # noqa: F401
+    ADSManagerView,
+    ads_manager_decree_view,
+    ADSManagerAutocompleteView,
+)
 from .ads_manager_admin import PrefectureExportView, ADSManagerExportView  # noqa: F401
 from .ads_manager_request import (  # noqa: F401
     ADSManagerRequestView,

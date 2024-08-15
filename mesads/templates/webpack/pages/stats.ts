@@ -143,13 +143,20 @@ DisplayLineChart(
   AccumulateValues(adsByTimester)
 );
 
-const adsByTimesterFiltered = GroupDataByTrimester(data.ads_by_month_filtered);
+const adsCountFilteredCanvas = document.getElementById(
+  "ads-count-filtered"
+) as HTMLCanvasElement | null;
 
-DisplayLineChart(
-  document.getElementById("ads-count-filtered") as HTMLCanvasElement,
-  Object.keys(adsByTimesterFiltered),
-  AccumulateValues(adsByTimesterFiltered)
-);
+if (adsCountFilteredCanvas !== null) {
+  const adsByTimesterFiltered = GroupDataByTrimester(
+    data.ads_by_month_filtered
+  );
+  DisplayLineChart(
+    adsCountFilteredCanvas,
+    Object.keys(adsByTimesterFiltered),
+    AccumulateValues(adsByTimesterFiltered)
+  );
+}
 
 const requestsByTrimester = GroupDataByTrimester(
   data.ads_manager_requests_by_month
@@ -161,17 +168,20 @@ DisplayLineChart(
   AccumulateValues(requestsByTrimester)
 );
 
-const requestsByTrimesterFiltered = GroupDataByTrimester(
-  data.ads_manager_requests_by_month_filtered
-);
+const ADSManagerRequestsCountFilteredCanvas = document.getElementById(
+  "ads-manager-requests-count-filtered"
+) as HTMLCanvasElement | null;
 
-DisplayLineChart(
-  document.getElementById(
-    "ads-manager-requests-count-filtered"
-  ) as HTMLCanvasElement,
-  Object.keys(requestsByTrimesterFiltered),
-  AccumulateValues(requestsByTrimesterFiltered)
-);
+if (ADSManagerRequestsCountFilteredCanvas !== null) {
+  const requestsByTrimesterFiltered = GroupDataByTrimester(
+    data.ads_manager_requests_by_month_filtered
+  );
+  DisplayLineChart(
+    ADSManagerRequestsCountFilteredCanvas,
+    Object.keys(requestsByTrimesterFiltered),
+    AccumulateValues(requestsByTrimesterFiltered)
+  );
+}
 
 const relaisProprietairesByTrimester = GroupDataByTrimester(
   data.relais_proprietaires_by_month

@@ -81,6 +81,11 @@ urlpatterns = [
         ads_manager_administrator_required(views.PrefectureExportView.as_view()),
         name="app.exports.prefecture",
     ),
+    path(
+        "gestionnaire_ads/autocomplete",
+        views.ADSManagerAutocompleteView.as_view(),
+        name="app.autocomplete.ads-manager",
+    ),
 ]
 
 
