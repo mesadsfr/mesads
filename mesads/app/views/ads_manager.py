@@ -137,8 +137,19 @@ class ADSManagerAutocompleteView(autocomplete.Select2QuerySetView):
                     output_field=CharField(),
                 )
             )
+        ).annotate(
+            location=Unaccent(
+                Case(
+                    When(content_type__model="commune", then="commune__insee"),
+                    When(content_type__model="prefecture", then="prefecture__numero"),
+                    When(content_type__model="epci", then="epci__departement"),
+                    output_field=CharField(),
+                )
+            )
         )
-        return query.filter(value__icontains=self.q).order_by("value")
+        return query.filter(
+            Q(value__icontains=self.q) | Q(location__startswith=self.q)
+        ).order_by("value")
 
     def get_result_label(self, ads_manager):
         """Display human_name instead of the default __str__."""
