@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.postgres.lookups import Unaccent
 from django.db.models import Count, Q, Value, Case, When, CharField
 from django.db.models.functions import Replace
 from django.shortcuts import get_object_or_404, redirect, render
@@ -128,11 +129,13 @@ def ads_manager_decree_view(request, manager_id):
 class ADSManagerAutocompleteView(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         query = ADSManager.objects.annotate(
-            value=Case(
-                When(content_type__model="commune", then="commune__libelle"),
-                When(content_type__model="prefecture", then="prefecture__libelle"),
-                When(content_type__model="epci", then="epci__name"),
-                output_field=CharField(),
+            value=Unaccent(
+                Case(
+                    When(content_type__model="commune", then="commune__libelle"),
+                    When(content_type__model="prefecture", then="prefecture__libelle"),
+                    When(content_type__model="epci", then="epci__name"),
+                    output_field=CharField(),
+                )
             )
         )
         return query.filter(value__icontains=self.q).order_by("value")
