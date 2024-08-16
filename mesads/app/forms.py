@@ -397,7 +397,10 @@ class ADSDecreeForm4(forms.Form):
 
 
 class ADSManagerMultipleChoiceField(forms.ModelMultipleChoiceField):
-    widget = autocomplete.ModelSelect2Multiple(url="app.autocomplete.ads-manager")
+    widget = autocomplete.ModelSelect2Multiple(
+        url="app.autocomplete.ads-manager",
+        attrs={"data-placeholder": "Sélectionnez un gestionnaire ADS"},
+    )
 
     def label_from_instance(self, ads_manager):
         return ads_manager.human_name()
