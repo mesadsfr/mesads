@@ -79,3 +79,15 @@ class TestFAQView(ClientTestCase):
     def test_get(self):
         resp = self.client.get("/faq")
         self.assertEqual(resp.status_code, 200)
+
+
+class TestStatsView(ClientTestCase):
+    def test_get(self):
+        resp = self.anonymous_client.get("/chiffres-cles")
+        self.assertEqual(resp.status_code, 200)
+
+
+class TestReglementationView(ClientTestCase):
+    def test_get(self):
+        resp = self.anonymous_client.get("/reglementation")
+        self.assertEqual(resp.status_code, 200)
