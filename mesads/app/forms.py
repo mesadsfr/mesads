@@ -410,5 +410,5 @@ class ADSManagerAutocompleteForm(forms.Form):
     q = ADSManagerMultipleChoiceField(
         queryset=ADSManager.objects,
         label="Gestionnaires ADS",
-        required=True,
+        required=False,
     )
