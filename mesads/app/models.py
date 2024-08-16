@@ -151,7 +151,7 @@ class ADSManager(SmartValidationMixin, models.Model):
                 f"Commune — {self.content_object.libelle} ({self.content_object.insee})"
             )
         # Never reached
-        return str(self)
+        return str(self)  # noqa
 
     administrator = models.ForeignKey(
         "ADSManagerAdministrator", on_delete=models.RESTRICT, null=False

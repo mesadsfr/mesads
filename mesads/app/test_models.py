@@ -4,13 +4,21 @@ from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings, TestCase
 
+from django.contrib.contenttypes.models import ContentType
+
 import requests
 import requests_mock
 
+from mesads.fradm.models import (
+    Commune,
+    EPCI,
+    Prefecture,
+)
 from .models import (
     ADS,
     validate_siret,
     ADSLegalFile,
+    ADSManager,
     ADSUser,
     ADSUpdateFile,
     ADSManagerDecree,
@@ -45,6 +53,31 @@ class TestADSManager(ClientTestCase):
         self.assertRaises(
             ValidationError, validate_no_ads_declared, self.ads_manager_city35, True
         )
+
+    def test_human_name(self):
+        ads_manager = ADSManager.objects.get(
+            content_type=ContentType.objects.get_for_model(Prefecture),
+            object_id=self.fixtures_prefectures[0].id,
+        )
+        self.assertIn("Préfecture", ads_manager.human_name())
+        self.assertTrue(self.fixtures_prefectures[0].libelle, ads_manager.human_name())
+        self.assertTrue(self.fixtures_prefectures[0].numero, ads_manager.human_name())
+
+        ads_manager = ADSManager.objects.get(
+            content_type=ContentType.objects.get_for_model(EPCI),
+            object_id=self.fixtures_epci[0].id,
+        )
+        self.assertIn("EPCI", ads_manager.human_name())
+        self.assertTrue(self.fixtures_epci[0].name, ads_manager.human_name())
+        self.assertTrue(self.fixtures_epci[0].departement, ads_manager.human_name())
+
+        ads_manager = ADSManager.objects.get(
+            content_type=ContentType.objects.get_for_model(Commune),
+            object_id=self.fixtures_communes[0].id,
+        )
+        self.assertIn("Commune", ads_manager.human_name())
+        self.assertTrue(self.fixtures_communes[0].libelle, ads_manager.human_name())
+        self.assertTrue(self.fixtures_communes[0].insee, ads_manager.human_name())
 
 
 class TestADSManagerDecree(ClientTestCase):

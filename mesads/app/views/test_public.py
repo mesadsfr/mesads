@@ -86,6 +86,11 @@ class TestStatsView(ClientTestCase):
         resp = self.anonymous_client.get("/chiffres-cles")
         self.assertEqual(resp.status_code, 200)
 
+        resp = self.anonymous_client.get(
+            f"/chiffres-cles?q={self.ads_manager_administrator_35_user.id}"
+        )
+        self.assertEqual(resp.status_code, 200)
+
 
 class TestReglementationView(ClientTestCase):
     def test_get(self):
