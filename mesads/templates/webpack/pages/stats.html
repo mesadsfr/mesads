@@ -18,232 +18,244 @@
   Vous trouverez sur cette page quelques statistiques à propos du projet.
 </p>
 
-<hr />
+<div class="fr-tabs">
+  <ul class="fr-tabs__list" role="tablist" aria-label="Statistiques MesADS">
+      <li role="presentation">
+        <button id="tabpanel-1" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="0" role="tab" aria-selected="true" aria-controls="tabpanel-1-panel">
+          Les statistiques du registre ADS
+        </button>
+      </li>
+      <li role="presentation">
+        <button id="tabpanel-2" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-2-panel">
+          Les statistiques du registre des véhicules relais
+        </button>
+      </li>
+  </ul>
+  {% comment %} First tab {% endcomment %}
+  <div id="tabpanel-1-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" aria-labelledby="tabpanel-1" tabindex="0">
+    <h2>Au niveau national</h2>
 
-<h2>Les statistiques du registre ADS au niveau national</h2>
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="stats-card fr-col-12 fr-col-md-4">
+        <div class="stats-card-content">
+          <div class="stats-card-number">
+            {{ ads_count }}
+          </div>
+          <div class="stats-card-description">
+            ADS enregistrées ce jour
+          </div>
+        </div>
+      </div>
 
-<div class="fr-grid-row fr-grid-row--gutters">
-  <div class="stats-card fr-col-12 fr-col-md-4">
-    <div class="stats-card-content">
-      <div class="stats-card-number">
-        {{ ads_count }}
+      <div class="stats-card fr-col-12 fr-col-md-4">
+        <div class="stats-card-content">
+          <div class="stats-card-number">
+            {{ ads_manager_requests_count }}
+          </div>
+          <div class="stats-card-description">
+            instructeurs enregistrés pour gérer les ADS
+          </div>
+        </div>
       </div>
-      <div class="stats-card-description">
-        ADS enregistrées ce jour
-      </div>
-    </div>
-  </div>
 
-  <div class="stats-card fr-col-12 fr-col-md-4">
-    <div class="stats-card-content">
-      <div class="stats-card-number">
-        {{ ads_manager_requests_count }}
+      <div class="stats-card fr-col-12 fr-col-md-4">
+        <div class="stats-card-content">
+          <div class="stats-card-number">
+            {{ ads_managers_count }}
+          </div>
+          <div class="stats-card-description">
+            différentes administrations gérant des ADS
+          </div>
+        </div>
       </div>
-      <div class="stats-card-description">
-        instructeurs enregistrés pour gérer les ADS
-      </div>
-    </div>
-  </div>
 
-  <div class="stats-card fr-col-12 fr-col-md-4">
-    <div class="stats-card-content">
-      <div class="stats-card-number">
-        {{ ads_managers_count }}
-      </div>
-      <div class="stats-card-description">
-        différentes administrations gérant des ADS
-      </div>
-    </div>
-  </div>
-
-  <div class="stats-card fr-col-12 fr-col-md-4">
-    <div class="stats-card-content">
-      <div class="stats-card-number">
-        +10 000
-      </div>
-      <div class="stats-card-description">
-        réponses à vos questions concernant les ADS, la plateforme, les démarches, etc.
-      </div>
-    </div>
-  </div>
-</div>
-
-<h2 class="fr-mt-3w">Les statistiques du registre des véhicules relais</h2>
-
-<div class="fr-grid-row fr-grid-row--gutters">
-  <div class="stats-card fr-col-12 fr-col-md-4">
-    <div class="stats-card-content">
-      <div class="stats-card-number">
-        {{ relais_proprietaires_count }}
-      </div>
-      <div class="stats-card-description">
-        propriétaires de véhicules relais enregistrés <small>ayant enregistré au moins un véhicule relais</small>
-      </div>
-    </div>
-  </div>
-
-  <div class="stats-card fr-col-12 fr-col-md-4">
-    <div class="stats-card-content">
-      <div class="stats-card-number">
-        {{ relais_vehicules_count }}
-      </div>
-      <div class="stats-card-description">
-        véhicules relais enregistrés
+      <div class="stats-card fr-col-12 fr-col-md-4">
+        <div class="stats-card-content">
+          <div class="stats-card-number">
+            +10 000
+          </div>
+          <div class="stats-card-description">
+            réponses à vos questions concernant les ADS, la plateforme, les démarches, etc.
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<hr class="fr-mt-3w" />
+    <hr class="fr-mt-3w" />
 
-<h2>Carte de déploiement du registre ADS au niveau national</h2>
-<div id="map" style="width: 100%; height: 764px;"></div>
-<script src="leaflet/dist/leaflet.js"></script>
-<script src="./stats_map.ts"></script>
+    <h2>Carte de déploiement</h2>
+    <div id="map" style="width: 100%; height: 764px;"></div>
+    <script src="leaflet/dist/leaflet.js"></script>
+    <script src="./stats_map.ts"></script>
 
-<p class="fr-mt-3w">
-  Cette carte présente le nombre d'ADS enregistrées dans chaque département jusqu'à ce jour. Le nombre d'ADS estimé peut ne pas être exact, mais permet d'avoir une vue d'ensemble du déploiement du registre ADS au niveau national.
-</p>
-
-<hr class="fr-mt-3w" />
-
-<h2>Les courbes d'utilisation du registre ADS au niveau national</h2>
-
-<p>
-  Ces graphiques montrent l'évolution du nombre d'ADS enregistrées sur la plateforme, ainsi que le nombre de gestionnaires ADS enregistrés sur la plateforme depuis son lancement.
-</p>
-
-<div class="fr-grid-row fr-grid-row--gutters">
-  <div class="fr-col-12">
-    <h3>Nombre d'ADS enregistrées</h3>
-    <canvas id="ads-count"></canvas>
-
-    <p class="fr-mt-3w fr-text--xs">
-      Évolution du nombre d'ADS enregistrées sur la plateforme depuis son lancement.
+    <p class="fr-mt-3w">
+      Cette carte présente le nombre d'ADS enregistrées dans chaque département jusqu'à ce jour. Le nombre d'ADS estimé peut ne pas être exact, mais permet d'avoir une vue d'ensemble du déploiement du registre ADS au niveau national.
     </p>
-  </div>
 
-  <div class="fr-col-12">
-    <h3>Nombre de gestionnaires ADS</h3>
-    <canvas id="ads-manager-requests-count"></canvas>
+    <hr class="fr-mt-3w" />
 
-    <p class="fr-mt-3w fr-text--xs">
-      Évolution du nombre de comptes instructeurs créés sur la plateforme depuis son lancement. Un compte instructeur a la possibilité d'enregistrer des ADS pour son administration.
-    </p>
-  </div>
-</div>
+    <h2>Utilisation du registre ADS</h2>
 
-<hr class="fr-mt-3w" />
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12">
+        <h3>Nombre d'ADS enregistrées</h3>
+        <canvas id="ads-count"></canvas>
 
-<h2>Les courbes d'utilisation du registre des véhicules relais</h2>
-
-<p>
-  Ces graphiques montrent l'évolution de l'utilisation du registre des véhicules relais.
-</p>
-
-<div class="fr-grid-row fr-grid-row--gutters">
-  <div class="fr-col-12">
-    <h3>Nombre de propriétaires de véhicules relais enregistrés</h3>
-    <canvas id="relais-proprietaires-count"></canvas>
-
-    <p class="fr-mt-3w fr-text--xs">
-      Évolution du nombre de propriétaires de véhicules relais ayant enregistré au moins un véhicule.
-    </p>
-  </div>
-
-  <div class="fr-col-12">
-    <h3>Nombre de propriétaires de véhicules relais enregistrés</h3>
-    <canvas id="relais-vehicules-count"></canvas>
-
-    <p class="fr-mt-3w fr-text--xs">
-      Évolution du nombre de véhicules relais enregistrés.
-    </p>
-  </div>
-</div>
-
-<hr class="fr-mt-3w" />
-
-<h2>Les statistiques du registre ADS en détails</h2>
-
-<div class="fr-alert fr-alert--info fr-mb-3w">
-  Renseignez un ou plusieurs gestionnaires ADS pour afficher ses statistiques en détails.
-</div>
-
-<form  method="get" id="details" action="#details">
-  {% if form.non_field_errors %}
-    <div class="fr-input-group fr-input-group--error">
-      {% for error in ads_managers_select_form.non_field_errors %}
-      <!-- Non-field error -->
-      <p class="fr-error-text">
-        {{ error }}
-      </p>
-      {% endfor %}
-    </div>
-  {% endif %}
-
-  {% include 'form_fields/select-autocomplete.html' with field=ads_managers_select_form.q field_errors=ads_managers_select_form.errors.q %}
-
-  <button type="submit" class="fr-btn">Filtrer les statistiques</button>
-</form>
-
-{% if ads_managers_select_form.q.value %}
-<div class="fr-mt-3w fr-grid-row fr-grid-row--gutters">
-  <div class="stats-card fr-col-12 fr-col-md-4">
-    <div class="stats-card-content">
-      <div class="stats-card-number">
-        {{ ads_count_filtered }}
+        <p class="fr-mt-3w fr-text--xs">
+          Évolution du nombre d'ADS enregistrées sur la plateforme depuis son lancement.
+        </p>
       </div>
-      <div class="stats-card-description">
-        ADS enregistrées ce jour
+
+      <div class="fr-col-12">
+        <h3>Nombre de gestionnaires ADS</h3>
+        <canvas id="ads-manager-requests-count"></canvas>
+
+        <p class="fr-mt-3w fr-text--xs">
+          Évolution du nombre de comptes instructeurs créés sur la plateforme depuis son lancement. Un compte instructeur a la possibilité d'enregistrer des ADS pour son administration.
+        </p>
       </div>
     </div>
-  </div>
 
-  <div class="stats-card fr-col-12 fr-col-md-4">
-    <div class="stats-card-content">
-      <div class="stats-card-number">
-        {{ ads_manager_requests_count_filtered }}
+    <hr class="fr-mt-3w" />
+
+    <h2>Statistiques filtrées</h2>
+
+    <div class="fr-alert fr-alert--info fr-mb-3w">
+      Renseignez un ou plusieurs gestionnaires ADS pour afficher ses statistiques en détails.
+    </div>
+
+    <form  method="get" id="details" action="#details">
+      {% if form.non_field_errors %}
+        <div class="fr-input-group fr-input-group--error">
+          {% for error in ads_managers_select_form.non_field_errors %}
+          <!-- Non-field error -->
+          <p class="fr-error-text">
+            {{ error }}
+          </p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% include 'form_fields/select-autocomplete.html' with field=ads_managers_select_form.q field_errors=ads_managers_select_form.errors.q %}
+
+      <button type="submit" class="fr-btn">Filtrer les statistiques</button>
+    </form>
+
+    {% if ads_managers_select_form.q.value %}
+    <div class="fr-mt-3w fr-grid-row fr-grid-row--gutters">
+      <div class="stats-card fr-col-12 fr-col-md-4">
+        <div class="stats-card-content">
+          <div class="stats-card-number">
+            {{ ads_count_filtered }}
+          </div>
+          <div class="stats-card-description">
+            ADS enregistrées ce jour
+          </div>
+        </div>
       </div>
-      <div class="stats-card-description">
-        instructeurs enregistrés pour gérer les ADS
+
+      <div class="stats-card fr-col-12 fr-col-md-4">
+        <div class="stats-card-content">
+          <div class="stats-card-number">
+            {{ ads_manager_requests_count_filtered }}
+          </div>
+          <div class="stats-card-description">
+            instructeurs enregistrés pour gérer les ADS
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-card fr-col-12 fr-col-md-4">
+        <div class="stats-card-content">
+          <div class="stats-card-number">
+            {{ ads_managers_count_filtered }}
+          </div>
+          <div class="stats-card-description">
+            différentes administrations gérant des ADS
+          </div>
+        </div>
       </div>
     </div>
+
+    <h2 class="fr-mt-3w">Utilisation du registre ADS pour les administrations spécifiées</h2>
+
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12">
+        <h3>Nombre d'ADS enregistrées</h3>
+        <canvas id="ads-count-filtered"></canvas>
+
+        <p class="fr-mt-3w fr-text--xs">
+          Évolution du nombre d'ADS enregistrées sur la plateforme depuis son lancement.
+        </p>
+      </div>
+
+      <div class="fr-col-12">
+        <h3>Nombre de gestionnaires ADS</h3>
+        <canvas id="ads-manager-requests-count-filtered"></canvas>
+
+        <p class="fr-mt-3w fr-text--xs">
+          Évolution du nombre de comptes instructeurs créés sur la plateforme depuis son lancement. Un compte instructeur a la possibilité d'enregistrer des ADS pour son administration.
+        </p>
+      </div>
+    </div>
+    {% endif %}
+
+
   </div>
 
-  <div class="stats-card fr-col-12 fr-col-md-4">
-    <div class="stats-card-content">
-      <div class="stats-card-number">
-        {{ ads_managers_count_filtered }}
+  {% comment %} Second tab {% endcomment %}
+  <div id="tabpanel-2-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-2" tabindex="0">
+    <h2>Au niveau national</h2>
+
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="stats-card fr-col-12 fr-col-md-4">
+        <div class="stats-card-content">
+          <div class="stats-card-number">
+            {{ relais_proprietaires_count }}
+          </div>
+          <div class="stats-card-description">
+            propriétaires de véhicules relais enregistrés <small>ayant enregistré au moins un véhicule relais</small>
+          </div>
+        </div>
       </div>
-      <div class="stats-card-description">
-        différentes administrations gérant des ADS
+
+      <div class="stats-card fr-col-12 fr-col-md-4">
+        <div class="stats-card-content">
+          <div class="stats-card-number">
+            {{ relais_vehicules_count }}
+          </div>
+          <div class="stats-card-description">
+            véhicules relais enregistrés
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="fr-mt-3w" />
+
+    <h2>Utilisation du registre des véhicules relais</h2>
+
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12">
+        <h3>Nombre de propriétaires de véhicules relais enregistrés</h3>
+        <canvas id="relais-proprietaires-count"></canvas>
+
+        <p class="fr-mt-3w fr-text--xs">
+          Évolution du nombre de propriétaires de véhicules relais ayant enregistré au moins un véhicule.
+        </p>
+      </div>
+
+      <div class="fr-col-12">
+        <h3>Nombre de propriétaires de véhicules relais enregistrés</h3>
+        <canvas id="relais-vehicules-count"></canvas>
+
+        <p class="fr-mt-3w fr-text--xs">
+          Évolution du nombre de véhicules relais enregistrés.
+        </p>
       </div>
     </div>
   </div>
 </div>
-
-<h2 class="fr-mt-3w">Les courbes d'utilisation du registre ADS en détails</h2>
-
-<div class="fr-grid-row fr-grid-row--gutters">
-  <div class="fr-col-12">
-    <h3>Nombre d'ADS enregistrées</h3>
-    <canvas id="ads-count-filtered"></canvas>
-
-    <p class="fr-mt-3w fr-text--xs">
-      Évolution du nombre d'ADS enregistrées sur la plateforme depuis son lancement.
-    </p>
-  </div>
-
-  <div class="fr-col-12">
-    <h3>Nombre de gestionnaires ADS</h3>
-    <canvas id="ads-manager-requests-count-filtered"></canvas>
-
-    <p class="fr-mt-3w fr-text--xs">
-      Évolution du nombre de comptes instructeurs créés sur la plateforme depuis son lancement. Un compte instructeur a la possibilité d'enregistrer des ADS pour son administration.
-    </p>
-  </div>
-</div>
-{% endif %}
 
 <script id="data" type="application/json">
 {
