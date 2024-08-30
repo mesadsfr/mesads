@@ -147,9 +147,19 @@ class ADSManagerAutocompleteView(autocomplete.Select2QuerySetView):
                 )
             )
         )
-        return query.filter(
+        query = query.filter(
             Q(value__icontains=self.q) | Q(location__startswith=self.q)
-        ).order_by("value")
+        )
+        return (
+            query.filter(Q(value__icontains=self.q) | Q(location__startswith=self.q))
+            # For communes, only display if the type is "COM". For other types, display all.
+            .filter(
+                Q(
+                    commune__type_commune="COM",
+                )
+                | Q(commune__isnull=True)
+            ).order_by("value")
+        )
 
     def get_result_label(self, ads_manager):
         """Display human_name instead of the default __str__."""
