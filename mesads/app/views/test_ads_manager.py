@@ -265,3 +265,22 @@ class TestADSManagerDecreeView(ClientTestCase):
         self.assertEqual(len(ads_manager_decrees), 2)
         self.assertEqual(ads_manager_decrees[0].file.read(), b"First file")
         self.assertEqual(ads_manager_decrees[1].file.read(), b"Second file")
+
+
+class TestADSManagerAutocompleteView(ClientTestCase):
+    def test_get(self):
+        resp = self.anonymous_client.get("/gestionnaire_ads/autocomplete?q=bouches")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()["results"]), 1)
+
+        resp = self.anonymous_client.get("/gestionnaire_ads/autocomplete?q=MARSEIL")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()["results"]), 1)
+
+        resp = self.anonymous_client.get("/gestionnaire_ads/autocomplete?q=13")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()["results"]), 2)
+
+        resp = self.anonymous_client.get("/gestionnaire_ads/autocomplete?q=")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.json()["results"]), 10)
