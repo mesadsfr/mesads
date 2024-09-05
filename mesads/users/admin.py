@@ -9,6 +9,8 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 
+from mesads.app.models import Notification
+
 from .models import User
 
 
@@ -95,6 +97,7 @@ class UserAdmin(BaseUserAdmin):
         "is_active",
         "admin_roles_link",
         "ads_manager_request_link",
+        "notifications_link",
     )
 
     readonly_fields = (
@@ -102,6 +105,7 @@ class UserAdmin(BaseUserAdmin):
         "last_login",
         "admin_roles_link",
         "ads_manager_request_link",
+        "notifications_link",
     )
 
     search_fields = (
@@ -161,3 +165,21 @@ class UserAdmin(BaseUserAdmin):
         return mark_safe(
             f'<a href="{ads_manager_request_link}">Voir les {obj.adsmanagerrequest_set.count()} requêtes</a>'
         )
+
+    @admin.display(
+        description="Voir les notifications configurées pour cet utilisateur",
+    )
+    def notifications_link(self, obj):
+        try:
+            link = reverse(
+                "admin:app_notification_change",
+                kwargs={"object_id": obj.notification.id},
+            )
+            return mark_safe(
+                f'<a href="{link}">Voir la configuration des notifications</a>'
+            )
+        except Notification.DoesNotExist:
+            link = reverse(
+                "admin:app_notification_add",
+            )
+            return mark_safe(f'<a href="{link}">Configurer les notifications</a>')
