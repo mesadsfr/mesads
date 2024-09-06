@@ -38,6 +38,10 @@ urls:
     title: "MesADS: la réglementation taxi"
     description: Les questions fréquemment posées sur la réglementation des taxis et des véhicules relais.
 
+  app.suivi:
+    title: "Données personnelles et cookies sur MesADS"
+    description: "Configurez les outils de suivi d'audience et de gestion des cookies sur MesADS."
+
   ###
   ### Registration
   ###
