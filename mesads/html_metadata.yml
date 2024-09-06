@@ -49,6 +49,9 @@ urls:
     title: "Connexion à l'espace MesADS"
     description: "Connectez-vous pour gérer les ADS de votre administration ou enregistrer vos véhicules relais sur MesADS."
 
+  django_registration_disallowed:
+    missing: true
+
   django_registration_register:
     title: "Inscription sur MesADS"
     description: "Créez votre compte MesADS pour gérer les ADS ou enregistrer des véhicules relais."
@@ -68,6 +71,9 @@ urls:
   password_change:
     title: "Changement de mot de passe MesADS"
     description: "Changez votre mot de passe MesADS."
+
+  password_change_done:
+    missing: true
 
   password_reset:
     title: "Réinitialisation du mot de passe MesADS"
@@ -103,9 +109,6 @@ urls:
   app.ads-manager-admin.index:
     title: "Gestion et contrôle des accès des instructeurs ADS"
     description: "Gérez les demandes d'accès au registre ADS en acceptant ou refusant les instructeurs de votre département."
-
-  app.autocomplete.ads-manager:
-    missing: true # Not HTML view
 
   app.ads-manager.index:
     title: "Accès et gestion des administrations au registre ADS"

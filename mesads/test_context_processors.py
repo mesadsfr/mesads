@@ -1,4 +1,5 @@
 import pkg_resources
+import re
 import unittest
 
 import yaml
@@ -6,21 +7,53 @@ import yaml
 from django.urls import URLPattern, URLResolver, get_resolver
 
 
-def list_modules_urls(*modules):
-    """List all the reverse URLs with a target view in the given modules."""
+EXCLUDE_MODULES = [
+    r".*autocomplete.*",
+    r"^(app.*|auth_.*|users_.*|fradm_.*|vehicules_relais_.*)_add$",
+    r"^(app.*|auth_.*|users_.*|fradm_.*|vehicules_relais_.*)_change$",
+    r"^(app.*|auth_.*|users_.*|fradm_.*|vehicules_relais_.*)_changelist$",
+    r"^(app.*|auth_.*|users_.*|fradm_.*|vehicules_relais_.*)_compare$",
+    r"^(app.*|auth_.*|users_.*|fradm_.*|vehicules_relais_.*)_delete$",
+    r"^(app.*|auth_.*|users_.*|fradm_.*|vehicules_relais_.*)_history$",
+    r"^(app.*|auth_.*|users_.*|fradm_.*|vehicules_relais_.*)_list$",
+    r"^(app.*|auth_.*|users_.*|fradm_.*|vehicules_relais_.*)_recover$",
+    r"^(app.*|auth_.*|users_.*|fradm_.*|vehicules_relais_.*)_recoverlist$",
+    r"^(app.*|auth_.*|users_.*|fradm_.*|vehicules_relais_.*)_revision$",
+    r"^ads-updates",
+    r"^api",
+    r"^authtoken",
+    r"^django_cron",
+    r"^history_refresh$",
+    r"^history_sidebar$",
+    r"^index$",
+    r"^login",
+    r"^logout",
+    r"^markdownx.*",
+    r"^render_panel$",
+    r"^sql_.*$",
+    r"^template_source$",
+    r"jsi18n",
+    r"view_on_site",
+]
 
-    def recurse(patterns):
+
+def list_modules_urls():
+    def recurse(patterns, parents):
         urls = []
         for item in patterns:
             if isinstance(item, URLPattern) and item.name:
-                for module in modules:
-                    if item.callback.__module__.startswith(module):
-                        urls.append(item.name)
+                for module in EXCLUDE_MODULES:
+                    if re.match(module, item.name):
+                        break
+                else:
+                    urls.append(item.name)
             elif isinstance(item, URLResolver):
-                urls.extend(recurse(item.url_patterns))
+                urls.extend(
+                    recurse(item.url_patterns, parents=parents + [item.pattern])
+                )
         return urls
 
-    return recurse(get_resolver().url_patterns)
+    return recurse(get_resolver().url_patterns, parents=[])
 
 
 class TestHTMLMetadata(unittest.TestCase):
@@ -29,7 +62,7 @@ class TestHTMLMetadata(unittest.TestCase):
         data = pkg_resources.resource_string(__name__, "html_metadata.yml")
         metadata = yaml.safe_load(data)
         metadata_views = list(metadata.get("urls", {}).keys())
-        mesads_reverses = list_modules_urls("mesads.app", "mesads.vehicules_relais")
+        mesads_reverses = list_modules_urls()
 
         for name in mesads_reverses:
             self.assertIn(
@@ -42,7 +75,7 @@ class TestHTMLMetadata(unittest.TestCase):
                 self.assertIn("description", metadata["urls"][name])
 
         # All the entries in the YAML file should relate to an existing URL
-        all_urls = list_modules_urls("")
+        all_urls = list_modules_urls()
         for name in metadata_views:
             self.assertIn(
                 name,
