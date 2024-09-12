@@ -184,3 +184,12 @@ class UserAdmin(BaseUserAdmin):
                 "admin:app_notification_add",
             )
             return mark_safe(f'<a href="{link}">Configurer les notifications</a>')
+
+    def has_delete_permission(self, request, obj=None):
+        """Users should not be deleted. To deactivate a user, we can simply set
+        the flag is_active to False.
+
+        In the future, we can consider allowing the deletion of users if they
+        have no related data.
+        """
+        return False
