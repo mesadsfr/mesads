@@ -81,6 +81,7 @@ class UserAdmin(BaseUserAdmin):
         "is_active",
         ADSManagerRequestFilter,
         ADSManagerAdministratorFilter,
+        ("last_login", admin.EmptyFieldListFilter),
     )
 
     fieldsets = []
