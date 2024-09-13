@@ -74,6 +74,7 @@ class UserAdmin(BaseUserAdmin):
         "date_joined",
         "email",
         "admin_roles",
+        "last_login",
         "is_active",
     )
 
