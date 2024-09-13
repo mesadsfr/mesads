@@ -54,7 +54,8 @@ function AccumulateValues(data: Record<string, number>) {
 function DisplayLineChart(
   canvas: HTMLCanvasElement,
   labels: string[],
-  data: number[]
+  data: number[],
+  max?: number
 ) {
   // Case where there are no data points
   if (labels.length === 0 && data.length === 0) {
@@ -99,6 +100,12 @@ function DisplayLineChart(
       ],
     },
     options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: max,
+        },
+      },
       locale: "fr",
       plugins: {
         tooltip: {
@@ -140,7 +147,12 @@ const adsByTimester = GroupDataByTrimester(data.ads_by_month);
 DisplayLineChart(
   document.getElementById("ads-count") as HTMLCanvasElement,
   Object.keys(adsByTimester),
-  AccumulateValues(adsByTimester)
+  AccumulateValues(adsByTimester),
+  // Hardcode the maximum value to 60000, because there are approximately 60000
+  // in total. If we don't hardcode the value, the maximum value of the graph
+  // corresponds to +- the number of ADS which we registered in the database,
+  // which might be confusing.
+  60000
 );
 
 const adsCountFilteredCanvas = document.getElementById(
