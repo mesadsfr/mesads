@@ -14,7 +14,7 @@ class FrenchAdministrationForm(forms.Form):
         widget=autocomplete.ListSelect2(
             url="fradm.autocomplete.commune",
             attrs={
-                "data-placeholder": "Sélectionnez la commune dont vous souhaitez gérer les ADS",
+                "data-placeholder": "Sélectionnez une commune",
             },
         ),
         label="Commune",
@@ -26,7 +26,7 @@ class FrenchAdministrationForm(forms.Form):
         widget=autocomplete.ListSelect2(
             url="fradm.autocomplete.epci",
             attrs={
-                "data-placeholder": "Sélectionnez l'EPCI dont vous souhaitez gérer les ADS",
+                "data-placeholder": "Sélectionnez un EPCI",
             },
         ),
         required=False,
@@ -38,7 +38,7 @@ class FrenchAdministrationForm(forms.Form):
         widget=autocomplete.ListSelect2(
             url="fradm.autocomplete.prefecture",
             attrs={
-                "data-placeholder": "Sélectionnez la préfecture dont vous souhaitez gérer les ADS",
+                "data-placeholder": "Sélectionnez une préfecture",
             },
         ),
         label="Préfecture",

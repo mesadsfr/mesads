@@ -121,7 +121,7 @@
   <ul class="fr-tabs__list" role="tablist" aria-label="[A modifier | nom du système d'onglet]">
     <li role="presentation">
       <button id="tabpanel-1" class="fr-tabs__tab fr-icon-government-line fr-tabs__tab--icon-left" tabindex="0" role="tab" aria-selected="true" aria-controls="tabpanel-1-panel">
-        Je suis instructeur au sein d'une administration et je souhaite gérer ses ADS
+        Je suis instructeur
       </button>
     </li>
     <li role="presentation">
@@ -137,17 +137,20 @@
       <div class="fr-form-group">
         <fieldset class="fr-fieldset">
           <legend class="fr-fieldset__legend fr-text--regular" id='radio-inline-legend'>
-              Afin d'obtenir un accès pour la gestion de vos ADS, sélectionnez votre administration puis cliquez sur “envoyer la demande à la préfecture”. <strong>L'accès est strictement réservé aux agents de l'administration</strong>.
+            <div class="fr-mb-2w fr-alert fr-alert--info">
+              <p class="fr-alert__title">Un problème ? Contactez-nous !</p>
+              <p>
+                Si vous avez le moindre problème, par exemple si votre demande est refusée ou met trop de temps avant d'être acceptée, vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+              </p>
+
+              <p class="fr-text--xl fr-mt-2w">
+                La demande est exclusivement réservée aux agents de l'administration.
+              </p>
+            </div>
           </legend>
 
-          <div class="fr-mb-2w fr-alert fr-alert--info">
-            <p class="fr-alert__title">Un problème ? Contactez-nous !</p>
-            <p>
-              Si vous avez le moindre problème, par exemple si votre demande est refusée ou met trop de temps avant d'être acceptée, vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
-            </p>
-          </div>
 
-          <p>Vous souhaitez gérer les ADS :</p>
+          <p>Sélectionnez le type d'administration pour laquelle vous souhaitez déclarer des ADS, ou déclarer l'absence d'ADS :</p>
 
           <div class="fr-fieldset__content">
             <!-- Commune -->
