@@ -160,10 +160,6 @@ urls:
     title: "Recherche dans le registre des véhicules relais"
     description: "Choisissez un département pour explorer la liste des véhicules relais disponibles."
 
-  vehicules-relais.search.departement:
-    title: "Liste des taxis relais en {{ prefecture.libelle }}"
-    description: "Explorez les taxis relais disponibles dans le département de {{ prefecture.libelle }}."
-
   vehicules-relais.vehicule:
     title: "Détails du taxi relais n°{{ vehicule.numero }}"
     description: "Consultez les détails du taxi relais n°{{ vehicule.numero }}, y compris le propriétaire et les spécificités."

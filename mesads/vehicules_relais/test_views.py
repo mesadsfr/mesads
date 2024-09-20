@@ -29,46 +29,97 @@ class TestSearchView(ClientTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(resp.context["is_proprietaire"])
 
-    def test_post(self):
-        prefecture = Prefecture.objects.filter(numero="35").get()
+    def test_search(self):
+        ain = Prefecture.objects.get(numero="01")
+        paris = Prefecture.objects.get(numero="75")
 
-        for client in (self.anonymous_client, self.proprietaire_client):
-            resp = client.post(
-                "/registre_vehicules_relais/consulter",
-                {
-                    "prefecture": prefecture.id,
-                },
-            )
-            self.assertEqual(resp.status_code, 302)
-            self.assertEqual(
-                resp.headers["Location"],
-                "/registre_vehicules_relais/consulter/departements/35",
-            )
+        # Paris
+        v1 = Vehicule.objects.create(
+            numero="75-01",
+            proprietaire=self.proprietaire,
+            departement=paris,
+            immatriculation="abc-abc-abc",
+            modele="Range rover",
+            motorisation="essence",
+            date_mise_circulation=datetime.date(2020, 5, 1),
+            nombre_places=4,
+            pmr=True,
+            commune_localisation=None,
+        )
+        v1.save()
+        v2 = Vehicule.objects.create(
+            numero="75-02",
+            proprietaire=self.proprietaire,
+            departement=paris,
+            immatriculation="def-def-def",
+            modele="Range rover",
+            motorisation="essence",
+            date_mise_circulation=datetime.date(2020, 5, 1),
+            nombre_places=4,
+            pmr=True,
+            commune_localisation=None,
+        )
+        v2.save()
+        # Ain
+        v3 = Vehicule.objects.create(
+            numero="01-01",
+            proprietaire=self.proprietaire,
+            departement=ain,
+            immatriculation=v1.immatriculation,
+            modele="Range rover",
+            motorisation="essence",
+            date_mise_circulation=datetime.date(2020, 5, 1),
+            nombre_places=4,
+            pmr=True,
+            commune_localisation=None,
+        )
+        v3.save()
 
+        # 1 vehicule in Ain
+        resp = self.admin_client.get(
+            f"/registre_vehicules_relais/consulter?departement={ain.id}"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context["object_list"].count(), 1)
 
-class TestSearchDepartementView(ClientTestCase):
-    def test_get(self):
-        for client in self.anonymous_client, self.proprietaire_client:
-            resp = client.get("/registre_vehicules_relais/consulter/departements/35")
-            self.assertEqual(resp.status_code, 200)
-            self.assertEqual(resp.context["prefecture"].numero, "35")
-            self.assertEqual(resp.context["object_list"].count(), 4)
+        # 2 vehicules in Paris
+        resp = self.admin_client.get(
+            f"/registre_vehicules_relais/consulter?departement={paris.id}"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context["object_list"].count(), 2)
 
-            resp = client.get("/registre_vehicules_relais/consulter/departements/33")
-            self.assertEqual(resp.status_code, 200)
-            self.assertEqual(resp.context["prefecture"].numero, "33")
-            self.assertEqual(resp.context["object_list"].count(), 1)
+        # 2 vehicule with this immatriculation
+        resp = self.admin_client.get(
+            f"/registre_vehicules_relais/consulter?immatriculation={v3.immatriculation}"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context["object_list"].count(), 2)
+
+        # 1 vehicule with this immatriculation
+        resp = self.admin_client.get(
+            f"/registre_vehicules_relais/consulter?immatriculation={v2.immatriculation}"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context["object_list"].count(), 1)
+
+        # 1 vehicule with this immatriculation in Paris
+        resp = self.admin_client.get(
+            f"/registre_vehicules_relais/consulter?immatriculation={v1.immatriculation}&departement={paris.id}"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context["object_list"].count(), 1)
 
     def test_ordering(self):
         """Ensure vehicules are ordered by numero"""
+        paris = Prefecture.objects.get(numero="75")
+
         resp = self.admin_client.get(
-            "/registre_vehicules_relais/consulter/departements/75"
+            f"/registre_vehicules_relais/consulter?departement={paris.id}"
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.context["prefecture"].numero, "75")
         self.assertEqual(resp.context["object_list"].count(), 0)
 
-        paris = Prefecture.objects.filter(numero="75").get()
         for numero in (
             "75-01",
             "75-02",
@@ -91,10 +142,9 @@ class TestSearchDepartementView(ClientTestCase):
             vehicule.save()
 
         resp = self.admin_client.get(
-            "/registre_vehicules_relais/consulter/departements/75"
+            f"/registre_vehicules_relais/consulter?departement={paris.id}"
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.context["prefecture"].numero, "75")
         self.assertEqual(resp.context["object_list"].count(), 5)
         self.assertEqual(resp.context["object_list"][0].numero, "75-01")
         self.assertEqual(resp.context["object_list"][1].numero, "75-02")

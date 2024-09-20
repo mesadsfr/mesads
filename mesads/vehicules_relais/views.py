@@ -6,14 +6,13 @@ from django.contrib.staticfiles.finders import find
 from django.db.models.functions import Cast
 from django.db.models import Func, IntegerField, Value
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     CreateView,
     DetailView,
     DeleteView,
-    FormView,
     ListView,
     RedirectView,
     TemplateView,
@@ -27,15 +26,13 @@ from reversion.views import RevisionMixin
 
 import qrcode
 
-from mesads.fradm.forms import PrefectureForm
-from mesads.fradm.models import Prefecture
-
 from mesads.app.reversion_diff import ModelHistory
 
 from .models import Proprietaire, Vehicule, DispositionSpecifique
 from .forms import (
     ProprietaireDeleteForm,
     ProprietaireForm,
+    SearchVehiculeForm,
     VehiculeCreateForm,
     VehiculeForm,
 )
@@ -53,37 +50,18 @@ class IndexView(RedirectView):
     url = reverse_lazy("vehicules-relais.search")
 
 
-class SearchView(FormView):
+class SearchView(ListView):
     template_name = "pages/vehicules_relais/user_search.html"
-    form_class = PrefectureForm
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx["is_proprietaire"] = (
-            self.request.user.is_authenticated
-            and Proprietaire.objects.filter(users__in=[self.request.user]).exists()
-        )
-        return ctx
-
-    def form_valid(self, form):
-        return redirect(
-            reverse(
-                "vehicules-relais.search.departement",
-                kwargs={"departement": form.cleaned_data["prefecture"].numero},
-            )
-        )
-
-
-class SearchDepartementView(ListView):
-    template_name = "pages/vehicules_relais/user_search_departement.html"
     paginate_by = 100
+
+    def get_form(self):
+        return SearchVehiculeForm(self.request.GET)
 
     def get_queryset(self):
         # .order_by("numero") doesn't work because with a string ordering, 75-2 is higher than 75-100.
         # Instead we split the numero field and order by the first and second part.
-        return (
-            Vehicule.objects.filter(departement__numero=self.kwargs["departement"])
-            .annotate(
+        qs = (
+            Vehicule.objects.annotate(
                 part1=Cast(SplitPart("numero", Value("-"), Value(1)), IntegerField()),
                 part2=Cast(SplitPart("numero", Value("-"), Value(2)), IntegerField()),
             )
@@ -91,10 +69,31 @@ class SearchDepartementView(ListView):
             .select_related("proprietaire")
         )
 
+        form = self.get_form()
+        if form.is_valid():
+            departement = form.cleaned_data["departement"]
+            if departement:
+                qs = qs.filter(departement__numero=departement.numero)
+            immatriculation = form.cleaned_data["immatriculation"]
+            if immatriculation:
+                qs = qs.filter(immatriculation=immatriculation)
+        return qs
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["prefecture"] = get_object_or_404(
-            Prefecture, numero=self.kwargs["departement"]
+        form = self.get_form()
+
+        ctx["form"] = form
+
+        # If the form is valid and at least one field is not empty
+        should_display_search_results = False
+        if form.is_valid() and next((v for v in form.cleaned_data.values() if v), None):
+            should_display_search_results = True
+        ctx["should_display_search_results"] = should_display_search_results
+
+        ctx["is_proprietaire"] = (
+            self.request.user.is_authenticated
+            and Proprietaire.objects.filter(users__in=[self.request.user]).exists()
         )
         return ctx
 

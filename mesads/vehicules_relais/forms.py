@@ -80,3 +80,15 @@ class ProprietaireDeleteForm(forms.ModelForm):
                 "Il est impossible de supprimer cet espace propriétaire, car des véhicules y sont rattachés."
             )
         return super().clean()
+
+
+class SearchVehiculeForm(forms.Form):
+    departement = forms.ModelChoiceField(
+        queryset=Prefecture.objects,
+        widget=autocomplete.ListSelect2(url="fradm.autocomplete.prefecture"),
+        label=Vehicule.departement.field.verbose_name,
+        help_text=Vehicule.departement.field.help_text,
+        required=False,
+    )
+
+    immatriculation = forms.CharField(required=False)
