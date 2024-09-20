@@ -3,8 +3,8 @@ from io import BytesIO
 
 from django.contrib import messages
 from django.contrib.staticfiles.finders import find
-from django.db.models.functions import Cast
-from django.db.models import Func, IntegerField, Value
+from django.db.models.functions import Cast, Replace
+from django.db.models import F, Func, IntegerField, Value
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -64,6 +64,9 @@ class SearchView(ListView):
             Vehicule.objects.annotate(
                 part1=Cast(SplitPart("numero", Value("-"), Value(1)), IntegerField()),
                 part2=Cast(SplitPart("numero", Value("-"), Value(2)), IntegerField()),
+                immatriculation_clean=Replace(
+                    F("immatriculation"), Value("-"), Value("")
+                ),
             )
             .order_by("part1", "part2")
             .select_related("proprietaire")
@@ -76,7 +79,9 @@ class SearchView(ListView):
                 qs = qs.filter(departement__numero=departement.numero)
             immatriculation = form.cleaned_data["immatriculation"]
             if immatriculation:
-                qs = qs.filter(immatriculation=immatriculation)
+                qs = qs.filter(
+                    immatriculation_clean__icontains=immatriculation.replace("-", "")
+                )
         return qs
 
     def get_context_data(self, **kwargs):

@@ -96,6 +96,13 @@ class TestSearchView(ClientTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context["object_list"].count(), 2)
 
+        # Ensure dashes are ignored
+        resp = self.admin_client.get(
+            f"/registre_vehicules_relais/consulter?immatriculation={v3.immatriculation.replace('-', '')}"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context["object_list"].count(), 2)
+
         # 1 vehicule with this immatriculation
         resp = self.admin_client.get(
             f"/registre_vehicules_relais/consulter?immatriculation={v2.immatriculation}"
