@@ -17,8 +17,8 @@ class Page:
     number: int = None
 
 
-@register.inclusion_tag("pagination_links.html")
-def show_pagination_links(page_obj):
+@register.inclusion_tag("pagination_links.html", takes_context=True)
+def show_pagination_links(context, page_obj):
     """Links to render pagination.
 
     The output is as follow, for a table of 11 pages when the current page is
@@ -70,6 +70,12 @@ def show_pagination_links(page_obj):
         pages.append(Page(is_next=True, number=page_obj.next_page_number))
         pages.append(Page(is_last=True, number=page_obj.paginator.num_pages))
 
+    request = context["request"]
+    extra_qs = "&".join(
+        [f"{key}={value}" for key, value in request.GET.items() if key != "page"]
+    )
+
     return {
         "pages": pages,
+        "extra_qs": extra_qs,
     }
