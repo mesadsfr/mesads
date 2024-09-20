@@ -1,5 +1,6 @@
 from django.contrib import admin
-from django.db.models import Count
+from django.db.models import Count, F, Q
+from django.db.models.functions import Collate
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
@@ -78,6 +79,30 @@ class ProprietaireAdmin(admin.ModelAdmin):
     list_filter = (VehiculeCount,)
 
     inlines = (UsersInline,)
+
+    def get_search_results(self, request, queryset, search_term):
+        """The field Users.email uses a non-deterministic collation, which makes
+        it impossible to perform a LIKE query on it.
+
+        By overriding this method, we can specify the collation to use for the search.
+        """
+        use_distinct = True
+        queryset = queryset.annotate(collated_email=Collate(F("users__email"), "C"))
+        queryset = queryset.filter(
+            Q(
+                nom__icontains=search_term,
+            )
+            | Q(
+                siret__icontains=search_term,
+            )
+            | Q(
+                collated_email__icontains=search_term,
+            )
+        )
+        return (
+            queryset,
+            use_distinct,
+        )
 
     def get_queryset(self, request):
         qs = Proprietaire.with_deleted.get_queryset()
