@@ -11,7 +11,7 @@
         <div class="fr-table__container">
           <div class="fr-table__content">
             <table id="table-history">
-              <caption>Changement du {{ revision.date_created|date:"d/m/Y" }} par {{ revision.user.email }}</caption>
+              <caption>Changement du {{ revision.date_created|date:"d/m/Y" }} par {% if revision.user %}{{ revision.user.email }}{% else %}un utilisateur inconnu{% endif %}</caption>
               <thead>
                 {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
                 <th class="fr-text--lg" style="text-align:center; background-color:#c9191e; color:#fff" colspan="2">
