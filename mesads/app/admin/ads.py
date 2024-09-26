@@ -171,6 +171,7 @@ class ADSAdmin(CompareVersionAdmin):
         "adsuser__status",
         ADSUsersCount,
         "accepted_cpam",
+        "vehicle_compatible_pmr",
     ]
 
     def get_queryset(self, request):
