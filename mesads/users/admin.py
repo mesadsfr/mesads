@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
+from reversion.models import Revision
 
 from mesads.app.models import Notification
 
@@ -187,10 +188,11 @@ class UserAdmin(BaseUserAdmin):
             return mark_safe(f'<a href="{link}">Configurer les notifications</a>')
 
     def has_delete_permission(self, request, obj=None):
-        """Users should not be deleted. To deactivate a user, we can simply set
-        the flag is_active to False.
-
-        In the future, we can consider allowing the deletion of users if they
-        have no related data.
-        """
-        return False
+        """Forbid user deletion if the account is referenced by django
+        reversion. To deactivate these users, we can simply set the flag
+        is_active to False instead."""
+        if obj:
+            count = Revision.objects.filter(user=obj).count()
+            if count:
+                return False
+        return True
