@@ -13,6 +13,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
+from reversion.revisions import create_revision, set_user
+from mesads.users.models import User
+
 from mesads.app.models import ADS, ADSManager, ADSUser, validate_siret
 from mesads.fradm.models import Commune, Prefecture
 
@@ -701,9 +704,17 @@ class Command(BaseCommand):
         )
 
         # Save all ADS in a single transaction, so that if one fails, all are rolled back
+        # create_revision and set_user are called to make sure a
+        # reversion_revision entry is created for this initial import.
         try:
             last_exc = None
-            with transaction.atomic():
+            with (
+                transaction.atomic(),
+                create_revision(),
+            ):
+                revision_user = User.objects.get(email="julien.castets@beta.gouv.fr")
+                set_user(revision_user)
+
                 for idx, ads in enumerate(ads_list):
                     try:
                         # For each ADS, we create a new transaction. If one
@@ -741,7 +752,8 @@ class Command(BaseCommand):
                     raise ValueError
         except:  # noqa
             self._log(
-                self.style.ERROR, "Échec de l'import, aucune ADS n'a été enregistrée"
+                self.style.ERROR,
+                "Échec de l'import, aucune ADS n'a été enregistrée",
             )
         else:
             self._log(self.style.SUCCESS, "Enregistrement terminé.")
