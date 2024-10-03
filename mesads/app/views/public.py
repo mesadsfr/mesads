@@ -222,7 +222,7 @@ class ReglementationView(TemplateView):
             ],
         },
         {
-            "title": "Registre des taxis relais",
+            "title": "Registres des taxis relais",
             "articles": [
                 {
                     "title": "Qu'est-ce qu'un taxi relais ?",

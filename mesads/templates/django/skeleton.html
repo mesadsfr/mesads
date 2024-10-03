@@ -121,7 +121,7 @@
               <li class="fr-nav__item">
                 {% url 'vehicules-relais.index' as vehicules_relais_index_url %}
                 {% is_subpath request.path vehicules_relais_index_url 1 as is_vehicules_relais %}
-                <a class="fr-nav__link" href="{{ vehicules_relais_index_url }}"{% if is_vehicules_relais %} aria-current="page"{% endif %}>🚖 Registre des Véhicules Relais</a>
+                <a class="fr-nav__link" href="{{ vehicules_relais_index_url }}"{% if is_vehicules_relais %} aria-current="page"{% endif %}>🚖 Registres des Véhicules Relais</a>
               </li>
               <li class="fr-nav__item">
                 {% url 'app.reglementation' as reglementation_url %}
@@ -153,7 +153,7 @@
           </div>
           <div class="fr-footer__content">
             <p class="fr-footer__content-desc">
-              MesADS est l'outil de référence du secteur taxi. La plateforme propose actuellement deux fonctionnalités: la gestion des licences de taxi pour les administrations (registre des ADS) et l'accès à la liste des véhicules de remplacement pour les chauffeurs de taxi (registre des taxis relais). 
+              MesADS est l'outil de référence du secteur taxi. La plateforme propose actuellement deux fonctionnalités: la gestion des licences de taxi pour les administrations (registre des ADS) et l'accès aux listes des véhicules de remplacement pour les chauffeurs de taxi (registres des taxis relais). 
             </p>
             <ul class="fr-footer__content-list">
               <li class="fr-footer__content-item">
