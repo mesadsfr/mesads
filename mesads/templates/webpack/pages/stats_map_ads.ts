@@ -1,6 +1,9 @@
 import * as L from "leaflet";
 
-const map = L.map("map", { zoomControl: false }).setView([46.2276, 2.2137], 6);
+const map = L.map("map_ads", { zoomControl: false }).setView(
+  [46.2276, 2.2137],
+  6
+);
 
 type APIProps = {
   code_insee: string;

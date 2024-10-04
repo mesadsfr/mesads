@@ -21,12 +21,12 @@
 <div class="fr-tabs">
   <ul class="fr-tabs__list" role="tablist" aria-label="Statistiques MesADS">
       <li role="presentation">
-        <button id="tabpanel-1" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="0" role="tab" aria-selected="true" aria-controls="tabpanel-1-panel">
+        <button id="tabpanel-1" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="0" role="tab" aria-selected="false" aria-controls="tabpanel-1-panel">
           Les statistiques du registre ADS
         </button>
       </li>
       <li role="presentation">
-        <button id="tabpanel-2" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-2-panel">
+        <button id="tabpanel-2" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="-1" role="tab" aria-selected="true" aria-controls="tabpanel-2-panel">
           Les statistiques des registres des véhicules relais
         </button>
       </li>
@@ -84,9 +84,8 @@
     <hr class="fr-mt-3w" />
 
     <h2>Carte de déploiement</h2>
-    <div id="map" style="width: 100%; height: 764px;"></div>
-    <script src="leaflet/dist/leaflet.js"></script>
-    <script src="./stats_map.ts"></script>
+    <div id="map_ads" style="width: 100%; height: 764px;"></div>
+    <script src="./stats_map_ads.ts"></script>
 
     <p class="fr-mt-3w">
       Cette carte présente le nombre d'ADS enregistrées dans chaque département jusqu'à ce jour. Le nombre d'ADS estimé peut ne pas être exact, mais permet d'avoir une vue d'ensemble du déploiement du registre ADS au niveau national.
@@ -230,6 +229,16 @@
         </div>
       </div>
     </div>
+
+    <hr class="fr-mt-3w" />
+
+    <h2>Carte de déploiement</h2>
+    <div id="map_vehicules_relais" style="width: 100%; height: 764px;"></div>
+    <script src="./stats_map_vehicules_relais.ts"></script>
+
+    <p class="fr-mt-3w">
+      Cette carte présente le nombre de véhicules relais enregistrés dans chaque département.
+    </p>
 
     <hr class="fr-mt-3w" />
 

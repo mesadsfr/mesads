@@ -8,6 +8,7 @@ from rest_framework import mixins, permissions, viewsets, views
 from rest_framework.response import Response
 
 from mesads.app.models import ADSManagerAdministrator, ADSUpdateFile
+from mesads.fradm.models import Prefecture
 
 from .serializers import ADSUpdateFileSerializer
 
@@ -31,10 +32,10 @@ class ADSUpdatesViewSet(
 
 
 class StatsGeoJSONPerPrefecture(views.APIView):
-    """Exposes a GeoJSON with the number of ADS for each prefecture."""
+    """Exposes a GeoJSON with statistics for each prefecture."""
 
     def get(self, request):
-        query_stats = ADSManagerAdministrator.objects.select_related(
+        ads_stats = ADSManagerAdministrator.objects.select_related(
             "prefecture"
         ).annotate(ads_count=Count("adsmanager__ads"))
 
@@ -43,8 +44,13 @@ class StatsGeoJSONPerPrefecture(views.APIView):
                 "ads_count": ads_manager_administrator.ads_count,
                 "expected_ads_count": ads_manager_administrator.expected_ads_count,
             }
-            for ads_manager_administrator in query_stats.all()
+            for ads_manager_administrator in ads_stats.all()
         }
+
+        vehicules_relais_stats = Prefecture.objects.annotate(count=Count("vehicule"))
+
+        for row in vehicules_relais_stats:
+            stats[row.numero]["vehicules_relais_count"] = row.count
 
         departements_shpfile = (
             importlib.resources.files("mesads.api.resources")
@@ -54,9 +60,15 @@ class StatsGeoJSONPerPrefecture(views.APIView):
             geojson = shp.__geo_interface__
             for feature in geojson["features"]:
                 insee_code = feature["properties"]["code_insee"]
-                feature["properties"]["ads_count"] = stats[insee_code]["ads_count"]
-                feature["properties"]["expected_ads_count"] = stats[insee_code][
-                    "expected_ads_count"
-                ]
+                print(insee_code)
+                feature["properties"]["ads_count"] = stats.get(insee_code, {}).get(
+                    "ads_count", 0
+                )
+                feature["properties"]["expected_ads_count"] = stats.get(
+                    insee_code, {}
+                ).get("expected_ads_count", 0)
+                feature["properties"]["vehicules_relais_count"] = stats.get(
+                    insee_code, {}
+                ).get("vehicules_relais_count", 0)
 
             return Response(geojson)
