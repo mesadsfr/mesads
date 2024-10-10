@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.db.models import F, Q
+from django.db.models.functions import Collate
 
 from reversion.admin import VersionAdmin
 
@@ -14,7 +16,7 @@ class ADSManagerRequestAdmin(VersionAdmin):
     list_display = ("created_at", "user", "administration", "accepted")
     ordering = ("-created_at",)
     list_filter = ("accepted",)
-    search_fields = ("user__email__icontains",)
+    search_fields = ("user__email",)
 
     fields = (
         "user",
@@ -28,6 +30,24 @@ class ADSManagerRequestAdmin(VersionAdmin):
         "created_at",
         "last_update_at",
     )
+
+    def get_search_results(self, request, queryset, search_term):
+        """The field Users.email uses a non-deterministic collation, which makes
+        it impossible to perform a LIKE query on it.
+
+        By overriding this method, we can specify the collation to use for the search.
+        """
+        use_distinct = True
+        queryset = queryset.annotate(collated_email=Collate(F("user__email"), "C"))
+        queryset = queryset.filter(
+            Q(
+                collated_email__icontains=search_term,
+            )
+        )
+        return (
+            queryset,
+            use_distinct,
+        )
 
     @admin.display(description="Administration")
     def administration(self, ads_manager_request):
