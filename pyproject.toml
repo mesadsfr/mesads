@@ -70,6 +70,8 @@ pyyaml = "^6.0.1"
 django-markdownx = "^4.0.7"
 weasyprint = "^62.1"
 qrcode = "^7.4.2"
+django-htmx = "^1.19.0"
+django-render-block = "^0.10"
 
 [tool.poetry.dev-dependencies]
 django-debug-toolbar = "^3.2.2"

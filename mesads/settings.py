@@ -124,6 +124,7 @@ INSTALLED_APPS = [
     "django_cleanup.apps.CleanupConfig",
     "mjml",
     "markdownx",
+    "django_htmx",
     "mesads.app",
     "mesads.users",
     "mesads.fradm",
@@ -146,6 +147,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
     "mesads.middleware.BackwardCompatibilityURLMiddleware",
 ]
 

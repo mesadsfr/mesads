@@ -2,14 +2,16 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
-from django.db.models import Count
 from django.db import transaction
+from django.db.models import Count
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 
+from render_block import render_block_to_string
 from reversion.views import RevisionMixin
 
 from ..forms import (
@@ -115,6 +117,18 @@ class ADSManagerRequestView(FormView):
     template_name = "pages/ads_register/ads_manager_request.html"
     form_class = ADSManagerForm
     success_url = reverse_lazy("app.ads-manager.index")
+
+    def get(self, request, *args, **kwargs):
+        if request.htmx:
+            return HttpResponse(
+                content=render_block_to_string(
+                    "pages/ads_register/ads_manager_request.html",
+                    "forms",
+                    request=request,
+                    context=self.get_context_data(),
+                )
+            )
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """Expose the list of ADSManagerAdministrators for which current user

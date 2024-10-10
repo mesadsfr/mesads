@@ -1,6 +1,10 @@
 {% extends "./base.html" %}
 {% load static %}
 
+{% block extra_head %}
+  <script src="htmx.org/dist/htmx.min.js" defer></script>
+{% endblock %}
+
 {% block main %}
 <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
   <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
@@ -132,100 +136,131 @@
   </ul>
 
   <div id="tabpanel-1-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" aria-labelledby="tabpanel-1" tabindex="0">
-    <form method="post" action="{% url 'app.ads-manager.index' %}">
-      {% csrf_token %}
-      <div class="fr-form-group">
-        <fieldset class="fr-fieldset">
-          <legend class="fr-fieldset__legend fr-text--regular" id='radio-inline-legend'>
-            <div class="fr-mb-2w fr-alert fr-alert--info">
-              <p class="fr-alert__title">Un problème ? Contactez-nous !</p>
-              <p>
-                Si vous avez le moindre problème, par exemple si votre demande est refusée ou met trop de temps avant d'être acceptée, vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
-              </p>
-
-              <p class="fr-text--xl fr-mt-2w">
-                La demande est exclusivement réservée aux agents de l'administration.
-              </p>
-            </div>
-          </legend>
-
-
-          <p>Sélectionnez le type d'administration pour laquelle vous souhaitez déclarer des ADS, ou déclarer l'absence d'ADS :</p>
-
-          <div class="fr-fieldset__content">
-            <!-- Commune -->
-            <div class="fr-radio-group">
-              <input type="radio" id="radio-inline-1" name="radio-inline">
-              <label class="fr-label" for="radio-inline-1">
-                D'une commune
-              </label>
-
-              <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.commune %} fr-input-group--error{% endif %}">
-                {{ form.commune }}
-
-                {% for error in form.errors.commune %}
-                <p class="fr-error-text">
-                  {{ error }}
+    <div id="forms">
+      {% block forms %}
+      <form method="post" action="{% url 'app.ads-manager.index' %}">
+        {% csrf_token %}
+        <div class="fr-form-group">
+          <fieldset class="fr-fieldset">
+            <legend class="fr-fieldset__legend fr-text--regular" id='radio-inline-legend'>
+              <div class="fr-mb-2w fr-alert fr-alert--info">
+                <p class="fr-alert__title">Un problème ? Contactez-nous !</p>
+                <p>
+                  Si vous avez le moindre problème, par exemple si votre demande est refusée ou met trop de temps avant d'être acceptée, vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
                 </p>
-                {% endfor %}
+
+                <p class="fr-text--xl fr-mt-2w">
+                  La demande est exclusivement réservée aux agents de l'administration.
+                </p>
+              </div>
+            </legend>
+
+
+            <p>Sélectionnez le type d'administration pour laquelle vous souhaitez déclarer des ADS, ou déclarer l'absence d'ADS :</p>
+
+            <div class="fr-fieldset__content">
+              <!-- Commune -->
+              <div class="fr-radio-group">
+                <input
+                  id="select-commune"
+                  type="radio"
+                  name="select-administration"
+                  hx-get
+                  hx-target="#forms"
+                  {% if request.htmx.trigger == "select-commune" %}checked{% endif %}
+                >
+                <label class="fr-label" for="select-commune">
+                  D'une commune
+                </label>
+
+                {% if request.htmx.trigger == "select-commune" %}
+                  <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.commune %} fr-input-group--error{% endif %}">
+                    {{ form.commune }}
+
+                    {% for error in form.errors.commune %}
+                    <p class="fr-error-text">
+                      {{ error }}
+                    </p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- EPCI -->
+              <div class="fr-radio-group">
+                <input
+                  id="select-epci"
+                  type="radio"
+                  name="select-administration"
+                  hx-get
+                  hx-target="#forms"
+                  {% if request.htmx.trigger == "select-epci" %}checked{% endif %}
+                >
+                <label class="fr-label" for="select-epci">
+                  D'un établissement public à fiscalité propre (métropole, communauté de commune, communauté d’agglomération ou communauté urbaine)
+                </label>
+
+                {% if request.htmx.trigger == "select-epci" %}
+                  <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.epci %} fr-input-group--error{% endif %}">
+                    {{ form.epci }}
+
+                    {% for error in form.errors.epci %}
+                    <p class="fr-error-text">
+                      {{ error }}
+                    </p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Préfecture -->
+              <div class="fr-radio-group">
+                <input
+                  id="select-prefecture"
+                  type="radio"
+                  name="select-administration"
+                  hx-get
+                  hx-target="#forms"
+                  {% if request.htmx.trigger == "select-prefecture" %}checked{% endif %}
+                >
+                <label class="fr-label" for="select-prefecture">
+                  D'une préfecture (ADS aéroport)
+                </label>
+
+                {% if request.htmx.trigger == "select-prefecture" %}
+                  <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
+                    {{ form.prefecture }}
+
+                    {% for error in form.errors.prefecture %}
+                    <p class="fr-error-text">
+                      {{ error }}
+                    </p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
               </div>
             </div>
+          </fieldset>
+        </div>
 
-            <!-- EPCI -->
-            <div class="fr-radio-group">
-              <input type="radio" id="radio-inline-2" name="radio-inline">
-              <label class="fr-label" for="radio-inline-2">
-                D'un établissement public à fiscalité propre (métropole, communauté de commune, communauté d’agglomération ou communauté urbaine)
-              </label>
+        <!-- Non-fields errors -->
+        {% if form.non_field_errors %}
+        <div class="fr-input-group fr-input-group--error">
+          {% for error in form.non_field_errors %}
+          <!-- Non-field error -->
+          <p class="fr-error-text">
+            {{ error }}
+          </p>
+          {% endfor %}
+        </div>
+        {% endif %}
 
-              <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.epci %} fr-input-group--error{% endif %}">
-                {{ form.epci }}
-
-                {% for error in form.errors.epci %}
-                <p class="fr-error-text">
-                  {{ error }}
-                </p>
-                {% endfor %}
-              </div>
-            </div>
-
-            <!-- Préfecture -->
-            <div class="fr-radio-group">
-              <input type="radio" id="radio-inline-3" name="radio-inline">
-              <label class="fr-label" for="radio-inline-3">
-                D'une préfecture (ADS aéroport)
-              </label>
-
-              <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
-                {{ form.prefecture }}
-
-                {% for error in form.errors.prefecture %}
-                <p class="fr-error-text">
-                  {{ error }}
-                </p>
-                {% endfor %}
-              </div>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-
-      <!-- Non-fields errors -->
-      {% if form.non_field_errors %}
-      <div class="fr-input-group fr-input-group--error">
-        {% for error in form.non_field_errors %}
-        <!-- Non-field error -->
-        <p class="fr-error-text">
-          {{ error }}
-        </p>
-        {% endfor %}
-      </div>
-      {% endif %}
-
-      <div class="fr-input-group">
-        <button type="submit" class="fr-btn">Envoyer la demande à la préfecture</button>
-      </div>
-    </form>
+        <div class="fr-input-group">
+          <button type="submit" class="fr-btn">Envoyer la demande à la préfecture</button>
+        </div>
+      </form>
+      {% endblock %}
+    </div>
   </div>
 
   <div id="tabpanel-2-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-2" tabindex="0">
@@ -238,48 +273,6 @@
 
 {% block endbody %}
   {{ block.super }}
-
   {% comment %}Extra javascript to display form for new requests.{% endcomment %}
   {{ form.media }}
-
-  <script type="text/javascript">
-    /*
-     * The form to create a new ADS manager shows three radio buttons to select
-     * the commune, EPCI or préfecture. When checked, a select input appears to
-     * select the administration.
-     *
-     * The code below hides the select inputs for the unchecked radio buttons.
-     *
-     * We can't easily use alpinejs here because the select inputs are managed
-     * by mesads.fradm.forms.FrenchAdministrationForm and is not so easy to add
-     * custom properties. It is much easier to write a few line of plain
-     * javascript.
-     *
-     * We also make sure the select value of related to unchecked radio buttons
-     * are always empty.
-     */
-    document.addEventListener('DOMContentLoaded', () => {
-      const radios = document.getElementsByName('radio-inline');
-
-      // Only display the selected element, hide the others
-      function setADSRequestFormVisibility() {
-        radios.forEach((radio) => {
-          const child = radio.parentElement.getElementsByClassName('radio-inline')[0];
-          child.style.display = radio.checked ? 'block' : 'none';
-
-          if (!radio.checked) {
-            $(child.getElementsByTagName('select')[0]).empty();
-          }
-        });
-      }
-
-      // Set initial rendering
-      setADSRequestFormVisibility();
-
-      // Hook to changes to reset visibility
-      radios.forEach((radio) => radio.addEventListener('change', setADSRequestFormVisibility));
-    });
-  </script>
-
-  <script src="ads_manager_request.ts"></script>
 {% endblock %}
