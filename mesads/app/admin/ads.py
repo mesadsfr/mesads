@@ -2,6 +2,7 @@ from datetime import date
 
 from django.contrib import admin
 from django.db.models import Count
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 from reversion_compare.admin import CompareVersionAdmin
@@ -132,6 +133,14 @@ class ADSAdmin(CompareVersionAdmin):
         """
         )
 
+    @admin.display(description="Voir sur le site public")
+    def public_url(self, obj):
+        url = reverse(
+            "app.ads.detail",
+            kwargs={"manager_id": obj.ads_manager.id, "ads_id": obj.id},
+        )
+        return mark_safe(f'<a href="{url}">Cliquer ici</a>')
+
     def has_change_permission(self, request, obj=None):
         if obj and obj.ads_manager.is_locked:
             return False
@@ -141,6 +150,13 @@ class ADSAdmin(CompareVersionAdmin):
         if obj and obj.ads_manager.is_locked:
             return False
         return True
+
+    def get_fields(self, request, obj=None):
+        """Set fields to the default value (ie. all fields), and add public_url"""
+        fields = super().get_fields(request, obj)
+        return ["public_url"] + fields
+
+    readonly_fields = ("public_url",)
 
     list_display = (
         "number",
