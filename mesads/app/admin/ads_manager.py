@@ -116,6 +116,7 @@ class ADSManagerAdmin(admin.ModelAdmin):
     ordering = ("commune__libelle",)
 
     fields = (
+        "public_url",
         "administrator",
         "administration",
         "no_ads_declared",
@@ -129,6 +130,7 @@ class ADSManagerAdmin(admin.ModelAdmin):
     autocomplete_fields = ("epci_delegate",)
 
     readonly_fields = (
+        "public_url",
         "administrator",
         "administration",
         "ads_manager_administrator_users_link",
@@ -143,6 +145,14 @@ class ADSManagerAdmin(admin.ModelAdmin):
     )
 
     inlines = (ADSManagerDecreeInline,)
+
+    @admin.display(description="Voir sur le site public")
+    def public_url(self, obj):
+        url = reverse(
+            "app.ads-manager.detail",
+            kwargs={"manager_id": obj.id},
+        )
+        return mark_safe(f'<a href="{url}">Cliquer ici</a>')
 
     @admin.display(description="Gestionnaire configuré ?")
     def display_ads_manager_request_count(self, ads_manager):
