@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -58,6 +60,31 @@ class ADSManagerAdministratorFilter(admin.SimpleListFilter):
             return queryset.filter(adsmanageradministrator_count=0)
 
 
+class LastLoginFilter(admin.SimpleListFilter):
+    title = "Date de la dernière connexion"
+
+    parameter_name = "last_login_date"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("30", "Moins de 1 mois (30 jours)"),
+            ("90", "Moins de 3 mois (90 jours)"),
+            ("180", "Moins de 6 mois (180 jours)"),
+            ("365", "Moins de 12 mois (365 jours)"),
+            ("730", "Moins de 24 mois (730 jours)"),
+        )
+
+    def queryset(self, request, queryset):
+        try:
+            since = int(self.value())
+        except TypeError:
+            return queryset
+        today = date.today()
+        return queryset.filter(
+            last_login__gte=today - timedelta(days=since),
+        )
+
+
 class UserForm(UserChangeForm):
     """Override the default form to add a custom widget to the email field."""
 
@@ -84,6 +111,7 @@ class UserAdmin(BaseUserAdmin):
         ADSManagerRequestFilter,
         ADSManagerAdministratorFilter,
         ("last_login", admin.EmptyFieldListFilter),
+        LastLoginFilter,
     )
 
     fieldsets = []
