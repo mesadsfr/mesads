@@ -255,7 +255,14 @@ LOGOUT_REDIRECT_URL = "/"
 # Setup INTERNAL_IPS for django-debug-toolbar.
 if DEBUG:
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-    INTERNAL_IPS = [ip[:-1] + "1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+    INTERNAL_IPS = [ip[:-1] + "1" for ip in ips] + [
+        "127.0.0.1",
+    ]
+
+# Display toolbar if DEBUG is True
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": lambda request: DEBUG,
+}
 
 MESADS_CONTACT_EMAIL = "equipe@mesads.beta.gouv.fr"
 
