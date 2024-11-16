@@ -523,8 +523,8 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
         verbose_name="Commune de l'EPCI concernée par l'ADS",
     )
 
-    creation_date = models.DateField(auto_now_add=True, null=False)
-    last_update = models.DateField(auto_now=True, null=False)
+    creation_date = models.DateTimeField(auto_now_add=True, null=False)
+    last_update = models.DateTimeField(auto_now=True, null=False)
 
     ads_creation_date = models.DateField(
         blank=True,
