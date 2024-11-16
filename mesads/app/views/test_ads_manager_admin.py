@@ -203,3 +203,49 @@ class TestExportPrefecture(ClientTestCase):
             resp.headers["Content-Type"],
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
+
+
+class TestADSManagerAdminUpdatesView(ClientTestCase):
+    def test_updates(self):
+        resp = self.ads_manager_administrator_35_client.get(
+            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture.id}/changements"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context["updates"], [])
+
+        # Create ADS, and update it
+        ads = ADS.objects.create(
+            number="12346", ads_manager=self.ads_manager_city35, ads_in_use=True
+        )
+        resp = self.ads_manager_administrator_35_client.post(
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{ads.id}",
+            {
+                "number": ads.id,
+                "ads_in_use": "false",
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
+
+        resp = self.ads_manager_administrator_35_client.get(
+            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture.id}/changements"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.context["updates"]), 1)
+        self.assertEqual(len(resp.context["updates"][0]["history_entries"]), 1)
+
+        # # Update the same ADS again
+        resp = self.ads_manager_administrator_35_client.post(
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{ads.id}",
+            {
+                "number": ads.id,
+                "ads_in_use": "true",
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
+
+        resp = self.ads_manager_administrator_35_client.get(
+            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture.id}/changements"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.context["updates"]), 1)
+        self.assertEqual(len(resp.context["updates"][0]["history_entries"]), 2)
