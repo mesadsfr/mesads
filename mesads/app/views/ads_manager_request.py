@@ -22,7 +22,7 @@ from ..models import (
 
 
 class ADSManagerAdminView(RevisionMixin, TemplateView):
-    """This view is used by ADSManagerAdministartors to validate ADSManagerRequests."""
+    """This view is used by ADSManagerAdministrators to validate ADSManagerRequests."""
 
     template_name = "pages/ads_register/ads_manager_admin.html"
 
