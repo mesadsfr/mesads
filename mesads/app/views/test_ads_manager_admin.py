@@ -6,6 +6,28 @@ from ..models import ADS, ADSManager, ADSManagerRequest
 from ..unittest import ClientTestCase
 
 
+class ADSManagerAdminIndexView(ClientTestCase):
+    def test_redirect(self):
+        resp = self.ads_manager_administrator_35_client.get(
+            "/registre_ads/admin_gestion"
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(
+            resp.url,
+            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}",
+        )
+
+        client, _ = self.create_client(admin=True)
+
+        # Admin, but not ADSManagerAdministrator
+        resp = client.get("/registre_ads/admin_gestion")
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(
+            resp.url,
+            "/registre_ads/gestion",
+        )
+
+
 class TestADSManagerAdminView(ClientTestCase):
     def setUp(self):
         super().setUp()
