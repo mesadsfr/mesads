@@ -113,6 +113,10 @@ urls:
     title: "Gestion et contrôle des accès des instructeurs ADS"
     description: "Gérez les demandes d'accès au registre ADS en acceptant ou refusant les instructeurs de votre département."
 
+  app.ads-manager-admin.updates:
+    title: "Les dernières modifications des ADS de votre préfecture"
+    description: "Liste des dernières modifications apportées aux ADS de votre préfecture."
+
   app.ads-manager.index:
     title: "Accès et gestion des administrations au registre ADS"
     description: "Configurez votre accès au registre ADS et consultez les gestionnaires ADS déjà configurées."
