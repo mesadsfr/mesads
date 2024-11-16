@@ -13,10 +13,15 @@ from .ads_manager import (  # noqa: F401
     ads_manager_decree_view,
     ADSManagerAutocompleteView,
 )
-from .ads_manager_admin import PrefectureExportView, ADSManagerExportView  # noqa: F401
+from .ads_manager_admin import (  # noqa: F401
+    PrefectureExportView,
+    ADSManagerExportView,
+    ADSManagerAdminIndexView,
+    ADSManagerAdminDetailsView,
+    ADSManagerAdminUpdatesView,
+)
 from .ads_manager_request import (  # noqa: F401
     ADSManagerRequestView,
-    ADSManagerAdminView,
 )
 from .dashboards import DashboardsView, DashboardsDetailView  # noqa: F401
 from .public import (  # noqa: F401
@@ -34,6 +39,9 @@ class ADSRegisterView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         if self.request.user.is_staff:
             return reverse("app.dashboards.list")
-        if len(self.request.user.adsmanageradministrator_set.all()):
-            return reverse("app.ads-manager-admin.index")
+        ads_manager_administrators = self.request.user.adsmanageradministrator_set.all()
+        if len(ads_manager_administrators):
+            return reverse(
+                "app.ads-manager-admin.index",
+            )
         return reverse("app.ads-manager.index")

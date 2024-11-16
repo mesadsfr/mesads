@@ -60,7 +60,6 @@ class StatsGeoJSONPerPrefecture(views.APIView):
             geojson = shp.__geo_interface__
             for feature in geojson["features"]:
                 insee_code = feature["properties"]["code_insee"]
-                print(insee_code)
                 feature["properties"]["ads_count"] = stats.get(insee_code, {}).get(
                     "ads_count", 0
                 )

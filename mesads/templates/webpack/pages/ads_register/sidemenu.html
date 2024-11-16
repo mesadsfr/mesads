@@ -1,11 +1,9 @@
 {% load is_subpath %}
 
 {% url 'app.dashboards.list' as dashboards_index_url %}
-{% url 'app.ads-manager-admin.index' as ads_manager_admin_index_url %}
 {% url 'app.ads-manager.index' as ads_manager_index_url %}
 
 {% is_subpath request.path dashboards_index_url 2 as in_dashboards %}
-{% is_subpath request.path ads_manager_admin_index_url 2 as in_ads_manager_admin %}
 {% is_subpath request.path ads_manager_index_url 2 as in_ads_manager %}
 
 <nav class="fr-sidemenu" aria-labelledby="fr-sidemenu-title">
@@ -32,13 +30,19 @@
           </button>
           <div class="fr-collapse" id="fr-sidemenu-item-2-1">
             <ul class="fr-sidemenu__list">
+              {% for ads_manager_administrator in user.adsmanageradministrator_set.all %}
+
+              {% url 'app.ads-manager-admin.details' prefecture_id=ads_manager_administrator.prefecture_id as ads_manager_admin_url %}
+              {% is_subpath request.path ads_manager_admin_url 3 as in_ads_manager_admin %}
+
               <li class="fr-sidemenu__item{% if in_ads_manager_admin %} fr-sidemenu__item--active{% endif %}">
                 <a
                   class="fr-sidemenu__link"
-                  href="{% url 'app.ads-manager-admin.index' %}"
+                  href="{% url 'app.ads-manager-admin.details' prefecture_id=ads_manager_administrator.prefecture_id %}"
                   target="_self"
-                  {% if in_ads_manager_admin %}aria-current="page"{% endif %}>Gestion des accès gestionnaires</a>
+                  {% if in_ads_manager_admin %}aria-current="page"{% endif %}>{{ ads_manager_administrator.prefecture.text }}</a>
               </li>
+              {% endfor %}
             </ul>
           </div>
         </li>

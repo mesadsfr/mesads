@@ -107,6 +107,9 @@ urls:
     description: "Découvrez en détail le déploiement et l'utilisation du registre ADS dans {{ object.prefecture.display_fulltext }}."
 
   app.ads-manager-admin.index:
+    missing: true # Redirect view
+
+  app.ads-manager-admin.details:
     title: "Gestion et contrôle des accès des instructeurs ADS"
     description: "Gérez les demandes d'accès au registre ADS en acceptant ou refusant les instructeurs de votre département."
 

@@ -4,88 +4,10 @@ from django.core import mail
 from mesads.fradm.models import EPCI, Prefecture
 
 from ..models import (
-    ADSManager,
     ADSManagerRequest,
     Notification,
 )
 from ..unittest import ClientTestCase
-
-
-class TestADSManagerAdminView(ClientTestCase):
-    def setUp(self):
-        super().setUp()
-        self.ads_manager_request = ADSManagerRequest.objects.create(
-            user=self.create_user().obj,
-            ads_manager=self.ads_manager_city35,
-            accepted=None,
-        )
-
-    def test_permissions(self):
-        for client_name, client, expected_status in (
-            ("admin", self.admin_client, 200),
-            ("anonymous", self.anonymous_client, 302),
-            ("auth", self.auth_client, 404),
-            ("ads_manager 35", self.ads_manager_city35_client, 404),
-            ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
-        ):
-            with self.subTest(client_name=client_name, expected_status=expected_status):
-                resp = client.get("/registre_ads/admin_gestion")
-                self.assertEqual(resp.status_code, expected_status)
-
-    def test_invalid_action(self):
-        resp = self.ads_manager_administrator_35_client.post(
-            "/registre_ads/admin_gestion", {"action": "xxx", "request_id": 1}
-        )
-        self.assertEqual(resp.status_code, 400)
-
-    def test_invalid_request_id(self):
-        resp = self.ads_manager_administrator_35_client.post(
-            "/registre_ads/admin_gestion", {"action": "accept", "request_id": 12342}
-        )
-        self.assertEqual(resp.status_code, 404)
-
-    def test_accept(self):
-        self.assertEqual(len(mail.outbox), 0)
-
-        resp = self.ads_manager_administrator_35_client.post(
-            "/registre_ads/admin_gestion",
-            {"action": "accept", "request_id": self.ads_manager_request.id},
-        )
-        self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp.url, "/registre_ads/admin_gestion")
-        self.ads_manager_request.refresh_from_db()
-        self.assertTrue(self.ads_manager_request.accepted)
-        self.assertEqual(len(mail.outbox), 1)
-
-    def test_deny(self):
-        self.assertEqual(len(mail.outbox), 0)
-
-        resp = self.ads_manager_administrator_35_client.post(
-            "/registre_ads/admin_gestion",
-            {"action": "deny", "request_id": self.ads_manager_request.id},
-        )
-        self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp.url, "/registre_ads/admin_gestion")
-        self.ads_manager_request.refresh_from_db()
-        self.assertFalse(self.ads_manager_request.accepted)
-        self.assertEqual(len(mail.outbox), 1)
-
-    def test_sort(self):
-        for ads_manager in ADSManager.objects.all():
-            ADSManagerRequest.objects.create(
-                user=self.create_user().obj,
-                ads_manager=ads_manager,
-                accepted=None,
-            )
-            resp = self.ads_manager_administrator_35_client.get(
-                "/registre_ads/admin_gestion",
-            )
-            self.assertEqual(resp.status_code, 200)
-
-            resp = self.ads_manager_administrator_35_client.get(
-                "/registre_ads/admin_gestion?sort=name",
-            )
-            self.assertEqual(resp.status_code, 200)
 
 
 class TestADSManagerRequestView(ClientTestCase):

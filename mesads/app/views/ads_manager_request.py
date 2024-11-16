@@ -1,16 +1,11 @@
 from django.conf import settings
 from django.contrib import messages
-from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.db.models import Count
 from django.db import transaction
-from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
-from django.urls import reverse, reverse_lazy
-from django.views.generic import TemplateView
+from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
-
-from reversion.views import RevisionMixin
 
 from ..forms import (
     ADSManagerForm,
@@ -19,96 +14,6 @@ from ..models import (
     ADSManagerAdministrator,
     ADSManagerRequest,
 )
-
-
-class ADSManagerAdminView(RevisionMixin, TemplateView):
-    """This view is used by ADSManagerAdministrators to validate ADSManagerRequests."""
-
-    template_name = "pages/ads_register/ads_manager_admin.html"
-
-    def get_context_data(self, **kwargs):
-        """Populate context with the list of ADSManagerRequest current user can accept."""
-        ctx = super().get_context_data(**kwargs)
-        query = (
-            ADSManagerRequest.objects.select_related(
-                "ads_manager__administrator",
-                "ads_manager__administrator__prefecture",
-                "ads_manager__content_type",
-                "user",
-            )
-            .prefetch_related("ads_manager__content_object")
-            .filter(ads_manager__administrator__users__in=[self.request.user])
-        )
-        if self.request.GET.get("sort") == "name":
-            ctx["sort"] = "name"
-            ctx["ads_manager_requests"] = query.order_by(
-                "ads_manager__administrator",
-                "ads_manager__commune__libelle",
-                "ads_manager__epci__name",
-                "ads_manager__prefecture__libelle",
-            )
-        else:
-            ctx["ads_manager_requests"] = query.order_by(
-                "ads_manager__administrator",
-                "-created_at",
-            )
-        return ctx
-
-    def post(self, request):
-        request_id = request.POST.get("request_id")
-        action = request.POST.get("action")
-
-        if action not in ("accept", "deny"):
-            raise SuspiciousOperation("Invalid action")
-
-        ads_manager_request = get_object_or_404(ADSManagerRequest, id=request_id)
-
-        # Make sure current user can accept this request
-        get_object_or_404(
-            ADSManagerAdministrator,
-            users__in=[request.user],
-            adsmanager=ads_manager_request.ads_manager,
-        )
-
-        if action == "accept":
-            ads_manager_request.accepted = True
-        else:
-            ads_manager_request.accepted = False
-        ads_manager_request.save()
-
-        # Send notification to user
-        email_subject = render_to_string(
-            "pages/email_ads_manager_request_result_subject.txt",
-            {
-                "ads_manager_request": ads_manager_request,
-            },
-            request=request,
-        ).strip()
-        email_content = render_to_string(
-            "pages/email_ads_manager_request_result_content.txt",
-            {
-                "request": request,
-                "ads_manager_request": ads_manager_request,
-            },
-            request=request,
-        )
-        email_content_html = render_to_string(
-            "pages/email_ads_manager_request_result_content.mjml",
-            {
-                "request": request,
-                "ads_manager_request": ads_manager_request,
-            },
-            request=request,
-        )
-        send_mail(
-            email_subject,
-            email_content,
-            settings.MESADS_CONTACT_EMAIL,
-            [ads_manager_request.user.email],
-            fail_silently=True,
-            html_message=email_content_html,
-        )
-        return redirect(reverse("app.ads-manager-admin.index"))
 
 
 class ADSManagerRequestView(FormView):

@@ -28,8 +28,18 @@ urlpatterns = [
     ),
     path(
         "registre_ads/admin_gestion",
-        ads_manager_administrator_required(views.ADSManagerAdminView.as_view()),
+        ads_manager_administrator_required(views.ADSManagerAdminIndexView.as_view()),
         name="app.ads-manager-admin.index",
+    ),
+    path(
+        "registre_ads/admin_gestion/<int:prefecture_id>",
+        ads_manager_administrator_required(views.ADSManagerAdminDetailsView.as_view()),
+        name="app.ads-manager-admin.details",
+    ),
+    path(
+        "registre_ads/admin_gestion/<int:prefecture_id>/changements",
+        ads_manager_administrator_required(views.ADSManagerAdminUpdatesView.as_view()),
+        name="app.ads-manager-admin.updates",
     ),
     path(
         "registre_ads/gestion",
