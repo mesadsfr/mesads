@@ -251,7 +251,9 @@ class ADSManagerAdminUpdatesView(TemplateView):
         ads_objects = ADS.objects.filter(id__in=[row[0] for row in updates])
         ads_dict = {obj.id: obj for obj in ads_objects}
 
-        ads_managers = ADSManager.objects.filter(id__in=[row[1] for row in updates])
+        ads_managers = ADSManager.objects.filter(
+            id__in=[row[1] for row in updates]
+        ).prefetch_related("content_type", "content_object")
         ads_managers_dict = {obj.id: obj for obj in ads_managers}
         return [
             {
