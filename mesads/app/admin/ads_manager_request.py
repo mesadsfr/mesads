@@ -11,7 +11,7 @@ from ..models import (
 
 @admin.register(ADSManagerRequest)
 class ADSManagerRequestAdmin(VersionAdmin):
-    autocomplete_fields = ("ads_manager",)
+    autocomplete_fields = ("ads_manager", "user")
 
     list_display = ("created_at", "user", "administration", "accepted")
     ordering = ("-created_at",)
