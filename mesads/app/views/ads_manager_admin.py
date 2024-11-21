@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
-from django.db import connection
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -204,19 +203,13 @@ class PrefectureExportView(View, ADSExporter):
 class ADSManagerAdminUpdatesView(TemplateView):
     template_name = "pages/ads_register/ads_manager_admin_updates.html"
 
-    def get_updates(self, cursor):
-        # You might be wondering why we didn't implement pagination and why we
-        # limit to 100 results.
-        # Long story short, it's because we are using a raw query and pagination
-        # needs to be handled manually, and I've spent way too much time on this
-        # already.
-        # Alternatively we could use the django ORM instead of a raw query, but
-        # good luck with that.
-        cursor.execute(
-            """
+    def get_updates(self):
+        query = """
             SELECT
-                ads.id AS id,
-                adsmanager.id,
+                ads.id,
+                ads.last_update,
+                ads.number,
+                adsmanager.id AS ads_manager_id,
                 CASE
                     WHEN COUNT(revision.id) = 0 THEN NULL
                     ELSE COALESCE(JSON_AGG(JSON_BUILD_OBJECT(
@@ -224,7 +217,8 @@ class ADSManagerAdminUpdatesView(TemplateView):
                         'user_email', "user".email,
                         'modification_date', revision.date_created
                     ) ORDER BY revision.date_created DESC), '[]'::json)
-                END as updates
+                END as updates,
+                %(extra_fields)s
             FROM app_ads AS ads
             LEFT JOIN app_adsmanager AS adsmanager
                 ON adsmanager.id = ads.ads_manager_id
@@ -238,34 +232,43 @@ class ADSManagerAdminUpdatesView(TemplateView):
             LEFT JOIN users_user AS "user"
                 ON "user".id = revision.user_id
             WHERE
-                adsmanageradministrator.id = %s
+                adsmanageradministrator.id = %%s
             GROUP BY ads.id, adsmanager.id
             ORDER BY ads.last_update DESC
             LIMIT 100
-        """,
-            (self.kwargs["ads_manager_administrator"].id,),
+        """ % {
+            # The constructor of ADS retrieves the fields specified  in
+            # SMART_VALIDATION_WATCHED_FIELDS. If we didn't explicitly select
+            # them, the ORM would have to perform a lazy load for each object to
+            # read them.
+            "extra_fields": ", ".join(
+                ['"%s"' % key for key in ADS.SMART_VALIDATION_WATCHED_FIELDS.keys()]
+            )
+        }
+        ads_updated = list(
+            ADS.objects.raw(
+                query,
+                (self.kwargs["ads_manager_administrator"].id,),
+            )
         )
-        updates = cursor.fetchall()
 
-        # Load objects
-        ads_objects = ADS.objects.filter(id__in=[row[0] for row in updates])
-        ads_dict = {obj.id: obj for obj in ads_objects}
+        ads_managers = {
+            obj.id: obj
+            for obj in ADSManager.objects.filter(
+                id__in=[row.ads_manager_id for row in ads_updated]
+            ).prefetch_related("content_type", "content_object")
+        }
 
-        ads_managers = ADSManager.objects.filter(
-            id__in=[row[1] for row in updates]
-        ).prefetch_related("content_type", "content_object")
-        ads_managers_dict = {obj.id: obj for obj in ads_managers}
         return [
             {
-                "ads": ads_dict[update[0]],
-                "ads_manager": ads_managers_dict[update[1]],
-                "history_entries": update[2],
+                "ads": row,
+                "ads_manager": ads_managers[row.ads_manager_id],
+                "history_entries": row.updates,
             }
-            for update in updates
+            for row in ads_updated
         ]
 
     def get_context_data(self, *args, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        with connection.cursor() as cursor:
-            ctx["updates"] = self.get_updates(cursor)
+        ctx["updates"] = self.get_updates()
         return ctx

@@ -42,7 +42,7 @@
               {% for update in updates %}
               <tr>
                 <td>
-                  <a href="{% url 'app.ads.detail' manager_id=update.ads.ads_manager_id ads_id=update.ads.id %}">
+                  <a href="{% url 'app.ads.detail' manager_id=update.ads_manager.id ads_id=update.ads.id %}">
                   {% comment %} Before, dates were stored as DateField instead of DateTimeField. Avoid displaying the time if it's 00:00. {% endcomment %}
                   {% if update.ads.last_update.hour == 0 and update.ads.last_update.minute == 0 %}
                   {{ update.ads.last_update|date:"d/m/Y" }}
