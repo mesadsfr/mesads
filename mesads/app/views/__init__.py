@@ -18,6 +18,7 @@ from .ads_manager_admin import (  # noqa: F401
     ADSManagerExportView,
     ADSManagerAdminIndexView,
     ADSManagerAdminDetailsView,
+    ADSManagerAdminRequestsView,
     ADSManagerAdminUpdatesView,
 )
 from .ads_manager_request import (  # noqa: F401

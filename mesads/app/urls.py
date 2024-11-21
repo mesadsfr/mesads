@@ -37,6 +37,11 @@ urlpatterns = [
         name="app.ads-manager-admin.details",
     ),
     path(
+        "registre_ads/admin_gestion/<int:prefecture_id>/demandes",
+        ads_manager_administrator_required(views.ADSManagerAdminRequestsView.as_view()),
+        name="app.ads-manager-admin.requests",
+    ),
+    path(
         "registre_ads/admin_gestion/<int:prefecture_id>/changements",
         ads_manager_administrator_required(views.ADSManagerAdminUpdatesView.as_view()),
         name="app.ads-manager-admin.updates",

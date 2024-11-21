@@ -16,7 +16,7 @@
     </p>
   </mj-text>
 
-  <mj-button href="{{ request.scheme }}://{{ request.get_host }}{% url 'app.ads-manager-admin.details' prefecture_id=ads_manager.administrator.prefecture_id %}">
+  <mj-button href="{{ request.scheme }}://{{ request.get_host }}{% url 'app.ads-manager-admin.requests' prefecture_id=ads_manager.administrator.prefecture_id %}">
     Aller sur Mes ADS pour répondre à la demande
   </mj-button>
 

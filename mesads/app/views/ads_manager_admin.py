@@ -33,10 +33,23 @@ class ADSManagerAdminIndexView(RedirectView):
 
 
 class ADSManagerAdminDetailsView(RevisionMixin, TemplateView):
+
+    template_name = "pages/ads_register/ads_manager_admin.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        pending_requests = ADSManagerRequest.objects.filter(
+            ads_manager__administrator=self.kwargs["ads_manager_administrator"]
+        ).filter(accepted__isnull=True)
+        ctx["pending_requests_count"] = pending_requests.count()
+        return ctx
+
+
+class ADSManagerAdminRequestsView(RevisionMixin, TemplateView):
     """This view is used by ADSManagerAdministrators to validate
     ADSManagerRequests and list changes made by ADSManagers."""
 
-    template_name = "pages/ads_register/ads_manager_admin.html"
+    template_name = "pages/ads_register/ads_manager_admin_requests.html"
 
     def get_context_data(self, **kwargs):
         """Populate context with the list of ADSManagerRequest current user can accept."""
@@ -126,7 +139,7 @@ class ADSManagerAdminDetailsView(RevisionMixin, TemplateView):
         )
         return redirect(
             reverse(
-                "app.ads-manager-admin.details",
+                "app.ads-manager-admin.requests",
                 kwargs={
                     "prefecture_id": ads_manager_request.ads_manager.administrator.prefecture.id
                 },

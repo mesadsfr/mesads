@@ -110,6 +110,10 @@ urls:
     missing: true # Redirect view
 
   app.ads-manager-admin.details:
+    title: "Votre accès préfecture"
+    description: "Accédez aux pages vous permettant de gérer votre accès préfecture."
+
+  app.ads-manager-admin.requests:
     title: "Gestion et contrôle des accès des instructeurs ADS"
     description: "Gérez les demandes d'accès au registre ADS en acceptant ou refusant les instructeurs de votre département."
 

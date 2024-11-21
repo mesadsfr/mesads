@@ -28,7 +28,23 @@ class ADSManagerAdminIndexView(ClientTestCase):
         )
 
 
-class TestADSManagerAdminView(ClientTestCase):
+class TestADSManagerAdminDetailsView(ClientTestCase):
+    def test_permissions(self):
+        for client_name, client, expected_status in (
+            ("admin", self.admin_client, 200),
+            ("anonymous", self.anonymous_client, 302),
+            ("auth", self.auth_client, 404),
+            ("ads_manager 35", self.ads_manager_city35_client, 404),
+            ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
+        ):
+            with self.subTest(client_name=client_name, expected_status=expected_status):
+                resp = client.get(
+                    f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}"
+                )
+                self.assertEqual(resp.status_code, expected_status)
+
+
+class TestADSManagerAdminRequestsView(ClientTestCase):
     def setUp(self):
         super().setUp()
         self.ads_manager_request = ADSManagerRequest.objects.create(
@@ -47,20 +63,20 @@ class TestADSManagerAdminView(ClientTestCase):
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(
-                    f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}"
+                    f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}/demandes"
                 )
                 self.assertEqual(resp.status_code, expected_status)
 
     def test_invalid_action(self):
         resp = self.ads_manager_administrator_35_client.post(
-            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}",
+            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}/demandes",
             {"action": "xxx", "request_id": 1},
         )
         self.assertEqual(resp.status_code, 400)
 
     def test_invalid_request_id(self):
         resp = self.ads_manager_administrator_35_client.post(
-            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}",
+            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}/demandes",
             {"action": "accept", "request_id": 12342},
         )
         self.assertEqual(resp.status_code, 404)
@@ -69,13 +85,13 @@ class TestADSManagerAdminView(ClientTestCase):
         self.assertEqual(len(mail.outbox), 0)
 
         resp = self.ads_manager_administrator_35_client.post(
-            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}",
+            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}/demandes",
             {"action": "accept", "request_id": self.ads_manager_request.id},
         )
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(
             resp.url,
-            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}",
+            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}/demandes",
         )
         self.ads_manager_request.refresh_from_db()
         self.assertTrue(self.ads_manager_request.accepted)
@@ -85,13 +101,13 @@ class TestADSManagerAdminView(ClientTestCase):
         self.assertEqual(len(mail.outbox), 0)
 
         resp = self.ads_manager_administrator_35_client.post(
-            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}",
+            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}/demandes",
             {"action": "deny", "request_id": self.ads_manager_request.id},
         )
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(
             resp.url,
-            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}",
+            f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}/demandes",
         )
         self.ads_manager_request.refresh_from_db()
         self.assertFalse(self.ads_manager_request.accepted)
@@ -105,12 +121,12 @@ class TestADSManagerAdminView(ClientTestCase):
                 accepted=None,
             )
             resp = self.ads_manager_administrator_35_client.get(
-                f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}",
+                f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}/demandes",
             )
             self.assertEqual(resp.status_code, 200)
 
             resp = self.ads_manager_administrator_35_client.get(
-                f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}?sort=name",
+                f"/registre_ads/admin_gestion/{self.ads_manager_administrator_35.prefecture_id}/demandes?sort=name",
             )
             self.assertEqual(resp.status_code, 200)
 

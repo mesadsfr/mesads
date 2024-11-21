@@ -12,96 +12,31 @@
   </div>
 </nav>
 
+<h1>Accès préfecture</h1>
+
+<p clas="fr-text">
+  En tant qu'administrateur gestionnaire d'ADS au sein de
+  {{ ads_manager_administrator.prefecture.display_fulltext }}, vous avez la
+  possibilité de valider l'accès à la gestion des ADS de chacun des
+  gestionnaires, de consulter les ADS qu'ils enregistrent ou d'en vérifier les modifications.
+</p>
+
 <p>
-  🔎&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads-manager-admin.updates' prefecture_id=ads_manager_administrator.prefecture.id %}">
-    Modifications apportées par les gestionnaires de la préfecture
+  🙋‍♂️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads-manager-admin.requests' prefecture_id=ads_manager_administrator.prefecture.id %}">
+    Demandes d'accès des gestionnaires rattachés à votre Préfecture{% if pending_requests_count %} <strong>({{ pending_requests_count }} demande{% if pending_requests_count > 1 %}s{% endif %} en attente)</strong>{% endif %}
   </a>
 </p>
 
-<h1>Demandes d'accès</h1>
-
-<p class="fr-text--lead">
-  Vous trouverez ci-dessous les demandes d'accès des administrations souhaitant gérer leurs ADS. Avant d'accepter une demande, assurez-vous que la demande provient bien d'un agent travaillant pour une administration dépendant de votre préfecture.
+<p>
+  📜&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads-manager.index' %}">
+    ADS des administrations rattachées à votre Préfecture
+  </a>
 </p>
 
 <p>
-  Si vous avez la moindre question, ou si vous souhaitez révoquer un accès, contactez notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+  🔎&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads-manager-admin.updates' prefecture_id=ads_manager_administrator.prefecture.id %}">
+    Modifications effectuées par les gestionnaires rattachés à votre Préfecture
+  </a>
 </p>
 
-<div class="fr-grid-row">
-  <div class="fr-table fr-table--no-caption fr-table--md" id="table-requests-{{ ads_manager_administrator.prefecture.id }}">
-    <div class="fr-table__wrapper">
-      <div class="fr-table__container">
-        <div class="fr-table__content">
-          <table id="table-requests-{{ ads_manager_administrator.prefecture.id }}">
-            <caption>Demandes pour la {{ ads_manager_administrator.prefecture.display_text }}</caption>
-            <thead>
-              <tr>
-                <th>👨‍💻 Utilisateur</th>
-                <th>
-                  {% if sort == "name" %}
-                    🏢 Administration ▲
-                  {% else %}
-                    <a href="?sort=name">🏢 Administration ▶</a>
-                  {% endif %}
-                </th>
-                <th>
-                  {% if sort == "name" %}
-                  <a href="?">📅 Date de la demande ▶</a>
-                  {% else %}
-                  📅 Date de la demande ▲
-                  {% endif %}
-                </th>
-                <th>🔎 Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for ads_manager_request in ads_manager_requests %}
-              <tr class="table-row-{% if ads_manager_request.accepted is True %}success{% elif ads_manager_request.accepted is False %}failure{% else %}unknown{% endif %}">
-                <td>{{ ads_manager_request.user.email }}</td>
-                <td>{{ ads_manager_request.ads_manager.content_object.display_text|capfirst }}</td>
-                <td>{{ ads_manager_request.created_at }}</td>
-                <td>
-                  <div class="fr-grid-row fr-grid-row--gutters">
-                    {% comment %}
-                    Display the button to accept/deny when the request is pending.
-
-                    In the past, we used to also display the buttons when the request
-                    was accepted or denied. It was error prone. Instead, we want the
-                    users to contact our team to revoke an access, or grant when the
-                    request has been mistakenly denied.
-                    {% endcomment %}
-                    {% if ads_manager_request.accepted is None %}
-                    <div class="fr-p-1w">
-                      <form method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
-                        <input type="hidden" name="action" value="accept" />
-                        <button type="submit" class="fr-btn fr-btn--sm">Accepter</button>
-                      </form>
-                    </div>
-                    <div class="fr-p-1w">
-                      <form method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
-                        <input type="hidden" name="action" value="deny" />
-                        <button type="submit" class="fr-btn fr-btn--sm">Refuser</button>
-                      </form>
-                    </div>
-                    {% endif %}
-                  </div>
-                </td>
-              </tr>
-              {% empty %}
-              <tr>
-                <td colspan="4">Aucune demande en cours</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 {% endblock %}
