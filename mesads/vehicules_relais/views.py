@@ -4,7 +4,7 @@ from io import BytesIO
 from django.contrib import messages
 from django.contrib.staticfiles.finders import find
 from django.db.models.functions import Cast, Replace
-from django.db.models import F, Func, IntegerField, Value
+from django.db.models import CharField, F, Func, IntegerField, Value
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -60,9 +60,11 @@ class SearchView(ListView):
     def get_queryset(self):
         # .order_by("numero") doesn't work because with a string ordering, 75-2 is higher than 75-100.
         # Instead we split the numero field and order by the first and second part.
+        # Note the first part has to be cast to a string and not to an integer
+        # because Corsica's departement number is 2A or 2B.
         qs = (
             Vehicule.objects.annotate(
-                part1=Cast(SplitPart("numero", Value("-"), Value(1)), IntegerField()),
+                part1=Cast(SplitPart("numero", Value("-"), Value(1)), CharField()),
                 part2=Cast(SplitPart("numero", Value("-"), Value(2)), IntegerField()),
                 immatriculation_clean=Replace(
                     F("immatriculation"), Value("-"), Value("")
