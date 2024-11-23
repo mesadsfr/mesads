@@ -12,10 +12,10 @@
       Voir le menu
     </button>
     <div class="fr-collapse" id="fr-sidemenu-wrapper">
-      <div class="fr-sidemenu__title" id="fr-sidemenu-title">Registres des Véhicules Relais</div>
+      <div class="fr-sidemenu__title" id="fr-sidemenu-title">Répertoires des Véhicules Relais</div>
       <ul class="fr-sidemenu__list">
         <li class="fr-sidemenu__item{% if in_search %} fr-sidemenu__item--active{% endif %}">
-          <a class="fr-sidemenu__link" href="{% url 'vehicules-relais.search' %}" target="_self"{% if in_search %} aria-current="page"{% endif %}>Consulter les registres</a>
+          <a class="fr-sidemenu__link" href="{% url 'vehicules-relais.search' %}" target="_self"{% if in_search %} aria-current="page"{% endif %}>Consulter les répertoires</a>
         </li>
         {% if request.user.is_authenticated %}
         <li class="fr-sidemenu__item{% if in_proprietaire %} fr-sidemenu__item--active{% endif %}">

@@ -168,7 +168,7 @@ urls:
     missing: true
 
   vehicules-relais.search:
-    title: "Recherche dans les registres des véhicules relais"
+    title: "Recherche dans les répertoires des véhicules relais"
     description: "Choisissez un département pour explorer la liste des véhicules relais disponibles."
 
   vehicules-relais.vehicule:

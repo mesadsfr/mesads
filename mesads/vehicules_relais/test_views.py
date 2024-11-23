@@ -12,20 +12,18 @@ from mesads.vehicules_relais.models import Proprietaire, Vehicule
 
 class TestIndexView(ClientTestCase):
     def test_200(self):
-        resp = self.anonymous_client.get("/registre_vehicules_relais/")
+        resp = self.anonymous_client.get("/relais/")
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(
-            resp.headers["Location"], "/registre_vehicules_relais/consulter"
-        )
+        self.assertEqual(resp.headers["Location"], "/relais/consulter")
 
 
 class TestSearchView(ClientTestCase):
     def test_get(self):
-        resp = self.anonymous_client.get("/registre_vehicules_relais/consulter")
+        resp = self.anonymous_client.get("/relais/consulter")
         self.assertEqual(resp.status_code, 200)
         self.assertFalse(resp.context["is_proprietaire"])
 
-        resp = self.proprietaire_client.get("/registre_vehicules_relais/consulter")
+        resp = self.proprietaire_client.get("/relais/consulter")
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(resp.context["is_proprietaire"])
 
@@ -76,43 +74,39 @@ class TestSearchView(ClientTestCase):
         v3.save()
 
         # 1 vehicule in Ain
-        resp = self.admin_client.get(
-            f"/registre_vehicules_relais/consulter?departement={ain.id}"
-        )
+        resp = self.admin_client.get(f"/relais/consulter?departement={ain.id}")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context["object_list"].count(), 1)
 
         # 2 vehicules in Paris
-        resp = self.admin_client.get(
-            f"/registre_vehicules_relais/consulter?departement={paris.id}"
-        )
+        resp = self.admin_client.get(f"/relais/consulter?departement={paris.id}")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context["object_list"].count(), 2)
 
         # 2 vehicule with this immatriculation
         resp = self.admin_client.get(
-            f"/registre_vehicules_relais/consulter?immatriculation={v3.immatriculation}"
+            f"/relais/consulter?immatriculation={v3.immatriculation}"
         )
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context["object_list"].count(), 2)
 
         # Ensure dashes are ignored
         resp = self.admin_client.get(
-            f"/registre_vehicules_relais/consulter?immatriculation={v3.immatriculation.replace('-', '')}"
+            f"/relais/consulter?immatriculation={v3.immatriculation.replace('-', '')}"
         )
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context["object_list"].count(), 2)
 
         # 1 vehicule with this immatriculation
         resp = self.admin_client.get(
-            f"/registre_vehicules_relais/consulter?immatriculation={v2.immatriculation}"
+            f"/relais/consulter?immatriculation={v2.immatriculation}"
         )
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context["object_list"].count(), 1)
 
         # 1 vehicule with this immatriculation in Paris
         resp = self.admin_client.get(
-            f"/registre_vehicules_relais/consulter?immatriculation={v1.immatriculation}&departement={paris.id}"
+            f"/relais/consulter?immatriculation={v1.immatriculation}&departement={paris.id}"
         )
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context["object_list"].count(), 1)
@@ -121,9 +115,7 @@ class TestSearchView(ClientTestCase):
         """Ensure vehicules are ordered by numero"""
         paris = Prefecture.objects.get(numero="75")
 
-        resp = self.admin_client.get(
-            f"/registre_vehicules_relais/consulter?departement={paris.id}"
-        )
+        resp = self.admin_client.get(f"/relais/consulter?departement={paris.id}")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context["object_list"].count(), 0)
 
@@ -148,9 +140,7 @@ class TestSearchView(ClientTestCase):
             vehicule.numero = numero
             vehicule.save()
 
-        resp = self.admin_client.get(
-            f"/registre_vehicules_relais/consulter?departement={paris.id}"
-        )
+        resp = self.admin_client.get(f"/relais/consulter?departement={paris.id}")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context["object_list"].count(), 5)
         self.assertEqual(resp.context["object_list"][0].numero, "75-01")
@@ -164,33 +154,31 @@ class TestVehiculeView(ClientTestCase):
     def test_get(self):
         vehicule = Vehicule.objects.first()
         for client in self.anonymous_client, self.proprietaire_client:
-            resp = client.get(
-                f"/registre_vehicules_relais/consulter/vehicules/{vehicule.numero}"
-            )
+            resp = client.get(f"/relais/consulter/vehicules/{vehicule.numero}")
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.context["vehicule"], vehicule)
 
-            resp = client.get("/registre_vehicules_relais/consulter/vehicules/33-999")
+            resp = client.get("/relais/consulter/vehicules/33-999")
             self.assertEqual(resp.status_code, 404)
 
 
 class TestProprietaireListView(ClientTestCase):
     def test_get(self):
-        resp = self.anonymous_client.get("/registre_vehicules_relais/proprietaire")
+        resp = self.anonymous_client.get("/relais/proprietaire")
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(
             resp.headers["Location"],
-            "/auth/login/?next=/registre_vehicules_relais/proprietaire",
+            "/auth/login/?next=/relais/proprietaire",
         )
 
         # Admin user is not propriétaire
-        resp = self.admin_client.get("/registre_vehicules_relais/proprietaire")
+        resp = self.admin_client.get("/relais/proprietaire")
         self.assertEqual(resp.status_code, 200)
         self.assertFalse(resp.context["is_proprietaire"])
         self.assertEqual(resp.context["proprietaire_list"].count(), 0)
 
         # Proprietaire user
-        resp = self.proprietaire_client.get("/registre_vehicules_relais/proprietaire")
+        resp = self.proprietaire_client.get("/relais/proprietaire")
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(resp.context["is_proprietaire"])
         self.assertEqual(resp.context["proprietaire_list"].count(), 1)
@@ -200,7 +188,7 @@ class TestProprietaireListView(ClientTestCase):
         obj.save()
         obj.users.add(self.proprietaire_user)
 
-        resp = self.proprietaire_client.get("/registre_vehicules_relais/proprietaire")
+        resp = self.proprietaire_client.get("/relais/proprietaire")
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(resp.context["is_proprietaire"])
         self.assertEqual(resp.context["proprietaire_list"].count(), 2)
@@ -210,12 +198,12 @@ class TestProprietaireCreateView(ClientTestCase):
     def test_view(self):
         client, user = self.create_client()
 
-        resp = client.get("/registre_vehicules_relais/proprietaire/nouveau")
+        resp = client.get("/relais/proprietaire/nouveau")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(Proprietaire.objects.filter(users__in=[user]).count(), 0)
 
         resp = client.post(
-            "/registre_vehicules_relais/proprietaire/nouveau",
+            "/relais/proprietaire/nouveau",
             {
                 "nom": "xxx",
                 "siret": "11111222223333",
@@ -231,7 +219,7 @@ class TestProprietaireDetailView(ClientTestCase):
     def test_view(self):
         # Proprietaire with vehicules. Cannot be deleted because vehicules are attached to it.
         resp = self.proprietaire_client.get(
-            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}"
+            f"/relais/proprietaire/{self.proprietaire.id}"
         )
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(self.proprietaire.id, resp.context["object"].id)
@@ -243,16 +231,14 @@ class TestProprietaireDetailView(ClientTestCase):
             nom="Propriétaire sans véhicules"
         )
         proprietaire_without_vehicules.users.add(user)
-        resp = client.get(
-            f"/registre_vehicules_relais/proprietaire/{proprietaire_without_vehicules.id}"
-        )
+        resp = client.get(f"/relais/proprietaire/{proprietaire_without_vehicules.id}")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(proprietaire_without_vehicules.id, resp.context["object"].id)
         self.assertTrue(resp.context["deletable"])
 
         # Admin user should be able to access any proprietaire object
         resp = self.admin_client.get(
-            f"/registre_vehicules_relais/proprietaire/{proprietaire_without_vehicules.id}"
+            f"/relais/proprietaire/{proprietaire_without_vehicules.id}"
         )
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(proprietaire_without_vehicules.id, resp.context["object"].id)
@@ -261,9 +247,7 @@ class TestProprietaireDetailView(ClientTestCase):
     def test_ordering(self):
         """Ensure vehicules are ordered by numero"""
         proprietaire = Proprietaire.objects.create(nom="Propriétaire sans véhicules")
-        resp = self.admin_client.get(
-            f"/registre_vehicules_relais/proprietaire/{proprietaire.id}"
-        )
+        resp = self.admin_client.get(f"/relais/proprietaire/{proprietaire.id}")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context["object_list"].count(), 0)
 
@@ -289,9 +273,7 @@ class TestProprietaireDetailView(ClientTestCase):
             vehicule.numero = numero
             vehicule.save()
 
-        resp = self.admin_client.get(
-            f"/registre_vehicules_relais/proprietaire/{proprietaire.id}"
-        )
+        resp = self.admin_client.get(f"/relais/proprietaire/{proprietaire.id}")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context["object_list"].count(), 5)
         self.assertEqual(resp.context["object_list"][0].numero, "75-01")
@@ -304,7 +286,7 @@ class TestProprietaireDetailView(ClientTestCase):
 class TestProprietaireDeleteView(ClientTestCase):
     def test_view(self):
         resp = self.proprietaire_client.post(
-            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/supprimer"
+            f"/relais/proprietaire/{self.proprietaire.id}/supprimer"
         )
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.context["form"].errors["__all__"]), 1)
@@ -313,7 +295,7 @@ class TestProprietaireDeleteView(ClientTestCase):
             vehicule.delete()
 
         resp = self.proprietaire_client.post(
-            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/supprimer"
+            f"/relais/proprietaire/{self.proprietaire.id}/supprimer"
         )
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(
@@ -324,7 +306,7 @@ class TestProprietaireDeleteView(ClientTestCase):
 class TestProprietaireEditView(ClientTestCase):
     def test_view(self):
         resp = self.proprietaire_client.post(
-            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/modifier",
+            f"/relais/proprietaire/{self.proprietaire.id}/modifier",
             {
                 "nom": "nouveau nom",
                 "siret": "99999999999991",
@@ -344,7 +326,7 @@ class TestProprietaireEditView(ClientTestCase):
 class TestProprietaireHistoryView(ClientTestCase):
     def test_view(self):
         resp = self.admin_client.get(
-            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/historique"
+            f"/relais/proprietaire/{self.proprietaire.id}/historique"
         )
         self.assertEqual(resp.status_code, 200)
 
@@ -355,7 +337,7 @@ class TestProprietaireVehiculeCreateView(ClientTestCase):
         commune = Commune.objects.first()
         count = Vehicule.objects.count()
         resp = self.proprietaire_client.post(
-            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/nouveau_vehicule",
+            f"/relais/proprietaire/{self.proprietaire.id}/nouveau_vehicule",
             {
                 "immatriculation": "XXX-YYY",
                 "modele": "Peugeot 308",
@@ -380,13 +362,13 @@ class TestProprietaireVehiculeUpdateView(ClientTestCase):
         )
 
         resp = self.proprietaire_client.get(
-            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}",
+            f"/relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}",
         )
         self.assertEqual(resp.status_code, 200)
 
         commune = Commune.objects.first()
         resp = self.proprietaire_client.post(
-            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}",
+            f"/relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}",
             {
                 "immatriculation": "XXX-YYY",
                 "modele": "Peugeot 308",
@@ -414,7 +396,7 @@ class TestProprietaireVehiculeUpdateView(ClientTestCase):
             numero="94", libelle="Val de Marne"
         )
         resp = self.proprietaire_client.post(
-            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}",
+            f"/relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}",
             {
                 "immatriculation": "XXX-YYY",
                 "modele": "Peugeot 308",
@@ -440,12 +422,12 @@ class TestProprietaireVehiculeDeleteView(ClientTestCase):
         )
 
         resp = self.proprietaire_client.get(
-            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/supprimer"
+            f"/relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/supprimer"
         )
         self.assertEqual(resp.status_code, 200)
 
         resp = self.proprietaire_client.post(
-            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/supprimer"
+            f"/relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/supprimer"
         )
         self.assertEqual(resp.status_code, 302)
         vehicule.refresh_from_db()
@@ -461,17 +443,17 @@ class TestProprietaireVehiculeHistoryView(ClientTestCase):
         )
         # only available for admins
         resp = self.proprietaire_client.get(
-            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/historique"
+            f"/relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/historique"
         )
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(
             resp.headers["Location"],
-            f"/admin/login/?next=/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/historique",
+            f"/admin/login/?next=/relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/historique",
         )
 
         # ok
         resp = self.admin_client.get(
-            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/historique"
+            f"/relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/historique"
         )
         self.assertEqual(resp.status_code, 200)
 
@@ -484,7 +466,7 @@ class TestProprietaireVehiculeRecepisseView(ClientTestCase):
             departement=departement,
         )
         resp = self.admin_client.get(
-            f"/registre_vehicules_relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/recepisse"
+            f"/relais/proprietaire/{self.proprietaire.id}/vehicules/{vehicule.numero}/recepisse"
         )
         self.assertEqual(resp.status_code, 200)
 
