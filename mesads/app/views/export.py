@@ -22,6 +22,7 @@ class ADSExporter:
             )
             .prefetch_related(
                 "ads_manager__content_object",
+                'adslegalfile_set'
             )
             .annotate(
                 ads_users_status=ArrayAgg("adsuser__status"),
@@ -77,6 +78,7 @@ class ADSExporter:
             "Téléphone fixe du titulaire de l'ADS",
             "Téléphone mobile du titulaire de l'ADS",
             "Email du titulaire de l'ADS",
+            "Nombre de documents enregistrés (arrêtés municipaux, …)"
         )
         # If one of the ADS in the list has, let's say, 4 drivers, driver_headers
         # will be appended 4 times to headers.
@@ -119,6 +121,7 @@ class ADSExporter:
                 ads.owner_phone,
                 ads.owner_mobile,
                 ads.owner_email,
+                ads.adslegalfile_set.count(),
             )
             for nth, status in enumerate(ads.ads_users_status):
                 # ads_users_status, ads_users_names, ads_users_sirets and
