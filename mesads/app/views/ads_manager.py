@@ -30,7 +30,7 @@ class ADSManagerView(ListView, ProcessFormView):
         return ListView.get(self, request, *args, **kwargs)
 
     def get_ads_manager(self):
-        return ADSManager.objects.get(id=self.kwargs["manager_id"])
+        return ADSManager.objects.prefetch_related('adsmanagerdecree_set').get(id=self.kwargs["manager_id"])
 
     def get_form(self):
         if self.request.method == "POST":
