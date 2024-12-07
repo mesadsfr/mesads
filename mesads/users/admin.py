@@ -137,6 +137,11 @@ class UserAdmin(BaseUserAdmin):
         "admin_roles_link",
         "ads_manager_request_link",
         "notifications_link",
+        # We don't want the flags is_staff and is_superuser to be changed by
+        # mistake, so they are read-only. Only a technical administrator can
+        # change them.
+        "is_staff",
+        "is_superuser",
     )
 
     search_fields = (
