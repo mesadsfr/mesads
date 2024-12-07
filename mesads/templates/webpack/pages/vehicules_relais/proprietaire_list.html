@@ -49,7 +49,7 @@
             <tr>
               <th scope="col">Nom</th>
               <th scope="col">SIRET</th>
-              <th scope="col">Details</th>
+              <th scope="col">🔎 Action</th>
             </tr>
           </thead>
           <tbody>
@@ -57,7 +57,7 @@
             <tr>
               <td>{{ row.nom }}</td>
               <td>{{ row.siret|default:"-" }}</td>
-              <td><a href="{% url 'vehicules-relais.proprietaire.detail' proprietaire_id=row.id %}">Afficher les détails</a></td>
+              <td><a href="{% url 'vehicules-relais.proprietaire.detail' proprietaire_id=row.id %}">Accéder à mon espace propriétaire</a></td>
             </tr>
             {% endfor %}
           </tbody>
