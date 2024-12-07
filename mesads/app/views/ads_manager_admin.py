@@ -183,6 +183,7 @@ class PrefectureExportView(View, ADSExporter):
                 "Nom de l'administration",
                 "Nombre d'ADS",
                 "Statut de la gestion des ADS",
+                "Arrêté délimitant le nombre d'ADS",
             ),
         )
         # Applying bold format to headers
@@ -201,6 +202,8 @@ class PrefectureExportView(View, ADSExporter):
                     % ads_manager.epci_delegate.display_fulltext()
                 )
 
+            decrees_count = ads_manager.adsmanagerdecree_set.count()
+
             sheet.write_row(
                 idx + 1,
                 0,
@@ -208,6 +211,11 @@ class PrefectureExportView(View, ADSExporter):
                     ads_manager.content_object.display_text(),
                     ads_manager.ads_set.count() or "",
                     status,
+                    (
+                        f"{decrees_count} document(s) enregistré(s)"
+                        if decrees_count
+                        else ""
+                    ),
                 ),
             )
         sheet.autofit()
