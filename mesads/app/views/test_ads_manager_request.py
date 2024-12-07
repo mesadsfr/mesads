@@ -33,7 +33,8 @@ class TestADSManagerRequestView(ClientTestCase):
 
     def test_create_request_commune(self):
         resp = self.auth_client.post(
-            "/registre_ads/gestion", {"commune": self.commune_melesse.id}
+            "/registre_ads/gestion",
+            {"commune": self.commune_melesse.id, "is_ads_manager": "on"},
         )
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(
@@ -55,7 +56,8 @@ class TestADSManagerRequestView(ClientTestCase):
         # If we send the same request, a warning message is displayed and no email is sent.
         #
         resp = self.auth_client.post(
-            "/registre_ads/gestion", {"commune": self.commune_melesse.id}
+            "/registre_ads/gestion",
+            {"commune": self.commune_melesse.id, "is_ads_manager": "on"},
         )
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(
@@ -79,7 +81,8 @@ class TestADSManagerRequestView(ClientTestCase):
             ads_manager_requests=False,
         )
         self.auth_client.post(
-            "/registre_ads/gestion", {"commune": self.commune_melesse.id}
+            "/registre_ads/gestion",
+            {"commune": self.commune_melesse.id, "is_ads_manager": "on"},
         )
         self.assertEqual(len(mail.outbox), 0)
 
@@ -92,7 +95,8 @@ class TestADSManagerRequestView(ClientTestCase):
             ads_manager_requests=True,
         )
         self.auth_client.post(
-            "/registre_ads/gestion", {"commune": self.commune_melesse.id}
+            "/registre_ads/gestion",
+            {"commune": self.commune_melesse.id, "is_ads_manager": "on"},
         )
         self.assertEqual(len(mail.outbox), 1)
 
@@ -101,13 +105,16 @@ class TestADSManagerRequestView(ClientTestCase):
         user ads_manager_administrator_35_user, but no Notification is linked to the user. By default, we should send an email.
         """
         self.auth_client.post(
-            "/registre_ads/gestion", {"commune": self.commune_melesse.id}
+            "/registre_ads/gestion",
+            {"commune": self.commune_melesse.id, "is_ads_manager": "on"},
         )
         self.assertEqual(len(mail.outbox), 1)
 
     def test_create_request_epci(self):
         epci = EPCI.objects.first()
-        resp = self.auth_client.post("/registre_ads/gestion", {"epci": epci.id})
+        resp = self.auth_client.post(
+            "/registre_ads/gestion", {"epci": epci.id, "is_ads_manager": "on"}
+        )
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(
             ADSManagerRequest.objects.count(), self.initial_ads_managers_count + 1
@@ -122,7 +129,9 @@ class TestADSManagerRequestView(ClientTestCase):
         #
         # If we send the same request, no object is created and a warning message is displayed.
         #
-        resp = self.auth_client.post("/registre_ads/gestion", {"epci": epci.id})
+        resp = self.auth_client.post(
+            "/registre_ads/gestion", {"epci": epci.id, "is_ads_manager": "on"}
+        )
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(
             ADSManagerRequest.objects.count(), self.initial_ads_managers_count + 1
@@ -136,7 +145,8 @@ class TestADSManagerRequestView(ClientTestCase):
     def test_create_request_prefecture(self):
         prefecture = Prefecture.objects.first()
         resp = self.auth_client.post(
-            "/registre_ads/gestion", {"prefecture": prefecture.id}
+            "/registre_ads/gestion",
+            {"prefecture": prefecture.id, "is_ads_manager": "on"},
         )
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(
@@ -153,7 +163,8 @@ class TestADSManagerRequestView(ClientTestCase):
         # If we send the same request, no object is created and a warning message is displayed.
         #
         resp = self.auth_client.post(
-            "/registre_ads/gestion", {"prefecture": prefecture.id}
+            "/registre_ads/gestion",
+            {"prefecture": prefecture.id, "is_ads_manager": "on"},
         )
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(
@@ -165,3 +176,12 @@ class TestADSManagerRequestView(ClientTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.context["messages"]), 1)
         self.assertEqual(list(resp.context["messages"])[0].level, messages.WARNING)
+
+    def test_create_request_commune_no_is_ads_manager(self):
+        """Test to create a request, but is_ads_manager is not checked."""
+        resp = self.auth_client.post(
+            "/registre_ads/gestion",
+            {"commune": self.commune_melesse.id},
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("is_ads_manager", resp.context["form"].errors)

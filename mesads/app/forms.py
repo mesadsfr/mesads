@@ -37,12 +37,28 @@ class ADSManagerForm(FrenchAdministrationForm):
         # super() method ensures only one field is set
         super().clean()
 
-        obj = list({k: v for k, v in self.cleaned_data.items() if v}.values())[0]
+        obj = list(
+            {
+                k: v
+                for k, v in (
+                    ("epci", self.cleaned_data.get("epci")),
+                    ("prefecture", self.cleaned_data.get("prefecture")),
+                    ("commune", self.cleaned_data.get("commune")),
+                )
+                if v
+            }.values()
+        )[0]
 
         content_type = ContentType.objects.get_for_model(obj)
         manager = ADSManager.objects.get(content_type=content_type, object_id=obj.id)
 
         self.cleaned_data["ads_manager"] = manager
+
+    is_ads_manager = forms.BooleanField(
+        required=True,
+        label="J'atteste être gestionnaire d'ADS au sein d'une administration (mairie, EPCI ou préfecture)",
+        help_text="Ne remplissez pas ce formulaire si vous êtes chauffeur de taxi, ou si vous n'êtes pas employé par une administration.",
+    )
 
 
 class ADSManagerEditForm(forms.ModelForm):

@@ -47,7 +47,15 @@ class FrenchAdministrationForm(forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
-        not_none = {k: v for k, v in cleaned_data.items() if v}
+        not_none = {
+            k: v
+            for k, v in (
+                ("epci", cleaned_data.get("epci")),
+                ("prefecture", cleaned_data.get("prefecture")),
+                ("commune", cleaned_data.get("commune")),
+            )
+            if v
+        }
 
         if len(not_none) == 0:
             raise ValidationError(

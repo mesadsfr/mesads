@@ -175,7 +175,7 @@
             <div class="fr-radio-group">
               <input type="radio" id="radio-inline-2" name="radio-inline">
               <label class="fr-label" for="radio-inline-2">
-                D'un établissement public à fiscalité propre (métropole, communauté de commune, communauté d’agglomération ou communauté urbaine)
+                D'un établissement public à fiscalité propre (métropole, communauté de commune, communauté d'agglomération ou communauté urbaine)
               </label>
 
               <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.epci %} fr-input-group--error{% endif %}">
@@ -206,6 +206,8 @@
                 {% endfor %}
               </div>
             </div>
+
+            {% include 'form_fields/bool.html' with field=form.is_ads_manager field_errors=form.errors.is_ads_manager required=form.fields.is_ads_manager %}
           </div>
         </fieldset>
       </div>
