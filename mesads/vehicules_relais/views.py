@@ -165,10 +165,12 @@ class ProprietaireDetailView(ListView):
     def get_queryset(self):
         # .order_by("numero") doesn't work because with a string ordering, 75-2 is higher than 75-100.
         # Instead we split the numero field and order by the first and second part.
+        # Note the first part has to be cast to a string and not to an integer
+        # because Corsica's departement number is 2A or 2B.
         return (
             Vehicule.objects.filter(proprietaire=self.kwargs["proprietaire_id"])
             .annotate(
-                part1=Cast(SplitPart("numero", Value("-"), Value(1)), IntegerField()),
+                part1=Cast(SplitPart("numero", Value("-"), Value(1)), CharField()),
                 part2=Cast(SplitPart("numero", Value("-"), Value(2)), IntegerField()),
             )
             .select_related("departement")
