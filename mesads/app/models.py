@@ -322,8 +322,8 @@ def validate_siret(value):
 
     try:
         resp = requests.get(
-            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{value}",
-            headers={"Authorization": f"Bearer {settings.INSEE_TOKEN}"},
+            f"https://api.insee.fr/api-sirene/3.11/siret/{value}",
+            headers={"X-INSEE-Api-Key-Integration": settings.INSEE_TOKEN},
             timeout=1,
         )
 
