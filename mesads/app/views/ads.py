@@ -350,7 +350,11 @@ class ADSDecreeView(CustomCookieWizardView):
     def get_form_kwargs(self, step=None):
         ret = super().get_form_kwargs(step=step)
         if step in ("1", "2"):
-            return {"is_old_ads": self.get_cleaned_data_for_step("0").get("is_old_ads")}
+            return {
+                "is_old_ads": (self.get_cleaned_data_for_step("0") or {}).get(
+                    "is_old_ads"
+                )
+            }
         return ret
 
     def get_form_initial(self, step):
