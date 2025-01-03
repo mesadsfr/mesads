@@ -315,7 +315,7 @@ class CustomCookieWizardView(CookieWizardView):
            to step 2.
 
         Since the choices of the select field are computed from the data of step
-        1, the choice previously select and stored refers to an invalid choice.
+        1, the choice previously selected and stored refers to an invalid choice.
 
         To fix this issue, we delete the stored data of the next step before
         going to it.
@@ -348,8 +348,6 @@ class ADSDecreeView(CustomCookieWizardView):
     )
 
     def get_form_kwargs(self, step=None):
-        """Instantiate ADSDecreeForm1 with the value of the previous form, to
-        set the correct choices of the select field."""
         ret = super().get_form_kwargs(step=step)
         if step in ("1", "2"):
             return {"is_old_ads": self.get_cleaned_data_for_step("0").get("is_old_ads")}
