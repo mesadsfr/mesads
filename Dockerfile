@@ -21,7 +21,7 @@ RUN poetry config virtualenvs.path /venv
 # Improve docker cache and install dependencies before copying code.
 WORKDIR /app
 COPY pyproject.toml poetry.lock /app/
-RUN poetry install
+RUN poetry install --no-root
 
 #
 # Local development
