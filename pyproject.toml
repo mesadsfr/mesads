@@ -3,6 +3,8 @@ name = "mesads"
 version = "0.1.0"
 description = ""
 authors = ["Julien Castets"]
+packages = [{include = "mesads"}]
+
 [tool.poetry.group.dev.dependencies]
 autopep8 = "^1.7.0"
 flake8 = "^5.0.4"
