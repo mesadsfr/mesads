@@ -16,3 +16,4 @@ dist
 dist_webpack
 *.xlsx
 .testmondata
+/devdata
