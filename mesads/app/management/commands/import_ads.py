@@ -451,7 +451,7 @@ class ADSImporter:
 
             name = cols[name_exploitant_idx] or ""
             if name and status == "titulaire_exploitant":
-                if name.replace(" ", "") == ads.owner_name.replace(" ", ""):
+                if str(name).replace(" ", "") == ads.owner_name.replace(" ", ""):
                     name = ""
                 else:
                     raise self.fmt_col_error(
