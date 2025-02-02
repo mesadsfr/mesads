@@ -122,6 +122,24 @@ class ProprietaireAdmin(admin.ModelAdmin):
         return mark_safe(f'<a href="{url}">Voir les {obj.vehicule_count} véhicules</a>')
 
 
+class VehiculeDeletedAtFilter(admin.SimpleListFilter):
+    title = "Filtrer les véhicules supprimés"
+    parameter_name = "deleted_at"  # URL query parameter
+
+    def lookups(self, request, model_admin):
+        return (
+            ("deleted", "Supprimés"),
+            ("active", "Actifs"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "deleted":
+            return queryset.exclude(deleted_at__isnull=True)
+        if self.value() == "active":
+            return queryset.filter(deleted_at__isnull=True)
+        return queryset
+
+
 @admin.register(Vehicule)
 class VehiculeAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
@@ -172,7 +190,7 @@ class VehiculeAdmin(admin.ModelAdmin):
         "commune_localisation",
     )
 
-    list_filter = ("departement",)
+    list_filter = ("departement", VehiculeDeletedAtFilter)
 
 
 @admin.register(DispositionSpecifique)
