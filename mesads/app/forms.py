@@ -180,7 +180,14 @@ ADSUserFormSet = inlineformset_factory(
     # django.db.models.constraints.CheckConstraint.validate() will silently skip
     # the evaluation of the constraints using this field.
     # Does it suck? Yes. Did I spend 2 days to figure it out? Also yes.
-    fields=("status", "name", "siret", "license_number", "deleted_at"),
+    fields=(
+        "status",
+        "name",
+        "siret",
+        "license_number",
+        "date_location_gerance",
+        "deleted_at",
+    ),
     can_delete=True,
     extra=0,
     formset=AutoDeleteADSUserFormSet,

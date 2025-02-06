@@ -249,6 +249,11 @@ Enregistrement d'une ADS
                       <input type="hidden" name="{{ ads_user_form.status.html_name }}" value="titulaire_exploitant" />
                     </template>
 
+                    <!-- Date location gérance -->
+                    <template x-if="status === 'locataire_gerant'">
+                      {% include 'form_fields/date.html' with field=ads_user_form.date_location_gerance field_errors=ads_user_form.errors.date_location_gerance required=ads_user_form.fields.date_location_gerance.required readonly=ads_manager.is_locked %}
+                    </template>
+
                     <!-- User name -->
                     <template x-if="ads_before_2014 && status !== 'titulaire_exploitant'">
                       {% include 'form_fields/string.html' with field=ads_user_form.name field_errors=ads_user_form.errors.name required=ads_user_form.fields.name.required readonly=ads_manager.is_locked %}
@@ -293,13 +298,18 @@ Enregistrement d'une ADS
                   <!-- User status -->
                   {% include 'form_fields/select.html' with x_model="status" field=ads_users_formset.empty_form.status field_errors=ads_users_formset.empty_form.errors.status required=ads_users_formset.empty_form.fields.status.required readonly=ads_manager.is_locked %}
 
+                  <!-- Date location gérance -->
+                  <template x-if="status === 'locataire_gerant'">
+                    {% include 'form_fields/date.html' with field=ads_users_formset.empty_form.date_location_gerance field_errors=ads_users_formset.empty_form.errors.date_location_gerance required=ads_users_formset.empty_form.fields.date_location_gerance.required readonly=ads_manager.is_locked %}
+                  </template>
+
                   <!-- User name -->
                   <template x-if="status !== 'titulaire_exploitant'">
                     {% include 'form_fields/string.html' with field=ads_users_formset.empty_form.name field_errors=ads_users_formset.empty_form.errors.name required=ads_users_formset.empty_form.fields.name.required readonly=ads_manager.is_locked %}
                   </template>
 
                   <!-- User SIRET  -->
-                  <template x-if="status !== 'titulaire_exploitant' && status !== 'legal_representative' && status !== 'salarie' ">
+                  <template x-if="status !== 'titulaire_exploitant' && status !== 'legal_representative' && status !== 'salarie'">
                     {% include 'form_fields/string.html' with field=ads_users_formset.empty_form.siret field_errors=ads_users_formset.empty_form.errors.siret required=ads_users_formset.empty_form.fields.siret.required readonly=ads_manager.is_locked %}
                   </template>
 
