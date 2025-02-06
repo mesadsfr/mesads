@@ -783,6 +783,13 @@ class ADSUser(
                 name="siret_empty_for_salarie",
                 violation_error_message="Le SIRET du conducteur ne peut pas être renseigné pour un salarié.",
             ),
+            # date_location_gerance can only be set for locataire_gerant
+            models.CheckConstraint(
+                check=Q(date_location_gerance__isnull=True)
+                | Q(date_location_gerance__isnull=False, status="locataire_gerant"),
+                name="ads_location_gerance_set_only_for_locataire_gerant",
+                violation_error_message="La date du contrat de location-gérance ne peut être renseignée que pour un locataire-gérant.",
+            ),
         ]
 
     def __str__(self):
@@ -862,6 +869,11 @@ class ADSUser(
         blank=True,
         null=False,
         verbose_name="Numéro de la carte professionnelle",
+    )
+    date_location_gerance = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name="Date du contrat de location-gérance",
     )
 
 
