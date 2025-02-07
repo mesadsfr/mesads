@@ -552,7 +552,7 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
         blank=True,
         null=True,
         verbose_name="Date d'attribution de l'ADS au titulaire actuel",
-        help_text="Laissez ce champ vide si le titulaire n'a pas changé depuis la création de l'ADS.",
+        help_text="Date à laquelle le titulaire (propriétaire) actuel a racheté l'ADS. Laissez ce champ vide si le titulaire n'a pas changé depuis la création de l'ADS.",
     )
 
     accepted_cpam = models.BooleanField(
