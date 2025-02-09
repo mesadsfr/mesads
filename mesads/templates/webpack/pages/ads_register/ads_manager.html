@@ -115,9 +115,9 @@
               <th>🌆 Commune</th>
               {% endif %}
               <th>♯ ADS</th>
-              <th>📜 Date de création</th>
-              <th>🗓 Date d'attribution<br />au titulaire actuel</th>
-              <th>🚑 Conventionné<br />CPAM ?</th>
+              <th>📜 Date<br />de création</th>
+              <th>🗓 Date<br />d'attribution<br />au titulaire<br />actuel</th>
+              <th>🚑 Conv.<br />CPAM ?</th>
               <th>🤴 Titulaire</th>
               <th>🔎 Action</th>
           </thead>
@@ -131,7 +131,7 @@
               <td>{{ ads.ads_creation_date|date:"d/m/Y"|default:"" }}</td>
               <td>{{ ads.attribution_date|date:"d/m/Y"|default:"" }}</td>
               <td>{% if ads.accepted_cpam is None %}⁉️  Inconnu{% elif ads.accepted_cpam is True %}👍 Oui{% else %}❌ Non{% endif %}</td>
-              <td>{{ ads.owner_name }}</td>
+              <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">{{ ads.owner_name }}</td>
               <td>
                 <a class="fr-btn fr-btn--sm" href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}">Consulter ou Modifier</a>
               </td>
