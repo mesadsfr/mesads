@@ -23,6 +23,9 @@
   Gérez ici les autorisations de stationnement (ADS) de votre administration.
 </p>
 
+<p>
+  📚&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.reglementation' %}">Réglementation taxi</a>
+</p>
 {% if not ads_manager.is_locked and not ads_manager.no_ads_declared %}
 <p>
   📜️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'app.ads-manager.decree.detail' manager_id=ads_manager.id %}">Arrêté délimitant le nombre d'ADS{% if ads_manager.adsmanagerdecree_set.count %} <strong>({{ ads_manager.adsmanagerdecree_set.count }} {% if ads_manager.adsmanagerdecree_set.count > 1 %}documents enregistrés{% else %}document enregistré{% endif %})</strong>{% endif %}</a>
