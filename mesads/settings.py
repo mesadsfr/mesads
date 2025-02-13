@@ -60,7 +60,7 @@ else:
         sentry_sdk.init(
             dsn=os.environ["SENTRY_DSN"],
             integrations=[DjangoIntegration(), LoggingIntegration(level=logging.ERROR)],
-            traces_sample_rate=0,
+            traces_sample_rate=0.01,
             send_default_pii=True,
         )
 
