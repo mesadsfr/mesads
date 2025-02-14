@@ -51,6 +51,7 @@ class ProprietaireAdmin(admin.ModelAdmin):
         "created_at",
         "last_update_at",
         "display_vehicule_count",
+        "is_active",
     )
 
     search_fields = (
@@ -120,6 +121,12 @@ class ProprietaireAdmin(admin.ModelAdmin):
             + f"?proprietaire={obj.id}"
         )
         return mark_safe(f'<a href="{url}">Voir les {obj.vehicule_count} véhicules</a>')
+
+    @admin.display(description="Compte actif")
+    def is_active(self, proprietaire):
+        if not proprietaire.deleted_at:
+            return "✅"
+        return "❌"
 
 
 class VehiculeDeletedAtFilter(admin.SimpleListFilter):
