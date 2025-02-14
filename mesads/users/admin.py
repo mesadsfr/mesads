@@ -13,6 +13,7 @@ from django.utils.safestring import mark_safe
 from reversion.models import Revision
 
 from mesads.app.models import Notification
+from mesads.vehicules_relais.models import Proprietaire
 
 from .models import User
 
@@ -129,6 +130,7 @@ class UserAdmin(BaseUserAdmin):
         "admin_roles_link",
         "ads_manager_request_link",
         "notifications_link",
+        "relais_links",
     )
 
     readonly_fields = (
@@ -142,6 +144,7 @@ class UserAdmin(BaseUserAdmin):
         # change them.
         "is_staff",
         "is_superuser",
+        "relais_links",
     )
 
     search_fields = (
@@ -229,3 +232,48 @@ class UserAdmin(BaseUserAdmin):
             if count:
                 return False
         return True
+
+    @admin.display(description="Registre des véhicules relais")
+    def relais_links(self, obj):
+        proprietaires = Proprietaire.objects.filter(users__in=[obj]).annotate(
+            vehicules_count=Count("vehicule")
+        )
+
+        ret = """
+        <table>
+            <thead>
+                <tr>
+                    <th>Propriétaire</th>
+                    <th>Nombre de véhicules</th>
+                </tr>
+            </thead>
+            <tbody>
+        """
+        if len(proprietaires) == 0:
+            ret += """
+                <tr>
+                    <td colspan="2">Aucun compte propriétaire associé</td>
+                </tr>
+            """
+        else:
+            for proprietaire in proprietaires:
+                proprietaire_url = reverse(
+                    "admin:vehicules_relais_proprietaire_change",
+                    kwargs={"object_id": proprietaire.id},
+                )
+                vehicules_url = (
+                    reverse("admin:vehicules_relais_vehicule_changelist")
+                    + f"?proprietaire={proprietaire.id}"
+                )
+                ret += f"""
+                    <tr>
+                        <td><a href="{proprietaire_url}">{proprietaire.nom}</a></td>
+                        <td><a href="{vehicules_url}">Voir le(s) {proprietaire.vehicules_count} véhicule(s)</a></td>
+                    </tr>
+                """
+
+        ret += """
+            </tbody>
+        </table>
+        """
+        return mark_safe(ret)
