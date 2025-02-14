@@ -43,6 +43,25 @@ class VehiculeCount(admin.SimpleListFilter):
             return queryset.filter(vehicule_count__gte=count_filter)
 
 
+class ProprietaireIsDeleted(admin.SimpleListFilter):
+    title = "Statut du propriétaire"
+
+    parameter_name = "deleted"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("oui", "Supprimé"),
+            ("non", "Actif"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "oui":
+            return queryset.exclude(deleted_at__isnull=True)
+        if self.value() == "non":
+            return queryset.filter(deleted_at__isnull=True)
+        return queryset
+
+
 @admin.register(Proprietaire)
 class ProprietaireAdmin(admin.ModelAdmin):
     list_display = (
@@ -77,7 +96,7 @@ class ProprietaireAdmin(admin.ModelAdmin):
         "vehicules_link",
     )
 
-    list_filter = (VehiculeCount,)
+    list_filter = (VehiculeCount, ProprietaireIsDeleted)
 
     inlines = (UsersInline,)
 
