@@ -31,26 +31,32 @@ class ADSUpdatesViewSet(
         serializer.save(user=self.request.user)
 
 
+def get_stats_by_prefecture():
+    ads_stats = ADSManagerAdministrator.objects.select_related("prefecture").annotate(
+        ads_count=Count("adsmanager__ads")
+    )
+
+    stats = {
+        ads_manager_administrator.prefecture.numero: {
+            "ads_count": ads_manager_administrator.ads_count,
+            "expected_ads_count": ads_manager_administrator.expected_ads_count,
+        }
+        for ads_manager_administrator in ads_stats.all()
+    }
+
+    vehicules_relais_stats = Prefecture.objects.annotate(count=Count("vehicule"))
+
+    for row in vehicules_relais_stats:
+        stats[row.numero]["vehicules_relais_count"] = row.count
+
+    return stats
+
+
 class StatsGeoJSONPerPrefecture(views.APIView):
     """Exposes a GeoJSON with statistics for each prefecture."""
 
     def get(self, request):
-        ads_stats = ADSManagerAdministrator.objects.select_related(
-            "prefecture"
-        ).annotate(ads_count=Count("adsmanager__ads"))
-
-        stats = {
-            ads_manager_administrator.prefecture.numero: {
-                "ads_count": ads_manager_administrator.ads_count,
-                "expected_ads_count": ads_manager_administrator.expected_ads_count,
-            }
-            for ads_manager_administrator in ads_stats.all()
-        }
-
-        vehicules_relais_stats = Prefecture.objects.annotate(count=Count("vehicule"))
-
-        for row in vehicules_relais_stats:
-            stats[row.numero]["vehicules_relais_count"] = row.count
+        stats = get_stats_by_prefecture()
 
         departements_shpfile = (
             importlib.resources.files("mesads.api.resources")

@@ -91,6 +91,36 @@
       Cette carte présente le nombre d'ADS enregistrées dans chaque département jusqu'à ce jour. Le nombre d'ADS estimé peut ne pas être exact, mais permet d'avoir une vue d'ensemble du déploiement du registre ADS au niveau national.
     </p>
 
+    <div class="fr-table" id="table-md-component">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table id="table-md">
+              <caption>Statistiques par préfecture</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Préfecture</th>
+                  <th scope="col">Nombre d'ADS</th>
+                  <th scope="col">Nombre total estimé d'ADS</th>
+                  <th scope="col">Nombre de véhicules relais</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for prefecture, stats in stats_by_prefecture %}
+                  <tr>
+                    <td>{{ prefecture.libelle }}</td>
+                    <td>{{ stats.ads_count|default:"" }}</td>
+                    <td>{{ stats.expected_ads_count|default:"" }}</td>
+                    <td>{{ stats.vehicules_relais_count|default:"" }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <hr class="fr-mt-3w" />
 
     <h2>Utilisation du registre ADS</h2>

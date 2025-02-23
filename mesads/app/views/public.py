@@ -10,6 +10,8 @@ from ..models import (
     ADSManager,
     ADSManagerRequest,
 )
+from mesads.api.views import get_stats_by_prefecture
+from mesads.fradm.models import Prefecture
 from mesads.vehicules_relais.models import Proprietaire, Vehicule
 
 
@@ -39,6 +41,14 @@ class StatsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+
+        stats_by_pref = get_stats_by_prefecture()
+        ctx["stats_by_prefecture"] = [
+            (prefecture, stats_by_pref.get(prefecture.numero))
+            for prefecture in Prefecture.objects.order_by("numero").exclude(
+                libelle__icontains="test"
+            )
+        ]
 
         if len(self.request.GET.getlist("q")) == 0:
             ads_managers_select_form = ADSManagerAutocompleteForm()
