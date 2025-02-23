@@ -1,4 +1,7 @@
 import functools
+import io
+from contextlib import redirect_stdout, redirect_stderr
+
 
 from sentry_sdk import capture_exception
 
@@ -29,4 +32,9 @@ class ImportDataForParis(CronJobBase):
 
     @sentry_exceptions
     def do(self):
-        call_command("import_last_update_file_from_paris")
+        # Redirect stdout and stderr to a buffer to capture the output of the
+        # command. By returning it, django-cron will log it in the database.
+        buf = io.StringIO()
+        with redirect_stdout(buf), redirect_stderr(buf):
+            call_command("import_last_update_file_from_paris")
+        return buf.getvalue()
