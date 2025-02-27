@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <title>Documentation</title>
+    <style type="text/css">
+        body {
+            background-color: #fff;
+            padding: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        article {
+            width: 968px;
+            background-color: rgba(0, 0, 145, 0.02);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 145, 0.05);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        article h2 {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <article>
+        <h2>Gestion des ADS pour les administrations</h2>
+        <pre class="mermaid">
+            sequenceDiagram
+            actor administration as Administration (commune, EPCI)
+            participant mesads as MesADS
+            actor prefecture as Préfecture
+
+            administration->>mesads: Demande de création de compte
+            mesads->>prefecture: Envoie la demande
+            prefecture->>prefecture: Vérifie que la demande provient bien d'un email connu
+            prefecture<<-->>administration: En cas de doute, vérfie directement avec l'administration (téléphone…) si la demande est légitime
+            prefecture->>mesads: Accepte la demande
+            mesads->>administration: Notifie que la demande a été acceptée
+            Note over administration: L'administration peut maintenant<br>se connecter à MesADS et gérer<br>les ADS de sa commune ou de son EPCI
+        </pre>
+    </article>
+
+    <article>
+        <h2>Gestion des ADS pour les préfectures</h2>
+        <pre class="mermaid">
+            sequenceDiagram
+            actor prefecture as Préfecture
+            participant mesads as MesADS
+
+            mesads->>prefecture: Créé un compte préfecture avec un mail connu
+            mesads-->>prefecture: Notifie en cas de demande d'accès d'une administration<br>aux ADS de la préfecture
+            prefecture->>mesads: Gère les accès aux administrations
+            prefecture->>mesads: Gère les ADS de sa préfecture
+        </pre>
+    </article>
+
+    <article>
+        <h2>Registre des véhicules relais</h2>
+        <pre class="mermaid">
+            sequenceDiagram
+            actor proprietaire as Propriétaire de véhicule relais
+            participant mesads as MesADS
+            actor utilisateur as public
+            participant fdo as Forces de l'Ordre
+
+            proprietaire->>mesads: Créé un compte
+            proprietaire->>mesads: Active l'espace "propriétaire de véhicules relais"
+            proprietaire->>mesads: Enregistre les véhicules relais dans un département
+            proprietaire->>mesads: Télécharge le récépissé du véhicule
+            utilisateur->>mesads: Consulte le registre des véhicules relais
+            fdo->>mesads: Scanne le QR code du véhicule relais et accède à ses détails
+        </pre>
+    </article>
+
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+
+
+</body>
+
+</html>
