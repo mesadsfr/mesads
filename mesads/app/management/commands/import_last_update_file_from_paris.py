@@ -111,22 +111,6 @@ class Command(BaseCommand):
 
         ads.ads_in_use = True
 
-        # The CSV file sent by Paris contains a field with the attribution date,
-        # but not the creation date.
-        # For new ADS, since the ADS user is always the owner, we store the
-        # field value in ADS.ads_creation_date, and leave ADS.attribution_date
-        # empty.
-        # For old ADS, we leave ADS.ads_creation_date empty (since the CSV
-        # doesn't have the info) and we use the field value in
-        # ADS.attribution_date.
-        attribution_date = datetime.strptime(row["date_attribution"], "%Y-%m-%d").date()
-        if attribution_date < date(2014, 10, 1):
-            ads.ads_creation_date = None
-            ads.attribution_date = attribution_date
-        else:
-            ads.ads_creation_date = attribution_date
-            ads.attribution_date = None
-
         if row["type_ads"] not in (
             "Payante",
             "Relais",
@@ -137,6 +121,22 @@ class Command(BaseCommand):
             raise ValueError(
                 f'ADS {row["numero_ads"]}: invalid type_ads "{row["type_ads"]}"'
             )
+
+        # The CSV file sent by Paris contains a field with the attribution date,
+        # but not the creation date.
+        # If "type" is "Gratuite non cessible", it's a new ADS and the date
+        # should be considered as the creation date of the ADS.
+        # If the type is anything else, it's an old ADS, this date is the
+        # attribution date, and we don't have the creation date of the ADS, so
+        # we hardcode it.
+        attribution_date = datetime.strptime(row["date_attribution"], "%Y-%m-%d").date()
+
+        if row["type_ads"] == "Gratuite non cessible":
+            ads.ads_creation_date = attribution_date
+            ads.attribution_date = None
+        else:
+            ads.ads_creation_date = date.min  # equals datetime.date(1, 1, 1)
+            ads.attribution_date = attribution_date
 
         if row["type_ads"] == "PMR":
             ads.vehicle_compatible_pmr = True
