@@ -156,15 +156,20 @@ class ADSAdmin(CompareVersionAdmin):
         fields = super().get_fields(request, obj)
         return ["public_url"] + fields
 
+    @admin.display(description="Numéro de l'ADS")
+    def number_with_deleted_info(self, obj):
+        return f"{obj.number}{' (supprimée)' if obj.deleted_at else ''}"
+
     readonly_fields = ("public_url",)
 
     list_display = (
-        "number",
+        "number_with_deleted_info",
         "administration",
         "prefecture",
         "owner_name",
         "owner_siret",
         "ads_users",
+        "deleted_at",
     )
 
     search_fields = (
@@ -191,7 +196,7 @@ class ADSAdmin(CompareVersionAdmin):
     ]
 
     def get_queryset(self, request):
-        req = super().get_queryset(request)
+        req = ADS.with_deleted
         req = req.prefetch_related("ads_manager__content_type")
         req = req.prefetch_related("ads_manager__content_object")
         req = req.prefetch_related("ads_manager__administrator__prefecture")
