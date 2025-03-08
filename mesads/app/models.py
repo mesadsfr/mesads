@@ -379,7 +379,7 @@ def validate_siret(value):
 
 
 @reversion.register
-class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
+class ADS(SmartValidationMixin, CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
     """Autorisation De Stationnement created by ADSManager."""
 
     class Meta:
@@ -391,6 +391,7 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, models.Model):
             # see the documentation of the method `unique_error_message`
             models.UniqueConstraint(
                 fields=["number", "ads_manager_id"],
+                condition=Q(deleted_at__isnull=True),
                 name="unique_ads_number",
             ),
             models.CheckConstraint(
