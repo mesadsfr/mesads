@@ -119,6 +119,13 @@ class ADSForm(forms.ModelForm):
             "owner_mobile",
             "owner_email",
             "notes",
+            # It is important to leave "deleted_at" in the fields, otherwise
+            # django.db.models.constraints.CheckConstraint.validate() will silently skip
+            # the evaluation of the constraints using this field.
+            # In other words, if deleted_at is not in the fields, saving the
+            # form will not trigger the correct error message in case the unique
+            # constraint is violated.
+            "deleted_at",
         )
 
     def __init__(self, epci=None, *args, **kwargs):

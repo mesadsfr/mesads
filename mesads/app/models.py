@@ -387,12 +387,11 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, SoftDeleteMixin, models
         verbose_name_plural = "ADS"
 
         constraints = [
-            # To understand why we do not define violation_error_message here,
-            # see the documentation of the method `unique_error_message`
             models.UniqueConstraint(
                 fields=["number", "ads_manager_id"],
                 condition=Q(deleted_at__isnull=True),
                 name="unique_ads_number",
+                violation_error_message="Une ADS avec ce numéro existe déjà. Supprimez l'ADS existante, ou utilisez un autre numéro.",
             ),
             models.CheckConstraint(
                 check=Q(ads_creation_date__isnull=True)
@@ -494,19 +493,6 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, SoftDeleteMixin, models
                 "Il n'est pas possible de supprimer une ADS d'une administration verrouillée."
             )
         return super().delete(*args, **kwargs)
-
-    UNIQUE_ERROR_MSG = "Une ADS avec ce numéro existe déjà. Supprimez l'ADS existante, ou utilisez un autre numéro."
-
-    def unique_error_message(self, model_class, unique_check):
-        """Constraints can have a custom violation error message set with the
-        parameter `violation_error_message`. However, it appears that this is
-        not possible for UniqueConstraint, which, for backward compatibility
-        reasons (django 4.1), ignores this parameter and instead calls
-        unique_error_message.
-
-        See https://github.com/django/django/blob/69069a443a906dd4060a8047e683657d40b4c383/django/db/models/constraints.py#L356
-        """
-        return self.UNIQUE_ERROR_MSG
 
     number = models.CharField(
         max_length=255,
