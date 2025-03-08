@@ -23,6 +23,28 @@
   </div>
 </nav>
 
+<div class="fr-notice fr-notice--info fr-mb-3w">
+  <div class="fr-container">
+    <div class="fr-notice__body">
+      <p>
+        <span class="fr-notice__title">
+          Pour modifier les informations de cette ADS,
+        </span>
+        <span class="fr-notice__desc">
+          éditez les champs du formulaire et cliquez sur "Valider les modifications de l'ADS" en bas de cette page.
+          <br />
+          <br />
+          En cas de location-gérance, les informations du locataire-gérant doivent être renseignées dans la partie "conducteur" en bas du formulaire.
+          <br />
+          <br />
+          Les anciennes informations s'enregistrent automatiquement dans l'historique de l'ADS que vous pourrez consulter sur le lien ci-dessous.
+          <br />
+          Vous pouvez aussi accéder aux modèles d'arrêtés en cliquant sur le lien "accéder aux modèles".
+        </span>
+      </p>
+    </div>
+  </div>
+</div>
 
 {% if ads %}
   {% if ads_manager.content_type.name == 'commune' %}
@@ -38,7 +60,6 @@
   </a>
 </p>
 {% endif %}
-
 
 <h1>
 {% if ads %}
