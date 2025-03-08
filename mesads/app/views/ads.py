@@ -36,6 +36,7 @@ from ..models import (
     ADSLegalFile,
     ADSManager,
     ADSUser,
+    ADS_UNIQUE_ERROR_MESSAGE,
 )
 from ..reversion_diff import ModelHistory
 
@@ -273,7 +274,7 @@ class ADSCreateView(ADSView, CreateView):
             with transaction.atomic():
                 return super().form_valid(form)
         except IntegrityError:
-            form.add_error("number", ADS.UNIQUE_ERROR_MSG)
+            form.add_error("number", ADS_UNIQUE_ERROR_MESSAGE)
             return super().form_invalid(form)
 
 

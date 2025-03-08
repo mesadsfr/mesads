@@ -378,6 +378,9 @@ def validate_siret(value):
     )
 
 
+ADS_UNIQUE_ERROR_MESSAGE = "Une ADS avec ce numéro existe déjà. Supprimez l'ADS existante, ou utilisez un autre numéro."
+
+
 @reversion.register
 class ADS(SmartValidationMixin, CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
     """Autorisation De Stationnement created by ADSManager."""
@@ -391,7 +394,7 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, SoftDeleteMixin, models
                 fields=["number", "ads_manager_id"],
                 condition=Q(deleted_at__isnull=True),
                 name="unique_ads_number",
-                violation_error_message="Une ADS avec ce numéro existe déjà. Supprimez l'ADS existante, ou utilisez un autre numéro.",
+                violation_error_message=ADS_UNIQUE_ERROR_MESSAGE,
             ),
             models.CheckConstraint(
                 check=Q(ads_creation_date__isnull=True)
