@@ -80,6 +80,24 @@ class ADSLegalFileInline(admin.StackedInline):
     extra = 0
 
 
+class ADSDeletedFilter(admin.SimpleListFilter):
+    title = "Status"
+    parameter_name = "deleted"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("active", "ADS valides"),
+            ("deleted", "ADS supprimées"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "active":
+            return queryset.filter(deleted_at__isnull=True)
+        if self.value() == "deleted":
+            return queryset.filter(deleted_at__isnull=False)
+        return queryset
+
+
 @admin.register(ADS)
 class ADSAdmin(CompareVersionAdmin):
     @admin.display(description="Préfecture")
@@ -193,6 +211,7 @@ class ADSAdmin(CompareVersionAdmin):
         ADSUsersCount,
         "accepted_cpam",
         "vehicle_compatible_pmr",
+        ADSDeletedFilter,
     ]
 
     def get_queryset(self, request):
