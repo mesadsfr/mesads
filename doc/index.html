@@ -82,6 +82,31 @@
         </pre>
     </article>
 
+    <article>
+        <h2>Infrastructure</h2>
+        <pre class="mermaid">
+            architecture-beta
+
+            group clevercloud(internet)[Site MesADS sur CleverCloud]
+            group scaleway(disk)[Sauvegardes sur Scaleway]
+        
+            service db(database)[PostgreSQL] in clevercloud
+            service s3(disk)[S3] in clevercloud
+            service server(server)[Server] in clevercloud
+
+            db:L -- R:server
+            s3:T -- B:server
+
+            service cronbackup(disk)[CronJob] in scaleway
+            service s3backup(disk)[S3] in scaleway
+
+            cronbackup:L -- R:s3backup
+            cronbackup:L --> R:s3
+            cronbackup:L --> R:db
+
+        </pre>
+    </article>
+
 
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
