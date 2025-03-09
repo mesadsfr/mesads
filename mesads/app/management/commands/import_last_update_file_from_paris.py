@@ -62,7 +62,14 @@ class Command(BaseCommand):
             self.style.SUCCESS, f"Currently {ads_manager.ads_set.count()} ADS for Paris"
         )
 
-        all_paris_ads = {ads.number: ads for ads in ads_manager.ads_set.all()}
+        # The update file does not include the ADS created during the Jeux
+        # Olympiques. Let's exclude them from this list. If we didnt' exclude
+        # them, then they would be deleted below.
+        all_paris_ads = {
+            ads.number: ads
+            for ads in ads_manager.ads_set.all()
+            if not ads.number.startswith("JO")
+        }
 
         new_count = 0
         update_count = 0
