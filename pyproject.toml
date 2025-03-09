@@ -73,7 +73,7 @@ django-markdownx = "^4.0.7"
 weasyprint = "^62.1"
 qrcode = "^7.4.2"
 
-[tool.poetry.dev-dependencies]
+[poetry.group.dev.dependencies]
 django-debug-toolbar = "^3.2.2"
 coverage = {version = "^6.4.1", extras = ["toml"]}
 requests-mock = "^1.9.3"
