@@ -49,7 +49,7 @@ exclude_lines = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-Django = "^5.0.6"
+Django = "^5.0.13"
 django-registration = "^3.2"
 django-autocomplete-light = "^3.8.2"
 psycopg2 = "^2.9.3"
