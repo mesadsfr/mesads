@@ -14,6 +14,9 @@ black = "^24.3.0"
 pytest-testmon = "^2.1.0"
 freezegun = "^1.4.0"
 pypdf2 = "^3.0.1"
+django-debug-toolbar = "^3.2.2"
+coverage = {version = "^6.4.1", extras = ["toml"]}
+requests-mock = "^1.9.3"
 
 
 [tool.coverage.run]
@@ -73,10 +76,6 @@ django-markdownx = "^4.0.7"
 weasyprint = "^62.1"
 qrcode = "^7.4.2"
 
-[poetry.group.dev.dependencies]
-django-debug-toolbar = "^3.2.2"
-coverage = {version = "^6.4.1", extras = ["toml"]}
-requests-mock = "^1.9.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
