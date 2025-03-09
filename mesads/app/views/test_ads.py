@@ -575,7 +575,9 @@ class TestADSDeleteView(ClientTestCase):
         self.assertEqual(
             resp.url, f"/registre_ads/gestion/{self.ads_manager_city35.id}/"
         )
-        self.assertRaises(ADS.DoesNotExist, self.ads.refresh_from_db)
+
+        self.assertEqual(ADS.objects.filter(id=self.ads.id).count(), 0)
+        self.assertEqual(ADS.with_deleted.filter(id=self.ads.id).count(), 1)
 
 
 class TestADSCreateView(ClientTestCase):
