@@ -73,9 +73,11 @@ class Command(BaseCommand):
             # communes. We need to insert it.
             else:
                 if row["DEP"] == "":
-                    raise ValueError(
-                        f"La commune {row['COM']} n'a pas de département. Impossible de l'ajouter."
-                    )
+                    if row["COM"].startswith("976"):
+                        row["DEP"] = "976"
+                    else:
+                        row["DEP"] = row["COM"][:2]
+
                 new_commune = Commune(
                     insee=row["COM"],
                     departement=row["DEP"],
