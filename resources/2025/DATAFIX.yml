@@ -1,0 +1,263 @@
+communes:
+  279:
+    insee: "01330"
+    libelle: Ruffieu
+    new_owner:
+      insee: "01187"
+      libelle: "Haut Valromey"
+
+  1819:
+    insee: "05127"
+    libelle: "Rousset"
+    new_owner:
+      insee: "05127"
+      libelle: "Rousset-Serre-Ponçon"
+
+  5319:
+    insee: '16147'
+    libelle: Gardes-le-Pontaroux
+    new_owner:
+      insee: '16198'
+      libelle: Magnac-lès-Gardes
+
+  5389:
+    insee: '16226'
+    libelle: Montignac-Charente
+    new_owner:
+      insee: '16393'
+      libelle: "La Boixe"
+
+  32775:
+    insee: '85223'
+    libelle: 'Sainte-Hermine'
+    new_owner:
+      insee: '85223'
+      libelle: "Saint-Jean-d'Hermine"
+
+  32647:
+    insee: '85076'
+    libelle: 'Cugand'
+    new_owner:
+      insee: "85076"
+      libelle: "Cugand-la-Bernardière"
+  
+  28504:
+    insee: "72155"
+    libelle: "Laigné-en-Belin"
+    new_owner:
+      insee: "72155"
+      libelle: "Laigné-Saint-Gervais"
+
+  28341:
+    insee: "71566"
+    libelle: "Verdun-sur-le-Doubs"
+    new_owner:
+      insee: "71566"
+      libelle: "Verdun-Ciel"
+
+  27924:
+    insee: "71131"
+    libelle: "Ciel"
+    new_owner:
+      insee: "71566"
+      libelle: "Verdun-Ciel"
+
+  27081:
+    insee: "69096"
+    libelle: "Grigny"
+    new_owner:
+      insee: "69096"
+      libelle: "Grigny-sur-Rhône"
+
+  24512:
+    insee: "63108"
+    libelle: "Le Cheix"
+    new_owner:
+      insee: "63108"
+      libelle: "Le Cheix-sur-Morge"
+
+  23338:
+    insee: "61275"
+    libelle: "Le Merlerault"
+    new_owner:
+      insee: "61275"
+      libelle: "Merlerault-le-Pin"
+
+  17569:
+    insee: "49069"
+    libelle: "Orée d'Anjou"
+    new_owner:
+      insee: 49126
+      libelle: "Orée d'Anjou"
+
+  17052:
+    insee: "46334"
+    libelle: "Le Vigan"
+    new_owner:
+      insee: "46334"
+      libelle: "Le Vigan-en-Quercy"
+
+  16904:
+    insee: "46172"
+    libelle: "Lhospitalet"
+    new_owner:
+      insee: "46172"
+      libelle: "Pern-Lhospitalet"
+
+  16127:
+    insee: "43174"
+    libelle: "Saint-Christophe-sur-Dolaison"
+    new_owner:
+      insee: "43174"
+      libelle: "Saint-Christophe-sur-Dolaizon"
+
+  15874:
+    insee: "42252" 
+    libelle: "Saint-Laurent-Rochefort"
+    new_owner:
+      insee: "42084"
+      libelle: "Solore-en-Forez"
+
+  15841:
+    insee: "42217"
+    libelle: "Saint-Didier-sur-Rochefort"
+    new_owner:
+      insee: "42217"
+      libelle: "La Côte-Saint-Didier"
+
+  15813:
+    insee: "42188"
+    libelle: "Roche"
+    new_owner:
+      insee: "42188"
+      libelle: "Roche-en-Forez"
+
+  15737:
+    insee: "42109"
+    libelle: "L'Hôpital-sous-Rochefort"
+    new_owner:
+      insee: "42084"
+      libelle: "Solore-en-Forez"
+
+  15712:
+    insee: "42084"
+    libelle: "Débats-Rivière-d'Orpra"
+    new_owner:
+      insee: "42084"
+      libelle: "Solore-en-Forez"
+
+  15702:
+    insee: "42072"
+    libelle: "La Côte-en-Couzan"
+    new_owner:
+      insee: "42217"
+      libelle: "La Côte-Saint-Didier"
+
+  15008:
+    insee: "39548"
+    libelle: "Vaux-sur-Poligny"
+    new_owner:
+      insee: "39434"
+      libelle: "Poligny"
+      type: 'COM'
+
+  14949:
+    insee: "39474"
+    libelle: "Sainte-Agnès"
+    new_owner:
+      insee: "39576"
+      libelle: "Val-Sonnette"
+
+  12989:
+    insee: "34144"
+    libelle: "Lunas"
+    new_owner:
+      insee: "34144"
+      libelle: "Lunas-les-Châteaux"
+
+  12938:
+    insee: "34093"
+    libelle: "Dio-et-Valquières"
+    new_owner:
+      insee: "34144"
+      libelle: "Lunas-les-Châteaux"
+
+  12705:
+    insee: "33409"
+    libelle: "Saint-Genis-du-Bois"
+    new_owner:
+      insee: "33008"
+      libelle: "Porte-de-Benauge"
+
+  12207:
+    insee: "32365"
+    libelle: "Saint-Blancard"
+    new_owner:
+      insee: "32365"
+      libelle: "Cap d'Astarac"
+
+  8035:
+    insee: "24177"
+    libelle: "Faux"
+    new_owner:
+      insee: "24177"
+      libelle: "Faux-en-Périgord"
+
+  7771:
+    insee: "23149"
+    libelle: "Parsac-Rimondeix"
+    new_owner:
+      insee: "23149"
+      libelle: "Parsac"
+      type: 'COM'
+
+  7650:
+    insee: "23023"
+    libelle: "Blaudeix"
+    new_owner:
+      insee: "23149"
+      libelle: "Parsac"
+      type: 'COM'
+
+  7490:
+    insee: "22237"
+    libelle: "Pluduno"
+    new_owner:
+      insee: "22237"
+      libelle: "Val-d'Arguenon"
+
+  6542:
+    insee: "19248"
+    libelle: "Saint-Ybard"
+    new_owner:
+      insee: "19248"
+      libelle: "Les Trois-Saints"
+
+  6524:
+    insee: "19230"
+    libelle: "Saint-Pardoux-Corbier"
+    new_owner:
+      insee: "19248"
+      libelle: "Les Trois-Saints"
+
+  6518:
+    insee: "19223"
+    libelle: "Saint-Martin-Sepert"
+    new_owner:
+      insee: "19248"
+      libelle: "Les Trois-Saints"
+
+  5068:
+    insee: "15141"
+    libelle: "Neussargues en Pinatelle"
+    new_owner:
+      insee: "15141"
+      libelle: "Neussargues-Moissac"
+      type: 'COM'
+
+  4080:
+    insee: "12076"
+    libelle: "Conques-en-Rouergue"
+    new_owner:
+      insee: "12218"
+      libelle: "Conques-en-Rouergue"
