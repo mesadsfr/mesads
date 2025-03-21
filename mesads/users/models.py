@@ -141,7 +141,7 @@ def user_logged_in_callback(sender, request, user, **kwargs):
 
 @receiver(user_logged_out)
 def user_logged_out_callback(sender, request, user, **kwargs):
-    UserAuditEntry.objects.create(user=user, action="login", ip=get_client_ip(request))
+    UserAuditEntry.objects.create(user=user, action="logout", ip=get_client_ip(request))
 
 
 @receiver(user_login_failed)
