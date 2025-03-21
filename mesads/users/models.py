@@ -1,8 +1,14 @@
 from django.apps import apps
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
+from django.contrib.auth.signals import (
+    user_logged_in,
+    user_logged_out,
+    user_login_failed,
+)
 from django.core.mail import send_mail
 from django.db import models
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -104,3 +110,42 @@ class User(AbstractBaseUser, PermissionsMixin):
     def email_user(self, subject, message, from_email=None, **kwargs):
         """Send an email to this user."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+
+class UserAuditEntry(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    action = models.CharField(max_length=64, null=False, blank=False)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="audit_entries", null=True
+    )
+    ip = models.GenericIPAddressField(null=True)
+    body = models.TextField(null=False, blank=True)
+
+
+def get_client_ip(request):
+    """In production, REMOTE_ADDR is the load balancer IP, not the client IP. On
+    Clever-Cloud, the client IP is in the X-Forwarded-For header."""
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    if x_forwarded_for:
+        # In case of multiple IPs, take the first one
+        ip = x_forwarded_for.split(",")[0].strip()
+    else:
+        ip = request.META.get("REMOTE_ADDR")
+    return ip
+
+
+@receiver(user_logged_in)
+def user_logged_in_callback(sender, request, user, **kwargs):
+    UserAuditEntry.objects.create(user=user, action="login", ip=get_client_ip(request))
+
+
+@receiver(user_logged_out)
+def user_logged_out_callback(sender, request, user, **kwargs):
+    UserAuditEntry.objects.create(user=user, action="login", ip=get_client_ip(request))
+
+
+@receiver(user_login_failed)
+def user_login_failed_callback(sender, credentials, request, **kwargs):
+    UserAuditEntry.objects.create(
+        user=None, action="login_failed", ip=get_client_ip(request), body=credentials
+    )
