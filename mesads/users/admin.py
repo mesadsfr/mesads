@@ -15,7 +15,7 @@ from reversion.models import Revision
 from mesads.app.models import Notification
 from mesads.vehicules_relais.models import Proprietaire
 
-from .models import User
+from .models import User, UserAuditEntry
 
 
 class ADSManagerRequestFilter(admin.SimpleListFilter):
@@ -131,6 +131,7 @@ class UserAdmin(BaseUserAdmin):
         "ads_manager_request_link",
         "notifications_link",
         "relais_links",
+        "audit_entries_link",
     )
 
     readonly_fields = (
@@ -145,6 +146,7 @@ class UserAdmin(BaseUserAdmin):
         "is_staff",
         "is_superuser",
         "relais_links",
+        "audit_entries_link",
     )
 
     search_fields = (
@@ -277,3 +279,34 @@ class UserAdmin(BaseUserAdmin):
         </table>
         """
         return mark_safe(ret)
+
+    @admin.display(description="Historique des connexions")
+    def audit_entries_link(self, obj):
+        url = (
+            reverse("admin:users_userauditentry_changelist")
+            + f"?user__id__exact={obj.id}"
+        )
+        return format_html('<a href="{}">Voir les connexions</a>', url)
+
+
+@admin.register(UserAuditEntry)
+class UserAuditEntryAdmin(admin.ModelAdmin):
+    list_display = ("created_at", "user", "action", "ip", "short_body")
+    list_filter = ("action",)
+    search_fields = ("ip", "body")
+    date_hierarchy = "created_at"
+    ordering = ("-created_at",)
+
+    def short_body(self, obj):
+        return obj.body[:75] + "..." if len(obj.body) > 75 else obj.body
+
+    short_body.short_description = "Body"
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

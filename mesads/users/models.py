@@ -113,6 +113,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class UserAuditEntry(models.Model):
+    class Meta:
+        verbose_name = "Historique des connexions"
+        verbose_name_plural = "Historiques des connexions"
+
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     action = models.CharField(max_length=64, null=False, blank=False)
     user = models.ForeignKey(
