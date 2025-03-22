@@ -22,11 +22,6 @@ urlpatterns = [
         name="app.dashboards.list",
     ),
     path(
-        "registre_ads/dashboards/<int:ads_manager_administrator_id>/",
-        staff_member_required(views.DashboardsDetailView.as_view()),
-        name="app.dashboards.detail",
-    ),
-    path(
         "registre_ads/admin_gestion",
         ads_manager_administrator_required(views.ADSManagerAdminIndexView.as_view()),
         name="app.ads-manager-admin.index",
