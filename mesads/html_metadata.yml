@@ -99,12 +99,8 @@ urls:
     missing: true
 
   app.dashboards.list:
-    title: "Aperçu des statistiques nationales du registre ADS"
-    description: "Explorez une vue complète des statistiques nationales relatives au déploiement du registre ADS."
-
-  app.dashboards.detail:
-    title: "Analyse détaillée des statistiques ADS pour {{ object.prefecture.display_fulltext }}"
-    description: "Découvrez en détail le déploiement et l'utilisation du registre ADS dans {{ object.prefecture.display_fulltext }}."
+    title: "Dashboard MesADS"
+    description: "Dashboards pour suivre le déploiement de MesADS."
 
   app.ads-manager-admin.index:
     missing: true # Redirect view
