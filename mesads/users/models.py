@@ -150,6 +150,11 @@ def user_logged_out_callback(sender, request, user, **kwargs):
 
 @receiver(user_login_failed)
 def user_login_failed_callback(sender, credentials, request, **kwargs):
+    try:
+        user = User.objects.get(email=credentials.get("username"))
+    except User.DoesNotExist:
+        user = None
+
     UserAuditEntry.objects.create(
-        user=None, action="login_failed", ip=get_client_ip(request), body=credentials
+        user=user, action="login_failed", ip=get_client_ip(request), body=credentials
     )
