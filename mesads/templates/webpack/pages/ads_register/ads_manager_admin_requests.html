@@ -55,6 +55,9 @@
                   📅 Date de la demande ▲
                   {% endif %}
                 </th>
+                <th>
+                  Dernière connexion de l'utilisateur
+                </th>
                 <th>🔎 Action</th>
               </tr>
             </thead>
@@ -64,6 +67,7 @@
                 <td>{{ ads_manager_request.user.email }}</td>
                 <td>{{ ads_manager_request.ads_manager.content_object.display_text|capfirst }}</td>
                 <td>{{ ads_manager_request.created_at }}</td>
+                <td>{{ ads_manager_request.user.last_login }}</td>
                 <td>
                   <div class="fr-grid-row fr-grid-row--gutters">
                     {% comment %}
