@@ -3,12 +3,19 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from two_factor.admin import AdminSiteOTPRequired
+from two_factor.urls import urlpatterns as tf_urls
+
 from .app import views
 
 import debug_toolbar
 
 
+admin.site.__class__ = AdminSiteOTPRequired
+
+
 urlpatterns = [
+    path("", include(tf_urls)),
     path("api/", include("mesads.api.urls")),
     path("auth/", include("mesads.users.urls")),
     path("fradm/", include("mesads.fradm.urls")),

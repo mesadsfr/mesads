@@ -124,6 +124,12 @@ INSTALLED_APPS = [
     "django_cleanup.apps.CleanupConfig",
     "mjml",
     "markdownx",
+    "django_otp",
+    "django_otp.plugins.otp_static",
+    "django_otp.plugins.otp_totp",
+    "django_otp.plugins.otp_email",
+    "two_factor",
+    "two_factor.plugins.email",
     "mesads.app",
     "mesads.users",
     "mesads.fradm",
@@ -145,6 +151,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django_otp.middleware.OTPMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "mesads.middleware.BackwardCompatibilityURLMiddleware",
@@ -233,7 +240,7 @@ STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_URL = "/auth/login/"
+LOGIN_URL = "two_factor:login"
 
 # Static configuration
 STATIC_ROOT = BASE_DIR / "static"
@@ -328,3 +335,5 @@ MESADS_CRISP_WEBSITE_ID = os.environ.get("CRISP_WEBSITE_ID")
 MESADS_SENTRY_JS_URL = os.environ.get("SENTRY_JS_URL")
 
 MJML_EXEC_CMD = BASE_DIR / "node_modules/.bin/mjml"
+
+TWO_FACTOR_REMEMBER_COOKIE_AGE = 60 * 60 * 24 * 365  # 1 year
