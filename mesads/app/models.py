@@ -900,7 +900,7 @@ class ADSUpdateFile(models.Model):
     )
 
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False
+        settings.AUTH_USER_MODEL, on_delete=models.RESTRICT, null=False, blank=False
     )
 
     update_file = models.FileField(upload_to=get_update_filename, blank=False)

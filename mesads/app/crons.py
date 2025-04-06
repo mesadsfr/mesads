@@ -38,3 +38,19 @@ class ImportDataForParis(CronJobBase):
         with redirect_stdout(buf), redirect_stderr(buf):
             call_command("import_last_update_file_from_paris")
         return buf.getvalue()
+
+
+class DeleteOldUsers(CronJobBase):
+    # Run every week
+    schedule = Schedule(run_every_mins=60 * 24 * 7)
+
+    code = "remove_old_accounts"  # unique code to represent this cron job
+
+    @sentry_exceptions
+    def do(self):
+        # Redirect stdout and stderr to a buffer to capture the output of the
+        # command. By returning it, django-cron will log it in the database.
+        buf = io.StringIO()
+        with redirect_stdout(buf), redirect_stderr(buf):
+            call_command("remove_old_accounts")
+        return buf.getvalue()
