@@ -132,6 +132,7 @@ class UserAdmin(BaseUserAdmin):
         "notifications_link",
         "relais_links",
         "audit_entries_link",
+        "double_authentication_enabled",
     )
 
     readonly_fields = (
@@ -147,6 +148,7 @@ class UserAdmin(BaseUserAdmin):
         "is_superuser",
         "relais_links",
         "audit_entries_link",
+        "double_authentication_enabled",
     )
 
     search_fields = (
@@ -287,6 +289,12 @@ class UserAdmin(BaseUserAdmin):
             + f"?user__id__exact={obj.id}"
         )
         return format_html('<a href="{}">Voir les connexions</a>', url)
+
+    @admin.display(description="Double authentification")
+    def double_authentication_enabled(self, obj):
+        return obj.otp_secret != ""
+
+    double_authentication_enabled.boolean = True
 
 
 @admin.register(UserAuditEntry)

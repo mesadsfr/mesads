@@ -1,9 +1,9 @@
-from django.contrib.auth.views import LoginView, PasswordResetView
+from django.contrib.auth.views import PasswordResetView
 from django.conf import settings
 from django.urls import include, path
 
 from .forms import PasswordResetStrictForm
-from .views import CustomRegistrationView
+from .views import CustomRegistrationView, OTPLoginView
 
 
 urlpatterns = [
@@ -24,12 +24,9 @@ urlpatterns = [
         ),
         name="password_reset",
     ),
-    # By default, /auth/login displays the login form to authenticated users,
-    # and also a permission error message if ?next is set. Override to force
-    # redirect to ?next or to LOGIN_REDIRECT_URL.
     path(
         "login/",
-        LoginView.as_view(redirect_authenticated_user=True),
+        OTPLoginView.as_view(),
         name="override.login",
     ),
     path("", include("django.contrib.auth.urls")),

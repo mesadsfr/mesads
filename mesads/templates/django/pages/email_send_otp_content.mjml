@@ -1,0 +1,31 @@
+{% extends "base_mail.mjml" %}
+
+{% block title %}Code de connexion MesADS{% endblock %}
+
+{% block content %}
+<mj-column>
+  <mj-text>
+    <p>
+      Afin de vous connecter à votre compte MesADS, utilisez le code suivant :
+    </p>
+  </mj-text>
+
+  <mj-text font-weight="bold">
+    <p>
+        {{ otp_code }}
+    </p>
+  </mj-text>
+
+  <mj-text>
+    <p>
+      Ce code n'est valide que pour une seule connexion et expirera dans 10 minutes.
+    </p>
+  </mj-text>
+
+  <mj-text>
+    <p>
+      Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.
+    </p>
+  </mj-text>
+</mj-column>
+{% endblock %}

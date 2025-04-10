@@ -1,0 +1,11 @@
+{% extends "base_mail.txt" %}
+
+{% block body %}
+Afin de vous connecter à votre compte MesADS, utilisez le code suivant :
+
+{{ otp_code }}
+
+Ce code n'est valide que pour une seule connexion et expirera dans 10 minutes.
+
+Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.
+{% endblock %}

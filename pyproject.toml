@@ -75,6 +75,7 @@ pyyaml = "^6.0.1"
 django-markdownx = "^4.0.7"
 weasyprint = "^62.1"
 qrcode = "^7.4.2"
+pyotp = "^2.9.0"
 
 
 [build-system]

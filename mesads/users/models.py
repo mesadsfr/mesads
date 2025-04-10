@@ -83,6 +83,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
 
+    otp_secret = models.CharField(
+        blank=True,
+        null=False,
+        max_length=64,
+    )
+
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
