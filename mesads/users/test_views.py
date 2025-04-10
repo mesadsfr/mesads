@@ -1,3 +1,5 @@
+import re
+
 from django.core import mail
 from django.conf import settings
 
@@ -59,3 +61,38 @@ class TestCustomRegistrationView(ClientTestCase):
         self.assertEqual(len(mail.outbox[0].alternatives), 1)
         self.assertEqual(mail.outbox[0].alternatives[0][1], "text/html")
         self.assertIn(settings.MESADS_CONTACT_EMAIL, mail.outbox[0].alternatives[0][0])
+
+
+class Test2FALoginView(ClientTestCase):
+    def test_2fa_login(self):
+        user = self.create_user(double_auth=True)
+
+        # Send login/password without OTP and verify that the OTP is sent by email
+        resp = self.anonymous_client.post(
+            "/auth/login/",
+            {
+                "username": user.obj.email,
+                "password": user.clear_password,
+            },
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("mot de passe à usage unique", resp.content.decode("utf8"))
+
+        self.assertEqual(len(mail.outbox[0].alternatives), 1)
+        self.assertEqual(mail.outbox[0].alternatives[0][1], "text/html")
+
+        matches = re.search(r"(\d{6})", mail.outbox[0].body)
+        self.assertIsNotNone(matches)
+
+        otp_code = matches.groups(1)[0]
+
+        # Validate the OTP received by email
+        resp = self.anonymous_client.post(
+            "/auth/login/",
+            {
+                "username": user.obj.email,
+                "password": user.clear_password,
+                "otp": otp_code,
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
