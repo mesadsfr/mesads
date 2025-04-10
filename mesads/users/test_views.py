@@ -86,6 +86,18 @@ class Test2FALoginView(ClientTestCase):
 
         otp_code = matches.groups(1)[0]
 
+        # Invalid OTP given
+        resp = self.anonymous_client.post(
+            "/auth/login/",
+            {
+                "username": user.obj.email,
+                "password": user.clear_password,
+                "otp": "xxx",
+            },
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("Le code est invalide", resp.content.decode("utf8"))
+
         # Validate the OTP received by email
         resp = self.anonymous_client.post(
             "/auth/login/",
