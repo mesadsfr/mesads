@@ -1,5 +1,10 @@
 {% extends "skeleton.html" %}
 
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="./base.css">
+{% endblock %}
+
 {% block content %}
 <main id="content" class="fr-container fr-pt-5w fr-pb-5w">
   {% for message in messages %}
