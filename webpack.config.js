@@ -53,7 +53,7 @@ module.exports = (env, argv) => {
         // styles
         {
           test: /\.(css|sass|scss)$/,
-          use: ["css-loader", "sass-loader"],
+          use: ["css-loader", "sass-loader", "postcss-loader"],
         },
         // images (load from `images` directory only)
         {
