@@ -120,6 +120,7 @@
                 <th>Type de l'ADS</th>
                 <th>Titulaire</th>
                 <th>Immatriculation</th>
+                <th>Dernière mise à jour</th>
                 <th class="!text-right">Consulter / Modifier</th>
               </tr>
             </thead>
@@ -134,6 +135,14 @@
                   <td>{{ ads.ads_type }}</td>
                   <td class="max-w-[300px] overflow-ellipsis overflow-hidden">{{ ads.owner_name }}</td>
                   <td>{{ ads.immatriculation_plate }}</td>
+                  <td>
+                    <div class="fr-text--xs !text-[var(--text-default-error)]">
+                      {% if ads.latest_update_log %}
+                        {% if not ads.latest_update_log_is_complete %}Données incomplètes{% endif %}
+                      {% endif %}
+                    </div>
+                    {{ ads.latest_update_log|date:"d/m/Y" }}
+                  </td>
                   <td class="!text-right">
                     <a class="fr-btn fr-btn--secondary fr-icon-eye-line"
                        href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}"></a>
@@ -141,7 +150,7 @@
                 </tr>
               {% empty %}
                 <tr>
-                  <td colspan="{% if ads_manager.content_type.name == 'EPCI' %}7{% else %}6{% endif %}">Aucun résultat</td>
+                  <td colspan="{% if ads_manager.content_type.name == 'EPCI' %}8{% else %}7{% endif %}">Aucun résultat</td>
                 </tr>
               {% endfor %}
             </tbody>

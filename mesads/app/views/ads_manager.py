@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.postgres.lookups import Unaccent
-from django.db.models import Count, Q, Value, Case, When, CharField
+from django.db.models import Count, Q, Value, Case, When, CharField, Subquery, OuterRef
 from django.db.models.functions import Replace
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import ProcessFormView
@@ -14,10 +14,7 @@ from ..forms import (
     ADSManagerEditForm,
     ADSSearchForm,
 )
-from ..models import (
-    ADS,
-    ADSManager,
-)
+from ..models import ADS, ADSManager, ADSUpdateLog
 
 
 class ADSManagerView(ListView, ProcessFormView):
@@ -30,7 +27,9 @@ class ADSManagerView(ListView, ProcessFormView):
         return ListView.get(self, request, *args, **kwargs)
 
     def get_ads_manager(self):
-        return ADSManager.objects.prefetch_related('adsmanagerdecree_set').get(id=self.kwargs["manager_id"])
+        return ADSManager.objects.prefetch_related("adsmanagerdecree_set").get(
+            id=self.kwargs["manager_id"]
+        )
 
     def get_form(self):
         if self.request.method == "POST":
@@ -73,6 +72,17 @@ class ADSManagerView(ListView, ProcessFormView):
                     | Q(epci_commune__libelle__icontains=q)
                     | Q(number__icontains=q)
                 )
+
+        # annotate the latest ADSUpdateLog.update_date
+        latest_log_qs = ADSUpdateLog.objects.filter(ads=OuterRef("pk")).order_by(
+            "-update_at"
+        )
+        qs = qs.annotate(
+            latest_update_log=Subquery(latest_log_qs.values("update_at")[:1]),
+            latest_update_log_is_complete=Subquery(
+                latest_log_qs.values("is_complete")[:1]
+            ),
+        )
 
         # Add ordering on the number. CAST is necessary in the case the ADS number is not an integer.
         qs_ordered = qs.extra(
