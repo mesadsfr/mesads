@@ -86,7 +86,7 @@
       </div>
     {% endif %}
     {% csrf_token %}
-    <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-1w fr-pr-1w border border-neutral-300">
+    <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
       <legend class="text-2xl font-semibold">Informations générales</legend>
       <!-- EPCI commune -->
       {% if ads_manager.content_type.name == 'EPCI' %}
@@ -151,7 +151,7 @@
       </template>
     </fieldset>
     <template x-if="ads_in_use === 'true'">
-      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-1w fr-pr-1w border border-neutral-300">
+      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
         <legend class="text-2xl font-semibold">Le titulaire (« propriétaire » de l'ADS)</legend>
         <!-- Owner name -->
         {% include "form_fields/string.html" with field=form.owner_name field_errors=form.errors.owner_name required=form.fields.owner_name.required readonly=ads_manager.is_locked bold=True %}
@@ -166,7 +166,7 @@
       </fieldset>
     </template>
     <template x-if="ads_in_use === 'true'">
-      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-1w fr-pr-1w border border-neutral-300">
+      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
         <legend class="text-2xl font-semibold">Le véhicule</legend>
         <!-- Immatriculation plate -->
         {% include "form_fields/string.html" with field=form.immatriculation_plate field_errors=form.errors.immatriculation_plate required=form.fields.immatriculation_plate.required readonly=ads_manager.is_locked bold=True %}
@@ -177,7 +177,7 @@
       </fieldset>
     </template>
     <template x-if="ads_in_use === 'true'">
-      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-1w fr-pr-1w border border-neutral-300">
+      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
         <legend class="text-2xl font-semibold">Informations conducteur</legend>
         <div class="fr-text--xs">
           Pour supprimer ce conducteur, effacez tous les champs de celui-ci et validez le formulaire.
@@ -295,13 +295,13 @@
       </fieldset>
     </template>
     <template x-if="ads_in_use === 'true'">
-      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-1w fr-pr-1w border border-neutral-300">
+      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
         <legend class="text-2xl font-semibold">Documents liés à l'ADS</legend>
         <p>Vous avez la possibilité d'envoyer un ou plusieurs documents avec l'arrêté portant l'attribution de l'ADS.</p>
         {% include "./formset_files.html" with formset=ads_legal_files_formset disabled=ads_manager.is_locked %}
       </fieldset>
     </template>
-    <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-1w fr-pr-1w border border-neutral-300">
+    <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
       <legend class="text-2xl font-semibold">Informations complémentaires</legend>
       {% include "form_fields/textarea.html" with field=form.notes field_errors=form.errors.notes required=form.fields.notes.required %}
     </fieldset>
