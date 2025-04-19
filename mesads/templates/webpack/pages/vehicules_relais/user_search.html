@@ -67,7 +67,7 @@
   </form>
   <hr class="fr-mt-3w">
   {% if should_display_search_results %}
-    <div class="fr-table fr-table--lg fr-table--no-caption">
+    <div class="fr-table fr-table--no-scroll fr-table--lg fr-table--no-caption">
       <div class="fr-table__wrapper">
         <div class="fr-table__container">
           <div class="fr-table__content">
@@ -89,7 +89,7 @@
                     <br />
                     du véhicule
                   </th>
-                  <th scope="col">Détails</th>
+                  <th scope="col">Consulter</th>
                 </tr>
               </thead>
               <tbody>
@@ -112,8 +112,9 @@
                         {{ vehicule.commune_localisation.libelle }} ({{ vehicule.commune_localisation.departement }})
                       {% endif %}
                     </td>
-                    <td>
-                      <a href="{% url 'vehicules-relais.vehicule' numero=vehicule.numero %}">Afficher les détails</a>
+                    <td class="!text-right">
+                      <a class="fr-btn fr-btn--secondary fr-icon-eye-line"
+                         href="{% url 'vehicules-relais.vehicule' numero=vehicule.numero %}">Afficher les détails</a>
                     </td>
                   </tr>
                 {% empty %}
