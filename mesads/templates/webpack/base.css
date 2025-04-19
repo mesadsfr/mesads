@@ -125,14 +125,3 @@ h1 {
   font-size: 1.3rem;
   margin-top: 1rem;
 }
-
-.mesads-fieldset {
-  border: 1px solid #ddd;
-  padding-top: 1rem;
-  padding-bottom: 2rem;
-}
-
-.mesads-fieldset legend {
-  font-weight: bold;
-  font-size: 1.5rem;
-}

@@ -86,8 +86,8 @@
       </div>
     {% endif %}
     {% csrf_token %}
-    <fieldset class="mesads-fieldset fr-mb-3w">
-      <legend>Informations générales</legend>
+    <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-1w fr-pr-1w border border-neutral-300">
+      <legend class="text-2xl font-semibold">Informations générales</legend>
       <!-- EPCI commune -->
       {% if ads_manager.content_type.name == 'EPCI' %}
         {% include "form_fields/select-autocomplete.html" with field=form.epci_commune field_errors=form.errors.epci_commune %}
@@ -151,8 +151,8 @@
       </template>
     </fieldset>
     <template x-if="ads_in_use === 'true'">
-      <fieldset class="mesads-fieldset fr-mb-3w">
-        <legend>Le titulaire (« propriétaire » de l'ADS)</legend>
+      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-1w fr-pr-1w border border-neutral-300">
+        <legend class="text-2xl font-semibold">Le titulaire (« propriétaire » de l'ADS)</legend>
         <!-- Owner name -->
         {% include "form_fields/string.html" with field=form.owner_name field_errors=form.errors.owner_name required=form.fields.owner_name.required readonly=ads_manager.is_locked %}
         <!-- Owner SIRET -->
@@ -166,8 +166,8 @@
       </fieldset>
     </template>
     <template x-if="ads_in_use === 'true'">
-      <fieldset class="mesads-fieldset fr-mb-3w">
-        <legend>Le véhicule</legend>
+      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-1w fr-pr-1w border border-neutral-300">
+        <legend class="text-2xl font-semibold">Le véhicule</legend>
         <!-- Immatriculation plate -->
         {% include "form_fields/string.html" with field=form.immatriculation_plate field_errors=form.errors.immatriculation_plate required=form.fields.immatriculation_plate.required readonly=ads_manager.is_locked %}
         <!-- Compatible PMR ? -->
@@ -177,8 +177,8 @@
       </fieldset>
     </template>
     <template x-if="ads_in_use === 'true'">
-      <fieldset class="mesads-fieldset fr-mb-3w">
-        <legend>Informations conducteur</legend>
+      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-1w fr-pr-1w border border-neutral-300">
+        <legend class="text-2xl font-semibold">Informations conducteur</legend>
         <div class="fr-text--xs">
           Pour supprimer ce conducteur, effacez tous les champs de celui-ci et validez le formulaire.
         </div>
@@ -295,14 +295,14 @@
       </fieldset>
     </template>
     <template x-if="ads_in_use === 'true'">
-      <fieldset class="mesads-fieldset fr-mb-3w">
-        <legend>Documents liés à l'ADS</legend>
+      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-1w fr-pr-1w border border-neutral-300">
+        <legend class="text-2xl font-semibold">Documents liés à l'ADS</legend>
         <p>Vous avez la possibilité d'envoyer un ou plusieurs documents avec l'arrêté portant l'attribution de l'ADS.</p>
         {% include "./formset_files.html" with formset=ads_legal_files_formset disabled=ads_manager.is_locked %}
       </fieldset>
     </template>
-    <fieldset class="mesads-fieldset fr-mb-3w">
-      <legend>Informations complémentaires</legend>
+    <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-1w fr-pr-1w border border-neutral-300">
+      <legend class="text-2xl font-semibold">Informations complémentaires</legend>
       {% include "form_fields/textarea.html" with field=form.notes field_errors=form.errors.notes required=form.fields.notes.required %}
     </fieldset>
     <!-- Submit buttons -->
