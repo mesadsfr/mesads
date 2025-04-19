@@ -19,12 +19,11 @@
   </p>
   {% if user_ads_manager_requests|length > 0 %}
     <h2>Vos administrations en gestion</h2>
-    <div class="fr-table fr-table--lg fr-table--no-scroll fr-table--no-caption"
-         id="table-administrations">
+    <div class="fr-table fr-table--lg fr-table--no-scroll fr-table--no-caption">
       <div class="fr-table__wrapper">
         <div class="fr-table__container">
           <div class="fr-table__content">
-            <table id="table-administrations">
+            <table>
               <caption>Administrations en gestion</caption>
               <thead>
                 <tr>
@@ -82,13 +81,11 @@
       Télécharger toutes les ADS de la préfecture au format excel
     </a>
   </p>
-  <div class="fr-table fr-table--lg fr-table--no-scroll fr-table--no-caption"
-       id="table-administration-{{ ads_manager_administrator.id }}">
+  <div class="fr-table fr-table--lg fr-table--no-scroll fr-table--no-caption">
     <div class="fr-table__wrapper">
       <div class="fr-table__container">
         <div class="fr-table__content">
-          <table id="table-administration-{{ ads_manager_administrator.id }}"
-                 x-data="{ displayExtra: false }">
+          <table x-data="{ displayExtra: false }">
             <caption>{{ ads_manager_administrator.prefecture.display_text|capfirst }}</caption>
             <thead>
               <tr>
