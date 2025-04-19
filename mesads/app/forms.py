@@ -160,6 +160,21 @@ class ADSForm(forms.ModelForm):
         required=True,
     )
 
+    certify = forms.BooleanField(
+        label="Je certifie que les informations enregistrées sont à jour et ne comportent pas d'erreur de saisie.",
+        required=True,
+        error_messages={
+            "required": "Vous devez cocher cette case pour valider le formulaire."
+        },
+    )
+
+    def clean_certify(self):
+        if not self.cleaned_data.get("certify"):
+            raise forms.ValidationError(
+                "Vous devez certifier que les informations sont correctes."
+            )
+        return True
+
 
 class AutoDeleteADSUserFormSet(BaseInlineFormSet):
     """By default, to remove an entry from a formset, you need to render a

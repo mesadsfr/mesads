@@ -629,6 +629,49 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, SoftDeleteMixin, models
     )
 
 
+@reversion.register
+class ADSUpdateLog(SoftDeleteMixin, models.Model):
+    class Meta:
+        verbose_name = "Mise à jour ADS"
+        verbose_name_plural = "Mises à jour ADS"
+
+    def __str__(self):
+        return f"Mise à jour de l'ADS {self.ads.number}"
+
+    ads = models.ForeignKey(
+        ADS, on_delete=models.CASCADE, related_name="ads_update_logs"
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.RESTRICT,
+        null=False,
+        blank=False,
+        verbose_name="Utilisateur ayant effectué la mise à jour",
+    )
+
+    serialized = models.TextField(
+        blank=True,
+        null=False,
+        verbose_name="Données relatives à l'ADS lors de la mise à jour",
+    )
+
+    update_at = models.DateTimeField(auto_now_add=True)
+
+    # True if all the important fields are set
+    is_complete = models.BooleanField(
+        default=False,
+        verbose_name="Complétude des informations",
+    )
+
+    # For debug purpose, contains a list of all the fields that should be set to consider the ADS complete.
+    debug_missing_fields = models.TextField(
+        blank=True,
+        null=False,
+        verbose_name="Message d'erreur de complétude",
+    )
+
+
 def get_legal_filename(instance, filename):
     now = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
     filename = os.path.basename(filename)

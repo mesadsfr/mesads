@@ -305,6 +305,11 @@
       <legend class="text-2xl font-semibold">Informations complémentaires</legend>
       {% include "form_fields/textarea.html" with field=form.notes field_errors=form.errors.notes required=form.fields.notes.required %}
     </fieldset>
+    {% comment %} Certify information {% endcomment %}
+    <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
+      <legend class="text-2xl font-semibold">Vérification des informations</legend>
+      {% include "form_fields/bool.html" with field=form.certify field_errors=form.errors.certify required=form.fields.certify.required %}
+    </fieldset>
     <!-- Submit buttons -->
     <div class="fr-input-group">
       {% if ads %}

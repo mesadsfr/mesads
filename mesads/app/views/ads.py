@@ -1,10 +1,12 @@
 from datetime import date, datetime, timedelta
+import itertools
 
 from docxtpl import DocxTemplate
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.staticfiles import finders
+from django.core import serializers
 from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
 from django.http import HttpResponse, HttpResponseRedirect
@@ -36,6 +38,7 @@ from ..models import (
     ADSLegalFile,
     ADSManager,
     ADSUser,
+    ADSUpdateLog,
     ADS_UNIQUE_ERROR_MESSAGE,
 )
 from ..reversion_diff import ModelHistory
@@ -155,6 +158,8 @@ class ADSView(RevisionMixin, UpdateView):
 
         self.object.run_checks()
 
+        self.create_ads_update_log()
+
         for user in self.object.ads_manager.administrator.users.all():
             notification = getattr(user, "notification", None)
             if notification and notification.ads_created_or_updated:
@@ -170,6 +175,48 @@ class ADSView(RevisionMixin, UpdateView):
 
         messages.success(self.request, "Les modifications ont été enregistrées.")
         return HttpResponseRedirect(self.get_success_url())
+
+    def create_ads_update_log(self):
+        serialized = serializers.serialize(
+            "json",
+            itertools.chain(
+                [self.object],
+                self.object.adsuser_set.all(),
+                self.object.adslegalfile_set.all(),
+            ),
+        )
+
+        debug_missing_fields = []
+
+        if not self.object.ads_creation_date:
+            debug_missing_fields.append("Date de création")
+        if self.object.ads_in_use:
+            if not self.object.owner_name:
+                debug_missing_fields.append("Nom du titulaire")
+            if not self.object.owner_siret:
+                debug_missing_fields.append("SIRET du titulaire")
+            if not self.object.immatriculation_plate:
+                debug_missing_fields.append("Immatriculation")
+            if self.object.vehicle_compatible_pmr is None:
+                debug_missing_fields.append("Véhicule compatible PMR")
+            if self.object.eco_vehicle is None:
+                debug_missing_fields.append("Véhicule électrique ou hybride")
+            ads_users = self.object.adsuser_set.all()
+            if len(ads_users) == 0:
+                debug_missing_fields.append("Aucun conducteur renseigné")
+            else:
+                for idx, ads_user in enumerate(ads_users):
+                    if not ads_user.license_number:
+                        debug_missing_fields.append(
+                            f"Conducteur {idx + 1}: licence professionnelle"
+                        )
+        ADSUpdateLog.objects.create(
+            ads=self.object,
+            user=self.request.user,
+            serialized=serialized,
+            is_complete=len(debug_missing_fields) == 0,
+            debug_missing_fields=debug_missing_fields,
+        )
 
     def send_notification(self, user, ads, is_new_ads):
         email_subject = render_to_string(

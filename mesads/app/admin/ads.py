@@ -7,11 +7,7 @@ from django.utils.safestring import mark_safe
 
 from reversion_compare.admin import CompareVersionAdmin
 
-from ..models import (
-    ADS,
-    ADSLegalFile,
-    ADSUser,
-)
+from ..models import ADS, ADSLegalFile, ADSUser, ADSUpdateLog
 
 
 class ADSPeriodListFilter(admin.SimpleListFilter):
@@ -78,6 +74,25 @@ class ADSUserInline(admin.TabularInline):
 class ADSLegalFileInline(admin.StackedInline):
     model = ADSLegalFile
     extra = 0
+
+
+class ADSUpdateLogInline(admin.TabularInline):
+    model = ADSUpdateLog
+    extra = 0
+    fields = ("update_at", "user", "is_complete")
+    ordering = ("-id",)
+
+    can_delete = False
+
+    def get_readonly_fields(self, request, obj=None):
+        """Make all fields readonly"""
+        return [f.name for f in self.model._meta.fields]
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class ADSDeletedFilter(admin.SimpleListFilter):
@@ -200,10 +215,7 @@ class ADSAdmin(CompareVersionAdmin):
         "epci_commune",
     )
 
-    inlines = [
-        ADSUserInline,
-        ADSLegalFileInline,
-    ]
+    inlines = [ADSUserInline, ADSLegalFileInline, ADSUpdateLogInline]
 
     list_filter = [
         ADSPeriodListFilter,
@@ -221,3 +233,18 @@ class ADSAdmin(CompareVersionAdmin):
         req = req.prefetch_related("ads_manager__administrator__prefecture")
         req = req.prefetch_related("adsuser_set")
         return req
+
+
+@admin.register(ADSUpdateLog)
+class ADSUpadteLogAdmin(admin.ModelAdmin):
+    autocomplete_fields = ("user", "ads")
+    list_display = ("update_at", "ads", "is_complete", "user")
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
