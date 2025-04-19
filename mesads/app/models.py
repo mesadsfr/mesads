@@ -497,6 +497,13 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, SoftDeleteMixin, models
             )
         return super().delete(*args, **kwargs)
 
+    def ads_type(self):
+        if self.ads_creation_date:
+            if self.ads_creation_date >= date(2014, 10, 1):
+                return "Nouvelle ADS"
+            return "Ancienne ADS"
+        return ""
+
     number = models.CharField(
         max_length=255,
         null=False,
