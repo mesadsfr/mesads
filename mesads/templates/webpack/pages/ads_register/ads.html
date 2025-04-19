@@ -93,11 +93,11 @@
         {% include "form_fields/select-autocomplete.html" with field=form.epci_commune field_errors=form.errors.epci_commune %}
       {% endif %}
       <!-- ADS number -->
-      {% include "form_fields/string.html" with field=form.number field_errors=form.errors.number required=form.fields.number.required readonly=ads_manager.is_locked %}
+      {% include "form_fields/string.html" with field=form.number field_errors=form.errors.number required=form.fields.number.required readonly=ads_manager.is_locked bold=True %}
       <!-- ADS creation date -->
-      {% include "form_fields/date.html" with x_model="ads_creation_date" field=form.ads_creation_date field_errors=form.errors.ads_creation_date required=form.fields.ads_creation_date.required readonly=ads_manager.is_locked %}
+      {% include "form_fields/date.html" with x_model="ads_creation_date" field=form.ads_creation_date field_errors=form.errors.ads_creation_date required=form.fields.ads_creation_date.required readonly=ads_manager.is_locked bold=True %}
       <!-- ADS in use? -->
-      {% include "form_fields/select.html" with x_model="ads_in_use" empty_option=True field=form.ads_in_use field_errors=form.errors.ads_in_use required=form.fields.ads_in_use.required readonly=ads_manager.is_locked %}
+      {% include "form_fields/select.html" with x_model="ads_in_use" empty_option=True field=form.ads_in_use field_errors=form.errors.ads_in_use required=form.fields.ads_in_use.required readonly=ads_manager.is_locked bold=True %}
       <template x-if="ads_in_use === 'false'">
         <div class="fr-alert fr-alert--error fr-mb-3w">
           L'ADS est actuellement vacante.
@@ -154,9 +154,9 @@
       <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-1w fr-pr-1w border border-neutral-300">
         <legend class="text-2xl font-semibold">Le titulaire (« propriétaire » de l'ADS)</legend>
         <!-- Owner name -->
-        {% include "form_fields/string.html" with field=form.owner_name field_errors=form.errors.owner_name required=form.fields.owner_name.required readonly=ads_manager.is_locked %}
+        {% include "form_fields/string.html" with field=form.owner_name field_errors=form.errors.owner_name required=form.fields.owner_name.required readonly=ads_manager.is_locked bold=True %}
         <!-- Owner SIRET -->
-        {% include "form_fields/string.html" with field=form.owner_siret field_errors=form.errors.owner_siret required=form.fields.owner_siret.required readonly=ads_manager.is_locked %}
+        {% include "form_fields/string.html" with field=form.owner_siret field_errors=form.errors.owner_siret required=form.fields.owner_siret.required readonly=ads_manager.is_locked bold=True %}
         <!-- Owner phone -->
         {% include "form_fields/string.html" with field=form.owner_phone field_errors=form.errors.owner_phone required=form.fields.owner_phone.required readonly=ads_manager.is_locked %}
         <!-- Owner mobile -->
@@ -169,11 +169,11 @@
       <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-1w fr-pr-1w border border-neutral-300">
         <legend class="text-2xl font-semibold">Le véhicule</legend>
         <!-- Immatriculation plate -->
-        {% include "form_fields/string.html" with field=form.immatriculation_plate field_errors=form.errors.immatriculation_plate required=form.fields.immatriculation_plate.required readonly=ads_manager.is_locked %}
+        {% include "form_fields/string.html" with field=form.immatriculation_plate field_errors=form.errors.immatriculation_plate required=form.fields.immatriculation_plate.required readonly=ads_manager.is_locked bold=True %}
         <!-- Compatible PMR ? -->
-        {% include "form_fields/select.html" with field=form.vehicle_compatible_pmr field_errors=form.errors.vehicle_compatible_pmr required=form.fields.vehicle_compatible_pmr.required readonly=ads_manager.is_locked %}
+        {% include "form_fields/select.html" with field=form.vehicle_compatible_pmr field_errors=form.errors.vehicle_compatible_pmr required=form.fields.vehicle_compatible_pmr.required readonly=ads_manager.is_locked bold=True %}
         <!-- Eco vehicle ? -->
-        {% include "form_fields/select.html" with field=form.eco_vehicle field_errors=form.errors.eco_vehicle required=form.fields.eco_vehicle.required readonly=ads_manager.is_locked %}
+        {% include "form_fields/select.html" with field=form.eco_vehicle field_errors=form.errors.eco_vehicle required=form.fields.eco_vehicle.required readonly=ads_manager.is_locked bold=True %}
       </fieldset>
     </template>
     <template x-if="ads_in_use === 'true'">
@@ -239,7 +239,7 @@
                       {% include "form_fields/string.html" with field=ads_user_form.siret field_errors=ads_user_form.errors.siret required=ads_user_form.fields.siret.required readonly=ads_manager.is_locked %}
                     </template>
                     <!-- Professional licence number -->
-                    {% include "form_fields/string.html" with field=ads_user_form.license_number field_errors=ads_user_form.errors.license_number required=ads_user_form.fields.license_number.required readonly=ads_manager.is_locked %}
+                    {% include "form_fields/string.html" with field=ads_user_form.license_number field_errors=ads_user_form.errors.license_number required=ads_user_form.fields.license_number.required readonly=ads_manager.is_locked bold=True %}
                   </div>
                 </fieldset>
               </div>
