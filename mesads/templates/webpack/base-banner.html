@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-  <div id="banner-container">
-    <div id="banner">
-      <div id="banner-text">MesADS, le registre des ADS et des véhicules relais</div>
+  <div class="relative">
+    <div class="relative h-[33vw] bg-[url('/static/images/banner-notext.svg')] bg-no-repeat bg-cover">
+      <div class="text-white font-bold text-center leading-[1.2] text-[2.5vw] absolute top-[35%] left-[55%] translate-x-[-50%] translate-y-[-50%]">
+        MesADS, le registre des ADS et des véhicules relais
+      </div>
     </div>
     {% comment %}Contains the <main> tag{% endcomment %}
     {{ block.super }}
