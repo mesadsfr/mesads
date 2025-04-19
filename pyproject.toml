@@ -17,6 +17,7 @@ pypdf2 = "^3.0.1"
 django-debug-toolbar = "^3.2.2"
 coverage = {version = "^6.4.1", extras = ["toml"]}
 requests-mock = "^1.9.3"
+djlint = "^1.36.4"
 
 
 [tool.coverage.run]

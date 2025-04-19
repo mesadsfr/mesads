@@ -11,9 +11,6 @@
     "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": true
   },
-  "[django-html]": {
-    "editor.formatOnSave": false
-  },
   "[typescript]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -23,5 +20,9 @@
   "files.associations": {
     "*.js": "javascript",
     "*.ts": "typescript"
-  }
+  },
+  "[django-html]": {
+    "editor.defaultFormatter": "monosans.djlint",
+    "editor.formatOnSave": true
+ }
 }
