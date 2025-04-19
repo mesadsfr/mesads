@@ -1,74 +1,77 @@
 {% extends "base.html" %}
-
 {% block body %}
-<h1>J'ai un problème</h1>
-
-<div class="fr-notice fr-notice--info">
-  <div class="fr-container">
-    <div class="fr-notice__body">
-      <p class="fr-notice__title">
-Mes ADS est développé par une équipe enthousiaste, mais nous ne sommes pas à l'abri d'un bug ou d'un problème technique. Si votre problème n'est pas listé ci-dessous, n'hésitez pas à nous contacter via le module de chat en bas à droite de votre écran, ou par email à l'adresse <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL}}</a>.
-      </p>
+  <h1>J'ai un problème</h1>
+  <div class="fr-notice fr-notice--info">
+    <div class="fr-container">
+      <div class="fr-notice__body">
+        <p class="fr-notice__title">
+          Mes ADS est développé par une équipe enthousiaste, mais nous ne sommes pas à l'abri d'un bug ou d'un problème technique. Si votre problème n'est pas listé ci-dessous, n'hésitez pas à nous contacter via le module de chat en bas à droite de votre écran, ou par email à l'adresse <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
+        </p>
+      </div>
     </div>
   </div>
-</div>
-
-<h2 class="fr-mt-3w">Problèmes courants</h2>
-
-<div class="fr-accordions-group">
-  <section class="fr-accordion">
-    <h3 class="fr-accordion__title">
-      <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-1">Je ne reçois pas l'e-mail de validation</button>
-    </h3>
-    <div class="fr-collapse" id="accordion-1">
-      <h4 class="fr-h4">Il s'agit probablement de votre anti-spam</h4>
-      <p>
-        Si vous ne recevez pas d'e-mail de validation, vous vous trouvez peut-être dans la situation suivante :
-      </p>
-      <ul>
-        <li>L'e-mail est arrivé dans vos courriers indésirables. Consultez vos spams.</li>
-        <li>Votre adresse e-mail a éventuellement fait l'objet d'une erreur de saisie. Vous pouvez créer à nouveau un compte, avec l'adresse e-mail correcte.</li>
-        <li>Vous utilisez un outil de gestion des spams (type MailInBlack) qui empêche la réception des e-mails. Il faut donc autoriser la réception des e-mails depuis votre hébergeur d'adresse e-mail.</li>
-      </ul>
-      <p>
-        Si vous avez toujours des difficultés, n'hésitez pas à nous contacter par e-mail à l'adresse suivante : <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a> en précisant votre adresse e-mail.
-      </p>
-    </div>
-  </section>
-
-  <section class="fr-accordion">
-    <h3 class="fr-accordion__title">
-      <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-2">Je veux changer l'adresse e-mail de mon compte</button>
-    </h3>
-    <div class="fr-collapse" id="accordion-2">
-      <h4 class="fr-h4">Contactez nous !</h4>
-      <p>
-        Si vous souhaitez changer votre e-mail de connexion, contactez-nous par e-mail à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">equipe@mesads.beta.gouv.fr</a> en nous indiquant votre ancienne adresse, ainsi que la nouvelle.
-
-        Notre équipe procèdera à la modification de votre compte.
-      </p>
-    </div>
-  </section>
-
-  <section class="fr-accordion">
-    <h3 class="fr-accordion__title">
-      <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-3">Un problème technique, une remarque, une suggestion ou une autre question ?</button>
-    </h3>
-    <div class="fr-collapse" id="accordion-3">
-      <h4 class="fr-h4">Contactez nous !</h4>
-
-      <p>
-        Si vous rencontrez un problème technique, que ce soit lors de votre connexion, ou lors de la saisie/consultation de vos informations sur l'outil Mes ADS, nous vous invitons à :
-      </p>
-      <ul>
-        <li>Utiliser notre module de tchat dédié (bouton de contact en bas à droite de votre page web)</li>
-        <li>Ou nous contacter par e-mail à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</li>
-      </ul>
-
-      <p>
-        N'hésitez surtout pas à rentrer en contact avec nous si vous avez des suggestions d'améliorations : vous ne trouvez un contenu peu clair ? Vous aimeriez une nouvelle fonctionnalité ? Nous expliquons mal comment utiliser telle ou telle page ? Le rendu est illisible sur votre navigateur ? Contactez-nous !
-      </p>
-    </div>
-  </section>
-</div>
-{% endblock %}
+  <h2 class="fr-mt-3w">Problèmes courants</h2>
+  <div class="fr-accordions-group">
+    <section class="fr-accordion">
+      <h3 class="fr-accordion__title">
+        <button class="fr-accordion__btn"
+                aria-expanded="false"
+                aria-controls="accordion-1">Je ne reçois pas l'e-mail de validation</button>
+      </h3>
+      <div class="fr-collapse" id="accordion-1">
+        <h4 class="fr-h4">Il s'agit probablement de votre anti-spam</h4>
+        <p>Si vous ne recevez pas d'e-mail de validation, vous vous trouvez peut-être dans la situation suivante :</p>
+        <ul>
+          <li>L'e-mail est arrivé dans vos courriers indésirables. Consultez vos spams.</li>
+          <li>
+            Votre adresse e-mail a éventuellement fait l'objet d'une erreur de saisie. Vous pouvez créer à nouveau un compte, avec l'adresse e-mail correcte.
+          </li>
+          <li>
+            Vous utilisez un outil de gestion des spams (type MailInBlack) qui empêche la réception des e-mails. Il faut donc autoriser la réception des e-mails depuis votre hébergeur d'adresse e-mail.
+          </li>
+        </ul>
+        <p>
+          Si vous avez toujours des difficultés, n'hésitez pas à nous contacter par e-mail à l'adresse suivante : <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a> en précisant votre adresse e-mail.
+        </p>
+      </div>
+    </section>
+    <section class="fr-accordion">
+      <h3 class="fr-accordion__title">
+        <button class="fr-accordion__btn"
+                aria-expanded="false"
+                aria-controls="accordion-2">Je veux changer l'adresse e-mail de mon compte</button>
+      </h3>
+      <div class="fr-collapse" id="accordion-2">
+        <h4 class="fr-h4">Contactez nous !</h4>
+        <p>
+          Si vous souhaitez changer votre e-mail de connexion, contactez-nous par e-mail à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">equipe@mesads.beta.gouv.fr</a> en nous indiquant votre ancienne adresse, ainsi que la nouvelle.
+          Notre équipe procèdera à la modification de votre compte.
+        </p>
+      </div>
+    </section>
+    <section class="fr-accordion">
+      <h3 class="fr-accordion__title">
+        <button class="fr-accordion__btn"
+                aria-expanded="false"
+                aria-controls="accordion-3">
+          Un problème technique, une remarque, une suggestion ou une autre question ?
+        </button>
+      </h3>
+      <div class="fr-collapse" id="accordion-3">
+        <h4 class="fr-h4">Contactez nous !</h4>
+        <p>
+          Si vous rencontrez un problème technique, que ce soit lors de votre connexion, ou lors de la saisie/consultation de vos informations sur l'outil Mes ADS, nous vous invitons à :
+        </p>
+        <ul>
+          <li>Utiliser notre module de tchat dédié (bouton de contact en bas à droite de votre page web)</li>
+          <li>
+            Ou nous contacter par e-mail à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+          </li>
+        </ul>
+        <p>
+          N'hésitez surtout pas à rentrer en contact avec nous si vous avez des suggestions d'améliorations : vous ne trouvez un contenu peu clair ? Vous aimeriez une nouvelle fonctionnalité ? Nous expliquons mal comment utiliser telle ou telle page ? Le rendu est illisible sur votre navigateur ? Contactez-nous !
+        </p>
+      </div>
+    </section>
+  </div>
+{% endblock body %}
