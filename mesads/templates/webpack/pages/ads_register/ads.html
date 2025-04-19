@@ -316,9 +316,8 @@
           </li>
           {% if not ads_manager.is_locked %}
             <li>
-              <a class="fr-link fr-icon-delete-line fr-link--icon-left"
-                 href="{% url 'app.ads.delete' manager_id=ads_manager.id ads_id=ads.id %}"
-                 style="color: var(--text-default-error)">Supprimer cette ADS</a>
+              <a class="fr-link fr-icon-delete-line fr-link--icon-left !text-[var(--text-default-error)]"
+                 href="{% url 'app.ads.delete' manager_id=ads_manager.id ads_id=ads.id %}">Supprimer cette ADS</a>
             </li>
           {% endif %}
         </ul>
