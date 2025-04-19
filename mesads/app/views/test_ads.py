@@ -649,6 +649,7 @@ class TestADSCreateView(ClientTestCase):
     def test_create_with_all_fields(self):
         """Verify that the log has the "complete" flag set when all the
         important fields are provided."""
+        # Certify not checked
         resp = self.ads_manager_city35_client.post(
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
             {
@@ -680,6 +681,7 @@ class TestADSCreateView(ClientTestCase):
             resp.context["form"].errors["certify"][0],
         )
 
+        # Ok, certify checked
         resp = self.ads_manager_city35_client.post(
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
             {

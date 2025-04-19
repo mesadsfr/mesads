@@ -168,13 +168,6 @@ class ADSForm(forms.ModelForm):
         },
     )
 
-    def clean_certify(self):
-        if not self.cleaned_data.get("certify"):
-            raise forms.ValidationError(
-                "Vous devez certifier que les informations sont correctes."
-            )
-        return True
-
 
 class AutoDeleteADSUserFormSet(BaseInlineFormSet):
     """By default, to remove an entry from a formset, you need to render a
