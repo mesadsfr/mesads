@@ -1,14 +1,10 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div id="banner-container">
-  <div id="banner">
-    <div id="banner-text">
-        MesADS, le registre des ADS et des véhicules relais
+  <div id="banner-container">
+    <div id="banner">
+      <div id="banner-text">MesADS, le registre des ADS et des véhicules relais</div>
     </div>
+    {% comment %}Contains the <main> tag{% endcomment %}
+    {{ block.super }}
   </div>
-
-  {% comment %}Contains the <main> tag{% endcomment %}
-  {{ block.super }}
-</div>
-{% endblock %}
+{% endblock body %}
