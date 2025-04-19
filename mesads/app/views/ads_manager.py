@@ -1,7 +1,21 @@
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.postgres.lookups import Unaccent
-from django.db.models import Count, Q, Value, Case, When, CharField, Subquery, OuterRef
-from django.db.models.functions import Replace
+from django.db.models import (
+    Count,
+    Q,
+    Value,
+    Case,
+    CharField,
+    Subquery,
+    OuterRef,
+    ExpressionWrapper,
+    DateTimeField,
+    When,
+    BooleanField,
+)
+from django.db.models.functions import Replace, Now
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import ProcessFormView
 from django.views.generic.list import ListView
@@ -81,6 +95,16 @@ class ADSManagerView(ListView, ProcessFormView):
             latest_update_log=Subquery(latest_log_qs.values("update_at")[:1]),
             latest_update_log_is_complete=Subquery(
                 latest_log_qs.values("is_complete")[:1]
+            ),
+            latest_update_log_is_outdated=Case(
+                When(
+                    latest_update_log__lt=ExpressionWrapper(
+                        Now() - timedelta(days=365), output_field=DateTimeField()
+                    ),
+                    then=Value(True),
+                ),
+                default=Value(False),
+                output_field=BooleanField(),
             ),
         )
 

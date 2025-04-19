@@ -138,7 +138,13 @@
                   <td>
                     <div class="fr-text--xs !text-[var(--text-default-error)]">
                       {% if ads.latest_update_log %}
-                        {% if not ads.latest_update_log_is_complete %}Données incomplètes{% endif %}
+                        {% if ads.latest_update_log_is_outdated %}
+                          Vérification des informations nécessaire
+                        {% elif not ads.latest_update_log_is_complete %}
+                          Données incomplètes
+                        {% endif %}
+                      {% else %}
+                        Vérification des informations nécessaire
                       {% endif %}
                     </div>
                     {{ ads.latest_update_log|date:"d/m/Y" }}
