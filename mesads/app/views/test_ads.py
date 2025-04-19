@@ -51,6 +51,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "certify": "true",
                 "ads_in_use": "true",
                 "owner_name": "Jean-Jacques Goldman",
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -85,6 +86,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "certify": "true",
                 "ads_in_use": "true",
                 "owner_name": "Jean-Jacques Goldman",
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -106,6 +108,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "certify": "true",
                 "ads_in_use": "true",
                 "owner_name": "Jean-Jacques Goldman",
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -125,6 +128,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "certify": "true",
                 "ads_in_use": "true",
                 "owner_name": "Jean-Jacques Goldman",
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -154,6 +158,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "certify": "true",
                 "ads_in_use": "false",
                 "owner_name": "Jean-Jacques Goldman",
             },
@@ -177,6 +182,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": other_ads.number,
+                "certify": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
                 "adsuser_set-MIN_NUM_FORMS": 0,
@@ -199,6 +205,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "certify": "true",
                 "ads_in_use": "true",
                 "owner_name": "  Jean Jaques   ",
                 "owner_email": "-",
@@ -222,6 +229,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.number,
+                "certify": "true",
                 "ads_in_use": "true",
                 "ads_creation_date": "2015-10-01",
                 "attribution_date": "2010-11-04",
@@ -252,6 +260,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "certify": "true",
                 "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 1,
@@ -290,6 +299,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "certify": "true",
                 "ads_in_use": "true",
                 "owner_name": "New name",
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -331,6 +341,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "certify": "true",
                 "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 1,
@@ -357,6 +368,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "certify": "true",
                 "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 1,
@@ -388,6 +400,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "certify": "true",
                 "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
@@ -416,6 +429,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "certify": "true",
                 "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 1,
@@ -449,6 +463,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{epci_ads_manager.id}/ads/{epci_ads.id}",
             {
                 "number": epci_ads.id,
+                "certify": "true",
                 "ads_in_use": "true",
                 "epci_commune": invalid_commune.id,
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -472,6 +487,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{epci_ads_manager.id}/ads/{epci_ads.id}",
             {
                 "number": epci_ads.id,
+                "certify": "true",
                 "epci_commune": valid_commune.id,
                 "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
@@ -494,6 +510,7 @@ class TestADSView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
             {
                 "number": self.ads.id,
+                "certify": "true",
                 "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 1,
@@ -608,6 +625,7 @@ class TestADSCreateView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
             {
                 "number": "abcdef",
+                "certify": "true",
                 "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
@@ -635,7 +653,9 @@ class TestADSCreateView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
             {
                 "number": "123",
+                "certify": "true",
                 "ads_in_use": "true",
+                "certify": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
                 "adsuser_set-MIN_NUM_FORMS": 0,
@@ -657,6 +677,7 @@ class TestADSCreateView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
             {
                 "number": "abcdef",
+                "certify": "true",
                 "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
@@ -688,6 +709,7 @@ class TestADSCreateView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
             {
                 "number": "abcdef",
+                "certify": "true",
                 "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
@@ -715,6 +737,7 @@ class TestADSCreateView(ClientTestCase):
                 f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
                 {
                     "number": "abcdef",
+                    "certify": "true",
                     "ads_in_use": "true",
                     "ads_creation_date": "2015-10-01",
                     "adsuser_set-TOTAL_FORMS": 10,
@@ -749,6 +772,7 @@ class TestADSCreateView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
             {
                 "number": "abcdef",
+                "certify": "true",
                 "ads_in_use": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
