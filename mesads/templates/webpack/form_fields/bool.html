@@ -11,4 +11,5 @@
         {% if required %}*{% endif %}
         {% if field.help_text %}<span class="fr-hint-text">{{ field.help_text }}</span>{% endif %}
     </label>
+    {% for error in field_errors %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
 </div>
