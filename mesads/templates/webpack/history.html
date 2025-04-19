@@ -1,30 +1,30 @@
 {% load meta %}
 {% load selectattr %}
-
 <h1>Historique des changements</h1>
-
 {% for revision, objects in history.get_revisions %}
   {% for cls, objects_ids in objects.items %}
     {% for object_id, diff in objects_ids.items %}
-    <div class="fr-table fr-table--lg" id="table-history">
-      <div class="fr-table__wrapper">
-        <div class="fr-table__container">
-          <div class="fr-table__content">
-            <table id="table-history">
-              <caption>Changement du {{ revision.date_created|date:"d/m/Y" }} par {% if revision.user %}{{ revision.user.email }}{% else %}un utilisateur inconnu{% endif %}</caption>
-              <thead>
-                {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
-                <th class="fr-text--lg" style="text-align:center; background-color:#c9191e; color:#fff" colspan="2">
-                  {{ cls|meta:"verbose_name" }} (supprimé)
-                </th>
-                {% else %}
-                <th class="fr-text--lg" style="text-align:center; background-color:#1b1b35; color:#fff" colspan="2">
-                  {{ cls|meta:"verbose_name" }}
-                </th>
-                {% endif %}
-              </thead>
-              <tbody>
-                {% comment %}
+      <div class="fr-table fr-table--lg" id="table-history">
+        <div class="fr-table__wrapper">
+          <div class="fr-table__container">
+            <div class="fr-table__content">
+              <table id="table-history">
+                <caption>Changement du {{ revision.date_created|date:"d/m/Y" }} par
+                  {% if revision.user %}
+                    {{ revision.user.email }}
+                  {% else %}
+                    un utilisateur inconnu
+                  {% endif %}
+                </caption>
+                <thead>
+                  {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
+                    <th class="fr-text--lg !text-center !bg-[#1b1b35] text-white" colspan="2">{{ cls|meta:"verbose_name" }} (supprimé)</th>
+                  {% else %}
+                    <th class="fr-text--lg !text-center !bg-[#1b1b35] text-white" colspan="2">{{ cls|meta:"verbose_name" }}</th>
+                  {% endif %}
+                </thead>
+                <tbody>
+                  {% comment %}
                   There are two reasons why diff.is_new_object is true:
                   1/ the object is new
                   2/ the object has been created before the history feature was implemented
@@ -33,47 +33,55 @@
                   didn't exist and 2/ we didn't save it) so instead of
                   displaying "(vide) -> <new value>", we just display the new
                   value.
-                {% endcomment %}
-                {% if diff.is_new_object %}
+                  {% endcomment %}
+                  {% if diff.is_new_object %}
                     {% for field, value in diff.new_fields.items %}
-                    <tr>
-                      <th>{{ field.verbose_name }}</th>
-                      <td>{{ value }}</td>
-                    </tr>
+                      <tr>
+                        <th>{{ field.verbose_name }}</th>
+                        <td>{{ value }}</td>
+                      </tr>
                     {% endfor %}
-                {% else %}
+                  {% else %}
                     {% for field, values in diff.changed_fields.items %}
-                    <tr>
+                      <tr>
                         <th>{{ field.verbose_name }}</th>
                         {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
                           {% comment %}We don't need to line-through the deletion date{% endcomment %}
                           {% if field.name == "deleted_at" %}
                             <td>{{ values.1 }}</td>
                           {% else %}
-                              <td style="text-decoration: line-through;">
+                            <td class="line-through">
                               {{ values.0 }}
-                              {% if values.0 and values.1 %}&rarr;{% endif %}
+                              {% if values.0 and values.1 %}→{% endif %}
                               {{ values.1 }}
-                              </td>
+                            </td>
                           {% endif %}
                         {% else %}
                           <td>
-                            {% if values.0 %}{{ values.0 }}{% else %}<small>(vide)</small>{% endif %}
-                            &rarr;
-                            {% if values.1 %}{{ values.1 }}{% else %}<small>(vide)</small>{% endif %}
+                            {% if values.0 %}
+                              {{ values.0 }}
+                            {% else %}
+                              <small>(vide)</small>
+                            {% endif %}
+                            →
+                            {% if values.1 %}
+                              {{ values.1 }}
+                            {% else %}
+                              <small>(vide)</small>
+                            {% endif %}
                           </td>
                         {% endif %}
-                    </tr>
+                      </tr>
                     {% endfor %}
-                {% endif %}
-              </tbody>
-            </table >
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     {% endfor %}
   {% endfor %}
 {% empty %}
-{% include empty_template %}
+  {% include empty_template %}
 {% endfor %}

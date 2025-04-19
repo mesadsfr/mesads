@@ -1,39 +1,39 @@
 {% if pages %}
-<nav role="navigation" class="fr-pagination fr-mt-2w" aria-label="Pagination">
-  <ul class="fr-pagination__list">
-    {% for page in pages %}
-      <li>
-      {% if page.is_first %}
-      <a class="fr-pagination__link fr-pagination__link--first" aria-disabled="true" role="link" href="?page={{ page.number }}&amp;{{ extra_qs }}">
-        Première page
-      </a>
-      {% elif page.is_prev %}
-      <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" aria-disabled="true" role="link" href="?page={{ page.number }}&amp;{{ extra_qs }}">
-        Page précédente
-      </a>
-      {% elif page.is_current %}
-      <a class="fr-pagination__link" aria-current="page" title="Page {{ page.number }}">
-        {{ page.number }}
-      </a>
-      {% elif page.is_ellipsis %}
-      <a class="fr-pagination__link fr-displayed-lg">
-        …
-      </a>
-      {% elif page.is_next %}
-      <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="?page={{ page.number }}&amp;{{ extra_qs }}">
-          Page suivante
-      </a>
-      {% elif page.is_last %}
-      <a class="fr-pagination__link fr-pagination__link--last" href="?page={{ page.number }}&amp;{{ extra_qs }}">
-          Dernière page
-      </a>
-      {% else %}
-      <a class="fr-pagination__link" href="?page={{ page.number }}&amp;{{ extra_qs }}" title="Page {{ page.number }}">
-        {{ page.number }}
-      </a>
-      {% endif %}
-      </li>
-    {% endfor %}
-  </ul>
-</nav>
+  <nav role="navigation"
+       class="fr-pagination fr-mt-2w"
+       aria-label="Pagination">
+    <ul class="fr-pagination__list">
+      {% for page in pages %}
+        <li>
+          {% if page.is_first %}
+            <a class="fr-pagination__link fr-pagination__link--first"
+               aria-disabled="true"
+               role="link"
+               href="?page={{ page.number }}&amp;{{ extra_qs }}">Première page</a>
+          {% elif page.is_prev %}
+            <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label"
+               aria-disabled="true"
+               role="link"
+               href="?page={{ page.number }}&amp;{{ extra_qs }}">Page précédente</a>
+          {% elif page.is_current %}
+            <a class="fr-pagination__link"
+               aria-current="page"
+               title="Page {{ page.number }}">{{ page.number }}</a>
+          {% elif page.is_ellipsis %}
+            <a class="fr-pagination__link fr-displayed-lg">…</a>
+          {% elif page.is_next %}
+            <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label"
+               href="?page={{ page.number }}&amp;{{ extra_qs }}">Page suivante</a>
+          {% elif page.is_last %}
+            <a class="fr-pagination__link fr-pagination__link--last"
+               href="?page={{ page.number }}&amp;{{ extra_qs }}">Dernière page</a>
+          {% else %}
+            <a class="fr-pagination__link"
+               href="?page={{ page.number }}&amp;{{ extra_qs }}"
+               title="Page {{ page.number }}">{{ page.number }}</a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
 {% endif %}

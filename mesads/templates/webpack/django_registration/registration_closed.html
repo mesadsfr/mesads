@@ -1,17 +1,12 @@
 {% extends "base.html" %}
-
 {% block body %}
-<div class="fr-grid-row fr-grid-row--center">
-  <div class="fr-col-12 fr-col-sm-8 fr-col-md-6">
-    <h1>Échec de l'inscription</h1>
-
-    <p class="fr-text--lead">
-      Il n'est actuellement pas possible de créer un compte Mes ADS.
-    </p>
-
-    <p>
-      Vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
-    </p>
+  <div class="fr-grid-row fr-grid-row--center">
+    <div class="fr-col-12 fr-col-sm-8 fr-col-md-6">
+      <h1>Échec de l'inscription</h1>
+      <p class="fr-text--lead">Il n'est actuellement pas possible de créer un compte Mes ADS.</p>
+      <p>
+        Vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
+      </p>
+    </div>
   </div>
-</div>
-{% endblock %}
+{% endblock body %}

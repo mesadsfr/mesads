@@ -1,62 +1,62 @@
 {% extends "../base-sidemenu.html" %}
-
 {% block sidemenu %}
-<nav class="fr-sidemenu fr-sidemenu--sticky" aria-labelledby="fr-sidemenu-title">
-  <div class="fr-sidemenu__inner">
-    <button class="fr-sidemenu__btn" hidden aria-controls="fr-sidemenu-wrapper" aria-expanded="false">
-      Voir le menu
-    </button>
-    <div class="fr-collapse" id="fr-sidemenu-wrapper">
-      <div class="fr-sidemenu__title" id="fr-sidemenu-title">
-        Réglementation taxi
-      </div>
-      <ul class="fr-sidemenu__list">
-      {% for entry in entries %}
-        {% if entry.articles %}
-        <li class="fr-sidemenu__item">
-          <button class="fr-sidemenu__btn" aria-expanded="true" aria-controls="fr-sidemenu-item-{{ forloop.counter0 }}">
-            {{ entry.title }}
-          </button>
-          <div class="fr-collapse" id="fr-sidemenu-item-{{ forloop.counter0 }}">
-            <ul class="fr-sidemenu__list">
-              {% for article in entry.articles %}
+  <nav class="fr-sidemenu fr-sidemenu--sticky"
+       aria-labelledby="fr-sidemenu-title">
+    <div class="fr-sidemenu__inner">
+      <button class="fr-sidemenu__btn"
+              hidden
+              aria-controls="fr-sidemenu-wrapper"
+              aria-expanded="false">Voir le menu</button>
+      <div class="fr-collapse" id="fr-sidemenu-wrapper">
+        <div class="fr-sidemenu__title" id="fr-sidemenu-title">Réglementation taxi</div>
+        <ul class="fr-sidemenu__list">
+          {% for entry in entries %}
+            {% if entry.articles %}
               <li class="fr-sidemenu__item">
-                <a class="fr-sidemenu__link" href="#{{ article.menu_title|default:article.title|slugify }}" target="_self">
-                  {{ article.menu_title|default:article.title }}
-                </a>
+                <button class="fr-sidemenu__btn"
+                        aria-expanded="true"
+                        aria-controls="fr-sidemenu-item-{{ forloop.counter0 }}">{{ entry.title }}</button>
+                <div class="fr-collapse" id="fr-sidemenu-item-{{ forloop.counter0 }}">
+                  <ul class="fr-sidemenu__list">
+                    {% for article in entry.articles %}
+                      <li class="fr-sidemenu__item">
+                        <a class="fr-sidemenu__link"
+                           href="#{{ article.menu_title|default:article.title|slugify }}"
+                           target="_self">{{ article.menu_title|default:article.title }}</a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
               </li>
-              {% endfor %}
-            </ul>
-          </div>
-        </li>
-        {% else %}
-        <li class="fr-sidemenu__item">
-          <a class="fr-sidemenu__link" href="#{{ entry.menu_title|default:entry.title|slugify }}" target="_self">{{ entry.menu_title|default:entry.title }}</a>
-        </li>
-        {% endif %}
-      {% endfor %}
-      </ul>
+            {% else %}
+              <li class="fr-sidemenu__item">
+                <a class="fr-sidemenu__link"
+                   href="#{{ entry.menu_title|default:entry.title|slugify }}"
+                   target="_self">{{ entry.menu_title|default:entry.title }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
-{% endblock %}
-
+  </nav>
+{% endblock sidemenu %}
 {% block main %}
-<h1>Réglementation taxi</h1>
-
-<p class="fr-text--lead">
-  Vous trouverez sur cette page des informations sur la réglementation taxi, notamment sur les autorisations de stationnement (ADS) et les taxis relais. Si vous ne trouvez pas l'information que vous cherchez, n'hésitez pas à nous contacter par le chat ou par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
-</p>
-
-{% for entry in entries %}
-  <h2 id="{{ entry.menu_title|default:entry.title|slugify }}" class="fr-mt-3w">{{ entry.title }}</h2>
-  {% for article in entry.articles %}
-  <article>
-    <h3 id="{{ article.menu_title|default:article.title|slugify }}" class="fr-mt-3w">{{ article.title }}</h3>
-    {% if article.template %}
-      {% include article.template %}
-    {% endif %}
-  </article>
+  <h1>Réglementation taxi</h1>
+  <p class="fr-text--lead">
+    Vous trouverez sur cette page des informations sur la réglementation taxi, notamment sur les autorisations de stationnement (ADS) et les taxis relais. Si vous ne trouvez pas l'information que vous cherchez, n'hésitez pas à nous contacter par le chat ou par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
+  </p>
+  {% for entry in entries %}
+    <h2 id="{{ entry.menu_title|default:entry.title|slugify }}"
+        class="fr-mt-3w">{{ entry.title }}</h2>
+    {% for article in entry.articles %}
+      <article>
+        <h3 id="{{ article.menu_title|default:article.title|slugify }}"
+            class="fr-mt-3w">{{ article.title }}</h3>
+        {% if article.template %}
+          {% include article.template %}
+        {% endif %}
+      </article>
+    {% endfor %}
   {% endfor %}
-{% endfor %}
-{% endblock %}
+{% endblock main %}

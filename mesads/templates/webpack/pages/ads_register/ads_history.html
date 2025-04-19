@@ -1,26 +1,27 @@
 {% extends "./base.html" %}
-
 {% block main %}
-<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
-  <div class="fr-collapse" id="breadcrumb-1">
-    <ol class="fr-breadcrumb__list">
-      <li>
-        <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
-      </li>
-      <li>
-        <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.detail' manager_id=ads.ads_manager.id %}">{{ ads.ads_manager.content_object.display_text|capfirst }}</a>
-      </li>
-      <li>
-        <a class="fr-breadcrumb__link" href="{% url 'app.ads.detail' manager_id=ads.ads_manager.id ads_id=ads.id %}">ADS numéro {{ ads.number }}</a>
-      </li>
-      <li>
-        <a class="fr-breadcrumb__link" aria-current="page">Historique des modifications</a>
-      </li>
-    </ol>
-  </div>
-</nav>
-
-{% include "history.html" with empty_template="pages/ads_register/ads_history_empty.html" %}
-
-{% endblock %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link"
+             href="{% url 'app.ads-manager.detail' manager_id=ads.ads_manager.id %}">{{ ads.ads_manager.content_object.display_text|capfirst }}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link"
+             href="{% url 'app.ads.detail' manager_id=ads.ads_manager.id ads_id=ads.id %}">ADS numéro {{ ads.number }}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Historique des modifications</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  {% include "history.html" with empty_template="pages/ads_register/ads_history_empty.html" %}
+{% endblock main %}

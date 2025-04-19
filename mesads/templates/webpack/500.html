@@ -1,20 +1,16 @@
 {% extends "base.html" %}
-
-{% block title %}Erreur serveur 500{% endblock %}
-
+{% block title %}
+  Erreur serveur 500
+{% endblock title %}
 {% block body %}
-<h1 class="fr-mb-42">Oops !</h1>
-
-<p>
-  Une erreur inattendue est survenue. Il ne s'agit vraisemblablement pas d'un problème de votre part, mais d'un bug technique de notre côté.
-</p>
-
-<p>
-  L'équipe MesADS a reçu une alerte pour les informer du problème. Lorsque nous recevons ce type d'alerte, nous nous efforçons de résoudre le bug le plus rapidement possible, habituellement en quelques jours.
-</p>
-
-<p>
-  Vous pouvez tout de même tenter de rafraichir la page ou de revenir plus tard. Si le problème persiste, nous vous serions reconnaisants de nous contacter par email sur <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
-</p>
-
-{% endblock %}
+  <h1 class="fr-mb-42">Oops !</h1>
+  <p>
+    Une erreur inattendue est survenue. Il ne s'agit vraisemblablement pas d'un problème de votre part, mais d'un bug technique de notre côté.
+  </p>
+  <p>
+    L'équipe MesADS a reçu une alerte pour les informer du problème. Lorsque nous recevons ce type d'alerte, nous nous efforçons de résoudre le bug le plus rapidement possible, habituellement en quelques jours.
+  </p>
+  <p>
+    Vous pouvez tout de même tenter de rafraichir la page ou de revenir plus tard. Si le problème persiste, nous vous serions reconnaisants de nous contacter par email sur <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+  </p>
+{% endblock body %}

@@ -1,27 +1,27 @@
 {% extends "base.html" %}
-
 {% block body %}
-<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
-  <div class="fr-collapse" id="breadcrumb-1">
-    <ol class="fr-breadcrumb__list">
-      <li>
-        <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Page d'accueil</a>
-      </li>
-      <li>
-        <a class="fr-breadcrumb__link" aria-current="page">Propriétaire de véhicules relais</a>
-      </li>
-    </ol>
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Page d'accueil</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Propriétaire de véhicules relais</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <h1>Vous détenez un ou plusieurs véhicules relais ?</h1>
+  <p>
+    Tout détenteur d'un taxi relais doit le déclarer dans les registres prévu par <a target="_blank"
+    href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047937443">l'arrêté du 28 juillet 2023</a>.
+  </p>
+  <div class="fr-grid-row fr-grid-row--center fr-mb-2w">
+    <a class="fr-btn fr-btn--secondary"
+       href="{% url 'login' %}?next={% url 'vehicules-relais.index' %}">Pour y accéder, connectez-vous ou créez un compte.</a>
   </div>
-</nav>
-
-<h1>Vous détenez un ou plusieurs véhicules relais ?</h1>
-
-<p>
-  Tout détenteur d'un taxi relais doit le déclarer dans les registres prévu par <a target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047937443"> l'arrêté du 28 juillet 2023</a>.
-</p>
-
-<div class="fr-grid-row fr-grid-row--center fr-mb-2w">
-  <a class="fr-btn fr-btn--secondary" href="{% url 'login' %}?next={% url 'vehicules-relais.index' %}">Pour y accéder, connectez-vous ou créez un compte.</a>
-</div>
-{% endblock %}
+{% endblock body %}

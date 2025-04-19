@@ -1,146 +1,138 @@
 {% extends "../../base-sidemenu.html" %}
-
 {% load show_pagination_links %}
-
-{% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
-
+{% block sidemenu %}
+  {% include "./sidemenu.html" %}
+{% endblock sidemenu %}
 {% block main %}
-<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
-  <div class="fr-collapse" id="breadcrumb-1">
-    <ol class="fr-breadcrumb__list">
-      <li>
-        <a class="fr-breadcrumb__link" aria-current="page">Répertoires des véhicules relais</a>
-      </li>
-    </ol>
-  </div>
-</nav>
-
-<h1>Consulter les répertoires des taxis relais</h1>
-
-<p class="fr-text--lead">
-  Un « taxi relais » est un véhicule utilisé temporairement en cas d'immobilisation d'origine mécanique, à la suite d'une panne ou d'un accident, ou de vol d'un véhicule taxi ou de ses équipements spéciaux. Vous trouverez sur cette page la liste des véhicules relais enregistrés dans les répertoires départementaux.
-</p>
-
-{% if not is_proprietaire %}
-<div class="fr-alert fr-alert--info fr-mt-5w">
-  <p class="fr-alert__title">Si vous êtes propriétaire d'un taxi relais, nous vous rappelons que</p>
-
-  <p>
-    Si vous possédez un taxi relais, nous vous rappelons qu'il est obligatoire de déclarer tous les véhicules relais dans le répertoire départemental dédié avant de les exploiter. Si vous n'avez pas encore effectué cette déclaration, rendez-vous dans votre espace propriétaire
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Répertoires des véhicules relais</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <h1>Consulter les répertoires des taxis relais</h1>
+  <p class="fr-text--lead">
+    Un « taxi relais » est un véhicule utilisé temporairement en cas d'immobilisation d'origine mécanique, à la suite d'une panne ou d'un accident, ou de vol d'un véhicule taxi ou de ses équipements spéciaux. Vous trouverez sur cette page la liste des véhicules relais enregistrés dans les répertoires départementaux.
   </p>
-
-  <div class="fr-grid-row fr-grid-row--center fr-m-2w">
-    <a class="fr-btn fr-btn--secondary" href="{% url 'login' %}?next={% url 'vehicules-relais.proprietaire' %}">
-      {% if request.user.is_authenticated %}
-        Mon espace propriétaire
-      {% else %}
-        Connectez-vous ou créez un compte pour enregistrer vos véhicules relais
-    {% endif %}
-    </a>
-  </div>
-</div>
-{% endif %}
-
-<hr class="fr-mt-3w">
-
-<form method="get" action="{% url 'vehicules-relais.search' %}">
-  <div class="fr-form-group">
-    <fieldset class="fr-fieldset">
-      <div class="fr-fieldset__content">
-        <div class="fr-input-group radio-inline{% if form.errors.departement %} fr-input-group--error{% endif %}">
-          <label class="fr-label" for="{{ form.prefecture.id_for_label }}">
-            Sélectionnez le département :
-          </label>
-
-          {{ form.departement }}
-
-          {% for error in form.errors.departement %}
-          <p class="fr-error-text">
-            {{ error }}
-          </p>
-          {% endfor %}
-        </div>
-
-        {% include 'form_fields/string.html' with field=form.immatriculation field_errors=form.errors.immatriculation required=form.fields.immatriculation.required %}
-      </div>
-    </fieldset>
-  </div>
-
-  <!-- Non-fields errors -->
-  {% if form.non_field_errors %}
-  <div class="fr-input-group fr-input-group--error">
-    {% for error in form.non_field_errors %}
-      <!-- Non-field error -->
-      <p class="fr-error-text">
-        {{ error }}
+  {% if not is_proprietaire %}
+    <div class="fr-alert fr-alert--info fr-mt-5w">
+      <p class="fr-alert__title">Si vous êtes propriétaire d'un taxi relais, nous vous rappelons que</p>
+      <p>
+        Si vous possédez un taxi relais, nous vous rappelons qu'il est obligatoire de déclarer tous les véhicules relais dans le répertoire départemental dédié avant de les exploiter. Si vous n'avez pas encore effectué cette déclaration, rendez-vous dans votre espace propriétaire
       </p>
-    {% endfor %}
-  </div>
-  {% endif %}
-  <div class="fr-input-group">
-    <button type="submit" class="fr-btn">Voir les taxis relais</button>
-  </div>
-</form>
-
-<hr class="fr-mt-3w">
-
-{% if should_display_search_results %}
-<div class="fr-table fr-table--lg fr-table--no-caption" id="table-vehicules">
-  <div class="fr-table__wrapper">
-    <div class="fr-table__container">
-      <div class="fr-table__content">
-        <table id="table-vehicules">
-          <caption>Véhicules relais du département {{ prefecture.numero }} - {{ prefecture.libelle }}</caption>
-          <thead>
-            <tr>
-              <th scope="col">Dép.</th>
-              <th scope="col">&numero;</th>
-              <th scope="col">Type de véhicule</th>
-              <th scope="col">Caractéristiques<br />principales</th>
-              <th scope="col">Propriétaire du véhicule</th>
-              <th scope="col">Ville de localisation<br />du véhicule</th>
-              <th scope="col">Détails</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for vehicule in vehicule_list %}
-            <tr>
-              <td>{{ vehicule.departement }}</td>
-              <td><strong>{{ vehicule.numero }}</strong></td>
-              <td>{{ vehicule.modele }}</td>
-              <td>
-                {% for feature in vehicule.main_features %}
-                  {{ feature }}<br />
-                {% endfor %}
-              </td>
-              <td>{{ vehicule.proprietaire.nom }}</td>
-              <td>
-                {% if vehicule.commune_localisation %}
-                  {{ vehicule.commune_localisation.libelle }} ({{ vehicule.commune_localisation.departement }})
-                {% endif %}
-              </td>
-              <td><a href="{% url 'vehicules-relais.vehicule' numero=vehicule.numero %}">Afficher les détails</a></td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="6" style="text-align: center">Aucun véhicule relais n'est enregistré pour ce département.</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+      <div class="fr-grid-row fr-grid-row--center fr-m-2w">
+        <a class="fr-btn fr-btn--secondary"
+           href="{% url 'login' %}?next={% url 'vehicules-relais.proprietaire' %}">
+          {% if request.user.is_authenticated %}
+            Mon espace propriétaire
+          {% else %}
+            Connectez-vous ou créez un compte pour enregistrer vos véhicules relais
+          {% endif %}
+        </a>
       </div>
     </div>
-  </div>
-  {% show_pagination_links page_obj %}
-</div>
-{% endif %}
-
-{% endblock %}
-
+  {% endif %}
+  <hr class="fr-mt-3w">
+  <form method="get" action="{% url 'vehicules-relais.search' %}">
+    <div class="fr-form-group">
+      <fieldset class="fr-fieldset">
+        <div class="fr-fieldset__content">
+          <div class="fr-input-group radio-inline{% if form.errors.departement %} fr-input-group--error{% endif %}">
+            <label class="fr-label" for="{{ form.prefecture.id_for_label }}">Sélectionnez le département :</label>
+            {{ form.departement }}
+            {% for error in form.errors.departement %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
+          </div>
+          {% include "form_fields/string.html" with field=form.immatriculation field_errors=form.errors.immatriculation required=form.fields.immatriculation.required %}
+        </div>
+      </fieldset>
+    </div>
+    <!-- Non-fields errors -->
+    {% if form.non_field_errors %}
+      <div class="fr-input-group fr-input-group--error">
+        {% for error in form.non_field_errors %}
+          <!-- Non-field error -->
+          <p class="fr-error-text">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <div class="fr-input-group">
+      <button type="submit" class="fr-btn">Voir les taxis relais</button>
+    </div>
+  </form>
+  <hr class="fr-mt-3w">
+  {% if should_display_search_results %}
+    <div class="fr-table fr-table--lg fr-table--no-caption"
+         id="table-vehicules">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table id="table-vehicules">
+              <caption>Véhicules relais du département {{ prefecture.numero }} - {{ prefecture.libelle }}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Dép.</th>
+                  <th scope="col">№</th>
+                  <th scope="col">Type de véhicule</th>
+                  <th scope="col">
+                    Caractéristiques
+                    <br />
+                    principales
+                  </th>
+                  <th scope="col">Propriétaire du véhicule</th>
+                  <th scope="col">
+                    Ville de localisation
+                    <br />
+                    du véhicule
+                  </th>
+                  <th scope="col">Détails</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for vehicule in vehicule_list %}
+                  <tr>
+                    <td>{{ vehicule.departement }}</td>
+                    <td>
+                      <strong>{{ vehicule.numero }}</strong>
+                    </td>
+                    <td>{{ vehicule.modele }}</td>
+                    <td>
+                      {% for feature in vehicule.main_features %}
+                        {{ feature }}
+                        <br />
+                      {% endfor %}
+                    </td>
+                    <td>{{ vehicule.proprietaire.nom }}</td>
+                    <td>
+                      {% if vehicule.commune_localisation %}
+                        {{ vehicule.commune_localisation.libelle }} ({{ vehicule.commune_localisation.departement }})
+                      {% endif %}
+                    </td>
+                    <td>
+                      <a href="{% url 'vehicules-relais.vehicule' numero=vehicule.numero %}">Afficher les détails</a>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="6" class="text-center">Aucun véhicule relais n'est enregistré pour ce département.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% show_pagination_links page_obj %}
+    </div>
+  {% endif %}
+{% endblock main %}
 {% block endbody %}
   {{ block.super }}
-
   {% comment %}Extra javascript to display form for new requests.{% endcomment %}
   {{ form.media }}
-{% endblock %}
+{% endblock endbody %}

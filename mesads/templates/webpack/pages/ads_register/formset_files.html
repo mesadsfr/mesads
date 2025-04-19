@@ -2,100 +2,68 @@
 <div id="formset-files" class="fr-input-group" x-data="{extra: 0}">
     {{ formset.management_form }}
     {% for form in formset %}
-        <div
-            class="fr-download fr-download--card formset-file"
-            x-data="{deleteFile: false}"
-            x-bind:style="deleteFile ? {'background-color': 'rgb(253,222,222)'} : {'background-color': '#fff'}"
-            x-transition
-        >
-        {% if form.instance.file %}
-            {{ form.id.as_hidden }}
-            {{ form.file.as_hidden }}
-
-            <p class="fr-download__title">
-                <a class="fr-download__link" {% if form.instance.exists_in_storage %}href="{{ form.instance.file.url }}" target="_blank"{% endif %}>
-                {{ form.instance.human_filename }}
-
-                <span class="fr-download__detail">
-                {% if form.instance.exists_in_storage %}
-                    {{ form.instance.file.size|filesizeformat }}
-                {% else %}
-                    Le fichier n'est plus accessible
-                {% endif %}
-                </span>
-                </a>
-            </p>
-            <p class="fr-download__desc">
-                Le document a été envoyé le {{ form.instance.creation_date|date:"d/m/Y" }}.
-            </p>
-            <p class="fr-download__desc">
-                <input
-                    class="fr-hidden"
-                    type="checkbox"
-                    name="{{ form.DELETE.html_name }}"
-                    id="{{ form.file.id_for_label }}-clear_id"
-                    x-model="deleteFile"
-                    {% if disabled %}disabled{% endif %}
-                />
-
-                <label
-                    class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-delete-line fr-btn--icon-left"
-                    for="{{ form.file.id_for_label }}-clear_id"
-                    x-show="!deleteFile"
-                >
-                    Supprimer le document
-                </label>
-
-                <label
-                    class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-download-line fr-btn--icon-left"
-                    for="{{ form.file.id_for_label }}-clear_id"
-                    x-show="deleteFile"
-                >
-                    Annuler la suppression
-                </label>
-            </p>
-        {% endif %}
-
-        {% comment %}Form errors {% endcomment %}
-        {% for error in form.errors.file %}
-            <p class="fr-error-text">
-            {{ error }}
-            </p>
-        {% endfor %}
+        <div class="fr-download fr-download--card formset-file"
+             x-data="{deleteFile: false}"
+             x-bind:style="deleteFile ? {'background-color': 'rgb(253,222,222)'} : {'background-color': '#fff'}"
+             x-transition>
+            {% if form.instance.file %}
+                {{ form.id.as_hidden }}
+                {{ form.file.as_hidden }}
+                <p class="fr-download__title">
+                    <a class="fr-download__link"
+                       {% if form.instance.exists_in_storage %}href="{{ form.instance.file.url }}" target="_blank"{% endif %}>
+                        {{ form.instance.human_filename }}
+                        <span class="fr-download__detail">
+                            {% if form.instance.exists_in_storage %}
+                                {{ form.instance.file.size|filesizeformat }}
+                            {% else %}
+                                Le fichier n'est plus accessible
+                            {% endif %}
+                        </span>
+                    </a>
+                </p>
+                <p class="fr-download__desc">Le document a été envoyé le {{ form.instance.creation_date|date:"d/m/Y" }}.</p>
+                <p class="fr-download__desc">
+                    <input class="fr-hidden"
+                           type="checkbox"
+                           name="{{ form.DELETE.html_name }}"
+                           id="{{ form.file.id_for_label }}-clear_id"
+                           x-model="deleteFile"
+                           {% if disabled %}disabled{% endif %} />
+                    <label class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-delete-line fr-btn--icon-left"
+                           for="{{ form.file.id_for_label }}-clear_id"
+                           x-show="!deleteFile">Supprimer le document</label>
+                    <label class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-download-line fr-btn--icon-left"
+                           for="{{ form.file.id_for_label }}-clear_id"
+                           x-show="deleteFile">Annuler la suppression</label>
+                </p>
+            {% endif %}
+            {% comment %}Form errors {% endcomment %}
+            {% for error in form.errors.file %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
         </div>
     {% endfor %}
-
     {% comment %}Extra forms to select new document{% endcomment %}
     <template x-for="i in extra">
-        <div
-            class="fr-download fr-download--card formset-file"
-            x-data="{deleteFile: false}"
-            x-bind:style="deleteFile ? {'background-color': 'rgb(253,222,222)'} : {'background-color': '#fff'}"
-            x-transition
-        >
+        <div class="fr-download fr-download--card formset-file"
+             x-data="{deleteFile: false}"
+             x-bind:style="deleteFile ? {'background-color': 'rgb(253,222,222)'} : {'background-color': '#fff'}"
+             x-transition>
             <div class="fr-upload-group">
                 <label class="fr-label" for="file-upload">
                     <strong>Nouveau document</strong>
                     <span class="fr-hint-text">Taille maximale : 10 Mo. Format préféré : pdf.</span>
                 </label>
-                <input class="fr-upload" type="file" id="{{ formset.empty_form.file.id_for_label }}" name="{{ formset.empty_form.file.html_name }}">
+                <input class="fr-upload"
+                       type="file"
+                       id="{{ formset.empty_form.file.id_for_label }}"
+                       name="{{ formset.empty_form.file.html_name }}">
             </div>
         </div>
     </template>
-
-    {% for error in formset.non_form_errors %}
-        <p class="fr-error-text">
-            {{ error }}
-        </p>
-    {% endfor %}
-
-    <button
-        type="button"
-        class="fr-btn fr-btn--sm fr-icon-add-circle-line fr-btn--icon-left fr-btn--secondary"
-        @click="extra++"
-        x-add-file-button
-        {% if disabled %}disabled{% endif %}
-    >
-        Ajouter un document
-    </button>
+    {% for error in formset.non_form_errors %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
+    <button type="button"
+            class="fr-btn fr-btn--sm fr-icon-add-circle-line fr-btn--icon-left fr-btn--secondary"
+            @click="extra++"
+            x-add-file-button
+            {% if disabled %}disabled{% endif %}>Ajouter un document</button>
 </div>

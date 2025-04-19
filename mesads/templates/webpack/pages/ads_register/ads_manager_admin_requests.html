@@ -1,114 +1,119 @@
 {% extends "./base.html" %}
-
 {% block main %}
-<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
-  <div class="fr-collapse" id="breadcrumb-1">
-    <ol class="fr-breadcrumb__list">
-      <li>
-        <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager-admin.details' prefecture_id=ads_manager_administrator.prefecture.id %}">{{ ads_manager_administrator.prefecture.display_text|capfirst }}</a>
-      </li>
-      <li>
-        <a class="fr-breadcrumb__link" aria-current="page">Modifications apportées par les gestionnaires de la préfecture</a>
-      </li>
-    </ol>
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link"
+             href="{% url 'app.ads-manager-admin.details' prefecture_id=ads_manager_administrator.prefecture.id %}">{{ ads_manager_administrator.prefecture.display_text|capfirst }}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Modifications apportées par les gestionnaires de la préfecture</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <h1>Demandes d'accès</h1>
+  <p class="fr-text--lead">
+    Vous trouverez ci-dessous les demandes d'accès des administrations souhaitant gérer leurs ADS.
+  </p>
+  <div class="fr-alert fr-alert--warning">
+    <h3 class="fr-alert__title">Attention : vérifiez l'origine des demandes</h3>
+    <p>
+      Avant d'accepter une demande, assurez-vous que la demande provient bien d'un agent travaillant pour une administration dépendant de votre préfecture.
+    </p>
   </div>
-</nav>
-
-
-<h1>Demandes d'accès</h1>
-
-<p class="fr-text--lead">
-  Vous trouverez ci-dessous les demandes d'accès des administrations souhaitant gérer leurs ADS.
-</p>
-
-<div class="fr-alert fr-alert--warning">
-  <h3 class="fr-alert__title">Attention : vérifiez l'origine des demandes</h3>
-  <p>Avant d'accepter une demande, assurez-vous que la demande provient bien d'un agent travaillant pour une administration dépendant de votre préfecture.</p>
-</div>
-
-<p class="fr-mt-3w">
-  Si vous avez la moindre question, ou si vous souhaitez révoquer un accès, contactez notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
-</p>
-
-<div class="fr-grid-row">
-  <div class="fr-table fr-table--no-caption fr-table--md" id="table-requests-{{ ads_manager_administrator.prefecture.id }}">
-    <div class="fr-table__wrapper">
-      <div class="fr-table__container">
-        <div class="fr-table__content">
-          <table id="table-requests-{{ ads_manager_administrator.prefecture.id }}">
-            <caption>Demandes pour la {{ ads_manager_administrator.prefecture.display_text }}</caption>
-            <thead>
-              <tr>
-                <th>👨‍💻 Utilisateur</th>
-                <th>
-                  {% if sort == "name" %}
-                    🏢 Administration ▲
-                  {% else %}
-                    <a href="?sort=name">🏢 Administration ▶</a>
-                  {% endif %}
-                </th>
-                <th>
-                  {% if sort == "name" %}
-                  <a href="?">📅 Date de<br />la demande ▶</a>
-                  {% else %}
-                  📅 Date de<br />la demande ▲
-                  {% endif %}
-                </th>
-                <th>
-                  Dernière<br />connexion
-                </th>
-                <th>🔎 Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for ads_manager_request in ads_manager_requests %}
-              <tr class="table-row-{% if ads_manager_request.accepted is True %}success{% elif ads_manager_request.accepted is False %}failure{% else %}unknown{% endif %}">
-                <td>{{ ads_manager_request.user.email }}</td>
-                <td>{{ ads_manager_request.ads_manager.content_object.display_text|capfirst }}</td>
-                <td>{{ ads_manager_request.created_at }}</td>
-                <td>{{ ads_manager_request.user.last_login }}</td>
-                <td>
-                  <div class="fr-grid-row fr-grid-row--gutters">
-                    {% comment %}
+  <p class="fr-mt-3w">
+    Si vous avez la moindre question, ou si vous souhaitez révoquer un accès, contactez notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+  </p>
+  <div class="fr-grid-row">
+    <div class="fr-table fr-table--no-caption fr-table--md"
+         id="table-requests-{{ ads_manager_administrator.prefecture.id }}">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table id="table-requests-{{ ads_manager_administrator.prefecture.id }}">
+              <caption>Demandes pour la {{ ads_manager_administrator.prefecture.display_text }}</caption>
+              <thead>
+                <tr>
+                  <th>👨‍💻 Utilisateur</th>
+                  <th>
+                    {% if sort == "name" %}
+                      🏢 Administration ▲
+                    {% else %}
+                      <a href="?sort=name">🏢 Administration ▶</a>
+                    {% endif %}
+                  </th>
+                  <th>
+                    {% if sort == "name" %}
+                      <a href="?">📅 Date de
+                        <br />
+                      la demande ▶</a>
+                    {% else %}
+                      📅 Date de
+                      <br />
+                      la demande ▲
+                    {% endif %}
+                  </th>
+                  <th>
+                    Dernière
+                    <br />
+                    connexion
+                  </th>
+                  <th>🔎 Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ads_manager_request in ads_manager_requests %}
+                  <tr class="table-row-{% if ads_manager_request.accepted is True %}success{% elif ads_manager_request.accepted is False %}failure{% else %}unknown{% endif %}">
+                    <td>{{ ads_manager_request.user.email }}</td>
+                    <td>{{ ads_manager_request.ads_manager.content_object.display_text|capfirst }}</td>
+                    <td>{{ ads_manager_request.created_at }}</td>
+                    <td>{{ ads_manager_request.user.last_login }}</td>
+                    <td>
+                      <div class="fr-grid-row fr-grid-row--gutters">
+                        {% comment %}
                     Display the button to accept/deny when the request is pending.
 
                     In the past, we used to also display the buttons when the request
                     was accepted or denied. It was error prone. Instead, we want the
                     users to contact our team to revoke an access, or grant when the
                     request has been mistakenly denied.
-                    {% endcomment %}
-                    {% if ads_manager_request.accepted is None %}
-                    <div class="fr-p-1w">
-                      <form method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
-                        <input type="hidden" name="action" value="accept" />
-                        <button type="submit" class="fr-btn fr-btn--sm">Accepter</button>
-                      </form>
-                    </div>
-                    <div class="fr-p-1w">
-                      <form method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
-                        <input type="hidden" name="action" value="deny" />
-                        <button type="submit" class="fr-btn fr-btn--sm">Refuser</button>
-                      </form>
-                    </div>
-                    {% endif %}
-                  </div>
-                </td>
-              </tr>
-              {% empty %}
-              <tr>
-                <td colspan="4">Aucune demande en cours</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+                        {% endcomment %}
+                        {% if ads_manager_request.accepted is None %}
+                          <div class="fr-p-1w">
+                            <form method="post">
+                              {% csrf_token %}
+                              <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
+                              <input type="hidden" name="action" value="accept" />
+                              <button type="submit" class="fr-btn fr-btn--sm">Accepter</button>
+                            </form>
+                          </div>
+                          <div class="fr-p-1w">
+                            <form method="post">
+                              {% csrf_token %}
+                              <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
+                              <input type="hidden" name="action" value="deny" />
+                              <button type="submit" class="fr-btn fr-btn--sm">Refuser</button>
+                            </form>
+                          </div>
+                        {% endif %}
+                      </div>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="4">Aucune demande en cours</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-{% endblock %}
+{% endblock main %}

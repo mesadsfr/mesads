@@ -1,31 +1,27 @@
 {% extends "base.html" %}
-
 {% block body %}
-<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
-  <div class="fr-collapse" id="breadcrumb-1">
-    <ol class="fr-breadcrumb__list">
-      <li>
-        <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Page d'accueil</a>
-      </li>
-      <li>
-        <a class="fr-breadcrumb__link" aria-current="page">Gestionnaire ADS</a>
-      </li>
-    </ol>
-  </div>
-</nav>
-
-<h1>Vous êtes chargé de la gestion des ADS de votre commune ou EPCI</h1>
-
-<p>
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Page d'accueil</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Gestionnaire ADS</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <h1>Vous êtes chargé de la gestion des ADS de votre commune ou EPCI</h1>
+  <p>
     Les autorités compétentes pour la délivrance des ADS (Mairies, EPCI, Préfectures) sont tenues de les enregistrer et de les mettre à jour à chaque modification, afin de satisfaire aux dispositions de l'<a href="https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000023086525/LEGISCTA000023071077/#LEGISCTA000023083907">article L3121-11-1 du Code des Transports</a>.
-</p>
-
-<p>
-Un compte est nécessaire pour effectuer cet enregistrement.
-</p>
-
-<p style="text-align: center">
-    <a class="fr-btn fr-btn--lg fr-btn--secondary" href="{% url 'login' %}?next={% url 'app.ads-manager.index' %}">Je me connecte ou je crée mon compte</a>
-</p>
-{% endblock %}
+  </p>
+  <p>Un compte est nécessaire pour effectuer cet enregistrement.</p>
+  <p class="text-center">
+    <a class="fr-btn fr-btn--lg fr-btn--secondary"
+       href="{% url 'login' %}?next={% url 'app.ads-manager.index' %}">Je me connecte ou je crée mon compte</a>
+  </p>
+{% endblock body %}

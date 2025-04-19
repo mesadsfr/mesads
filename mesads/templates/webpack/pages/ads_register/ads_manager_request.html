@@ -1,249 +1,251 @@
 {% extends "./base.html" %}
 {% load static %}
-
 {% block main %}
-<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
-  <div class="fr-collapse" id="breadcrumb-1">
-    <ol class="fr-breadcrumb__list">
-      <li>
-        <a class="fr-breadcrumb__link" aria-current="page">Gestion des ADS</a>
-      </li>
-    </ol>
-  </div>
-</nav>
-
-<h1>Vos administrations en gestion</h1>
-
-<p class="fr-text--lead">
-  Cette page liste les administrations pour lesquelles vous avez demandé à gérer les ADS (licences de taxi). Vous pouvez également demander à gérer les ADS pour une nouvelle administration en bas de cette page.
-</p>
-
-{% if user_ads_manager_requests|length > 0 %}
-<h2>Vos administrations en gestion</h2>
-
-<div class="fr-table fr-table--lg fr-table--no-scroll fr-table--no-caption" id="table-administrations">
-  <div class="fr-table__wrapper">
-    <div class="fr-table__container">
-      <div class="fr-table__content">
-        <table id="table-administrations">
-          <caption>Administrations en gestion</caption>
-          <thead>
-            <tr>
-              <th>🏢 Administration</th>
-              <th>💯 Nombre d'ADS<br />enregistrées</th>
-              <th>👌 Statut</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for request in user_ads_manager_requests %}
-            <tr>
-              <td>{{ request.ads_manager.content_object.display_text|capfirst }}</td>
-              <td>{% if request.ads_count %}{{ request.ads_count }}{% elif request.ads_manager.no_ads_declared %}<small>Ne gère aucune ADS<small>{% elif request.ads_manager.epci_delegate %}<small>ADS gérées par l'EPCI<br /><i>{{ request.ads_manager.epci_delegate }}</i></small>{% else %}-{% endif %}</td>
-              <td>
-                {% if request.accepted is None %}
-                ⏱ En attente de validation par la préfecture
-                {% elif request.accepted is False %}
-                🚫 Demande refusée
-                {% elif request.accepted is True %}
-                <a class="fr-btn fr-btn--sm" href="{% url 'app.ads-manager.detail' manager_id=request.ads_manager.id %}">Gérez les ADS</a>
-                {% endif %}
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Gestion des ADS</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <h1>Vos administrations en gestion</h1>
+  <p class="fr-text--lead">
+    Cette page liste les administrations pour lesquelles vous avez demandé à gérer les ADS (licences de taxi). Vous pouvez également demander à gérer les ADS pour une nouvelle administration en bas de cette page.
+  </p>
+  {% if user_ads_manager_requests|length > 0 %}
+    <h2>Vos administrations en gestion</h2>
+    <div class="fr-table fr-table--lg fr-table--no-scroll fr-table--no-caption"
+         id="table-administrations">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table id="table-administrations">
+              <caption>Administrations en gestion</caption>
+              <thead>
+                <tr>
+                  <th>🏢 Administration</th>
+                  <th>
+                    💯 Nombre d'ADS
+                    <br />
+                    enregistrées
+                  </th>
+                  <th>👌 Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for request in user_ads_manager_requests %}
+                  <tr>
+                    <td>{{ request.ads_manager.content_object.display_text|capfirst }}</td>
+                    <td>
+                      {% if request.ads_count %}
+                        {{ request.ads_count }}
+                      {% elif request.ads_manager.no_ads_declared %}
+                        <small>Ne gère aucune ADS</small>
+                      {% elif request.ads_manager.epci_delegate %}
+                        <small>ADS gérées par l'EPCI
+                          <br />
+                          <i>{{ request.ads_manager.epci_delegate }}</i></small>
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if request.accepted is None %}
+                        ⏱ En attente de validation par la préfecture
+                      {% elif request.accepted is False %}
+                        🚫 Demande refusée
+                      {% elif request.accepted is True %}
+                        <a class="fr-btn fr-btn--sm"
+                           href="{% url 'app.ads-manager.detail' manager_id=request.ads_manager.id %}">Gérez les ADS</a>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  {% if ads_managers_administrators|length %}<h2>Vos accès préfecture</h2>{% endif %}
+  {% for ads_manager_administrator in ads_managers_administrators %}
+    <h4>{{ ads_manager_administrator.prefecture.display_text|capfirst }}</h4>
+    <p>
+      📗️&nbsp;<a class="fr-link fr-icon-arrow-down-line fr-link--icon-right"
+   href="{% url 'app.exports.prefecture' prefecture_id=ads_manager_administrator.prefecture.id %}">
+      Télécharger toutes les ADS de la préfecture au format excel
+    </a>
+  </p>
+  <div class="fr-table fr-table--lg fr-table--no-scroll fr-table--no-caption"
+       id="table-administration-{{ ads_manager_administrator.id }}">
+    <div class="fr-table__wrapper">
+      <div class="fr-table__container">
+        <div class="fr-table__content">
+          <table id="table-administration-{{ ads_manager_administrator.id }}"
+                 x-data="{ displayExtra: false }">
+            <caption>{{ ads_manager_administrator.prefecture.display_text|capfirst }}</caption>
+            <thead>
+              <tr>
+                <th>🏢 Administration</th>
+                <th>
+                  💯 Nombre d'ADS
+                  <br />
+                  enregistrées
+                </th>
+                <th>👌 Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ads_manager in ads_manager_administrator.ordered_adsmanager_set %}
+                <tr x-show="displayExtra || {{ forloop.counter0 }} < 5" x-transition>
+                  <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
+                  <td>
+                    {% if ads_manager.ads_set.count > 0 %}
+                      {{ ads_manager.ads_set.count }}
+                    {% elif ads_manager.no_ads_declared %}
+                      <small>Ne gère aucune ADS</small>
+                    {% elif ads_manager.epci_delegate %}
+                      <small>ADS gérées par l'EPCI
+                        <br />
+                        <i>{{ ads_manager.epci_delegate }}</i></small>
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                  <td>
+                    <a class="fr-btn fr-btn--sm"
+                       href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">Gérez les ADS</a>
+                  </td>
+                </tr>
+              {% endfor %}
+              <tr x-show="{{ ads_manager_administrator.ordered_adsmanager_set.count }} > 5 && !displayExtra">
+                <td colspan="3">
+                  <button class="fr-btn fr-btn--secondary fr-btn--sm"
+                          x-on:click="displayExtra = true">
+                    Afficher les {{ ads_manager_administrator.ordered_adsmanager_set.count|add:"-5" }} autres entrées du tableau...
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
-</div>
-{% endif %}
-
-{% if ads_managers_administrators|length %}
-<h2>Vos accès préfecture</h2>
-{% endif %}
-
-{% for ads_manager_administrator in ads_managers_administrators %}
-
-<h4>{{ ads_manager_administrator.prefecture.display_text|capfirst }}</h4>
-
-<p>
-  📗️&nbsp;<a class="fr-link fr-icon-arrow-down-line fr-link--icon-right" href="{% url 'app.exports.prefecture' prefecture_id=ads_manager_administrator.prefecture.id %}">
-    Télécharger toutes les ADS de la préfecture au format excel
-  </a>
-</p>
-
-<div class="fr-table fr-table--lg fr-table--no-scroll fr-table--no-caption" id="table-administration-{{ ads_manager_administrator.id }}">
-  <div class="fr-table__wrapper">
-    <div class="fr-table__container">
-      <div class="fr-table__content">
-        <table id="table-administration-{{ ads_manager_administrator.id }}" x-data="{ displayExtra: false }">
-          <caption>{{ ads_manager_administrator.prefecture.display_text|capfirst }}</caption>
-          <thead>
-            <tr>
-              <th>🏢 Administration</th>
-              <th>💯 Nombre d'ADS<br />enregistrées</th>
-              <th>👌 Statut</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for ads_manager in ads_manager_administrator.ordered_adsmanager_set  %}
-            <tr x-show="displayExtra || {{ forloop.counter0 }} < 5" x-transition>
-              <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
-              <td>
-                {% if ads_manager.ads_set.count > 0 %}{{ ads_manager.ads_set.count }}{% elif ads_manager.no_ads_declared %}<small>Ne gère aucune ADS</small>{% elif ads_manager.epci_delegate %}<small>ADS gérées par l'EPCI<br /><i>{{ ads_manager.epci_delegate }}</i></small>{% else %}-{% endif %}
-              </td>
-              <td>
-                <a class="fr-btn fr-btn--sm" href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">Gérez les ADS</a>
-              </td>
-            </tr>
-            {% endfor %}
-            <tr x-show="{{ ads_manager_administrator.ordered_adsmanager_set.count }} > 5 && !displayExtra">
-              <td colspan="3">
-                <button class="fr-btn fr-btn--secondary fr-btn--sm" x-on:click="displayExtra = true">
-                  Afficher les {{ ads_manager_administrator.ordered_adsmanager_set.count|add:"-5" }} autres entrées du tableau...
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
 {% endfor %}
-
 <hr>
-
 <h2>Demander à gérer les ADS pour une nouvelle administration</h2>
-
 <div class="fr-tabs">
-  <ul class="fr-tabs__list" role="tablist" aria-label="[A modifier | nom du système d'onglet]">
+  <ul class="fr-tabs__list"
+      role="tablist"
+      aria-label="[A modifier | nom du système d'onglet]">
     <li role="presentation">
-      <button id="tabpanel-1" class="fr-tabs__tab fr-icon-government-line fr-tabs__tab--icon-left" tabindex="0" role="tab" aria-selected="true" aria-controls="tabpanel-1-panel">
-        Je suis instructeur
-      </button>
+      <button id="tabpanel-1"
+              class="fr-tabs__tab fr-icon-government-line fr-tabs__tab--icon-left"
+              tabindex="0"
+              role="tab"
+              aria-selected="true"
+              aria-controls="tabpanel-1-panel">Je suis instructeur</button>
     </li>
     <li role="presentation">
-        <button id="tabpanel-2" class="fr-tabs__tab fr-icon-questionnaire-line fr-tabs__tab--icon-left" tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-2-panel">
-          J'ai un autre profil
-        </button>
+      <button id="tabpanel-2"
+              class="fr-tabs__tab fr-icon-questionnaire-line fr-tabs__tab--icon-left"
+              tabindex="-1"
+              role="tab"
+              aria-selected="false"
+              aria-controls="tabpanel-2-panel">J'ai un autre profil</button>
     </li>
   </ul>
-
-  <div id="tabpanel-1-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" aria-labelledby="tabpanel-1" tabindex="0">
+  <div id="tabpanel-1-panel"
+       class="fr-tabs__panel fr-tabs__panel--selected"
+       role="tabpanel"
+       aria-labelledby="tabpanel-1"
+       tabindex="0">
     <form method="post" action="{% url 'app.ads-manager.index' %}">
       {% csrf_token %}
       <div class="fr-form-group">
         <fieldset class="fr-fieldset">
-          <legend class="fr-fieldset__legend fr-text--regular" id='radio-inline-legend'>
+          <legend class="fr-fieldset__legend fr-text--regular" id="radio-inline-legend">
             <div class="fr-mb-2w fr-alert fr-alert--info">
               <p class="fr-alert__title">Un problème ? Contactez-nous !</p>
               <p>
                 Si vous avez le moindre problème, par exemple si votre demande est refusée ou met trop de temps avant d'être acceptée, vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
               </p>
-
-              <p class="fr-text--xl fr-mt-2w">
-                La demande est exclusivement réservée aux agents de l'administration.
-              </p>
+              <p class="fr-text--xl fr-mt-2w">La demande est exclusivement réservée aux agents de l'administration.</p>
             </div>
           </legend>
-
-
-          <p>Sélectionnez le type d'administration pour laquelle vous souhaitez déclarer des ADS, ou déclarer l'absence d'ADS :</p>
-
+          <p>
+            Sélectionnez le type d'administration pour laquelle vous souhaitez déclarer des ADS, ou déclarer l'absence d'ADS :
+          </p>
           <div class="fr-fieldset__content">
             <!-- Commune -->
             <div class="fr-radio-group">
               <input type="radio" id="radio-inline-1" name="radio-inline">
-              <label class="fr-label" for="radio-inline-1">
-                D'une commune
-              </label>
-
+              <label class="fr-label" for="radio-inline-1">D'une commune</label>
               <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.commune %} fr-input-group--error{% endif %}">
                 {{ form.commune }}
-
-                {% for error in form.errors.commune %}
-                <p class="fr-error-text">
-                  {{ error }}
-                </p>
-                {% endfor %}
+                {% for error in form.errors.commune %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
               </div>
             </div>
-
             <!-- EPCI -->
             <div class="fr-radio-group">
               <input type="radio" id="radio-inline-2" name="radio-inline">
               <label class="fr-label" for="radio-inline-2">
                 D'un établissement public à fiscalité propre (métropole, communauté de commune, communauté d'agglomération ou communauté urbaine)
               </label>
-
               <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.epci %} fr-input-group--error{% endif %}">
                 {{ form.epci }}
-
-                {% for error in form.errors.epci %}
-                <p class="fr-error-text">
-                  {{ error }}
-                </p>
-                {% endfor %}
+                {% for error in form.errors.epci %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
               </div>
             </div>
-
             <!-- Préfecture -->
             <div class="fr-radio-group">
               <input type="radio" id="radio-inline-3" name="radio-inline">
-              <label class="fr-label" for="radio-inline-3">
-                D'une préfecture (ADS aéroport)
-              </label>
-
+              <label class="fr-label" for="radio-inline-3">D'une préfecture (ADS aéroport)</label>
               <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
                 {{ form.prefecture }}
-
-                {% for error in form.errors.prefecture %}
-                <p class="fr-error-text">
-                  {{ error }}
-                </p>
-                {% endfor %}
+                {% for error in form.errors.prefecture %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
               </div>
             </div>
-
-            {% include 'form_fields/bool.html' with field=form.is_ads_manager field_errors=form.errors.is_ads_manager required=form.fields.is_ads_manager %}
+            {% include "form_fields/bool.html" with field=form.is_ads_manager field_errors=form.errors.is_ads_manager required=form.fields.is_ads_manager %}
           </div>
         </fieldset>
       </div>
-
       <!-- Non-fields errors -->
       {% if form.non_field_errors %}
-      <div class="fr-input-group fr-input-group--error">
-        {% for error in form.non_field_errors %}
-        <!-- Non-field error -->
-        <p class="fr-error-text">
-          {{ error }}
-        </p>
-        {% endfor %}
-      </div>
+        <div class="fr-input-group fr-input-group--error">
+          {% for error in form.non_field_errors %}
+            <!-- Non-field error -->
+            <p class="fr-error-text">{{ error }}</p>
+          {% endfor %}
+        </div>
       {% endif %}
-
       <div class="fr-input-group">
         <button type="submit" class="fr-btn">Envoyer la demande à la préfecture</button>
       </div>
     </form>
   </div>
-
-  <div id="tabpanel-2-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-2" tabindex="0">
-      <p>
-        Le registre des ADS (licences de taxi) ne vous est pas ouvert, si nécessaire vous pouvez nous contacter en cliquant sur la bulle en bas à droite de votre écran
-      </p>
+  <div id="tabpanel-2-panel"
+       class="fr-tabs__panel"
+       role="tabpanel"
+       aria-labelledby="tabpanel-2"
+       tabindex="0">
+    <p>
+      Le registre des ADS (licences de taxi) ne vous est pas ouvert, si nécessaire vous pouvez nous contacter en cliquant sur la bulle en bas à droite de votre écran
+    </p>
   </div>
 </div>
-{% endblock %}
-
+{% endblock main %}
 {% block endbody %}
   {{ block.super }}
-
   {% comment %}Extra javascript to display form for new requests.{% endcomment %}
   {{ form.media }}
-
   <script type="text/javascript">
     /*
      * The form to create a new ADS manager shows three radio buttons to select
@@ -282,6 +284,5 @@
       radios.forEach((radio) => radio.addEventListener('change', setADSRequestFormVisibility));
     });
   </script>
-
   <script src="ads_manager_request.ts"></script>
-{% endblock %}
+{% endblock endbody %}

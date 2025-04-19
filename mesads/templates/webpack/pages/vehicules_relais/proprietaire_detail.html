@@ -1,47 +1,45 @@
 {% extends "../../base-sidemenu.html" %}
 {% load show_pagination_links %}
-
-{% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
-
+{% block sidemenu %}
+  {% include "./sidemenu.html" %}
+{% endblock sidemenu %}
 {% block main %}
-<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
-  <div class="fr-collapse" id="breadcrumb-1">
-    <ol class="fr-breadcrumb__list">
-      <li>
-        <a class="fr-breadcrumb__link" href="{% url 'vehicules-relais.proprietaire' %}">Espace propriétaire</a>
-      </li>
-      <li>
-        <a class="fr-breadcrumb__link" aria-current="page">{{ object.nom }}</a>
-      </li>
-    </ol>
-  </div>
-</nav>
-
-{% if user.is_staff %}
-<p>
-  🕰️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'vehicules-relais.proprietaire.history' proprietaire_id=object.id %}">
-    Voir l'historique des modifications <small>(lien uniquement dispo pour l'équipe MesADS)</small>
-  </a>
-</p>
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link"
+             href="{% url 'vehicules-relais.proprietaire' %}">Espace propriétaire</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">{{ object.nom }}</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  {% if user.is_staff %}
+    <p>
+      🕰️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+   href="{% url 'vehicules-relais.proprietaire.history' proprietaire_id=object.id %}">
+      Voir l'historique des modifications <small>(lien uniquement dispo pour l'équipe MesADS)</small>
+    </a>
+  </p>
 {% endif %}
-
 {% if deletable %}
-<p>
-  <a class="fr-link fr-icon-delete-line fr-link--icon-left" href="{% url 'vehicules-relais.proprietaire.delete' proprietaire_id=object.id %}" style="color: var(--text-default-error)">Supprimer mon espace propriétaire</a>
-</p>
+  <p>
+    <a class="fr-link fr-icon-delete-line fr-link--icon-left !text-[var(--text-default-error)]"
+       href="{% url 'vehicules-relais.proprietaire.delete' proprietaire_id=object.id %}">Supprimer mon espace propriétaire</a>
+  </p>
 {% endif %}
-
 <h1>Mon espace propriétaire — {{ object.nom }}</h1>
-
 <h2 class="fr-h4">Mes coordonnées</h2>
-
 <p>
-  📄 &nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'vehicules-relais.proprietaire.edit' proprietaire_id=object.id %}">
-    Modifier mes coordonnées
-  </a>
+  📄 &nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+   href="{% url 'vehicules-relais.proprietaire.edit' proprietaire_id=object.id %}">Modifier mes coordonnées</a>
 </p>
-
 <div class="fr-table fr-table--md fr-table--no-caption" id="table-contact">
   <div class="fr-table__wrapper">
     <div class="fr-table__container">
@@ -69,16 +67,15 @@
     </div>
   </div>
 </div>
-
 <h2 class="fr-h4">Mes véhicules enregistrés</h2>
-
 <p>
-  🚖 &nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'vehicules-relais.proprietaire.vehicule.new' proprietaire_id=object.id %}">
-    Enregistrer un nouveau véhicule
-  </a>
+  🚖 &nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+   href="{% url 'vehicules-relais.proprietaire.vehicule.new' proprietaire_id=object.id %}">
+  Enregistrer un nouveau véhicule
+</a>
 </p>
-
-<div class="fr-table fr-table--md fr-table--no-scroll fr-table--no-caption" id="table-vehicules">
+<div class="fr-table fr-table--md fr-table--no-scroll fr-table--no-caption"
+     id="table-vehicules">
   <div class="fr-table__wrapper">
     <div class="fr-table__container">
       <div class="fr-table__content">
@@ -95,17 +92,19 @@
           </thead>
           <tbody>
             {% for vehicule in object_list %}
-            <tr>
-              <td>{{ vehicule.departement.numero }} - {{ vehicule.departement.libelle }}</td>
-              <td>{{ vehicule.numero }}</td>
-              <td>{{ vehicule.modele|default:"-" }}</td>
-              <td>{{ vehicule.immatriculation|default:"-" }}</td>
-              <td><a href="{% url 'vehicules-relais.proprietaire.vehicule.edit' proprietaire_id=vehicule.proprietaire_id vehicule_numero=vehicule.numero %}">Afficher les détails</a></td>
-            </tr>
+              <tr>
+                <td>{{ vehicule.departement.numero }} - {{ vehicule.departement.libelle }}</td>
+                <td>{{ vehicule.numero }}</td>
+                <td>{{ vehicule.modele|default:"-" }}</td>
+                <td>{{ vehicule.immatriculation|default:"-" }}</td>
+                <td>
+                  <a href="{% url 'vehicules-relais.proprietaire.vehicule.edit' proprietaire_id=vehicule.proprietaire_id vehicule_numero=vehicule.numero %}">Afficher les détails</a>
+                </td>
+              </tr>
             {% empty %}
-            <tr>
-              <td colspan="5">Aucun véhicule enregistré</td>
-            </tr>
+              <tr>
+                <td colspan="5">Aucun véhicule enregistré</td>
+              </tr>
             {% endfor %}
           </tbody>
         </table>
@@ -114,4 +113,4 @@
   </div>
   {% show_pagination_links page_obj %}
 </div>
-{% endblock %}
+{% endblock main %}

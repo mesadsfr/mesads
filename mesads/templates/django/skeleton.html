@@ -1,23 +1,30 @@
 {% load static %}
 {% load is_subpath %}
 {% load html_metadata %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr" data-fr-scheme="light">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="{% static '@gouvfr/dsfr/dsfr.min.css' %}?v=20240718">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet"
+          href="{% static '@gouvfr/dsfr/dsfr.min.css' %}?v=20240718">
     <link rel="stylesheet" href="{% static '@gouvfr/utility/utility.css' %}">
-
-    <link rel="apple-touch-icon" href="{% static '@gouvfr/favicon/apple-touch-icon.png' %}"><!-- 180×180 -->
-    <link rel="icon" href="{% static '@gouvfr/favicon/favicon.svg' %}" type="image/svg+xml">
-    <link rel="shortcut icon" href="{% static '@gouvfr/favicon/favicon.ico' %}" type="image/x-icon"><!-- 32×32 -->
-
-    {% block extra_head %}{% endblock %}
+    <link rel="apple-touch-icon"
+          href="{% static '@gouvfr/favicon/apple-touch-icon.png' %}">
+    <!-- 180×180 -->
+    <link rel="icon"
+          href="{% static '@gouvfr/favicon/favicon.svg' %}"
+          type="image/svg+xml">
+    <link rel="shortcut icon"
+          href="{% static '@gouvfr/favicon/favicon.ico' %}"
+          type="image/x-icon">
+    <!-- 32×32 -->
+    {% block extra_head %}
+    {% endblock extra_head %}
     {% html_metadata %}
-
     {% if MESADS_STATS_ENABLED %}
-    <script>
+      <script>
       var _paq = window._paq = window._paq || [];
       /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
       _paq.push(['trackPageView']);
@@ -29,26 +36,25 @@
         var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
         g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
       })();
-    </script>
+      </script>
     {% endif %}
   </head>
   <body>
     <div class="fr-skiplinks">
       <nav class="fr-container" role="navigation" aria-label="Accès rapide">
-          <ul class="fr-skiplinks__list">
-              <li>
-                <a class="fr-link" href="#content">Contenu</a>
-              </li>
-              <li>
-                <a class="fr-link" href="#menu">Menu</a>
-              </li>
-              <li>
-                <a class="fr-link" href="#footer">Pied de page</a>
-              </li>
-          </ul>
+        <ul class="fr-skiplinks__list">
+          <li>
+            <a class="fr-link" href="#content">Contenu</a>
+          </li>
+          <li>
+            <a class="fr-link" href="#menu">Menu</a>
+          </li>
+          <li>
+            <a class="fr-link" href="#footer">Pied de page</a>
+          </li>
+        </ul>
       </nav>
     </div>
-
     <header role="banner" class="fr-header">
       <div class="fr-header__body">
         <div class="fr-container">
@@ -57,21 +63,27 @@
               <div class="fr-header__brand-top">
                 <div class="fr-header__logo">
                   <p class="fr-logo">
-                  République
-                  <br>Française
+                    République
+                    <br>
+                    Française
                   </p>
                 </div>
                 <div class="fr-header__navbar">
-                  <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="menu" aria-haspopup="menu" title="Menu" id="fr-btn-menu-mobile">
-                    Menu
-                  </button>
+                  <button class="fr-btn--menu fr-btn"
+                          data-fr-opened="false"
+                          aria-controls="menu"
+                          aria-haspopup="menu"
+                          title="Menu"
+                          id="fr-btn-menu-mobile">Menu</button>
                 </div>
               </div>
               <div class="fr-header__service">
                 <a href="/">
                   <p class="fr-header__service-title">Mes ADS</p>
                 </a>
-                <p class="fr-header__service-tagline">🚖 La base Française des autorisations de stationnement Taxi <span style="display: inline-block; width: fit-content; transform: scale(-1, 1);">🚕</span></p>
+                <p class="fr-header__service-tagline">
+                  🚖 La base Française des autorisations de stationnement Taxi <span class="inline-block w-fit -scale-x-100">🚕</span>
+                </p>
               </div>
             </div>
             <div class="fr-header__tools">
@@ -84,9 +96,7 @@
                     <li>
                       <form action="{% url 'logout' %}" method="post">
                         {% csrf_token %}
-                        <button type="submit" class="fr-link fr-icon-close-circle-line">
-                          Déconnexion
-                        </button>
+                        <button type="submit" class="fr-link fr-icon-close-circle-line">Déconnexion</button>
                       </form>
                     </li>
                     {% if user.is_superuser %}
@@ -105,48 +115,60 @@
           </div>
         </div>
       </div>
-
-      <div class="fr-header__menu fr-modal" id="menu" aria-labelledby="fr-btn-menu-mobile">
+      <div class="fr-header__menu fr-modal"
+           id="menu"
+           aria-labelledby="fr-btn-menu-mobile">
         <div class="fr-container">
           <button class="fr-link--close fr-link" aria-controls="menu">Fermer</button>
           <div class="fr-header__menu-links"></div>
-          <nav class="fr-nav" id="navigation-832" role="navigation" aria-label="Menu principal">
+          <nav class="fr-nav"
+               id="navigation-832"
+               role="navigation"
+               aria-label="Menu principal">
             <ul class="fr-nav__list">
               <li class="fr-nav__item">
                 {% url 'app.ads-manager.index' as ads_manager_index_url %}
                 {% is_subpath request.path ads_manager_index_url 1 as is_ads_register %}
-                <a class="fr-nav__link" href="{{ ads_manager_index_url }}"{% if is_ads_register %} aria-current="page"{% endif %}>📄 Registre des ADS</a>
+                <a class="fr-nav__link"
+                   href="{{ ads_manager_index_url }}"
+                   {% if is_ads_register %}aria-current="page"{% endif %}>📄 Registre des ADS</a>
               </li>
               <li class="fr-nav__item">
                 {% url 'vehicules-relais.index' as vehicules_relais_index_url %}
                 {% is_subpath request.path vehicules_relais_index_url 1 as is_vehicules_relais %}
-                <a class="fr-nav__link" href="{{ vehicules_relais_index_url }}"{% if is_vehicules_relais %} aria-current="page"{% endif %}>🚖 Répertoires des Véhicules Relais</a>
+                <a class="fr-nav__link"
+                   href="{{ vehicules_relais_index_url }}"
+                   {% if is_vehicules_relais %}aria-current="page"{% endif %}>🚖 Répertoires des Véhicules Relais</a>
               </li>
               <li class="fr-nav__item">
                 {% url 'app.reglementation' as reglementation_url %}
                 {% is_subpath request.path reglementation_url 1 as is_reglementation %}
-                <a class="fr-nav__link" href="{{ reglementation_url }}"{% if is_reglementation %} aria-current="page"{% endif %}>📚 Réglementation taxi</a>
+                <a class="fr-nav__link"
+                   href="{{ reglementation_url }}"
+                   {% if is_reglementation %}aria-current="page"{% endif %}>📚 Réglementation taxi</a>
               </li>
               <li class="fr-nav__item">
                 {% url 'app.faq' as faq_url %}
-                <a class="fr-nav__link" href="{{ faq_url }}"{% if request.path == faq_url %} aria-current="page"{% endif %}>🙋 J'ai un problème</a>
+                <a class="fr-nav__link"
+                   href="{{ faq_url }}"
+                   {% if request.path == faq_url %}aria-current="page"{% endif %}>🙋 J'ai un problème</a>
               </li>
             </ul>
           </nav>
         </div>
       </div>
     </header>
-
-    {% block content %}{% endblock %}
-
+    {% block content %}
+    {% endblock content %}
     <footer class="fr-footer fr-mt-5w" role="contentinfo" id="footer">
       <div class="fr-container">
         <div class="fr-footer__body">
           <div class="fr-footer__brand fr-enlarge-link">
             <a href="/" title="Retour à l’accueil">
               <p class="fr-logo" title="république française">
-              république
-              <br>française
+                république
+                <br>
+                française
               </p>
             </a>
           </div>
@@ -183,24 +205,26 @@
             </li>
           </ul>
           <div class="fr-footer__bottom-copy">
-            <p>Sauf mention contraire, tous les textes de ce site sont sous <a href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank">licence etalab-2.0</a>
+            <p>
+              Sauf mention contraire, tous les textes de ce site sont sous <a href="https://github.com/etalab/licence-ouverte/blob/master/LO.md"
+    target="_blank">licence etalab-2.0</a>
             </p>
           </div>
         </div>
       </div>
     </footer>
-
-    <script type="module" src="{% static '@gouvfr/dsfr/dsfr.module.js' %}?v=20240718"></script>
-    <script type="text/javascript" nomodule src="{% static '@gouvfr/js/dsfr.nomodule.js' %}?v=20240718"></script>
-    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}?v=20240718"></script>
-
+    <script type="module"
+            src="{% static '@gouvfr/dsfr/dsfr.module.js' %}?v=20240718"></script>
+    <script type="text/javascript"
+            nomodule
+            src="{% static '@gouvfr/js/dsfr.nomodule.js' %}?v=20240718"></script>
+    <script type="text/javascript"
+            src="{% static 'admin/js/vendor/jquery/jquery.js' %}?v=20240718"></script>
     {% if MESADS_CRISP_WEBSITE_ID %}
-    <script type="text/javascript">
+      <script type="text/javascript">
       window.$crisp= [];
 
-      {% if user.email %}
-      window.$crisp.push(["set", "user:email", ["{{ user.email }}"]]);
-      {% endif %}
+      {% if user.email %}window.$crisp.push(["set", "user:email", ["{{ user.email }}"]]);{% endif %}
 
       window.CRISP_WEBSITE_ID = "{{ MESADS_CRISP_WEBSITE_ID }}";
       (function(){
@@ -210,13 +234,12 @@
         s.async = 1;
         d.getElementsByTagName("head")[0].appendChild(s);
       })();
-    </script>
+      </script>
     {% endif %}
-
     {% if MESADS_SENTRY_JS_URL %}
-    <script src="{{ MESADS_SENTRY_JS_URL }}" crossorigin="anonymous"></script>
+      <script src="{{ MESADS_SENTRY_JS_URL }}" crossorigin="anonymous"></script>
     {% endif %}
-
-    {% block endbody %}{% endblock %}
+    {% block endbody %}
+    {% endblock endbody %}
   </body>
 </html>

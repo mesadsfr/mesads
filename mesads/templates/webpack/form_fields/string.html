@@ -1,28 +1,16 @@
-<div
-  class="fr-input-group{% if field_errors %} fr-input-group--error{% endif %}"
-  {% if x_show %}x-show="{{ x_show }}"{% endif %}
-  {% if x_transition %}x-transition{% endif %}
->
-  <label
-    class="fr-label"
-    for="{{ field.id_for_label }}"
-  >
-    {{ field.label }}{% if required %}*{% endif %}
+<div class="fr-input-group{% if field_errors %} fr-input-group--error{% endif %}"
+     {% if x_show %}x-show="{{ x_show }}"{% endif %}
+     {% if x_transition %}x-transition{% endif %}>
+  <label class="fr-label" for="{{ field.id_for_label }}">
+    {{ field.label }}
+    {% if required %}*{% endif %}
     {% if field.help_text %}<span class="fr-hint-text">{{ field.help_text }}</span>{% endif %}
   </label>
-
-  <input
-    class="fr-input{% if field_errors %} fr-input--error{% endif %}"
-    type="{% if html_type %}{{ html_type }}{% else %}text{% endif %}"
-    id="{{ field.id_for_label }}"
-    name="{{ field.html_name }}"
-    value="{{ field.value|default:"" }}"
-    {% if readonly %}readonly{% endif %}
-  />
-
-  {% for error in field_errors %}
-  <p class="fr-error-text">
-    {{ error }}
-  </p>
-  {% endfor %}
+  <input class="fr-input{% if field_errors %} fr-input--error{% endif %}"
+         type="{% if html_type %}{{ html_type }}{% else %}text{% endif %}"
+         id="{{ field.id_for_label }}"
+         name="{{ field.html_name }}"
+         value="{{ field.value|default:"" }}"
+         {% if readonly %}readonly{% endif %} />
+  {% for error in field_errors %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
 </div>

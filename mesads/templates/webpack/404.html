@@ -1,35 +1,27 @@
 {% extends "base.html" %}
-
 {% block extra_head %}
-{{ block.super }}
-<title>Page introuvable</title>
-{% endblock %}
-
+  {{ block.super }}
+  <title>Page introuvable</title>
+{% endblock extra_head %}
 {% block body %}
-<h1 class="fr-mb-4w">La page demandée n'existe pas</h1>
-
-<p>
-  💨 Le lien que vous avez suivi mène vers une page qui n'existe pas.
-</p>
-
-<div class="fr-notice fr-notice--info fr-mb-2w">
-  <div class="fr-container">
+  <h1 class="fr-mb-4w">La page demandée n'existe pas</h1>
+  <p>💨 Le lien que vous avez suivi mène vers une page qui n'existe pas.</p>
+  <div class="fr-notice fr-notice--info fr-mb-2w">
+    <div class="fr-container">
       <div class="fr-notice__body">
-          <p class="fr-notice__title">
-            Nous effectuons régulièrement des mises à jour sur Mes ADS afin d'améliorer le produit.
-            <br />
-            <br />
-            Si vous avez suivi un lien depuis un autre site, depuis votre historique de navigation, ou depuis un email, il est possible que la page ait été déplacée ou supprimée.
-            <br />
-            <br />
-            Suivez les menus de navigation pour retrouver votre chemin.
-          </p>
+        <p class="fr-notice__title">
+          Nous effectuons régulièrement des mises à jour sur Mes ADS afin d'améliorer le produit.
+          <br />
+          <br />
+          Si vous avez suivi un lien depuis un autre site, depuis votre historique de navigation, ou depuis un email, il est possible que la page ait été déplacée ou supprimée.
+          <br />
+          <br />
+          Suivez les menus de navigation pour retrouver votre chemin.
+        </p>
       </div>
+    </div>
   </div>
-</div>
-
-<p>
-  Si vous pensez qu'il s'agit d'une erreur, n'hésitez pas à contacter notre équipe sur <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
-</p>
-
-{% endblock %}
+  <p>
+    Si vous pensez qu'il s'agit d'une erreur, n'hésitez pas à contacter notre équipe sur <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+  </p>
+{% endblock body %}

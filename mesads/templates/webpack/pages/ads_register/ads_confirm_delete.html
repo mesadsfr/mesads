@@ -1,43 +1,36 @@
 {% extends "./base.html" %}
-
 {% block main %}
-<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
-  <div class="fr-collapse" id="breadcrumb-1">
-    <ol class="fr-breadcrumb__list">
-      <li>
-        <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
-      </li>
-      <li>
-        <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
-      </li>
-      <li>
-        <a class="fr-breadcrumb__link" aria-current="page">ADS numéro {{ ads.number }}</a>
-      </li>
-    </ol>
-  </div>
-</nav>
-
-<h1>
-  Suppression de l'ADS numéro {{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})
-</h1>
-
-{% if ads.ads_manager.is_locked %}
-<p>
-  Vous ne pouvez pas supprimer cette ADS, car elle appartient à un gestionnaire pour lequel les modifications manuelles ont été bloquées car les données sont mises à jour automatiquement.
-</p>
-{% else %}
-<form method="post">
-  {% csrf_token %}
-  <p>
-    Êtes-vous sûr de vouloir supprimer cette ADS ?
-  </p>
-  <input
-    class="fr-btn"
-    type="submit"
-    value="Supprimer définitivement"
-    style="background-color: var(--background-flat-error)"
-  />
-</form>
-{% endif %}
-{% endblock %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link"
+             href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">ADS numéro {{ ads.number }}</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <h1>Suppression de l'ADS numéro {{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})</h1>
+  {% if ads.ads_manager.is_locked %}
+    <p>
+      Vous ne pouvez pas supprimer cette ADS, car elle appartient à un gestionnaire pour lequel les modifications manuelles ont été bloquées car les données sont mises à jour automatiquement.
+    </p>
+  {% else %}
+    <form method="post">
+      {% csrf_token %}
+      <p>Êtes-vous sûr de vouloir supprimer cette ADS ?</p>
+      <input class="fr-btn !bg-[var(--background-flat-error)]"
+             type="submit"
+             value="Supprimer définitivement" />
+    </form>
+  {% endif %}
+{% endblock main %}

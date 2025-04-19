@@ -1,71 +1,72 @@
 {% extends "../../base-sidemenu.html" %}
 {% load show_pagination_links %}
-
-{% block sidemenu %}{% include "./sidemenu.html" %}{% endblock %}
-
+{% block sidemenu %}
+  {% include "./sidemenu.html" %}
+{% endblock sidemenu %}
 {% block main %}
-<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
-  <div class="fr-collapse" id="breadcrumb-1">
-    <ol class="fr-breadcrumb__list">
-      <li>
-        <a class="fr-breadcrumb__link" aria-current="page">Espace propriétaire</a>
-      </li>
-    </ol>
-  </div>
-</nav>
-
-<h1>Mon espace propriétaire</h1>
-
-{% if not is_proprietaire %}
-<div class="fr-alert fr-alert--error">
-  <p class="fr-alert__title">Votre compte propriétaire n'est pas activé</p>
-  <p>
-    Si vous êtes détenteur de taxis relais, il est nécessaire d'activer votre compte propriétaire avant de pouvoir les enregistrer.
-  </p>
-  <p>
-    Si vous n'êtes pas détenteur de taxis relais, cette section ne vous concerne pas et vous ne devez pas activer l'espace propriétaire.
-  </p>
-  <p>
-    En cas de doute, n'hésitez pas à contacter notre équipe par chat ou par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
-  </p>
-  <p class="fr-grid-row fr-grid-row--center fr-mt-2w">
-    <a class="fr-btn fr-btn--secondary" href="{% url 'vehicules-relais.proprietaire.new' %}">Activer mon espace propriétaire</a>
-  </p>
-</div>
-{% else %}
-<p>
-  ➕&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'vehicules-relais.proprietaire.new' %}">
-    Créer un autre espace propriétaire
-  </a>
-</p>
-
-<div class="fr-table fr-table--lg" id="table-proprietaires-list">
-  <div class="fr-table__wrapper">
-    <div class="fr-table__container">
-      <div class="fr-table__content">
-        <table id="table-proprietaires-list">
-          <thead>
-            <tr>
-              <th scope="col">Nom</th>
-              <th scope="col">SIRET</th>
-              <th scope="col">🔎 Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for row in object_list %}
-            <tr>
-              <td>{{ row.nom }}</td>
-              <td>{{ row.siret|default:"-" }}</td>
-              <td><a href="{% url 'vehicules-relais.proprietaire.detail' proprietaire_id=row.id %}">Accéder à mon espace propriétaire</a></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Espace propriétaire</a>
+        </li>
+      </ol>
     </div>
-  </div>
-  {% show_pagination_links page_obj %}
-</div>
-{% endif %}
-{% endblock %}
+  </nav>
+  <h1>Mon espace propriétaire</h1>
+  {% if not is_proprietaire %}
+    <div class="fr-alert fr-alert--error">
+      <p class="fr-alert__title">Votre compte propriétaire n'est pas activé</p>
+      <p>
+        Si vous êtes détenteur de taxis relais, il est nécessaire d'activer votre compte propriétaire avant de pouvoir les enregistrer.
+      </p>
+      <p>
+        Si vous n'êtes pas détenteur de taxis relais, cette section ne vous concerne pas et vous ne devez pas activer l'espace propriétaire.
+      </p>
+      <p>
+        En cas de doute, n'hésitez pas à contacter notre équipe par chat ou par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
+      </p>
+      <p class="fr-grid-row fr-grid-row--center fr-mt-2w">
+        <a class="fr-btn fr-btn--secondary"
+           href="{% url 'vehicules-relais.proprietaire.new' %}">Activer mon espace propriétaire</a>
+      </p>
+    </div>
+  {% else %}
+    <p>
+      ➕&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+   href="{% url 'vehicules-relais.proprietaire.new' %}">Créer un autre espace propriétaire</a>
+    </p>
+    <div class="fr-table fr-table--lg" id="table-proprietaires-list">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table id="table-proprietaires-list">
+              <thead>
+                <tr>
+                  <th scope="col">Nom</th>
+                  <th scope="col">SIRET</th>
+                  <th scope="col">🔎 Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in object_list %}
+                  <tr>
+                    <td>{{ row.nom }}</td>
+                    <td>{{ row.siret|default:"-" }}</td>
+                    <td>
+                      <a href="{% url 'vehicules-relais.proprietaire.detail' proprietaire_id=row.id %}">Accéder à mon espace propriétaire</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% show_pagination_links page_obj %}
+    </div>
+  {% endif %}
+{% endblock main %}
