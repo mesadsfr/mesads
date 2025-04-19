@@ -107,7 +107,7 @@
       </form>
     </div>
   </div>
-  <div class="fr-table fr-table--md">
+  <div class="fr-table fr-table--md fr-table--no-scroll">
     <div class="fr-table__wrapper">
       <div class="fr-table__container">
         <div class="fr-table__content">
@@ -120,7 +120,7 @@
                 <th>Type de l'ADS</th>
                 <th>Titulaire</th>
                 <th>Immatriculation</th>
-                <th>🔎 Action</th>
+                <th class="!text-right">Consulter / Modifier</th>
               </tr>
             </thead>
             <tbody>
@@ -134,9 +134,9 @@
                   <td>{{ ads.ads_type }}</td>
                   <td class="max-w-[300px] overflow-ellipsis overflow-hidden">{{ ads.owner_name }}</td>
                   <td>{{ ads.immatriculation_plate }}</td>
-                  <td>
-                    <a class="fr-btn fr-btn--sm"
-                       href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}">Consulter ou Modifier</a>
+                  <td class="!text-right">
+                    <a class="fr-btn fr-btn--secondary fr-icon-eye-line"
+                       href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}"></a>
                   </td>
                 </tr>
               {% empty %}
