@@ -9,7 +9,7 @@
             {% if form.instance.file %}
                 {{ form.id.as_hidden }}
                 {{ form.file.as_hidden }}
-                <p class="fr-download__title">
+                <p class="break-all">
                     <a class="fr-download__link"
                        {% if form.instance.exists_in_storage %}href="{{ form.instance.file.url }}" target="_blank"{% endif %}>
                         {{ form.instance.human_filename }}
