@@ -1,8 +1,5 @@
 @import "tailwindcss";
 
-h1 {
-  font-size: 2rem;
-}
 
 .table-row-success td:first-child:before {
   content: "✅ ";
@@ -69,10 +66,4 @@ h1 {
 
 .select2-dropdown {
   top: -.5rem;
-}
-
-/* Highlight table>tr */
-.tr-highlighted {
-  /* !important is required to override the background-color set by default to even rows */
-  background-color: rgba(0, 127, 127, 0.15) !important;
 }
