@@ -1,22 +1,5 @@
 @import "tailwindcss";
 
-
-.table-row-success td:first-child:before {
-  content: "✅ ";
-}
-
-.table-row-failure td:first-child:before {
-  content: "🚫 ";
-}
-
-.table-row-unknown td:first-child:before {
-  content: "⁉️  ";
-}
-
-.highlight-shadow {
-  box-shadow: 2px 2px 2px 2px;
-}
-
 /*
    If the title of the download card is too long, add ellipsis.
 */
