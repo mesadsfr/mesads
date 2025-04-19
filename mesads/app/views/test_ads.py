@@ -13,6 +13,7 @@ from ..models import (
     ADS,
     ADSLegalFile,
     ADSManager,
+    ADSUpdateLog,
     ADSManagerAdministrator,
     ADSUser,
     Notification,
@@ -641,6 +642,64 @@ class TestADSCreateView(ClientTestCase):
         ads = ADS.objects.order_by("-id")[0]
         self.assertEqual(
             resp.url, f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{ads.id}"
+        )
+        ads_update_log = ADSUpdateLog.objects.get(ads=ads)
+        self.assertFalse(ads_update_log.is_complete)
+
+    def test_create_with_all_fields(self):
+        """Verify that the log has the "complete" flag set when all the
+        important fields are provided."""
+        resp = self.ads_manager_city35_client.post(
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
+            {
+                "number": "abcdef",
+                "certify": "true",
+                "ads_in_use": "true",
+                "owner_name": "Bob Marley",
+                "owner_siret": "12345678901234",
+                "immatriculation_plate": "XXX-XX-XXX",
+                "vehicle_compatible_pmr": "true",
+                "eco_vehicle": "true",
+                "ads_creation_date": "2015-10-01",
+                "adsuser_set-TOTAL_FORMS": 10,
+                "adsuser_set-INITIAL_FORMS": 0,
+                "adsuser_set-MIN_NUM_FORMS": 0,
+                "adsuser_set-MAX_NUM_FORMS": 10,
+                "adsuser_set-0-id": "",
+                "adsuser_set-0-status": "titulaire_exploitant",
+                "adsuser_set-0-license_number": "yyy",
+                "adslegalfile_set-TOTAL_FORMS": 10,
+                "adslegalfile_set-INITIAL_FORMS": 0,
+                "adslegalfile_set-MIN_NUM_FORMS": 0,
+                "adslegalfile_set-MAX_NUM_FORMS": 10,
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
+        ads = ADS.objects.order_by("-id")[0]
+        ads_update_log = ADSUpdateLog.objects.get(ads=ads)
+        self.assertTrue(ads_update_log.is_complete)
+
+    def test_create_not_certified(self):
+        resp = self.ads_manager_city35_client.post(
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/",
+            {
+                "number": "abcdef",
+                "certify": "false",
+                "ads_in_use": "true",
+                "adsuser_set-TOTAL_FORMS": 10,
+                "adsuser_set-INITIAL_FORMS": 0,
+                "adsuser_set-MIN_NUM_FORMS": 0,
+                "adsuser_set-MAX_NUM_FORMS": 10,
+                "adslegalfile_set-TOTAL_FORMS": 10,
+                "adslegalfile_set-INITIAL_FORMS": 0,
+                "adslegalfile_set-MIN_NUM_FORMS": 0,
+                "adslegalfile_set-MAX_NUM_FORMS": 10,
+            },
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn(
+            "Vous devez cocher cette case pour valider le formulaire.",
+            resp.context["form"].errors["certify"][0],
         )
 
     def test_create_duplicate(self):

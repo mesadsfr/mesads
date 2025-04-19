@@ -239,6 +239,16 @@ class TestADS(ClientTestCase):
         else:
             self.fail("Should have raised a ValidationError")
 
+    def test_ads_type(self):
+        self.ads.ads_creation_date = date(2015, 12, 11)
+        self.assertEqual(self.ads.ads_type(), "Nouvelle ADS")
+
+        self.ads.ads_creation_date = date(2011, 12, 11)
+        self.assertEqual(self.ads.ads_type(), "Ancienne ADS")
+
+        self.ads.ads_creation_date = None
+        self.assertEqual(self.ads.ads_type(), "")
+
 
 class TestADSLegalFile(ClientTestCase):
     def setUp(self):
