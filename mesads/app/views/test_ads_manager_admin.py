@@ -255,6 +255,7 @@ class TestADSManagerAdminUpdatesView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{ads.id}",
             {
                 "number": ads.id,
+                "certify": "true",
                 "ads_in_use": "true",
             },
         )
