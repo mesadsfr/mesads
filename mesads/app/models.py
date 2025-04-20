@@ -695,25 +695,31 @@ class ADSUpdateLog(SoftDeleteMixin, models.Model):
         debug_missing_fields = []
 
         if not ads.ads_creation_date:
-            debug_missing_fields.append("Date de création")
+            debug_missing_fields.append(ADS.ads_creation_date.field.verbose_name)
         if ads.ads_in_use:
             if not ads.owner_name:
-                debug_missing_fields.append("Nom du titulaire")
+                debug_missing_fields.append(ADS.owner_name.field.verbose_name)
             if not ads.owner_siret:
-                debug_missing_fields.append("SIRET du titulaire")
+                debug_missing_fields.append(ADS.owner_siret.field.verbose_name)
             if not ads.immatriculation_plate:
-                debug_missing_fields.append("Immatriculation")
+                debug_missing_fields.append(
+                    ADS.immatriculation_plate.field.verbose_name
+                )
             if ads.vehicle_compatible_pmr is None:
-                debug_missing_fields.append("Véhicule compatible PMR")
+                debug_missing_fields.append(
+                    ADS.vehicle_compatible_pmr.field.verbose_name
+                )
             if ads.eco_vehicle is None:
-                debug_missing_fields.append("Véhicule électrique ou hybride")
+                debug_missing_fields.append(ADS.eco_vehicle.field.verbose_name)
             if len(ads_users) == 0:
-                debug_missing_fields.append("Aucun conducteur renseigné")
+                debug_missing_fields.append(
+                    "Vous devez renseigner au moins un conducteur"
+                )
             else:
                 for idx, ads_user in enumerate(ads_users):
                     if not ads_user.license_number:
                         debug_missing_fields.append(
-                            f"Conducteur {idx + 1}: licence professionnelle"
+                            f"Conducteur {idx + 1}: {ADSUser.license_number.field.verbose_name}"
                         )
         ADSUpdateLog.objects.create(
             ads=ads,
