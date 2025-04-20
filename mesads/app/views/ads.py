@@ -74,6 +74,14 @@ class ADSView(RevisionMixin, UpdateView):
         ctx["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
         ctx["ads_users_formset"] = self.ads_users_formset
         ctx["ads_legal_files_formset"] = self.ads_legal_files_formset
+
+        ctx["latest_ads_update_log"] = (
+            ADSUpdateLog.objects.filter(
+                ads=self.object,
+            )
+            .order_by("-update_at")
+            .first()
+        )
         return ctx
 
     def get_object(self, queryset=None):

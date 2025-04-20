@@ -99,7 +99,8 @@ class ADSManagerView(ListView, ProcessFormView):
             latest_update_log_is_outdated=Case(
                 When(
                     latest_update_log__lt=ExpressionWrapper(
-                        Now() - timedelta(days=365), output_field=DateTimeField()
+                        Now() - timedelta(days=ADSUpdateLog.OUTDATED_LOG_DAYS),
+                        output_field=DateTimeField(),
                     ),
                     then=Value(True),
                 ),

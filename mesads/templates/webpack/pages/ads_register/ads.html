@@ -58,13 +58,32 @@
    href="{% url 'app.ads.history' manager_id=ads_manager.id ads_id=ads.id %}">Voir l'historique des modifications</a>
   </p>
 {% endif %}
-<h1>
-  {% if ads %}
-    ADS numéro {{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})
-  {% else %}
-    Enregistrement d'une ADS
+{% if ads %}
+  <h1>ADS numéro {{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})</h1>
+  {% if not latest_ads_update_log or latest_ads_update_log.is_outdated %}
+    <div class="fr-alert fr-alert--warning fr-mb-3w">
+      <h3 class="fr-alert__title">Vérification de l'ADS nécessaire</h3>
+      <p>
+        {% if latest_ads_update_log %}
+          Les informations de cette ADS n'ont pas été mises à jour depuis le {{ latest_ads_update_log.update_at|date:"d/m/Y" }}.
+        {% endif %}
+        Veuillez valider que les informations sont correctes, et valider en bas de la page.
+      </p>
+    </div>
+  {% elif latest_ads_update_log and not latest_ads_update_log.is_outdated %}
+    <div class="fr-alert fr-alert--warning fr-mb-3w">
+      <h3 class="fr-alert__title">Informations incomplètes</h3>
+      <p>
+        Les informations suivantes sont nécessaires :
+        <ul>
+          {% for field in latest_ads_update_log.get_missing_fields %}<li>{{ field }}</li>{% endfor %}
+        </ul>
+      </p>
+    </div>
   {% endif %}
-</h1>
+{% else %}
+  <h1>Enregistrement d'une ADS</h1>
+{% endif %}
 {% if ads_manager.is_locked %}
   <div class="fr-highlight">
     <p>

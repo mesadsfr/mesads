@@ -1,5 +1,6 @@
 from datetime import date, datetime
 import itertools
+import json
 import logging
 import os
 import re
@@ -680,6 +681,10 @@ class ADSUpdateLog(SoftDeleteMixin, models.Model):
         verbose_name="Message d'erreur de complétude",
     )
 
+    # Number of days after which the log is considered outdated and should be reviewed
+    # by the user
+    OUTDATED_LOG_DAYS = 365
+
     @classmethod
     def create_for_ads(self, ads, user):
         ads_users = ads.adsuser_set.all()
@@ -726,7 +731,15 @@ class ADSUpdateLog(SoftDeleteMixin, models.Model):
             user=user,
             serialized=serialized,
             is_complete=len(debug_missing_fields) == 0,
-            debug_missing_fields=debug_missing_fields,
+            debug_missing_fields=json.dumps(debug_missing_fields),
+        )
+
+    def get_missing_fields(self):
+        return json.loads(self.debug_missing_fields)
+
+    def is_outdated(self):
+        return self.update_at < timezone.now() - timezone.timedelta(
+            days=self.OUTDATED_LOG_DAYS
         )
 
 
