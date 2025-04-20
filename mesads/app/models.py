@@ -1,4 +1,5 @@
 from datetime import date, datetime
+import itertools
 import logging
 import os
 import re
@@ -8,6 +9,7 @@ import requests
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import F, Q
@@ -677,6 +679,49 @@ class ADSUpdateLog(SoftDeleteMixin, models.Model):
         null=False,
         verbose_name="Message d'erreur de complétude",
     )
+
+    @classmethod
+    def create_for_ads(self, ads, user):
+        ads_users = ads.adsuser_set.all()
+        serialized = serializers.serialize(
+            "json",
+            itertools.chain(
+                [ads],
+                ads_users,
+                ads.adslegalfile_set.all(),
+            ),
+        )
+
+        debug_missing_fields = []
+
+        if not ads.ads_creation_date:
+            debug_missing_fields.append("Date de création")
+        if ads.ads_in_use:
+            if not ads.owner_name:
+                debug_missing_fields.append("Nom du titulaire")
+            if not ads.owner_siret:
+                debug_missing_fields.append("SIRET du titulaire")
+            if not ads.immatriculation_plate:
+                debug_missing_fields.append("Immatriculation")
+            if ads.vehicle_compatible_pmr is None:
+                debug_missing_fields.append("Véhicule compatible PMR")
+            if ads.eco_vehicle is None:
+                debug_missing_fields.append("Véhicule électrique ou hybride")
+            if len(ads_users) == 0:
+                debug_missing_fields.append("Aucun conducteur renseigné")
+            else:
+                for idx, ads_user in enumerate(ads_users):
+                    if not ads_user.license_number:
+                        debug_missing_fields.append(
+                            f"Conducteur {idx + 1}: licence professionnelle"
+                        )
+        ADSUpdateLog.objects.create(
+            ads=ads,
+            user=user,
+            serialized=serialized,
+            is_complete=len(debug_missing_fields) == 0,
+            debug_missing_fields=debug_missing_fields,
+        )
 
 
 def get_legal_filename(instance, filename):
