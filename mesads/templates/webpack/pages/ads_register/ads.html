@@ -70,7 +70,7 @@
         Veuillez valider que les informations sont correctes, et valider en bas de la page.
       </p>
     </div>
-  {% elif latest_ads_update_log and not latest_ads_update_log.is_outdated %}
+  {% elif not latest_ads_update_log.is_complete and not latest_ads_update_log.is_outdated %}
     <div class="fr-alert fr-alert--warning fr-mb-3w">
       <h3 class="fr-alert__title">Informations incomplètes</h3>
       <p>
