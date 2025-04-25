@@ -173,7 +173,9 @@ class ADSManagerAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         req = super().get_queryset(request)
-        req = req.annotate(ads_count=Count("ads"))
+        req = req.annotate(
+            ads_count=Count("ads", filter=Q(ads__deleted_at__isnull=True))
+        )
         return req
 
     def has_add_permission(self, request, obj=None):

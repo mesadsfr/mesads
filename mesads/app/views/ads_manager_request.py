@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import send_mail
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.db import transaction
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
@@ -32,7 +32,12 @@ class ADSManagerRequestView(FormView):
         ctx = super().get_context_data(**kwargs)
         ctx["user_ads_manager_requests"] = (
             ADSManagerRequest.objects.filter(user=self.request.user)
-            .annotate(ads_count=Count("ads_manager__ads"))
+            .annotate(
+                ads_count=Count(
+                    "ads_manager__ads",
+                    filter=Q(ads_manager__ads__deleted_at__isnull=True),
+                )
+            )
             .all()
         )
 
