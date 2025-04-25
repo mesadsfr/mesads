@@ -126,7 +126,7 @@ class UserAuditEntry(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     action = models.CharField(max_length=64, null=False, blank=False)
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="audit_entries", null=True
+        User, on_delete=models.SET_NULL, related_name="audit_entries", null=True
     )
     ip = models.GenericIPAddressField(null=True)
     body = models.TextField(null=False, blank=True)

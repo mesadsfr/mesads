@@ -230,7 +230,8 @@ class UserAdmin(BaseUserAdmin):
     def has_delete_permission(self, request, obj=None):
         """Forbid user deletion if the account is referenced by django
         reversion. To deactivate these users, we can simply set the flag
-        is_active to False instead."""
+        is_active to False instead. This is to avoid removing users that are
+        linked to important resources."""
         if obj:
             count = Revision.objects.filter(user=obj).count()
             if count:
