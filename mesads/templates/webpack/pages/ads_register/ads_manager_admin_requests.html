@@ -38,12 +38,12 @@
               <caption>Demandes pour la {{ ads_manager_administrator.prefecture.display_text }}</caption>
               <thead>
                 <tr>
-                  <th>👨‍💻 Utilisateur</th>
+                  <th>Utilisateur</th>
                   <th>
                     {% if sort == "name" %}
-                      🏢 Administration ▲
+                      Administration ▲
                     {% else %}
-                      <a href="?sort=name">🏢 Administration ▶</a>
+                      <a href="?sort=name">Administration ▶</a>
                     {% endif %}
                   </th>
                   <th>
@@ -52,37 +52,33 @@
                         <br />
                       la demande ▶</a>
                     {% else %}
-                      📅 Date de
-                      <br />
-                      la demande ▲
+                      📅 Date de la demande ▲
                     {% endif %}
                   </th>
-                  <th>
-                    Dernière
-                    <br />
-                    connexion
-                  </th>
-                  <th>🔎 Action</th>
+                  <th>Dernière connexion de l'utilisateur</th>
+                  <th>🔎 Statut</th>
                 </tr>
               </thead>
               <tbody>
                 {% for ads_manager_request in ads_manager_requests %}
                   <tr class="table-row-{% if ads_manager_request.accepted is True %}success{% elif ads_manager_request.accepted is False %}failure{% else %}unknown{% endif %}">
-                    <td>{{ ads_manager_request.user.email }}</td>
+                    <td {% if ads_manager_request.accepted is False %}class="line-through"{% endif %}>
+                      {{ ads_manager_request.user.email }}
+                    </td>
                     <td>{{ ads_manager_request.ads_manager.content_object.display_text|capfirst }}</td>
-                    <td>{{ ads_manager_request.created_at }}</td>
-                    <td>{{ ads_manager_request.user.last_login }}</td>
+                    <td>{{ ads_manager_request.created_at|date:"d/m/Y" }}</td>
+                    <td>{{ ads_manager_request.user.last_login|date:"d/m/Y" }}</td>
                     <td>
-                      <div class="fr-grid-row fr-grid-row--gutters">
-                        {% comment %}
+                      {% comment %}
                     Display the button to accept/deny when the request is pending.
 
                     In the past, we used to also display the buttons when the request
                     was accepted or denied. It was error prone. Instead, we want the
                     users to contact our team to revoke an access, or grant when the
                     request has been mistakenly denied.
-                        {% endcomment %}
-                        {% if ads_manager_request.accepted is None %}
+                      {% endcomment %}
+                      {% if ads_manager_request.accepted is None %}
+                        <div class="fr-grid-row fr-grid-row--gutters">
                           <div class="fr-p-1w">
                             <form method="post">
                               {% csrf_token %}
@@ -99,6 +95,16 @@
                               <button type="submit" class="fr-btn fr-btn--sm">Refuser</button>
                             </form>
                           </div>
+                        </div>
+                      {% else %}
+                        <div>
+                          Demande
+                          {% if ads_manager_request.accepted %}
+                            <strong>acceptée</strong>
+                          {% else %}
+                            <strong>refusée</strong>
+                          {% endif %}
+                          {% if ads_manager_request.last_update_at %}le {{ ads_manager_request.last_update_at|date:"d/m/Y" }}{% endif %}
                         {% endif %}
                       </div>
                     </td>
