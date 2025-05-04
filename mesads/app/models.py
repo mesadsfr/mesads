@@ -13,7 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import F, Q
+from django.db.models import F, Q, Subquery, IntegerField, OuterRef, Count
 from django.utils import timezone
 from django.utils.html import mark_safe
 
@@ -306,9 +306,24 @@ class ADSManagerAdministrator(models.Model):
     def ordered_adsmanager_set(self):
         """Function helper to get the adsmanager set order by the administration
         name."""
+        complete_updates_subquery = (
+            ADSUpdateLog.objects.filter(
+                ads__ads_manager=OuterRef("pk"),
+                is_complete=True,
+            )
+            .values("ads__ads_manager")
+            .annotate(count=Count("id"))
+            .values("count")[:1]
+        )
+
         return (
             self.adsmanager_set.prefetch_related("content_object", "ads_set")
             .filter(Q(commune__type_commune="COM") | Q(commune__isnull=True))
+            .annotate(
+                complete_updates_count=Subquery(
+                    complete_updates_subquery, output_field=IntegerField()
+                )
+            )
             .order_by("commune__libelle", "epci__name", "prefecture__libelle")
         )
 

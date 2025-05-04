@@ -48,6 +48,9 @@
                       {% else %}
                         -
                       {% endif %}
+                      {% if request.complete_updates_count %}
+                        <p class="fr-text--xs">(dont {{ request.complete_updates_count }} avec toutes les informations)</p>
+                      {% endif %}
                     </td>
                     <td>
                       {% if request.accepted is None %}
@@ -105,6 +108,9 @@
                         <i>{{ ads_manager.epci_delegate }}</i></small>
                     {% else %}
                       -
+                    {% endif %}
+                    {% if ads_manager.complete_updates_count %}
+                      <p class="fr-text--xs">(dont {{ ads_manager.complete_updates_count }} avec toutes les informations)</p>
                     {% endif %}
                   </td>
                   <td>

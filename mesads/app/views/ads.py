@@ -1,5 +1,4 @@
 from datetime import date, datetime, timedelta
-import itertools
 
 from docxtpl import DocxTemplate
 

@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import send_mail
-from django.db.models import Count, Q
+from django.db.models import OuterRef, Subquery, Count, IntegerField
 from django.db import transaction
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
@@ -11,8 +11,10 @@ from ..forms import (
     ADSManagerForm,
 )
 from ..models import (
+    ADS,
     ADSManagerAdministrator,
     ADSManagerRequest,
+    ADSUpdateLog,
 )
 
 
@@ -30,22 +32,44 @@ class ADSManagerRequestView(FormView):
         of SQL queries generated.
         """
         ctx = super().get_context_data(**kwargs)
-        ctx["user_ads_manager_requests"] = (
-            ADSManagerRequest.objects.filter(user=self.request.user)
-            .annotate(
-                ads_count=Count(
-                    "ads_manager__ads",
-                    filter=Q(ads_manager__ads__deleted_at__isnull=True),
-                )
+
+        # All ADS for the manager
+        ads_count_subquery = (
+            ADS.objects.filter(
+                ads_manager=OuterRef("ads_manager_id"),
+                deleted_at__isnull=True,
             )
-            .all()
+            .values("ads_manager")
+            .annotate(count=Count("*"))
+            .values("count")[:1]
+        )
+
+        # All complete updates for the manager
+        complete_updates_subquery = (
+            ADSUpdateLog.objects.filter(
+                ads__ads_manager=OuterRef("ads_manager_id"),
+                is_complete=True,
+            )
+            .values("ads__ads_manager")
+            .annotate(count=Count("id"))
+            .values("count")[:1]
+        )
+
+        ctx["user_ads_manager_requests"] = ADSManagerRequest.objects.filter(
+            user=self.request.user
+        ).annotate(
+            ads_count=Subquery(ads_count_subquery, output_field=IntegerField()),
+            complete_updates_count=Subquery(
+                complete_updates_subquery, output_field=IntegerField()
+            ),
         )
 
         ctx["ads_managers_administrators"] = (
-            ADSManagerAdministrator.objects.select_related("prefecture")
-            .filter(users=self.request.user)
-            .all()
+            ADSManagerAdministrator.objects.select_related("prefecture").filter(
+                users=self.request.user
+            )
         )
+
         return ctx
 
     @transaction.atomic
