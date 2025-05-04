@@ -1,8 +1,10 @@
-from datetime import date
+from datetime import date, timedelta
+import json
 
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings, TestCase
+from django.utils import timezone
 
 from django.contrib.contenttypes.models import ContentType
 
@@ -20,6 +22,7 @@ from .models import (
     ADSLegalFile,
     ADSManager,
     ADSUser,
+    ADSUpdateLog,
     ADSUpdateFile,
     ADSManagerDecree,
     Notification,
@@ -321,3 +324,19 @@ class TestNotification(ClientTestCase):
     def test_str(self):
         notification = Notification(user=self.admin_user)
         self.assertIn(self.admin_user.email, str(notification))
+
+
+class TestADSUpdateLog(TestCase):
+    def test_get_missing_fields(self):
+        model = ADSUpdateLog(debug_missing_fields=json.dumps(["field1", "field2"]))
+        self.assertEqual(model.get_missing_fields(), ["field1", "field2"])
+
+    def test_is_outdated(self):
+
+        model = ADSUpdateLog(update_at=timezone.now())
+        self.assertFalse(model.is_outdated())
+
+        model = ADSUpdateLog(
+            update_at=timezone.now() - timedelta(days=model.OUTDATED_LOG_DAYS * 2)
+        )
+        self.assertTrue(model.is_outdated())
