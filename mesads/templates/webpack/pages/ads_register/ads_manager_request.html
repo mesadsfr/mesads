@@ -27,13 +27,9 @@
               <caption>Administrations en gestion</caption>
               <thead>
                 <tr>
-                  <th>🏢 Administration</th>
-                  <th>
-                    💯 Nombre d'ADS
-                    <br />
-                    enregistrées
-                  </th>
-                  <th>👌 Statut</th>
+                  <th>Administration</th>
+                  <th>Nombre d'ADS</th>
+                  <th>Consulter / Modifier</th>
                 </tr>
               </thead>
               <tbody>
@@ -59,7 +55,7 @@
                       {% elif request.accepted is False %}
                         🚫 Demande refusée
                       {% elif request.accepted is True %}
-                        <a class="fr-btn fr-btn--sm"
+                        <a class="fr-btn fr-btn--secondary fr-icon-eye-line"
                            href="{% url 'app.ads-manager.detail' manager_id=request.ads_manager.id %}">Gérez les ADS</a>
                       {% endif %}
                     </td>
@@ -89,13 +85,9 @@
             <caption>{{ ads_manager_administrator.prefecture.display_text|capfirst }}</caption>
             <thead>
               <tr>
-                <th>🏢 Administration</th>
-                <th>
-                  💯 Nombre d'ADS
-                  <br />
-                  enregistrées
-                </th>
-                <th>👌 Statut</th>
+                <th>Administration</th>
+                <th>Nombre d'ADS</th>
+                <th>Consulter / Modifier</th>
               </tr>
             </thead>
             <tbody>
@@ -116,7 +108,7 @@
                     {% endif %}
                   </td>
                   <td>
-                    <a class="fr-btn fr-btn--sm"
+                    <a class="fr-btn fr-btn--secondary fr-icon-eye-line"
                        href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">Gérez les ADS</a>
                   </td>
                 </tr>
