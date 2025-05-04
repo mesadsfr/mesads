@@ -24,8 +24,12 @@
    href="{% url 'app.ads-manager-admin.requests' prefecture_id=ads_manager_administrator.prefecture.id %}">
     Demandes d'accès des gestionnaires rattachés à votre Préfecture
     {% if pending_requests_count %}
-      <strong>({{ pending_requests_count }} demande
-        {% if pending_requests_count > 1 %}s{% endif %}
+      <strong>({{ pending_requests_count }}
+        {% if pending_requests_count > 1 %}
+          demandes
+        {% else %}
+          demande
+        {% endif %}
       en attente)</strong>
     {% endif %}
   </a>
