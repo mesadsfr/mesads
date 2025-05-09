@@ -50,6 +50,8 @@
                       {% endif %}
                       {% if request.complete_updates_count %}
                         <p class="fr-text--xs">(dont {{ request.complete_updates_count }} avec toutes les informations)</p>
+                      {% elif request.ads_count %}
+                        <p class="fr-text--xs text-red-500">(à vérifier)</p>
                       {% endif %}
                     </td>
                     <td>
@@ -111,6 +113,8 @@
                     {% endif %}
                     {% if ads_manager.complete_updates_count %}
                       <p class="fr-text--xs">(dont {{ ads_manager.complete_updates_count }} avec toutes les informations)</p>
+                    {% elif ads_manager.ads_set.count %}
+                      <p class="fr-text--xs text-red-500">(à vérifier)</p>
                     {% endif %}
                   </td>
                   <td>
