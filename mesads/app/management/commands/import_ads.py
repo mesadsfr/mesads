@@ -669,6 +669,11 @@ class Command(BaseCommand):
         self._log(self.style.SUCCESS, "Préparation de l'import...")
 
         for idx, cols in enumerate(sheet.iter_rows(min_row=2, values_only=True)):
+            # All columns are empty
+            if len([v for v in cols if v is not None]) == 0:
+                print(f"skip empty line {idx+2}")
+                continue
+
             try:
                 ads, ads_users = importer.load_ads(cols, override=override)
                 if ads.id:
