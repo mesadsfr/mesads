@@ -32,6 +32,12 @@ from .public import (  # noqa: F401
     HTTP500View,
     HomepageView,
 )
+from .waiting_list import (  # noqa: F401
+    WaitingListView,
+    WaitingListCreateView,
+    WaitingListDetailsView,
+    WaitingListHistoryView,
+)
 
 
 class ADSRegisterView(RedirectView):
