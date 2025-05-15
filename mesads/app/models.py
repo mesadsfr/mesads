@@ -1071,3 +1071,155 @@ class Notification(models.Model):
         null=False,
         verbose_name="Recevoir une notification lorsqu'une ADS d'une administration gérée est créée ou modifiée (pour les préfectures uniquement)",
     )
+
+
+WAITING_LIST_UNIQUE_ERROR_MESSAGE = (
+    "Une entrée dans la liste d'attente avec ce numéro existe déjà."
+)
+
+WAITING_LIST_STATUS = {
+    "valid": {
+        "display_text": "Demande valide",
+        "display_help_text": "Cette entrée de la liste d'attente remplit toutes les conditions pour avoir une ADS.",
+    },
+    "incomplete": {
+        "display_text": "Demande incomplète",
+        "display_help_text": "Des informations manquent pour que cette entrée de la liste d'attente puisse être traitée.",
+    },
+}
+
+
+@reversion.register
+class WaitingList(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
+    class Meta:
+        verbose_name = "Liste d'attente"
+        verbose_name_plural = "Listes d'attente"
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=["number", "ads_manager_id"],
+                condition=Q(deleted_at__isnull=True),
+                name="unique_waiting_list_number",
+                violation_error_message=WAITING_LIST_UNIQUE_ERROR_MESSAGE,
+            ),
+        ]
+
+    def __str__(self):
+        return f"Entrée {self.number} de la liste d'attente de {self.ads_manager.content_object.display_fulltext()}"
+
+    status = models.CharField(
+        max_length=64,
+        choices=[
+            ("valid", WAITING_LIST_STATUS["valid"]["display_text"]),
+            ("incomplete", WAITING_LIST_STATUS["incomplete"]["display_text"]),
+        ],
+        blank=False,
+        null=False,
+        verbose_name="Statut de l'entrée de la liste d'attente",
+    )
+
+    last_update = models.DateTimeField(
+        auto_now=True,
+        verbose_name="Date de la dernière mise à jour de l'entrée de la liste d'attente",
+        help_text="Cette date est mise à jour automatiquement à chaque fois que l'entrée de la liste d'attente est modifiée.",
+    )
+
+    ads_manager = models.ForeignKey(
+        ADSManager,
+        on_delete=models.RESTRICT,
+        null=False,
+        blank=False,
+        verbose_name="Gestionnaire ADS",
+    )
+
+    number = models.CharField(
+        max_length=64,
+        blank=True,
+        null=False,
+        verbose_name="N° d'enregistrement",
+        help_text=(
+            "Laisser ce champ vide pour générer un nouveau numéro d'enregistrement"
+        ),
+    )
+
+    name = models.CharField(
+        max_length=1024,
+        blank=False,
+        null=False,
+        verbose_name="Nom",
+        help_text=(
+            "Attention : la liste d'attente est réservée uniquement aux personnes physiques. Les personnes morales, telles que les sociétés, ne peuvent y être inscrites."
+        ),
+    )
+
+    license_number = models.CharField(
+        max_length=64,
+        blank=True,
+        null=False,
+        verbose_name="N° de la carte professionnelle",
+        help_text=(
+            "Il vous appartient de vérifier que le demandeur dispose d'une carte "
+            "professionnelle en cours de validité au moment de l'inscription ou "
+            "du renouvellement de la demande"
+        ),
+    )
+
+    phone_number = models.CharField(
+        max_length=128,
+        blank=True,
+        null=False,
+        verbose_name="Téléphone",
+    )
+
+    email = models.CharField(
+        max_length=128,
+        blank=True,
+        null=False,
+        verbose_name="Email",
+    )
+
+    address = models.CharField(
+        max_length=4096,
+        blank=True,
+        null=False,
+        verbose_name="Adresse postale",
+    )
+
+    initial_request_date = models.DateField(
+        blank=False,
+        null=False,
+        verbose_name="Date de dépôt de la demande initiale",
+    )
+
+    last_renew_date = models.DateField(
+        blank=False,
+        null=False,
+        verbose_name="Date de la dernière demande de renouvellement",
+    )
+
+    end_validity_date = models.DateField(
+        blank=False,
+        null=False,
+        verbose_name="Date de fin de validité de la demande",
+    )
+
+    comment = models.TextField(
+        blank=True,
+        null=False,
+        verbose_name="Commentaire",
+        help_text=(
+            "Champ libre pour les informations complémentaires utiles (date de la dernière relance, …)"
+        ),
+    )
+
+    used_ads_two_years = models.BooleanField(
+        blank=True,
+        null=True,
+        verbose_name="Sur les 5 dernières années, le conducteur a-t'il exploité une ADS pendant au moins 2 ans ?",
+        help_text=(
+            "Sont prioritaires pour une nouvelle ADS les conducteurs ayant "
+            "exploité une ADS au moins deux ans au cours des cinq dernières "
+            "années ; les demandes valides des autres ne sont attribuées qu'en "
+            "l'absence de demandes prioritaires."
+        ),
+    )
