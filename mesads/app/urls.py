@@ -77,6 +77,26 @@ urlpatterns = [
         name="app.ads.create",
     ),
     path(
+        "registre_ads/gestion/<int:manager_id>/liste_attente/",
+        ads_manager_required(views.WaitingListView.as_view()),
+        name="app.waiting-list.list",
+    ),
+    path(
+        "registre_ads/gestion/<int:manager_id>/liste_attente/<int:waiting_list_id>",
+        ads_manager_required(views.WaitingListDetailsView.as_view()),
+        name="app.waiting-list.detail",
+    ),
+    path(
+        "registre_ads/gestion/<int:manager_id>/liste_attente/<int:waiting_list_id>/historique",
+        ads_manager_required(views.WaitingListHistoryView.as_view()),
+        name="app.waiting-list.history",
+    ),
+    path(
+        "registre_ads/gestion/<int:manager_id>/liste_attente/nouveau",
+        ads_manager_required(views.WaitingListCreateView.as_view()),
+        name="app.waiting-list.create",
+    ),
+    path(
         "registre_ads/gestion/<int:manager_id>/ads/<int:ads_id>/arrete",
         ads_manager_required(views.ADSDecreeView.as_view()),
         name="app.ads.decree",

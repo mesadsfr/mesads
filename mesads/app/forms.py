@@ -19,6 +19,7 @@ from .models import (
     ADSManager,
     ADSManagerDecree,
     ADSUser,
+    WaitingList,
 )
 from .widgets import BooleanSelect
 
@@ -450,3 +451,26 @@ class ADSManagerAutocompleteForm(forms.Form):
         label="Gestionnaires ADS",
         required=False,
     )
+
+
+class WaitingListForm(forms.ModelForm):
+    class Meta:
+        model = WaitingList
+        fields = (
+            "number",
+            "name",
+            "license_number",
+            "phone_number",
+            "email",
+            "address",
+            "initial_request_date",
+            "last_renew_date",
+            "end_validity_date",
+            # It is important to leave "deleted_at" in the fields, otherwise
+            # django.db.models.constraints.CheckConstraint.validate() will silently skip
+            # the evaluation of the constraints using this field.
+            # In other words, if deleted_at is not in the fields, saving the
+            # form will not trigger the correct error message in case the unique
+            # constraint is violated.
+            "deleted_at",
+        )

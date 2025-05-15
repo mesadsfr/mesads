@@ -1,0 +1,77 @@
+{% extends "./base.html" %}
+{% load str_to_date %}
+{% block main %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link"
+             href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link"
+             href="{% url 'app.waiting-list.list' manager_id=ads_manager.id %}">Liste d'attente</a>
+        </li>
+        <li>
+          {% if ads %}
+            <a class="fr-breadcrumb__link" aria-current="page">Entrée {{ object.number }} de la liste d'attente</a>
+          {% else %}
+            <a class="fr-breadcrumb__link" aria-current="page">Enregistrement d'une nouvelle entrée dans la liste d'attente</a>
+          {% endif %}
+        </li>
+      </ol>
+    </div>
+  </nav>
+  {% if object %}
+    <p>
+      🕰️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+   href="{% url 'app.waiting-list.history' manager_id=ads_manager.id waiting_list_id=object.id %}">Voir l'historique des modifications</a>
+    </p>
+  {% endif %}
+  <form method="post" enctype="multipart/form-data">
+    <!-- Non-field errors -->
+    {% if form.non_field_errors %}
+      <div class="fr-input-group fr-input-group--error">
+        {% for error in form.non_field_errors %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
+      </div>
+    {% endif %}
+    {% csrf_token %}
+    <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
+      <legend class="text-2xl font-semibold">
+        {% if object %}
+          Entrée {{ object.number }} de la liste d'attente
+        {% else %}
+          Nouvelle entrée dans la liste d'attente
+        {% endif %}
+      </legend>
+      <!-- number -->
+      {% include "form_fields/string.html" with field=form.number field_errors=form.errors.number required=form.fields.number.required readonly=ads_manager.is_locked %}
+      <!-- name -->
+      {% include "form_fields/string.html" with field=form.name field_errors=form.errors.name required=form.fields.name.required readonly=ads_manager.is_locked %}
+      <!-- license_number -->
+      {% include "form_fields/string.html" with field=form.license_number field_errors=form.errors.license_number required=form.fields.license_number.required readonly=ads_manager.is_locked %}
+      <!-- phone_number -->
+      {% include "form_fields/string.html" with field=form.phone_number field_errors=form.errors.phone_number required=form.fields.phone_number.required readonly=ads_manager.is_locked %}
+      <!-- email -->
+      {% include "form_fields/string.html" with field=form.email field_errors=form.errors.email required=form.fields.email.required readonly=ads_manager.is_locked %}
+      <!-- address -->
+      {% include "form_fields/string.html" with field=form.address field_errors=form.errors.address required=form.fields.address.required readonly=ads_manager.is_locked %}
+      <!-- initial_request_date -->
+      {% include "form_fields/date.html" with x_model="initial_request_date" field=form.initial_request_date field_errors=form.errors.initial_request_date required=form.fields.initial_request_date.required readonly=ads_manager.is_locked %}
+      <!-- last_update_date -->
+      {% include "form_fields/date.html" with x_model="last_renew_date" field=form.last_renew_date field_errors=form.errors.last_renew_date required=form.fields.last_renew_date.required readonly=ads_manager.is_locked %}
+      <!-- end_validity_date -->
+      {% include "form_fields/date.html" with x_model="end_validity_date" field=form.end_validity_date field_errors=form.errors.end_validity_date required=form.fields.end_validity_date.required readonly=ads_manager.is_locked %}
+    </fieldset>
+    <!-- Submit buttons -->
+    <div class="fr-input-group">
+      <button type="submit" class="fr-btn">Enregistrer</button>
+    </div>
+  </form>
+{% endblock main %}

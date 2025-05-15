@@ -45,6 +45,10 @@
     📗️&nbsp;<a class="fr-link fr-icon-arrow-down-line fr-link--icon-right"
    href="{% url 'app.exports.ads-manager' manager_id=ads_manager.id %}">Télécharger toutes les ADS au format excel</a>
   </p>
+  <p>
+    🕗️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+   href="{% url 'app.waiting-list.list' manager_id=ads_manager.id %}">Accéder à la liste d'attente</a>
+  </p>
 {% endif %}
 {% comment %}
   Display the list of ADS if the list is not empty, or if the user has searched for something.

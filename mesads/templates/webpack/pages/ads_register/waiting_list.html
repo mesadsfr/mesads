@@ -1,0 +1,71 @@
+{% extends "./base.html" %}
+{% load show_pagination_links %}
+{% block main %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link"
+             href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Liste d'attente</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <h1>Liste d'attente de {{ ads_manager.content_object.display_fulltext }}</h1>
+  {% comment %} Menu {% endcomment %}
+  <p>
+    <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+       href="{% url 'app.waiting-list.create' manager_id=ads_manager.id %}">Ajouter une nouvelle demande d'inscription</a>
+  </p>
+  <div class="fr-table fr-table--md fr-table--no-scroll">
+    <div class="fr-table__wrapper">
+      <div class="fr-table__container">
+        <div class="fr-table__content">
+          <table>
+            <thead>
+              <tr>
+                <th>N° d'enregistrement</th>
+                <th>Nom</th>
+                <th>N° de la carte professionnelle</th>
+                <th>Date du dépôt de la demande initiale</th>
+                <th>Date de fin de validité</th>
+                <th>Coordonnées</th>
+                <th class="!text-right">Consulter / Modifier</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for entry in object_list %}
+                <tr>
+                  <td>{{ entry.number }}</td>
+                  <td>{{ entry.name }}</td>
+                  <td>{{ entry.license_number }}</td>
+                  <td>{{ entry.initial_request_date }}</td>
+                  <td>{{ entry.end_validity_date }}</td>
+                  <td>
+                    {{ entry.phone_number }}
+                    <br>
+                    {{ entry.email }}
+                  </td>
+                  <td class="!text-right">
+                    <a class="fr-btn fr-btn--secondary fr-icon-eye-line"
+                       href="{% url 'app.waiting-list.detail' manager_id=ads_manager.id waiting_list_id=entry.id %}"></a>
+                  </td>
+                {% endfor %}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% show_pagination_links page_obj %}
+  </div>
+{% endblock main %}

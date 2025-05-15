@@ -152,12 +152,32 @@ urls:
     missing: true # Not HTML view
 
   app.ads.history:
-    title: "Revue de l'historique de l'ADS {{ ads.number }} chez {{ ads_manager.content_object.display_fulltext }}"
-    description: "Consultez le journal des modifications apportées à l'ADS {{ ads.number }} de {{ ads_manager.content_object.display_fulltext }}."
+    title: "Revue de l'historique de l'ADS {{ ads.number }} de {{ ads.ads_manager.content_object.display_fulltext }}"
+    description: "Consultez le journal des modifications apportées à l'ADS {{ ads.number }} de {{ ads.ads_manager.content_object.display_fulltext }}."
 
   app.ads.decree:
     title: "Édition d'arrêté pour l'ADS {{ ads.number }} de {{ ads.ads_manager.content_object.display_fulltext }}"
     description: "Générez et personnalisez l'arrêté municipal pour l'ADS {{ ads.number }} de {{ ads.ads_manager.content_object.display_fulltext }}."
+
+  ###
+  ### Liste d'attente
+  ###
+  app.waiting-list.list:
+    title: "Liste d'attente de {{ ads_manager.content_object.display_fulltext }}"
+    description: "Lister les entrées dans la liste d'attente de {{ ads_manager.content_object.display_fulltext }}."
+
+  app.waiting-list.detail:
+    title: "Entrée {{ object.number }} de la liste d'attente de {{ ads_manager.content_object.display_fulltext }}"
+    description: "Modifier l'entrée {{ object.number }} de la liste d'attente de {{ ads_manager.content_object.display_fulltext }}."
+
+  app.waiting-list.create:
+    title: "Nouvelle entrée dans la liste d'attente de {{ ads_manager.content_object.display_fulltext }}"
+    description: "Procédez à l'enregistrement d'une nouvelle entrée dans la liste d'attente de {{ ads_manager.content_object.display_fulltext }}."
+
+  app.waiting-list.history:
+    title: "Historique de l'entrée {{ object.number }} de {{ ads_manager.content_object.display_fulltext }}"
+    description: "Consultez le journal des modifications apportées à l'entrée {{ object.number }} de la liste d'attente de {{ object.ads_manager.content_object.display_fulltext }}."
+
 
   ###
   ### Vehicules relais
