@@ -7,6 +7,7 @@ from .ads_manager_administrator import *  # noqa
 from .ads_manager_request import *  # noqa
 from .ads_update_file import *  # noqa
 from .notifications import *  # noqa
+from .waiting_list import *  # noqa
 
 # Remove "Group" administration from admin. We do not use groups in the
 # application.
