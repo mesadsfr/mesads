@@ -1951,22 +1951,6 @@ docs = ["sphinx", "sphinx-rtd-theme"]
 testing = ["Django", "django-configurations (>=2.0)"]
 
 [[package]]
-name = "pytest-testmon"
-version = "2.1.1"
-description = "selects tests affected by changed files and methods"
-optional = false
-python-versions = ">=3.8"
-groups = ["dev"]
-files = [
-    {file = "pytest-testmon-2.1.1.tar.gz", hash = "sha256:8ebe2c3de42d99306ee54cd4536fed0fc48346a954420da904b18e8d59b5da98"},
-    {file = "pytest_testmon-2.1.1-py3-none-any.whl", hash = "sha256:8271ca47bc8c80760c4fc7fd7895ea786b111bbb31f13eeea879a6fd11fe2226"},
-]
-
-[package.dependencies]
-coverage = ">=6,<8"
-pytest = ">=5,<9"
-
-[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 description = "Extensions to the standard Python datetime module"
@@ -2622,4 +2606,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "292f037b72da7565cbc4578e137a2a855888bc8d0bd9e02d8ca50398a84157b0"
+content-hash = "47ec9a25a19e1a8e1c438d93badb8ec14f5ad24c84bc8a4a88e3d8c9e39b564c"
