@@ -59,6 +59,10 @@
                     <a class="fr-btn fr-btn--secondary fr-icon-eye-line"
                        href="{% url 'app.waiting-list.detail' manager_id=ads_manager.id waiting_list_id=entry.id %}"></a>
                   </td>
+                {% empty %}
+                  <td colspan="7">
+                    <p class="text-center">Aucune entrée dans la liste d'attente</p>
+                  </td>
                 {% endfor %}
               </tr>
             </tbody>
