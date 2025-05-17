@@ -32,5 +32,9 @@ test:
 	coverage run --source=. manage.py test
 	coverage report -m
 
+# Tests without coverage
+fasttest:
+	python manage.py test --parallel 8
+
 update-requirements:
 	for package in $$(poetry show --outdated --only main | awk '{print $$1}'); do poetry add "$$package@latest"; done
