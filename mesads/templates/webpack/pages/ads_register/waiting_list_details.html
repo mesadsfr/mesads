@@ -90,8 +90,6 @@
           Nouvelle entrée dans la liste d'attente
         {% endif %}
       </legend>
-      <!-- number -->
-      {% include "form_fields/string.html" with field=form.number field_errors=form.errors.number required=form.fields.number.required readonly=ads_manager.is_locked %}
       <!-- name -->
       {% include "form_fields/string.html" with field=form.name field_errors=form.errors.name required=form.fields.name.required readonly=ads_manager.is_locked %}
       <!-- license_number -->
@@ -108,6 +106,8 @@
       {% include "form_fields/date.html" with x_model="last_renew_date" field=form.last_renew_date field_errors=form.errors.last_renew_date required=form.fields.last_renew_date.required readonly=ads_manager.is_locked %}
       <!-- end_validity_date -->
       {% include "form_fields/date.html" with x_model="end_validity_date" field=form.end_validity_date field_errors=form.errors.end_validity_date required=form.fields.end_validity_date.required readonly=ads_manager.is_locked %}
+      <!-- number -->
+      {% include "form_fields/string.html" with field=form.number field_errors=form.errors.number required=form.fields.number.required readonly=ads_manager.is_locked %}
     </fieldset>
     <!-- Submit buttons -->
     <div class="fr-input-group">
