@@ -34,7 +34,18 @@
    href="{% url 'app.waiting-list.history' manager_id=ads_manager.id waiting_list_id=object.id %}">Voir l'historique des modifications</a>
     </p>
   {% endif %}
-  {% if not object %}
+  {% if object %}
+    <div class="fr-notice fr-notice--info fr-mb-3w">
+      <div class="fr-container">
+        <div class="fr-notice__body">
+          <p>
+            <span class="fr-notice__title">Pour modifier les informations de cette demande,</span>
+            <span class="fr-notice__desc">éditez les champs du formulaire et cliquez sur "Valider" en bas de cette page.</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  {% else %}
     <div class="fr-callout fr-icon-information-line">
       <h3 class="fr-callout__title">Rappel de la réglementation</h3>
       <ul class="fr-callout__text">
