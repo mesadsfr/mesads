@@ -14,6 +14,7 @@ import logging
 import os
 import socket
 from pathlib import Path
+import sys
 
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -328,3 +329,10 @@ MESADS_CRISP_WEBSITE_ID = os.environ.get("CRISP_WEBSITE_ID")
 MESADS_SENTRY_JS_URL = os.environ.get("SENTRY_JS_URL")
 
 MJML_EXEC_CMD = BASE_DIR / "node_modules/.bin/mjml"
+
+
+# Speed up unittests, see https://docs.djangoproject.com/en/5.2/topics/testing/overview/#speeding-up-the-tests
+if "test" in sys.argv:
+    PASSWORD_HASHERS = [
+        "django.contrib.auth.hashers.MD5PasswordHasher",
+    ]
