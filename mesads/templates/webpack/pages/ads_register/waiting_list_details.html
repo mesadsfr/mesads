@@ -34,6 +34,35 @@
    href="{% url 'app.waiting-list.history' manager_id=ads_manager.id waiting_list_id=object.id %}">Voir l'historique des modifications</a>
     </p>
   {% endif %}
+  {% if not object %}
+    <div class="fr-callout fr-icon-information-line">
+      <h3 class="fr-callout__title">Rappel de la réglementation</h3>
+      <ul class="fr-callout__text">
+        <li>
+          <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000033745452?idSecParent=LEGISCTA000023083937"
+             target="_blank">Article L3121-1-2 du code des transports</a> : Le titulaire exploite personnellement l'autorisation de stationnement mentionnée à <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000029532082"
+    target="_blank">l'article L. 3121-1</a>.
+        </li>
+        <li>
+          <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031971928"
+             target="_blank">Article R3121-13 du code des transports</a> : "[…] cessent de figurer sur la liste d'attente d'une zone géographique :
+          <ul>
+            <li>les demandes formées par un candidat qui figure déjà sur une autre liste d'attente ;</li>
+            <li>
+              les demandes qui ne sont pas renouvelées, par tout moyen permettant d'en accuser réception, avant la date anniversaire de l'inscription initiale ;
+            </li>
+            <li>
+              les demandes formées par un candidat qui ne dispose pas de la carte professionnelle, en cours de validité, prévue à l'article <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000023083909"
+    target="_blank">L. 3121-10</a>.
+            </li>
+            <li>
+              Les demandes formées par un candidat qui détient déjà, à la date de sa demande, une autorisation de stationnement."
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  {% endif %}
   <form method="post" enctype="multipart/form-data">
     <!-- Non-field errors -->
     {% if form.non_field_errors %}
