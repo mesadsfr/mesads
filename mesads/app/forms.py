@@ -466,6 +466,8 @@ class WaitingListForm(forms.ModelForm):
             "initial_request_date",
             "last_renew_date",
             "end_validity_date",
+            "comment",
+            "used_ads_two_years",
             # It is important to leave "deleted_at" in the fields, otherwise
             # django.db.models.constraints.CheckConstraint.validate() will silently skip
             # the evaluation of the constraints using this field.

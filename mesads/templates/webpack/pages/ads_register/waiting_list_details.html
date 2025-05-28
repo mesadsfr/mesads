@@ -85,29 +85,36 @@
     <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
       <legend class="text-2xl font-semibold">
         {% if object %}
-          Entrée {{ object.number }} de la liste d'attente
+          Informations générales
         {% else %}
           Nouvelle entrée dans la liste d'attente
         {% endif %}
       </legend>
       <!-- name -->
-      {% include "form_fields/string.html" with field=form.name field_errors=form.errors.name required=form.fields.name.required readonly=ads_manager.is_locked %}
+      {% include "form_fields/string.html" with field=form.name field_errors=form.errors.name required=form.fields.name.required %}
       <!-- license_number -->
-      {% include "form_fields/string.html" with field=form.license_number field_errors=form.errors.license_number required=form.fields.license_number.required readonly=ads_manager.is_locked %}
+      {% include "form_fields/string.html" with field=form.license_number field_errors=form.errors.license_number required=form.fields.license_number.required %}
       <!-- phone_number -->
-      {% include "form_fields/string.html" with field=form.phone_number field_errors=form.errors.phone_number required=form.fields.phone_number.required readonly=ads_manager.is_locked %}
+      {% include "form_fields/string.html" with field=form.phone_number field_errors=form.errors.phone_number required=form.fields.phone_number.required %}
       <!-- email -->
-      {% include "form_fields/string.html" with field=form.email field_errors=form.errors.email required=form.fields.email.required readonly=ads_manager.is_locked %}
+      {% include "form_fields/string.html" with field=form.email field_errors=form.errors.email required=form.fields.email.required %}
       <!-- address -->
-      {% include "form_fields/string.html" with field=form.address field_errors=form.errors.address required=form.fields.address.required readonly=ads_manager.is_locked %}
+      {% include "form_fields/string.html" with field=form.address field_errors=form.errors.address required=form.fields.address.required %}
       <!-- initial_request_date -->
-      {% include "form_fields/date.html" with x_model="initial_request_date" field=form.initial_request_date field_errors=form.errors.initial_request_date required=form.fields.initial_request_date.required readonly=ads_manager.is_locked %}
+      {% include "form_fields/date.html" with field=form.initial_request_date field_errors=form.errors.initial_request_date required=form.fields.initial_request_date.required %}
       <!-- last_update_date -->
-      {% include "form_fields/date.html" with x_model="last_renew_date" field=form.last_renew_date field_errors=form.errors.last_renew_date required=form.fields.last_renew_date.required readonly=ads_manager.is_locked %}
+      {% include "form_fields/date.html" with field=form.last_renew_date field_errors=form.errors.last_renew_date required=form.fields.last_renew_date.required %}
       <!-- end_validity_date -->
-      {% include "form_fields/date.html" with x_model="end_validity_date" field=form.end_validity_date field_errors=form.errors.end_validity_date required=form.fields.end_validity_date.required readonly=ads_manager.is_locked %}
+      {% include "form_fields/date.html" with field=form.end_validity_date field_errors=form.errors.end_validity_date required=form.fields.end_validity_date.required %}
       <!-- number -->
-      {% include "form_fields/string.html" with field=form.number field_errors=form.errors.number required=form.fields.number.required readonly=ads_manager.is_locked %}
+      {% include "form_fields/string.html" with field=form.number field_errors=form.errors.number required=form.fields.number.required %}
+    </fieldset>
+    <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
+      <legend class="text-2xl font-semibold">Informations complémentaires</legend>
+      <!-- used_das_two_years -->
+      {% include "form_fields/select.html" with field=form.used_ads_two_years field_errors=form.errors.used_ads_two_years required=form.fields.used_ads_two_years.required %}
+      <!-- comment -->
+      {% include "form_fields/textarea.html" with field=form.comment field_errors=form.errors.comment required=form.fields.comment.required %}
     </fieldset>
     <!-- Submit buttons -->
     <div class="fr-input-group">
