@@ -4,8 +4,7 @@ from mesads.app.models import WaitingList
 
 
 @admin.register(WaitingList)
-class NotificationAdmin(admin.ModelAdmin):
-
+class WaitingListAdmin(admin.ModelAdmin):
     list_fields = (
         "number",
         "name",
