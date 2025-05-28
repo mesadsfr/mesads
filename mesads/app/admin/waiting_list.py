@@ -17,4 +17,22 @@ class WaitingListAdmin(admin.ModelAdmin):
         "name",
     )
 
+    fields = (
+        "last_update",
+        "used_ads_two_years",
+        "ads_manager",
+        "number",
+        "name",
+        "license_number",
+        "phone_number",
+        "email",
+        "address",
+        "initial_request_date",
+        "last_renew_date",
+        "end_validity_date",
+        "comment",
+    )
+
+    readonly_fields = ("last_update", "ads_manager")
+
     autocomplete_fields = ("ads_manager",)
