@@ -1214,7 +1214,7 @@ class WaitingList(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
     )
 
     def end_validity_date_expired(self):
-        return self.end_validity_date > timezone.now().date()
+        return self.end_validity_date < timezone.now().date()
 
     comment = models.TextField(
         blank=True,
