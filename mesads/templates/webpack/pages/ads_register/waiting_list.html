@@ -49,7 +49,10 @@
                   <td>{{ entry.name }}</td>
                   <td>{{ entry.license_number }}</td>
                   <td>{{ entry.initial_request_date }}</td>
-                  <td>{{ entry.end_validity_date }}</td>
+                  <td>
+                    {% if entry.end_validity_date_expired %}<p class="fr-badge fr-badge--warning fr-badge--sm">expiré</p>{% endif %}
+                    {{ entry.end_validity_date }}
+                  </td>
                   <td>
                     {{ entry.phone_number }}
                     <br>
