@@ -39,6 +39,7 @@
                 <th>Date du dépôt de la demande initiale</th>
                 <th>Date de fin de validité</th>
                 <th>Coordonnées</th>
+                <th>Expl. d'une ADS depuis 2 ans min.</th>
                 <th class="!text-right">Consulter / Modifier / Radier</th>
               </tr>
             </thead>
@@ -46,7 +47,7 @@
               {% for entry in object_list %}
                 {% if not entry.recently_updated %}
                   <tr>
-                    <td colspan="7" class="!bg-none !text-center">
+                    <td colspan="8" class="!bg-none !text-center">
                       <p class="fr-badge fr-badge--info fr-badge--sm">Informations à vérifier</p>
                     </td>
                   </tr>
@@ -64,6 +65,15 @@
                     {{ entry.phone_number }}
                     <br>
                     {{ entry.email }}
+                  </td>
+                  <td>
+                    {% if entry.used_ads_two_years is None %}
+                      <p class="fr-badge fr-badge--info fr-badge--no-icon fr-badge--sm">inconnu</p>
+                    {% elif entry.used_ads_two_years %}
+                      <p class="fr-badge fr-badge--success fr-badge--no-icon fr-badge--sm">oui</p>
+                    {% else %}
+                      <p class="fr-badge fr-badge--warning fr-badge--no-icon fr-badge--sm">non</p>
+                    {% endif %}
                   </td>
                   <td class="!text-right">
                     <a class="fr-btn fr-btn--secondary fr-icon-eye-line"
