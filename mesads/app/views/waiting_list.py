@@ -30,10 +30,9 @@ class WaitingListDetailsView(RevisionMixin, UpdateView):
 
     def get_success_url(self):
         return reverse(
-            "app.waiting-list.detail",
+            "app.waiting-list.list",
             kwargs={
                 "manager_id": self.kwargs["manager_id"],
-                "waiting_list_id": self.kwargs["waiting_list_id"],
             },
         )
 
@@ -66,10 +65,9 @@ class WaitingListCreateView(WaitingListDetailsView, CreateView):
 
     def get_success_url(self):
         return reverse(
-            "app.waiting-list.detail",
+            "app.waiting-list.list",
             kwargs={
                 "manager_id": self.kwargs["manager_id"],
-                "waiting_list_id": self.object.id,
             },
         )
 
