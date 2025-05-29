@@ -42,6 +42,10 @@ urls:
     title: "Données personnelles et cookies sur MesADS"
     description: "Configurez les outils de suivi d'audience et de gestion des cookies sur MesADS."
 
+  app.legal:
+    title: "Mentions légales de MesADS"
+    description: "Consultez nos mentions légales."
+
   ###
   ### Registration
   ###
