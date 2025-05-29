@@ -1124,6 +1124,16 @@ class WaitingList(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
         help_text="Cette date est mise à jour automatiquement à chaque fois que l'entrée de la liste d'attente est modifiée.",
     )
 
+    UP_TO_DATE_DAYS = 90
+
+    def recently_updated(self):
+        """Les informations de l'entrée de la liste d'attente sont considérées à
+        jour si elles ont été mises à jour récemment. Sinon, il est nécessaire
+        de les vérifier."""
+        return self.last_update >= timezone.now() - timezone.timedelta(
+            days=self.UP_TO_DATE_DAYS
+        )
+
     ads_manager = models.ForeignKey(
         ADSManager,
         on_delete=models.RESTRICT,
