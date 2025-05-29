@@ -8,7 +8,7 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from reversion.views import RevisionMixin
 
 from ..models import ADSManager, WaitingList, WAITING_LIST_UNIQUE_ERROR_MESSAGE
-from ..forms import WaitingListForm
+from ..forms import WaitingListForm, WaitingListEditForm
 from ..reversion_diff import ModelHistory
 
 
@@ -26,7 +26,7 @@ class WaitingListView(ListView):
 
 class WaitingListDetailsView(RevisionMixin, UpdateView):
     template_name = "pages/ads_register/waiting_list_details.html"
-    form_class = WaitingListForm
+    form_class = WaitingListEditForm
 
     def get_success_url(self):
         return reverse(
@@ -60,6 +60,8 @@ class WaitingListDetailsView(RevisionMixin, UpdateView):
 
 
 class WaitingListCreateView(WaitingListDetailsView, CreateView):
+    form_class = WaitingListForm
+
     def get_object(self, queryset=None):
         return None
 

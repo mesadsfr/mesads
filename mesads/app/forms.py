@@ -476,3 +476,18 @@ class WaitingListForm(forms.ModelForm):
             # constraint is violated.
             "deleted_at",
         )
+
+
+class WaitingListEditForm(WaitingListForm):
+    class Meta:
+        model = WaitingList
+        fields = WaitingListForm.Meta.fields + ("certify",)
+
+    certify = forms.BooleanField(
+        label="Mettre à jour les informations de la demande.",
+        help_text="Afin de savoir quelles sont les entrées prioritaires dans la liste d'attente, il est nécessaire de mettre à jour les informations de chaque demande régulièrement en cochant cette case.",
+        required=True,
+        error_messages={
+            "required": "Vous devez cocher cette case pour valider le formulaire."
+        },
+    )
