@@ -103,6 +103,11 @@ urlpatterns += [
     path("", views.HomepageView.as_view(), name="app.homepage"),
     path("faq", views.FAQView.as_view(), name="app.faq"),
     path(
+        "mentions-legales",
+        TemplateView.as_view(template_name="pages/mentions-legales.html"),
+        name="app.legal",
+    ),
+    path(
         "suivi",
         TemplateView.as_view(template_name="pages/suivi.html"),
         name="app.suivi",
