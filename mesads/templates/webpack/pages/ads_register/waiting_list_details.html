@@ -83,13 +83,24 @@
     {% endif %}
     {% csrf_token %}
     <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
-      <legend class="text-2xl font-semibold">
-        {% if object %}
-          Informations générales
-        {% else %}
-          Nouvelle entrée dans la liste d'attente
-        {% endif %}
-      </legend>
+      <legend class="text-2xl font-semibold">Informations sur la demande</legend>
+      <!-- number -->
+      {% include "form_fields/string.html" with field=form.number field_errors=form.errors.number required=form.fields.number.required %}
+      <!-- status -->
+      {% include "form_fields/select.html" with field=form.status field_errors=form.errors.status required=form.fields.status.required %}
+      <!-- initial_request_date -->
+      {% include "form_fields/date.html" with field=form.initial_request_date field_errors=form.errors.initial_request_date required=form.fields.initial_request_date.required %}
+      <!-- last_update_date -->
+      {% include "form_fields/date.html" with field=form.last_renew_date field_errors=form.errors.last_renew_date required=form.fields.last_renew_date.required %}
+      <!-- end_validity_date -->
+      {% include "form_fields/date.html" with field=form.end_validity_date field_errors=form.errors.end_validity_date required=form.fields.end_validity_date.required %}
+      <!-- used_das_two_years -->
+      {% include "form_fields/select.html" with field=form.used_ads_two_years field_errors=form.errors.used_ads_two_years required=form.fields.used_ads_two_years.required %}
+      <!-- comment -->
+      {% include "form_fields/textarea.html" with field=form.comment field_errors=form.errors.comment required=form.fields.comment.required %}
+    </fieldset>
+    <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
+      <legend class="text-2xl font-semibold">Informations sur le demandeur</legend>
       <!-- name -->
       {% include "form_fields/string.html" with field=form.name field_errors=form.errors.name required=form.fields.name.required %}
       <!-- license_number -->
@@ -100,21 +111,6 @@
       {% include "form_fields/string.html" with field=form.email field_errors=form.errors.email required=form.fields.email.required %}
       <!-- address -->
       {% include "form_fields/string.html" with field=form.address field_errors=form.errors.address required=form.fields.address.required %}
-      <!-- initial_request_date -->
-      {% include "form_fields/date.html" with field=form.initial_request_date field_errors=form.errors.initial_request_date required=form.fields.initial_request_date.required %}
-      <!-- last_update_date -->
-      {% include "form_fields/date.html" with field=form.last_renew_date field_errors=form.errors.last_renew_date required=form.fields.last_renew_date.required %}
-      <!-- end_validity_date -->
-      {% include "form_fields/date.html" with field=form.end_validity_date field_errors=form.errors.end_validity_date required=form.fields.end_validity_date.required %}
-      <!-- number -->
-      {% include "form_fields/string.html" with field=form.number field_errors=form.errors.number required=form.fields.number.required %}
-    </fieldset>
-    <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
-      <legend class="text-2xl font-semibold">Informations complémentaires</legend>
-      <!-- used_das_two_years -->
-      {% include "form_fields/select.html" with field=form.used_ads_two_years field_errors=form.errors.used_ads_two_years required=form.fields.used_ads_two_years.required %}
-      <!-- comment -->
-      {% include "form_fields/textarea.html" with field=form.comment field_errors=form.errors.comment required=form.fields.comment.required %}
     </fieldset>
     {% if form.certify %}
       <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
@@ -132,3 +128,13 @@
     </div>
   </form>
 {% endblock main %}
+{% comment %} WAITING_LIST_STATUS = {
+"valid": {
+"display_text": "Demande valide",
+"display_help_text": "Cette entrée de la liste d'attente remplit toutes les conditions pour avoir une ADS.",
+},
+"incomplete": {
+"display_text": "Demande incomplète",
+"display_help_text": "Des informations manquent pour que cette entrée de la liste d'attente puisse être traitée.",
+},
+} {% endcomment %}

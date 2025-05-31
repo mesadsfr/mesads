@@ -53,7 +53,16 @@
                   </tr>
                 {% endif %}
                 <tr>
-                  <td>{{ entry.number }}</td>
+                  <td>
+                    <div class="flex flex-col items-center">
+                      {% if entry.status == 'incomplete' %}
+                        <p class="fr-badge fr-badge--warning fr-badge--no-icon fr-badge--sm text-center">demande incomplète</p>
+                      {% elif entry.status == '' %}
+                        <p class="fr-badge fr-badge--error fr-badge--no-icon fr-badge--sm text-center">statut inconnu</p>
+                      {% endif %}
+                      <span>{{ entry.number }}</span>
+                    </div>
+                  </td>
                   <td>{{ entry.name }}</td>
                   <td>{{ entry.license_number }}</td>
                   <td>{{ entry.initial_request_date }}</td>

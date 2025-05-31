@@ -457,6 +457,7 @@ class WaitingListForm(forms.ModelForm):
     class Meta:
         model = WaitingList
         fields = (
+            "status",
             "number",
             "name",
             "license_number",
@@ -485,7 +486,7 @@ class WaitingListEditForm(WaitingListForm):
 
     certify = forms.BooleanField(
         label="Mettre à jour les informations de la demande.",
-        help_text="Afin de savoir quelles sont les entrées prioritaires dans la liste d'attente, il est nécessaire de mettre à jour les informations de chaque demande régulièrement en cochant cette case.",
+        help_text="Vous devez cocher cette case pour valider le formulaire. En validant le formulaire, la dernière date de traitement est mise à jour. Cette date est utilisée pour gérer la priorité lors de l'attribution d'une ADS.",
         required=True,
         error_messages={
             "required": "Vous devez cocher cette case pour valider le formulaire."

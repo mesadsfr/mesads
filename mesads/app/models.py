@@ -1077,17 +1077,6 @@ WAITING_LIST_UNIQUE_ERROR_MESSAGE = (
     "Une entrée dans la liste d'attente avec ce numéro existe déjà."
 )
 
-WAITING_LIST_STATUS = {
-    "valid": {
-        "display_text": "Demande valide",
-        "display_help_text": "Cette entrée de la liste d'attente remplit toutes les conditions pour avoir une ADS.",
-    },
-    "incomplete": {
-        "display_text": "Demande incomplète",
-        "display_help_text": "Des informations manquent pour que cette entrée de la liste d'attente puisse être traitée.",
-    },
-}
-
 
 @reversion.register
 class WaitingList(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
@@ -1110,8 +1099,8 @@ class WaitingList(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
     status = models.CharField(
         max_length=64,
         choices=[
-            ("valid", WAITING_LIST_STATUS["valid"]["display_text"]),
-            ("incomplete", WAITING_LIST_STATUS["incomplete"]["display_text"]),
+            ("valid", "Demande valide"),
+            ("incomplete", "Demande incomplète"),
         ],
         blank=False,
         null=False,
