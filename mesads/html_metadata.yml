@@ -178,6 +178,10 @@ urls:
     title: "Historique de l'entrée {{ object.number }} de {{ ads_manager.content_object.display_fulltext }}"
     description: "Consultez le journal des modifications apportées à l'entrée {{ object.number }} de la liste d'attente de {{ object.ads_manager.content_object.display_fulltext }}."
 
+  app.waiting-list.attribution:
+    title: "Attribution d'une ADS"
+    description: "Attribuez une ADS à l'entrée {{ object.number }} de la liste d'attente de {{ object.ads_manager.content_object.display_fulltext }}."
+
 
   ###
   ### Vehicules relais
