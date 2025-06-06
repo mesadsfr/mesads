@@ -102,3 +102,13 @@ class WaitingListHistoryView(DetailView):
             ],
         )
         return ctx
+
+
+class WaitingListAttributionView(DetailView):
+    template_name = "pages/ads_register/waiting_list_attribution.html"
+    model = WaitingList
+    pk_url_kwarg = "waiting_list_id"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        return ctx

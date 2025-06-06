@@ -1225,3 +1225,15 @@ class WaitingList(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
             "l'absence de demandes prioritaires."
         ),
     )
+
+
+def compute_status_for_attribution(entry):
+    if entry.status != "valid":
+        return "not-valid"
+    if entry.end_validity_date < timezone.now():
+        return "not-valid-anymore"
+    if not entry.recently_updated():
+        return "unknown"
+    if entry.used_ads_two_years:
+        return "priority"
+    return "no priority"

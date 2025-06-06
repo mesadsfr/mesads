@@ -37,6 +37,7 @@ from .waiting_list import (  # noqa: F401
     WaitingListCreateView,
     WaitingListDetailsView,
     WaitingListHistoryView,
+    WaitingListAttributionView,
 )
 
 

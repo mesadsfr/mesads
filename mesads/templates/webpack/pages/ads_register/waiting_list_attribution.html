@@ -1,0 +1,27 @@
+{% extends "./base.html" %}
+{% block main %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link"
+             href="{% url 'app.ads-manager.detail' manager_id=object.ads_manager.id %}">{{ object.ads_manager.content_object.display_text|capfirst }}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link"
+             href="{% url 'app.waiting-list.detail' manager_id=object.ads_manager.id waiting_list_id=object.id %}">Entrée de la liste d'attente {{ object.number }}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Attribution d'une ADS</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  {{ object.previous_entries_status_for_attribution }}
+{% endblock main %}

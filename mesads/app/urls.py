@@ -92,6 +92,11 @@ urlpatterns = [
         name="app.waiting-list.history",
     ),
     path(
+        "registre_ads/gestion/<int:manager_id>/liste_attente/<int:waiting_list_id>/attribuer",
+        ads_manager_required(views.WaitingListAttributionView.as_view()),
+        name="app.waiting-list.attribution",
+    ),
+    path(
         "registre_ads/gestion/<int:manager_id>/liste_attente/nouveau",
         ads_manager_required(views.WaitingListCreateView.as_view()),
         name="app.waiting-list.create",

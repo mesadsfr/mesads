@@ -33,6 +33,10 @@
       🕰️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
    href="{% url 'app.waiting-list.history' manager_id=ads_manager.id waiting_list_id=object.id %}">Voir l'historique des modifications</a>
     </p>
+    <p>
+      🚕️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+   href="{% url 'app.waiting-list.attribution' manager_id=ads_manager.id waiting_list_id=object.id %}">Attribuer une ADS</a>
+    </p>
   {% endif %}
   {% if object %}
     <div class="fr-notice fr-notice--info fr-mb-3w">
