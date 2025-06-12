@@ -409,6 +409,7 @@ class ADSImporter:
                 "Qui est le conducteur du véhicule ? Remplir avec une des valeurs suivantes :",
                 i,
             )
+            date_creation_idx = self.excel.idx("date de création")
             name_exploitant_idx = self.excel.nidx("nom du conducteur", i)
             siret_exploitant_idx = self.excel.nidx("siret du conducteur", i)
             license_number_exploitant_idx = self.excel.nidx(
@@ -439,6 +440,13 @@ class ADSImporter:
                     and license_number_exploitant_idx
                 )
             )
+
+            if not ads.ads_creation_date:
+                raise self.fmt_col_error(
+                    "La date de création de l'ADS doit être renseignée avant de renseigner les exploitants",
+                    ads.ads_creation_date,
+                    date_creation_idx,
+                )
 
             if ads.ads_creation_date >= datetime.date(2014, 10, 1) and i > 1:
                 raise self.fmt_col_error(
@@ -488,6 +496,12 @@ class ADSImporter:
 
     @functools.cache
     def find_departement(self, numero):
+        if not numero:
+            raise ValueError(f"Le département doit être renseigné")
+
+        if numero < 10:
+            numero = "0" + str(numero)
+
         query = Prefecture.objects.filter(numero=numero)
         res = query.all()
         if len(res) == 0:
@@ -635,7 +649,7 @@ class ADSImporter:
     def is_empty(self, value):
         if value is None:
             return True
-        return value.strip() == ""
+        return str(value).strip() == ""
 
 
 class Command(BaseCommand):
@@ -670,8 +684,7 @@ class Command(BaseCommand):
 
         for idx, cols in enumerate(sheet.iter_rows(min_row=2, values_only=True)):
             # All columns are empty
-            if len([v for v in cols if v is not None]) == 0:
-                print(f"skip empty line {idx+2}")
+            if len([v for v in cols if v is not None and str(v).strip() != ""]) == 0:
                 continue
 
             try:
