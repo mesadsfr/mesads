@@ -2,7 +2,7 @@ import importlib.resources
 
 import shapefile
 
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from rest_framework import mixins, permissions, viewsets, views
 from rest_framework.response import Response
@@ -33,7 +33,8 @@ class ADSUpdatesViewSet(
 
 def get_stats_by_prefecture():
     ads_stats = ADSManagerAdministrator.objects.select_related("prefecture").annotate(
-        ads_count=Count("adsmanager__ads")
+        ads_count=Count("adsmanager__ads"),
+        filter=Q(adsmanager__ads__deleted_at__isnull=True),
     )
 
     stats = {
