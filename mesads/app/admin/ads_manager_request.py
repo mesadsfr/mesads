@@ -1,6 +1,9 @@
+import csv
+
 from django.contrib import admin
 from django.db.models import F, Q
 from django.db.models.functions import Collate
+from django.http import HttpResponse
 
 from reversion.admin import VersionAdmin
 
@@ -30,6 +33,39 @@ class ADSManagerRequestAdmin(VersionAdmin):
         "created_at",
         "last_update_at",
     )
+
+    actions = ["download_as_csv"]
+
+    def download_as_csv(self, request, queryset):
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = "attachment; filename=demandes d'accès.csv"
+        writer = csv.writer(response)
+        writer.writerow(
+            [
+                "Date de la demande",
+                "Email",
+                "Identifiant du gestionnaire ADS",
+                "Nom du gestionnaire",
+                "Statut de la demande",
+                "Dernière mise à jour",
+            ]
+        )
+        for obj in queryset:
+            writer.writerow(
+                [
+                    obj.created_at,
+                    obj.user.email,
+                    obj.ads_manager.id,
+                    obj.ads_manager.content_object.display_text(),
+                    {True: "Acceptée", False: "Rejetée", None: "Sans réponse"}[
+                        obj.accepted
+                    ],
+                    obj.last_update_at,
+                ]
+            )
+        return response
+
+    download_as_csv.short_description = "Télécharger la sélection au format CSV"
 
     def get_search_results(self, request, queryset, search_term):
         """The field Users.email uses a non-deterministic collation, which makes
