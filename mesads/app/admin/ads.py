@@ -1,6 +1,5 @@
 from datetime import date
 
-from django.contrib.admin import DateFieldListFilter
 from django.contrib import admin
 from django.db.models import Count
 from django.urls import reverse
