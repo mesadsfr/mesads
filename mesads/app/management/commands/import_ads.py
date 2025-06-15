@@ -497,7 +497,7 @@ class ADSImporter:
     @functools.cache
     def find_departement(self, numero):
         if not numero:
-            raise ValueError(f"Le département doit être renseigné")
+            raise ValueError("Le département doit être renseigné")
 
         if numero < 10:
             numero = "0" + str(numero)
