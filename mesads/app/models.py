@@ -13,7 +13,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import F, Q, Subquery, IntegerField, OuterRef, Count
+from django.db.models import F, Q, Subquery, IntegerField, OuterRef, Count, Value
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.utils.html import mark_safe
 
@@ -306,22 +307,30 @@ class ADSManagerAdministrator(models.Model):
     def ordered_adsmanager_set(self):
         """Function helper to get the adsmanager set order by the administration
         name."""
-        complete_updates_subquery = (
-            ADSUpdateLog.objects.filter(
-                ads__ads_manager=OuterRef("pk"),
-                is_complete=True,
-            )
-            .values("ads__ads_manager")
-            .annotate(count=Count("id"))
-            .values("count")[:1]
+        latest_complete = Subquery(
+            ADSUpdateLog.objects.filter(ads=OuterRef("pk"))
+            .order_by("-update_at")
+            .values("is_complete")[:1],
+            output_field=models.BooleanField(),
+        )
+
+        # 2) count how many ADS under this manager have latest_complete=True
+        completed_ads = (
+            ADS.objects.filter(ads_manager=OuterRef("pk"))
+            .annotate(latest_complete=latest_complete)
+            .filter(latest_complete=True)
+            .values("ads_manager")
+            .annotate(total=Count("pk"))
+            .values("total")[:1]
         )
 
         return (
             self.adsmanager_set.prefetch_related("content_object", "ads_set")
             .filter(Q(commune__type_commune="COM") | Q(commune__isnull=True))
             .annotate(
-                complete_updates_count=Subquery(
-                    complete_updates_subquery, output_field=IntegerField()
+                # if no ADS or none complete, default to 0
+                complete_updates_count=Coalesce(
+                    Subquery(completed_ads, output_field=IntegerField()), Value(0)
                 )
             )
             .order_by("commune__libelle", "epci__name", "prefecture__libelle")

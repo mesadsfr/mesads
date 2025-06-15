@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import send_mail
-from django.db.models import OuterRef, Subquery, Count, IntegerField
+from django.db.models import OuterRef, Subquery, Count, IntegerField, BooleanField
 from django.db import transaction
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
@@ -44,15 +44,23 @@ class ADSManagerRequestView(FormView):
             .values("count")[:1]
         )
 
-        # All complete updates for the manager
-        complete_updates_subquery = (
-            ADSUpdateLog.objects.filter(
-                ads__ads_manager=OuterRef("ads_manager_id"),
-                is_complete=True,
-            )
-            .values("ads__ads_manager")
-            .annotate(count=Count("id"))
-            .values("count")[:1]
+        # For each ADS, get its latest is_complete flag
+        latest_complete_per_ads = Subquery(
+            ADSUpdateLog.objects.filter(ads=OuterRef("pk"))
+            .order_by("-update_at")
+            .values("is_complete")[:1],
+            output_field=BooleanField(),
+        )
+
+        # 2) Count how many ADS under this manager have latest_complete=True
+        complete_updates_subquery = Subquery(
+            ADS.objects.filter(ads_manager=OuterRef("ads_manager_id"))
+            .annotate(latest_complete=latest_complete_per_ads)
+            .filter(latest_complete=True)
+            .values("ads_manager")
+            .annotate(count=Count("pk"))
+            .values("count")[:1],
+            output_field=IntegerField(),
         )
 
         ctx["user_ads_manager_requests"] = ADSManagerRequest.objects.filter(
