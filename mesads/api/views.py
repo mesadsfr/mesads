@@ -33,8 +33,9 @@ class ADSUpdatesViewSet(
 
 def get_stats_by_prefecture():
     ads_stats = ADSManagerAdministrator.objects.select_related("prefecture").annotate(
-        ads_count=Count("adsmanager__ads"),
-        filter=Q(adsmanager__ads__deleted_at__isnull=True),
+        ads_count=Count(
+            "adsmanager__ads", filter=Q(adsmanager__ads__deleted_at__isnull=True)
+        )
     )
 
     stats = {
