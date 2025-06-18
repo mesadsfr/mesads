@@ -1,3 +1,5 @@
+import unicodedata
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -73,6 +75,12 @@ class VehiculeManager(SoftDeleteManager):
         return f"{departement.numero:02s}-{last_numero+1:02d}"
 
 
+def clean_immatriculation(s):
+    """Replace all Unicode dash-punctuation with ASCII hyphen."""
+    s = unicodedata.normalize("NFKC", s)
+    return "".join("-" if unicodedata.category(ch) == "Pd" else ch for ch in s)
+
+
 @reversion.register
 class Vehicule(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
     class Meta:
@@ -120,6 +128,9 @@ class Vehicule(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
         # Automatically set the number when creating a new instance.
         if not self.pk:
             self.numero = Vehicule.objects.get_next_number(self.departement)
+
+        self.immatriculation = clean_immatriculation(self.immatriculation)
+
         return super().save(*args, **kwargs)
 
     def main_features(self):
