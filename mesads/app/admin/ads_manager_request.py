@@ -16,9 +16,14 @@ from ..models import (
 class ADSManagerRequestAdmin(VersionAdmin):
     autocomplete_fields = ("ads_manager", "user")
 
-    list_display = ("created_at", "user", "administration", "accepted")
+    list_display = (
+        "created_at",
+        "user",
+        "administration",
+        "accepted",
+    )
     ordering = ("-created_at",)
-    list_filter = ("accepted",)
+    list_filter = ("accepted", "user__is_active")
     search_fields = ("user__email",)
 
     fields = (
