@@ -1,6 +1,9 @@
+import csv
+
 from django.forms import Textarea
 from django.contrib import admin
 from django.db.models import Count
+from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
@@ -49,6 +52,36 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
     )
 
     search_fields = ("prefecture__libelle",)
+
+    actions = ["download_as_csv"]
+
+    def download_as_csv(self, request, queryset):
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = (
+            "attachment; filename=administrateurs gestionnaires.csv"
+        )
+        writer = csv.writer(response)
+        writer.writerow(
+            [
+                "Préfecture numéro",
+                "Préfecture libellé",
+                "Email de l'utilisateur",
+                "Utilisateur actif ?",
+            ]
+        )
+        for obj in queryset:
+            for user in obj.users.all():
+                writer.writerow(
+                    [
+                        obj.prefecture.numero,
+                        obj.prefecture.libelle,
+                        user.email,
+                        {True: "Oui", False: "Non", None: "Inconnu"}[user.is_active],
+                    ]
+                )
+        return response
+
+    download_as_csv.short_description = "Télécharger la sélection au format CSV"
 
     def get_form(self, request, obj=None, **kwargs):
         kwargs["widgets"] = {
