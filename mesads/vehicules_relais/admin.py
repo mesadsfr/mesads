@@ -177,6 +177,7 @@ class VehiculeAdmin(admin.ModelAdmin):
         "numero",
         "created_at",
         "last_update_at",
+        "deleted_at",
     )
 
     fields = (
