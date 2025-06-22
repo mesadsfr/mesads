@@ -137,6 +137,11 @@
       </div>
     </div>
   </div>
+  {% if ads_manager_administrator.complete_ads_count %}
+    <p class="fr-text--xs">
+      Nombre d'ADS vérifiées, avec toutes les informations : {{ ads_manager_administrator.complete_ads_count }}/{{ ads_manager_administrator.ads_count }}
+    </p>
+  {% endif %}
 {% endfor %}
 <hr>
 <h2>Demander à gérer les ADS pour une nouvelle administration</h2>

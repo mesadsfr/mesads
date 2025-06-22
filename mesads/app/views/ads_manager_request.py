@@ -45,7 +45,7 @@ class ADSManagerRequestView(FormView):
         )
 
         # For each ADS, get its latest is_complete flag
-        latest_complete_per_ads = Subquery(
+        latest_complete = Subquery(
             ADSUpdateLog.objects.filter(ads=OuterRef("pk"))
             .order_by("-update_at")
             .values("is_complete")[:1],
@@ -53,11 +53,24 @@ class ADSManagerRequestView(FormView):
         )
 
         # 2) Count how many ADS under this manager have latest_complete=True
-        complete_updates_subquery = Subquery(
+        complete_updates_subquery_per_ads_manager = Subquery(
             ADS.objects.filter(ads_manager=OuterRef("ads_manager_id"))
-            .annotate(latest_complete=latest_complete_per_ads)
+            .annotate(latest_complete=latest_complete)
             .filter(latest_complete=True)
             .values("ads_manager")
+            .annotate(count=Count("pk"))
+            .values("count")[:1],
+            output_field=IntegerField(),
+        )
+
+        complete_ads_per_admin_per_ads_manager_administrator = Subquery(
+            ADS.objects.filter(
+                ads_manager__administrator=OuterRef("pk"),
+                deleted_at__isnull=True,
+            )
+            .annotate(latest_complete=latest_complete)
+            .filter(latest_complete=True)
+            .values("ads_manager__administrator")
             .annotate(count=Count("pk"))
             .values("count")[:1],
             output_field=IntegerField(),
@@ -68,13 +81,27 @@ class ADSManagerRequestView(FormView):
         ).annotate(
             ads_count=Subquery(ads_count_subquery, output_field=IntegerField()),
             complete_updates_count=Subquery(
-                complete_updates_subquery, output_field=IntegerField()
+                complete_updates_subquery_per_ads_manager, output_field=IntegerField()
             ),
         )
 
+        total_ads_per_ads_manager_admininistrator = Subquery(
+            ADS.objects.filter(
+                ads_manager__administrator=OuterRef("pk"),
+                deleted_at__isnull=True,
+            )
+            .values("ads_manager__administrator")
+            .annotate(count=Count("pk"))
+            .values("count")[:1],
+            output_field=IntegerField(),
+        )
+
         ctx["ads_managers_administrators"] = (
-            ADSManagerAdministrator.objects.select_related("prefecture").filter(
-                users=self.request.user
+            ADSManagerAdministrator.objects.select_related("prefecture")
+            .filter(users=self.request.user)
+            .annotate(
+                ads_count=total_ads_per_ads_manager_admininistrator,
+                complete_ads_count=complete_ads_per_admin_per_ads_manager_administrator,
             )
         )
 
