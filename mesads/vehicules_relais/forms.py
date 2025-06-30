@@ -42,7 +42,7 @@ class VehiculeForm(forms.ModelForm):
         self.fields["pmr"].required = True
 
     commune_localisation = forms.ModelChoiceField(
-        queryset=Commune.objects,
+        queryset=Commune.all_objects,
         widget=autocomplete.ListSelect2(url="fradm.autocomplete.commune"),
         label=Vehicule.commune_localisation.field.verbose_name,
         help_text=Vehicule.commune_localisation.field.help_text,
