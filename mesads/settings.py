@@ -151,6 +151,10 @@ MIDDLEWARE = [
     "mesads.middleware.BackwardCompatibilityURLMiddleware",
 ]
 
+if DEBUG:
+    MIDDLEWARE.insert(0, "query_counter.middleware.DjangoQueryCounterMiddleware")
+
+
 ROOT_URLCONF = "mesads.urls"
 
 TEMPLATES = [
