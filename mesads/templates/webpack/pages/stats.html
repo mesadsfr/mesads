@@ -79,6 +79,7 @@
                     <th scope="col">Préfecture</th>
                     <th scope="col">Nombre d'ADS</th>
                     <th scope="col">Nombre total estimé d'ADS</th>
+                    <th scope="col">Pourcentage d'ADS vérifiées</th>
                     <th scope="col">Nombre de véhicules relais</th>
                   </tr>
                 </thead>
@@ -88,6 +89,7 @@
                       <td>{{ prefecture.libelle }}</td>
                       <td>{{ stats.ads_count|default:"" }}</td>
                       <td>{{ stats.expected_ads_count|default:"" }}</td>
+                      <td>{{ stats.ads_completee_pourcentage }}%</td>
                       <td>{{ stats.vehicules_relais_count|default:"" }}</td>
                     </tr>
                   {% endfor %}
