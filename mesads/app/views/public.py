@@ -40,10 +40,10 @@ class StatsView(TemplateView):
     template_name = "pages/stats.html"
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         stats_by_pref = get_stats_by_prefecture()
-        ctx["stats_by_prefecture"] = [
+        context["stats_by_prefecture"] = [
             (prefecture, stats_by_pref.get(prefecture.numero))
             for prefecture in Prefecture.objects.order_by("numero").exclude(
                 libelle__icontains="test"
@@ -55,14 +55,14 @@ class StatsView(TemplateView):
         else:
             ads_managers_select_form = ADSManagerAutocompleteForm(self.request.GET)
 
-        ctx["ads_managers_select_form"] = ads_managers_select_form
+        context["ads_managers_select_form"] = ads_managers_select_form
 
         ads_managers_filter = []
         if ads_managers_select_form.is_valid():
             ads_managers_filter = ads_managers_select_form.cleaned_data["q"].all()
 
-        ctx["ads_count"] = ADS.objects.count()
-        ctx["ads_count_filtered"] = ADS.objects.filter(
+        context["ads_count"] = ADS.objects.count()
+        context["ads_count_filtered"] = ADS.objects.filter(
             ads_manager__in=ads_managers_filter
         ).count()
 
@@ -72,7 +72,7 @@ class StatsView(TemplateView):
             .annotate(count=Count("id"))
             .order_by("month")
         )
-        ctx["ads_count_by_month"] = json.dumps(
+        context["ads_count_by_month"] = json.dumps(
             dict(
                 ((row["month"].isoformat(), row["count"]) for row in ads_count_by_month)
             )
@@ -85,7 +85,7 @@ class StatsView(TemplateView):
             .annotate(count=Count("id"))
             .order_by("month")
         )
-        ctx["ads_count_by_month_filtered"] = json.dumps(
+        context["ads_count_by_month_filtered"] = json.dumps(
             dict(
                 (
                     (row["month"].isoformat(), row["count"])
@@ -94,12 +94,14 @@ class StatsView(TemplateView):
             )
         )
 
-        ctx["ads_manager_requests_count"] = ADSManagerRequest.objects.filter(
+        context["ads_manager_requests_count"] = ADSManagerRequest.objects.filter(
             accepted=True
         ).count()
-        ctx["ads_manager_requests_count_filtered"] = ADSManagerRequest.objects.filter(
-            accepted=True, ads_manager__in=ads_managers_filter
-        ).count()
+        context["ads_manager_requests_count_filtered"] = (
+            ADSManagerRequest.objects.filter(
+                accepted=True, ads_manager__in=ads_managers_filter
+            ).count()
+        )
 
         ads_manager_requests_by_month = (
             ADSManagerRequest.objects.filter(accepted=True)
@@ -108,7 +110,7 @@ class StatsView(TemplateView):
             .annotate(count=Count("id"))
             .order_by("month")
         )
-        ctx["ads_manager_requests_by_month"] = json.dumps(
+        context["ads_manager_requests_by_month"] = json.dumps(
             dict(
                 (
                     (row["month"].isoformat(), row["count"])
@@ -125,7 +127,7 @@ class StatsView(TemplateView):
             .annotate(count=Count("id"))
             .order_by("month")
         )
-        ctx["ads_manager_requests_by_month_filtered"] = json.dumps(
+        context["ads_manager_requests_by_month_filtered"] = json.dumps(
             dict(
                 (
                     (row["month"].isoformat(), row["count"])
@@ -134,24 +136,24 @@ class StatsView(TemplateView):
             )
         )
 
-        ctx["ads_managers_count"] = (
+        context["ads_managers_count"] = (
             ADSManager.objects.annotate(ads_count=Count("ads"))
             .filter(ads_count__gt=0)
             .count()
         )
-        ctx["ads_managers_count_filtered"] = (
+        context["ads_managers_count_filtered"] = (
             ADSManager.objects.filter(id__in=ads_managers_filter)
             .annotate(ads_count=Count("ads"))
             .filter(ads_count__gt=0)
             .count()
         )
 
-        ctx["relais_proprietaires_count"] = (
+        context["relais_proprietaires_count"] = (
             Proprietaire.objects.annotate(vehicules_count=Count("vehicule"))
             .filter(vehicules_count__gt=0)
             .count()
         )
-        ctx["relais_vehicules_count"] = Vehicule.objects.count()
+        context["relais_vehicules_count"] = Vehicule.objects.count()
 
         relais_proprietaires_by_month = (
             Proprietaire.objects.filter(vehicule__isnull=False)
@@ -160,7 +162,7 @@ class StatsView(TemplateView):
             .annotate(count=Count("id", distinct=True))
             .order_by("month")
         )
-        ctx["relais_proprietaires_by_month"] = json.dumps(
+        context["relais_proprietaires_by_month"] = json.dumps(
             dict(
                 (
                     (row["month"].isoformat(), row["count"])
@@ -175,7 +177,7 @@ class StatsView(TemplateView):
             .annotate(count=Count("id"))
             .order_by("month")
         )
-        ctx["relais_vehicules_by_month"] = json.dumps(
+        context["relais_vehicules_by_month"] = json.dumps(
             dict(
                 (
                     (row["month"].isoformat(), row["count"])
@@ -183,7 +185,7 @@ class StatsView(TemplateView):
                 )
             )
         )
-        return ctx
+        return context
 
 
 class ReglementationView(TemplateView):
