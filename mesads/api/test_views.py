@@ -1,8 +1,10 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
-
+from datetime import timedelta
 from rest_framework.test import APIClient
+from django.utils import timezone
 
-from mesads.app.models import ADS, ADSUpdateFile
+
+from mesads.app.models import ADS, ADSUpdateFile, ADSUpdateLog
 from mesads.app.unittest import ClientTestCase
 
 
@@ -167,14 +169,54 @@ class TestStatsGeoJSONPerPrefecture(ClientTestCase):
         client.force_authenticate(user=self.admin_user)
 
         # Create 3 ADS in departement 35
-        ADS.objects.create(
+        ads_1 = ADS.objects.create(
             number="1", ads_manager=self.ads_manager_city35, ads_in_use=True
         )
-        ADS.objects.create(
+
+        ADSUpdateLog.objects.create(
+            ads=ads_1,
+            is_complete=True,
+            debug_missing_fields="[]",
+            serialized="",
+            user=self.admin_user,
+        )
+
+        ads_2 = ADS.objects.create(
             number="2", ads_manager=self.ads_manager_city35, ads_in_use=True
         )
-        ADS.objects.create(
+
+        # Ne devrait pas être compté dans le pourcentage de vérification des ADS
+        # Car update_at est vieux de plus de OUTDATED_LOG_DAYS jours
+        outdated_log_date = timezone.now() - timedelta(
+            days=ADSUpdateLog.OUTDATED_LOG_DAYS + 1
+        )
+        log = ADSUpdateLog.objects.create(
+            ads=ads_2,
+            is_complete=True,
+            debug_missing_fields="[]",
+            serialized="",
+            user=self.admin_user,
+        )
+        log.update_at = outdated_log_date
+        log.save(update_fields=["update_at"])
+
+        ads_3 = ADS.objects.create(
             number="3", ads_manager=self.ads_manager_city35, ads_in_use=True
+        )
+
+        # Ne devrait pas être compté dans le pourcentage de vérification des ADS
+        # Car is_complete est à False
+        ADSUpdateLog.objects.create(
+            ads=ads_3,
+            is_complete=False,
+            debug_missing_fields="[]",
+            serialized="",
+            user=self.admin_user,
+        )
+
+        # ADS Sans log: ne devrait pas etre comptabilisée comme vérifiée
+        ADS.objects.create(
+            number="4", ads_manager=self.ads_manager_city35, ads_in_use=True
         )
 
         resp = client.get("/api/stats/geojson/per-prefecture/")
@@ -182,6 +224,8 @@ class TestStatsGeoJSONPerPrefecture(ClientTestCase):
 
         for feature in resp.json()["features"]:
             if feature["properties"]["code_insee"] == "35":
-                self.assertEqual(feature["properties"]["ads_count"], 3)
+                self.assertEqual(feature["properties"]["ads_count"], 4)
+                self.assertEqual(feature["properties"]["ads_completee_pourcentage"], 25)
             else:
                 self.assertEqual(feature["properties"]["ads_count"], 0)
+                self.assertEqual(feature["properties"]["ads_completee_pourcentage"], 0)

@@ -12,6 +12,7 @@ type APIProps = {
   wikipedia: string;
   ads_count: number;
   expected_ads_count: number;
+  ads_completee_pourcentage: number;
 };
 
 type APIResponse = GeoJSON.FeatureCollection<GeoJSON.Polygon, APIProps>;
@@ -40,7 +41,11 @@ class InfoBox extends L.Control {
   update = (props: APIProps | null) => {
     const title = props ? `${props.nom} (${props.code_insee})` : `Nombre d'ADS`;
     const content = props
-      ? this.getInfoboxContent(props.ads_count, props.expected_ads_count)
+      ? this.getInfoboxContent(
+          props.ads_count,
+          props.expected_ads_count,
+          props.ads_completee_pourcentage
+        )
       : `Survolez un département pour <br/>afficher le nombre d'ADS enregistrées`;
     this._div.innerHTML = `
           <div class="fr-tile fr-enlarge-link fr-tile--horizontal" style="opacity: 0.8">
@@ -52,7 +57,11 @@ class InfoBox extends L.Control {
         `;
   };
 
-  getInfoboxContent = (ads_count: number, expected_ads_count: number) => {
+  getInfoboxContent = (
+    ads_count: number,
+    expected_ads_count: number,
+    ads_completee_pourcentage: number
+  ) => {
     const infos = [
       `&rarr; ${ads_count} ADS ${
         ads_count > 1 ? "enregistrées" : "enregistrée"
@@ -70,6 +79,9 @@ class InfoBox extends L.Control {
     } else {
       infos.push("Nombre d'ADS total inconnu pour cette préfecture");
     }
+    infos.push(
+      `<div><strong>Taux de vérification des ADS remplies: ${ads_completee_pourcentage}%</strong></div>`
+    );
     return infos.join("<br />");
   };
 }

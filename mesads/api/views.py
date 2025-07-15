@@ -2,12 +2,23 @@ import importlib.resources
 
 import shapefile
 
-from django.db.models import Count, Q
+from datetime import timedelta
+
+from django.db.models import (
+    Count,
+    Value,
+    IntegerField,
+    BooleanField,
+    OuterRef,
+    Subquery,
+)
+from django.db.models.functions import Coalesce
+from django.utils import timezone
 
 from rest_framework import mixins, permissions, viewsets, views
 from rest_framework.response import Response
 
-from mesads.app.models import ADSManagerAdministrator, ADSUpdateFile
+from mesads.app.models import ADSManagerAdministrator, ADSUpdateFile, ADSUpdateLog, ADS
 from mesads.fradm.models import Prefecture
 
 from .serializers import ADSUpdateFileSerializer
@@ -32,16 +43,64 @@ class ADSUpdatesViewSet(
 
 
 def get_stats_by_prefecture():
-    ads_stats = ADSManagerAdministrator.objects.select_related("prefecture").annotate(
-        ads_count=Count(
-            "adsmanager__ads", filter=Q(adsmanager__ads__deleted_at__isnull=True)
+    date_limite_completion = timezone.now() - timedelta(
+        days=ADSUpdateLog.OUTDATED_LOG_DAYS
+    )
+
+    total_ads_qs = (
+        ADS.objects.select_related("ads_manager", "ads_manager__administrator")
+        .filter(
+            ads_manager__administrator=OuterRef("pk"),
         )
+        .order_by()
+        .values("ads_manager__administrator")
+        .annotate(c=Count("pk"))
+        .values("c")
+    )
+
+    last_log_valid = (
+        ADSUpdateLog.objects.filter(
+            ads=OuterRef("pk"), update_at__gte=date_limite_completion
+        )
+        .order_by("-update_at")
+        .values("is_complete")[:1]
+    )
+
+    completed_ads_qs = (
+        ADS.objects.select_related("ads_manager", "ads_manager__administrator")
+        .filter(
+            ads_manager__administrator=OuterRef("pk"),
+        )
+        .annotate(last_log_valid=Subquery(last_log_valid, output_field=BooleanField()))
+        .filter(last_log_valid=True)
+        .order_by()
+        .values("ads_manager__administrator")
+        .annotate(c=Count("pk"))
+        .values("c")
+    )
+
+    ads_stats = ADSManagerAdministrator.objects.select_related("prefecture").annotate(
+        ads_count=Coalesce(
+            Subquery(total_ads_qs, output_field=IntegerField()), Value(0)
+        ),
+        ads_completed_count=Coalesce(
+            Subquery(completed_ads_qs, output_field=IntegerField()), Value(0)
+        ),
     )
 
     stats = {
         ads_manager_administrator.prefecture.numero: {
             "ads_count": ads_manager_administrator.ads_count,
             "expected_ads_count": ads_manager_administrator.expected_ads_count,
+            "ads_completee_pourcentage": (
+                round(
+                    (ads_manager_administrator.ads_completed_count * 100)
+                    / ads_manager_administrator.ads_count,
+                    1,
+                )
+                if ads_manager_administrator.ads_count
+                else 0
+            ),
         }
         for ads_manager_administrator in ads_stats.all()
     }
@@ -74,6 +133,9 @@ class StatsGeoJSONPerPrefecture(views.APIView):
                 feature["properties"]["expected_ads_count"] = stats.get(
                     insee_code, {}
                 ).get("expected_ads_count", 0)
+                feature["properties"]["ads_completee_pourcentage"] = stats.get(
+                    insee_code, {}
+                ).get("ads_completee_pourcentage", 0)
                 feature["properties"]["vehicules_relais_count"] = stats.get(
                     insee_code, {}
                 ).get("vehicules_relais_count", 0)
