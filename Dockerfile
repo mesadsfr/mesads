@@ -1,7 +1,7 @@
 #
 # Javascript builder for static files
 #
-FROM node:20 AS node-builder
+FROM node:22 AS node-builder
 
 WORKDIR /app
 COPY package.json package-lock.json /app/
