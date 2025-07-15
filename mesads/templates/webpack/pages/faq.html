@@ -1,77 +1,861 @@
 {% extends "base.html" %}
+{% load static %}
 {% block body %}
-  <h1>J'ai un problème</h1>
-  <div class="fr-notice fr-notice--info">
-    <div class="fr-container">
-      <div class="fr-notice__body">
-        <p class="fr-notice__title">
-          Mes ADS est développé par une équipe enthousiaste, mais nous ne sommes pas à l'abri d'un bug ou d'un problème technique. Si votre problème n'est pas listé ci-dessous, n'hésitez pas à nous contacter via le module de chat en bas à droite de votre écran, ou par email à l'adresse <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
-        </p>
+  <div class="fr-container fr-mt-3v">
+    <div class="fr-grid-row fr-grid-row--gutters">
+
+
+      <div class="fr-col-12 fr-col-lg-4">
+        <nav class="fr-summary fr-mx-4v" role="navigation" aria-labelledby="fr-summary-title">
+          <h2 class="fr-summary__title" id="fr-summary-title">Sommaire</h2>
+          <ol>
+            <li>
+              <a class="fr-summary__link" href="#gestionnaires">Gestionnaires (communes, EPCI, préfectures)</a>
+              <ol>
+                <li>
+                  <a class="fr-summary__link" href="#compte-gestionnaire">Mon compte MesADS</a>
+                </li>
+                <li>
+                  <a class="fr-summary__link" href="#gestion-ads">Gestion des ADS</a>
+                </li>
+                <li>
+                  <a class="fr-summary__link" href="#reglementaire-gestionnaire">Questions réglementaires</a>
+                </li>
+              </ol>
+            </li>
+            <li>
+              <a class="fr-summary__link" href="#prefectures">Préfectures</a>
+              <ol>
+                <li>
+                  <a class="fr-summary__link" href="#compte-prefecture">Mon compte</a>
+                </li>
+                <li>
+                  <a class="fr-summary__link" href="#admin-gestionnaires">Administration des gestionnaires</a>
+                </li>
+              </ol>
+            </li>
+            <li>
+              <a class="fr-summary__link" href="#taxi-relais">Propriétaires de taxi relais</a>
+              <ol>
+                <li>
+                  <a class="fr-summary__link" href="#compte-relais">Mon compte</a>
+                </li>
+                <li>
+                  <a class="fr-summary__link" href="#gestion-vehicules">Gestion des véhicules relais</a>
+                </li>
+              </ol>
+            </li>
+            <li>
+              <a class="fr-summary__link" href="#informations-generales">Informations générales</a>
+            </li>
+            <li>
+              <a class="fr-summary__link" href="#contacts">Contacts et ressources</a>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div class="fr-col-12 fr-col-lg-8">
+
+        <h1>Foire aux questions</h1>
+        <div class="fr-notice fr-notice--info fr-mb-6v">
+          <div class="fr-container">
+            <div class="fr-notice__body">
+              <p class="fr-notice__title">
+                Mes ADS est développé par une équipe enthousiaste, mais nous ne sommes pas à l'abri d'un bug ou d'un problème technique. Si votre problème n'est pas listé ci-dessous, n'hésitez pas à nous contacter par email à l'adresse <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <h2 id="gestionnaires">1. Gestionnaires (communes, EPCI, Préfectures)</h2>
+        <div class="fr-accordions-group fr-ml-3v">
+          <h3 id="compte-gestionnaire">1.1. Mon compte MesADS</h3>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-1">
+                Je n'arrive pas à créer mon compte ou je n'ai pas reçu le mail d'activation
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-1">
+              <p>
+                Si vous rencontrez des difficultés pour créer votre compte ou recevoir le mail d'activation, contactez-nous :
+                 <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-2">
+                Comment modifier mon adresse email ?
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-2">
+              <p>
+                <ol>
+                  <li>
+                    Faites une nouvelle demande d'accès via l'inscription sur MesADS
+                  </li>
+                  <li>
+                    Contactez-nous par email pour désactiver l'ancienne adresse : 
+                    <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+                  </li>
+                </ol>
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-3">
+                Démarrage rapide - gestionnaire
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-3">
+              <p>
+                <ol>
+                  <li>
+                    Créez votre compte et validez votre inscription via le lien envoyé par mail
+                  </li>
+                  <li>
+                    Demandez votre accès au compte de votre commune/EPCI à votre préfecture 
+                  </li>
+                  <img src="../images/faq/faq-1.png" alt="" width="100%" height="100%" />
+                  <li>
+                    Inscrivez-vous à notre prochain webinaire d’initiation aux bonnes pratiques et à l’utilisation de notre 
+                    outil (environ 45 minutes + Questions-réponses) :
+                    <a href="https://tally.so/r/3X4ldg">https://tally.so/r/3X4ldg</a>
+                  </li>
+                  <li>
+                    Gérer vos ADS:
+                    <ul>
+                      <li>
+                        Enregistrez l’arrêté délimitant le nombre d’ADS
+                      </li>
+                      <li>
+                        Enregistrez les ADS (Anciennes et nouvelles : toutes les ADS actuellement exploitées)
+                      </li>
+                      <li>
+                        Consultez et/ou modifiez les ADS de votre commune
+                      </li>
+                    </ul>
+                  </li>
+                  <img src="../images/faq/faq-2.png" alt="" width="100%" height="100%" />
+                  <img src="../images/faq/faq-3.png" alt="" width="100%" height="100%" />
+                </ol>
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <div class="fr-accordions-group fr-mt-4v fr-ml-3v">
+          <h3 id="gestion-ads">1.2 Gestion des ADS</h3>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-4">
+                Comment modifier une ADS ?
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-4">
+              <p>
+                Pour modifier une ADS (changement de véhicule, titulaire, création/modification location-gérance) :
+                <ol>
+                  <li>
+                    Dans votre tableau de bord, cliquez sur <strong>"Consulter ou modifier"</strong> pour l'ADS concernée
+                  </li>
+                  <li>
+                    Modifiez directement les champs nécessaires (titulaire, conducteur, véhicule, etc.)
+                  </li>
+                  <li>
+                    Ajoutez ou supprimez les fichiers en fin de formulaire, tel que l’arrêté modificatif signé
+                  </li>
+                  <li>
+                    Cliquez sur <strong>"Enregistrer les modifications"</strong>
+                  </li>
+                </ol>
+              </p>
+              <p>
+                <strong>Important</strong> : Pour une location-gérance, renseignez les informations du 
+                locataire-gérant dans la section "Conducteur"
+              </p>
+              <p>
+                <strong>Obligation réglementaire</strong> : Tout changement doit faire l'objet d'un nouvel arrêté municipal et être transmis au président de la CLT3P.
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-5">
+                Différence entre date de création et date d'attribution
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-5">
+              <p>
+                <ul>
+                  <li>
+                    <strong>Date de création</strong>: Date de délivrance de l'ADS au premier titulaire
+                  </li>
+                  <li>
+                    <strong>Date d'attribution :</strong>
+                  </li>
+                  <li>
+                    Pour les "anciennes" ADS (créées avant le 1er octobre 2014) : date de rachat par le titulaire actuel
+                  </li>
+                  <li>
+                    Pour les "nouvelles" ADS (créées après le 1er octobre 2014) : date de renouvellement après expiration du délai de 5 an
+                  </li>
+                </ul>
+              </p>
+              <p>
+                <strong>Plus d'infos : </strong> <a href="{% url 'app.reglementation' %}">Réglementation taxi</a>. 
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-6">
+                Où trouver les modèles d'arrêtés ?
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-6">
+              <p>
+                <ol>
+                  <li>
+                    Cliquez sur <strong>"Consulter ou modifier"</strong> pour l'ADS concernée
+                  </li>
+                  <li>
+                    Dans le formulaire, cliquez sur <strong>"Accéder aux modèles d'arrêtés pour cette ADS"</strong>
+                  </li>
+                  <li>
+                    Personnalisez et éditez le modèle selon vos besoins
+                  </li>
+                  <li>
+                    <strong>N'oubliez</strong> pas d'insérer l'arrêté signé via le bouton d'insertion en fin de formulaire
+                  </li>
+                </ol>
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-7">
+                Modèle d'arrêté délimitant le nombre d'ADS
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-7">
+              <p>
+                Ce modèle n'est pas encore disponible sur MesADS.
+              </p>
+              <p>
+                <strong>Solution :</strong> Contactez la préfecture de votre département pour obtenir ce modèle. 
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-8">
+                Comment inscrire une cession d’ADS sur l’outil ?
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-8">
+              <p>
+                <ol>
+                  <li>
+                    Cliquez sur <strong>"Consulter ou modifier"</strong> pour l'ADS concernée
+                  </li>
+                  <li>
+                    Dans le formulaire, <strong>modifiez le titulaire</strong> et autres éléments susceptibles de changer suite à la cession (véhicule, conducteur(s))
+                  </li>
+                  <li>
+                    Au-dessus du formulaire, cliquez sur "Accéder aux modèles d'arrêtés pour cette ADS"
+                  </li>
+                  <li>
+                    Personnalisez et éditez <strong>le modèle « Changement de titulaire »</strong> selon vos besoin
+                  </li>
+                  <li>
+                    N'oubliez pas d'insérer l'arrêté signé via le bouton d'insertion en fin de formulaire
+                  </li>
+                </ol>
+                L’historisation vous permet de garder traces des anciens titulaires de ladite ADS.
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-9">
+                Comment exporter les données ADS ?
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-9">
+              <p>
+                Vous pouvez exporter toutes les données ADS de votre périmètre au format Excel 
+                directement depuis l'outil MesADS, via le lien 
+                <u>« 📗️ Télécharger toutes les ADS au format excel »</u> 
+                au-dessus du tableau récapitulatif des ADS
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-10">
+                Vérification des données des ADS
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-10">
+              <p>
+                <strong>Obligation de vérifier la fiabilité des données des ADS au minimum un an après la dernière modification.</strong>
+                <ol>
+                  <li>Rendez-vous sur votre espace "Gestionnaire", et consultez le tableau récapitulatif des ADS</li>
+                  <li>Si la dernière <strong>date de mise à jour est rouge</strong> et/ou <strong>"données incomplètes"</strong> s'affiche, cliquez sur <strong>"consulter/modifier"</strong></li>
+                  <img src="../images/faq/faq-4.png" alt="" width="100%" height="100%" />
+                  <li>
+                    <strong>Vérifiez les informations et complétez-le</strong>
+                  </li>
+                  <li>
+                    Cochez la case ci-dessous et validez les modifications
+                  </li>
+                  <img src="../images/faq/faq-5.png" alt="" width="100%" height="100%" />
+                </ol>
+                <strong>Pour connaitre les éléments à compléter, un tableau rouge s’affiche au-dessus du formulaire, par exemple:</strong>
+                <img src="../images/faq/faq-6.png" alt="" width="100%" height="100%" />
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <div class="fr-accordions-group fr-mt-4v fr-ml-3v">
+          <h3 id="reglementaire-gestionnaire">1.3. Questions réglementaires</h3>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-11">
+                Une ADS "ancienne" cédée après 2014 devient-elle "nouvelle" ?
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-11">
+              <p>
+                <strong>Non.</strong> 
+                Une ADS créée avant le 1er octobre 2014 conserve son régime juridique d'ancienne ADS, même en cas de cession ultérieure.
+              </p>
+              <p>
+                <strong>Plus d'infos: </strong>
+                <a href="{% url 'app.reglementation' %}">Support réglementaire</a>
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-12">
+                Responsabilités des gestionnaires
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-12">
+              <p>
+                Les gestionnaires des ADS et préfectures ont la responsabilité de s'assurer que les informations saisies sur le registre des ADS de leur périmètre et sur la liste d'attente (à venir) sont justes, complètes et à jour.
+              </p>
+              <p>
+                <strong>Important : </strong>
+                L'historique des modifications n'est pas consultable dans l'outil. Il est recommandé de conserver une trace externe des modifications importantes.
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-13">
+                Quand créer ou renouveler les arrêtés ?
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-13">
+              <p>
+                Un nouvel arrêté est obligatoire dans les cas suivants :
+                <ul>
+                  <li>Délivrance de l'ADS (création)</li>
+                  <li>Changement de titulaire (cession)</li>
+                  <li>Changement de véhicule</li>
+                  <li>Passage en location-gérance (anciennes ADS uniquement)</li>
+                  <li>Retrait de l'ADS</li>
+                </ul>
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-14">
+                Que faire en cas de demande d'ADS ?
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-14">
+              <p>
+                <ul>
+                  <li><strong>Liste d'attente : </strong>Tout demandeur peut s'inscrire</li>
+                  <li><strong>Création d'ADS supplémentaires : </strong>Non obligatoire - ne créez une nouvelle ADS que s'il existe un réel besoin local</li>
+                  <li>
+                    <strong>Conditions : </strong>Consultez la 
+                    <a href="{% url 'app.reglementation' %}">réglementation</a>
+                  </li>
+                </ul>
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-16">
+                Conditions de cession d'une ADS
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-16">
+              <p>
+                <strong>Important : </strong>Seules les ADS délivrées avant le 1er octobre 2014 peuvent être cédées.
+              </p>
+              <p>
+                <strong>Conditions d'exploitation :</strong>
+                <ul>
+                  <li><strong>15 ans </strong>à compter de la création</li>
+                  <strong>OU</strong>
+                  <li><strong>5 ans </strong>à compter de la dernière attribution</li>
+                </ul>
+              </p>
+              <p>
+                <strong>Exceptions (cession possible avant délai) :</strong>
+                <ul>
+                  <li>Fusion, scission ou cessation d'activité d'entreprise de taxi</li>
+                  <li>Procédure collective (sauvegarde, redressement, liquidation)</li>
+                  <li>Inaptitude définitive avec annulation du permis (interdiction de solliciter une nouvelle ADS pendant 5 ans)</li>
+                  <li>Décès du titulaire (1 an pour présenter un successeur)</li>
+                </ul>
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-17">
+                Documents requis pour une cession
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-17">
+              <p>
+                <strong>Nouveau titulaire :</strong>
+                <ul>
+                  <li>Carte professionnelle de conducteur de taxi valide</li>
+                  <li>Copie du permis de conduire</li>
+                  <li>Extrait Kbis (si société)</li>
+                  <li>Attestation d'aptitude médicale préfectorale</li>
+                  <li>Examen de conducteur de taxi (-5 ans) ou attestation de formation continue</li>
+                </ul>
+              </p>
+              <p>
+                <strong>Véhicule :</strong>
+                <ul>
+                  <li>Certificat d'immatriculation</li>
+                  <li>Justificatif d'assurance</li>
+                </ul>
+              </p>
+                <strong>Cession :</strong>
+                <ul>
+                  <li>Acte de cession signé</li>
+                  <li>
+                    Justificatif d'exploitation effective et continue (déclarations de revenus, avis d'imposition, ou autre pièce prévue par arrêté préfectoral - cf. 
+                    <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000030048433" target="_blank">article R3121-6 du Code des transports</a>)
+                  </li>
+                </ul>
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-18">
+                Comment vérifier l'exploitation d'une ADS ?
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-18">
+              <p>
+                <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000030048433" target="_blank">Article R3121-6 du code des transports</a>
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-19">
+                Autre question réglementaire ou administrative
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-19">
+              <p>
+                Si vous ne trouvez pas réponse à vos interrogations sur notre 
+                <a href="{% url 'app.reglementation' %}">support réglementaire</a>
+                , veuillez contacter la préfecture de votre département.
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <h2 class="fr-mt-4v" id="prefectures">2. Préfectures</h2>
+        <div class="fr-accordions-group fr-ml-3v">
+          <h3 id="compte-prefecture">2.1. Mon compte</h3>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-20">
+                Problèmes de compte
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-20">
+              <p>
+                Pour les problèmes d'activation, modification/suppression/ajout d'adresses email, contactez : 
+                <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-21">
+                Démarrage rapide - Préfecture
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-21">
+              <p>
+                <ol>
+                  <li>
+                    Envoyez-nous une demande d’accès au compte administrateur de votre préfecture par mail à 
+                    <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+                  </li>
+                  <li>
+                    Connectez-vous à votre espace préfecture via « Registre des ADS »
+                  </li>
+                  <li>
+                    Trois actions possibles :
+                    <ul>
+                      <li>Demande d'accès des gestionnaires rattachés à votre Préfecture</li>
+                      <li>ADS des administrations rattachées à votre Préfecture</li>
+                      <li>Modifications effectuées par les gestionnaires rattachées à votre prefecture</li>
+                    </ul>
+                  </li>
+                  <li>
+                    En téléchargeant les données de votre département, vous obtiendrez un Excel avec :
+                    <ul>
+                      <li>Un onglet rindiquant les données des ADS enregistrées</li>
+                      <li>Un onglet indiquant les données par commune/ EPCI</li>
+                    </ul>
+                  </li>
+                  <img src="../images/faq/faq-7.png" alt="" width="100%" height="100%" />
+                </ol>
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <div class="fr-accordions-group fr-mt-4v fr-ml-3v">
+          <h3 id="admin-gestionnaires">2.2. Administration des gestionnaires</h3>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-22">
+                Mot de passe oublié d'une commune
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-22">
+              <p>
+                <ol>
+                  <li>La commune peut utiliser <strong>"Mot de passe oublié"</strong> lors de la connexion</li>
+                  <li>
+                    En cas de problème : 
+                    <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+                  </li>
+                </ol>
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-23">
+                Demande d’un nouvel accès pour une commune existante
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-23">
+              <p>
+                <strong>Autorisé</strong> - Une commune peut avoir plusieurs accès si plusieurs gestionnaires. 
+                <strong>Vérifiez</strong> que l'adresse correspond bien à un gestionnaire légitime.
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-24">
+                Accès pour la police municipale
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-24">
+              <p>
+                <ul>
+                  <li>
+                    <strong>Si elle gère les ADS</strong> pour la commune/EPCI : accès autorisé
+                  </li>
+                  <li>
+                    <strong>Pour contrôle uniquement</strong> : accès refusé (comme CPAM et autres structures de contrôle)
+                  </li>
+                </ul>
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <h2 id="taxi-relais" class="fr-mt-4v">3. Propriétaires de taxi relais</h2>
+        <div class="fr-accordions-group fr-ml-3v">
+          <h3 id="compte-relais">3.1. Mon compte</h3>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-25">
+                Problèmes de compte
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-25">
+              <p>
+                Pour tous problèmes de compte (activation, modification email, mot de passe): 
+                <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <div class="fr-accordions-group fr-mt-4v fr-ml-3v">
+          <h3 id="gestion-vehicules">3.2. Gestion des véhicules relais</h3>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-26">
+                Autorisation nécessaire pour proposer un taxi relais ?
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-26">
+              <p>
+                <strong>Non,</strong> aucune autorisation n'est requise. Consultez les obligations dans :
+                <ul>
+                  <li>
+                    <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047937443" target="_blank">Arrêté du 28 juillet 2023</a>
+                  </li>
+                  <li>
+                    <a href="{% url 'app.reglementation' %}">Réglementation taxi</a> 
+                  </li>
+                </ul>
+                <strong>Attention :</strong> Certaines préfectures ont des dispositions spécifiques.
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-27">
+                Comment enregistrer un taxi relai ?
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-27">
+              <p>
+                <ol>
+                  <li>
+                    Accédez à <a href="{% url 'vehicules-relais.proprietaire' %}">l'espace propriétaire</a>
+                  </li>
+                  <li>
+                    Ou via <strong>"Répertoire des taxis relais"</strong>, puis <strong>"Espace propriétaire"</strong> à gauche de votre écran
+                  </li>
+                  <li>
+                    Enregistrez vos véhicules depuis cet espace
+                  </li>
+                </ol>
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-28">
+                Remplacer ou supprimer un véhicule
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-28">
+              <p>
+                <ol>
+                  <li>
+                    Rendez-vous sur votre espace propriétaire
+                  </li>
+                  <li>
+                    Consultez le véhicule concerné
+                  </li>
+                  <li>
+                    Utilisez le bouton <strong>"Supprimer"</strong> en bas de page
+                  </li>
+                </ol>
+                Pour un remplacement : enregistrez le nouveau véhicule (nouveau numéro unique automatique)
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-29">
+                Télécharger un récépissé d’enregistrement d’un taxi relais
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-29">
+              <p>
+                <ol>
+                  <li>
+                    Rendez-vous sur votre <strong>espace propriétaire</strong>
+                  </li>
+                  <li>
+                    Consultez le véhicule concerné
+                  </li>
+                  <li>
+                    Cliquez sur le lien <strong>« Télécharger le récépissé d'enregistrement du véhicule relais »</strong> ; situé au-dessus du formulaire
+                  </li>
+                </ol>
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <h2 id="informations-generales" class="fr-mt-4v">4. Informations générales</h2>
+        <div class="fr-accordions-group fr-ml-3v">
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-30">
+                Coût et accessibilité
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-30">
+              <p>
+                MesADS est un outil <strong>entièrement gratuit</strong>. Aucun frais n'est appliqué pour son utilisation.
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-31">
+                Compatibilité technique
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-31">
+              <p>
+                L'outil MesADS est compatible avec tous les navigateurs web modernes (Chrome, Firefox, Safari, Edge, etc.).
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-32">
+                Sauvegarde des données
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-32">
+              <p>
+                Les modifications s'enregistrent uniquement lorsque vous cliquez sur le bouton <strong>"Enregistrer"</strong>. Pensez à sauvegarder régulièrement votre travail.
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-33">
+                Confidentialité et conditions d'utilisation
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-33">
+              <p>
+                <ul>
+                  <li>
+                    <strong>Politique de confidentialité :</strong> Consultable dans le bas de page du site
+                  </li>
+                  <li>
+                    <strong>Conditions générales d'utilisation :</strong> Consultable dans le bas de page du site
+                  </li>
+                </ul>
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-34">
+                Glossaire des termes techniques
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-34">
+              <p>
+                <strong>Administrateur/trice des gestionnaires :</strong> agent des préfectures en charge du secteur des taxis à échelle départementale.
+              </p>
+              <p>
+                <strong>Autorisation de stationnement (ADS) :</strong> une autorisation administrative permettant à son titulaire d'exploiter un véhicule taxi effectuant de la maraude sur le territoire de sa zone de prise en charge.
+              </p>
+              <p>
+                <strong>CLT3P :</strong> comité local des transports publics particuliers de personnes.
+              </p>
+              <p>
+                <strong>EPCI :</strong> Établissement public de coopération intercommunale (structures intercommunales).
+              </p>
+              <p>
+                <strong>Gestionnaires d’ADS :</strong> Agent municipaux, intercommunaux ou préfectoraux qui ont en charge la gestion des autorisations de stationnement de taxis à échelle locale.
+              </p>
+              <p>
+                <strong>Taxi relais :</strong> un véhicule utilisé temporairement en cas d'immobilisation d'origine mécanique, à la suite d'une panne ou d'un accident, ou de vol d'un véhicule taxi ou de ses équipements spéciaux.
+              </p>
+              <p>
+                <strong>Location-gérance d’une ADS :</strong> Contrat permettant au titulaire d’une ADS (bailleur) d'accorder à une autre personne (locataire-gérant) le droit d'exploiter librement cette ADS.
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <h2 id="contacts" class="fr-mt-4v">5. Contacts et ressources</h2>
+        <div class="fr-accordions-group fr-ml-3v">
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-35">
+                Contact technique
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-35">
+              <p>
+                <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a> pour : 
+                <ul>
+                  <li>
+                    Problèmes de compte
+                  </li>
+                  <li>
+                    Questions sur l'utilisation de MesADS
+                  </li>
+                </ul>
+                <strong>Disponibilité :</strong> En journée, du lundi au vendredi
+              </p>
+              <p>
+                <strong>Délai de réponse :</strong> Sous 72 heures ouvrées
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-36">
+                Ressources
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-36">
+              <p>
+                <ul>
+                  <li>
+                    <a href="{% url 'app.reglementation' %}">Réglementation complète</a>
+                  </li>
+                  <li>
+                    <strong>Formation et webinaires :</strong> 
+                    <a href="https://tally.so/r/3X4ldg" target="_blank">Inscription</a> 
+                    (45 minutes, avec une séance de questions réponses)
+                  </li>
+                </ul>
+              </p>
+            </div>
+          </section>
+          <section class="fr-accordion">
+            <h4 class="fr-accordion__title">
+              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-37">
+                Questions administratives
+              </button>
+            </h4>
+            <div class="fr-collapse" id="accordion-id-37">
+              <p>
+                Pour les questions réglementaires complexes ou cas pratiques spécifiques, contactez <strong>la préfecture de votre département</strong>.
+              </p>
+            </div>
+          </section>
+
+        </div>
       </div>
     </div>
   </div>
-  <h2 class="fr-mt-3w">Problèmes courants</h2>
-  <div class="fr-accordions-group">
-    <section class="fr-accordion">
-      <h3 class="fr-accordion__title">
-        <button class="fr-accordion__btn"
-                aria-expanded="false"
-                aria-controls="accordion-1">Je ne reçois pas l'e-mail de validation</button>
-      </h3>
-      <div class="fr-collapse" id="accordion-1">
-        <h4 class="fr-h4">Il s'agit probablement de votre anti-spam</h4>
-        <p>Si vous ne recevez pas d'e-mail de validation, vous vous trouvez peut-être dans la situation suivante :</p>
-        <ul>
-          <li>L'e-mail est arrivé dans vos courriers indésirables. Consultez vos spams.</li>
-          <li>
-            Votre adresse e-mail a éventuellement fait l'objet d'une erreur de saisie. Vous pouvez créer à nouveau un compte, avec l'adresse e-mail correcte.
-          </li>
-          <li>
-            Vous utilisez un outil de gestion des spams (type MailInBlack) qui empêche la réception des e-mails. Il faut donc autoriser la réception des e-mails depuis votre hébergeur d'adresse e-mail.
-          </li>
-        </ul>
-        <p>
-          Si vous avez toujours des difficultés, n'hésitez pas à nous contacter par e-mail à l'adresse suivante : <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a> en précisant votre adresse e-mail.
-        </p>
-      </div>
-    </section>
-    <section class="fr-accordion">
-      <h3 class="fr-accordion__title">
-        <button class="fr-accordion__btn"
-                aria-expanded="false"
-                aria-controls="accordion-2">Je veux changer l'adresse e-mail de mon compte</button>
-      </h3>
-      <div class="fr-collapse" id="accordion-2">
-        <h4 class="fr-h4">Contactez nous !</h4>
-        <p>
-          Si vous souhaitez changer votre e-mail de connexion, contactez-nous par e-mail à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">equipe@mesads.beta.gouv.fr</a> en nous indiquant votre ancienne adresse, ainsi que la nouvelle.
-          Notre équipe procèdera à la modification de votre compte.
-        </p>
-      </div>
-    </section>
-    <section class="fr-accordion">
-      <h3 class="fr-accordion__title">
-        <button class="fr-accordion__btn"
-                aria-expanded="false"
-                aria-controls="accordion-3">
-          Un problème technique, une remarque, une suggestion ou une autre question ?
-        </button>
-      </h3>
-      <div class="fr-collapse" id="accordion-3">
-        <h4 class="fr-h4">Contactez nous !</h4>
-        <p>
-          Si vous rencontrez un problème technique, que ce soit lors de votre connexion, ou lors de la saisie/consultation de vos informations sur l'outil Mes ADS, nous vous invitons à :
-        </p>
-        <ul>
-          <li>Utiliser notre module de tchat dédié (bouton de contact en bas à droite de votre page web)</li>
-          <li>
-            Ou nous contacter par e-mail à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
-          </li>
-        </ul>
-        <p>
-          N'hésitez surtout pas à rentrer en contact avec nous si vous avez des suggestions d'améliorations : vous ne trouvez un contenu peu clair ? Vous aimeriez une nouvelle fonctionnalité ? Nous expliquons mal comment utiliser telle ou telle page ? Le rendu est illisible sur votre navigateur ? Contactez-nous !
-        </p>
-      </div>
-    </section>
-  </div>
+ 
 {% endblock body %}
