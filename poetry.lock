@@ -792,18 +792,18 @@ Pillow = "*"
 
 [[package]]
 name = "django-mjml"
-version = "1.2"
+version = "1.4"
 description = "Use MJML in Django templates"
 optional = false
 python-versions = ">=3.6"
 groups = ["main"]
 files = [
-    {file = "django-mjml-1.2.tar.gz", hash = "sha256:5a8a670614602016bac11470a0499b77c451768af32ed253983c80597bb2f449"},
-    {file = "django_mjml-1.2-py3-none-any.whl", hash = "sha256:6ede759763f46f74fb0f9346e9b10d282bb88599c077aaa11939cfb67e3b2845"},
+    {file = "django_mjml-1.4-py3-none-any.whl", hash = "sha256:09dc440fcec64f3656b17646439336e6c15c5987103dfb6fe23eb1f1bf734d11"},
+    {file = "django_mjml-1.4.tar.gz", hash = "sha256:a805b3721de92a4972bb6bd4a3bffa91579420e48297a55f3ffef6d8e926b0b4"},
 ]
 
 [package.dependencies]
-django = ">=2.2,<5.1"
+django = ">=2.2,<5.3"
 
 [package.extras]
 requests = ["requests (>=2.24)"]
