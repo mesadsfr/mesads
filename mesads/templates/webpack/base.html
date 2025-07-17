@@ -4,7 +4,7 @@
   <link rel="stylesheet" href="./base.css">
 {% endblock extra_head %}
 {% block content %}
-  <main id="content" class="fr-container fr-pt-5w fr-pb-5w">
+  <main id="content" class="fr-pt-5w fr-pb-5w">
     {% for message in messages %}
       <div class="fr-alert fr-mb-2w {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}fr-alert--info{% endif %} {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}fr-alert--success{% endif %} {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}fr-alert--error{% endif %} ">
         <p>{{ message|safe }}</p>

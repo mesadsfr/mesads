@@ -1,96 +1,161 @@
-{% extends "base-banner.html" %}
-{% block banner %}
-  MesADS, le registre des ADS et des véhicules relais
-{% endblock banner %}
+{% extends "base.html" %}
 {% block body %}
   {% if not request.user.is_authenticated %}
-    <h1 class="fr-mt-5w">Pour savoir comment utiliser MesADS, choisissez votre profil</h1>
-    <p class="fr-text--lead text-center">
-      MesADS est l'outil de référence du secteur taxi. La plateforme propose actuellement deux fonctionnalités: la gestion des licences de taxi <strong>pour les administrations</strong> (registre des ADS) et l'accès à la liste des véhicules de remplacement <strong>pour les chauffeurs de taxi et propriétaires de véhicules relais</strong> (répertoires des taxis relais).
-    </p>
-    <p class="fr-text--lead">Vous êtes…</p>
-    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
-      <div class="fr-col-6">
-        <div class="fr-tile fr-enlarge-link">
-          <div class="fr-tile__body">
-            <div class="fr-tile__content">
-              <h2 class="fr-tile__title">
-                <a href="{% url 'app.profiles.ads_manager' %}">Chargé de la gestion des ADS de votre commune ou EPCI</a>
-              </h2>
-            </div>
+
+    <div class="homepage-section">
+      <div class="fr-container">
+        <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+          <div class="fr-col-12 fr-col-lg-8">
+              <h1 class="fr-mt-5w">MesADS, l’outil de référence du secteur taxi</h1>
+
+              <p class="fr-text--lead ">
+                MesADS simplifie la <strong>gestion administrative des taxis</strong> pour tous les acteurs du secteur. 
+                Que vous soyez <strong>préfecture, mairie, chauffeur en exercice ou en formation</strong>, 
+                notre plateforme centralise l'ensemble des démarches administratives liées aux taxis. Un outil de référence qui 
+                <strong>connecte les administrations et les professionnels</strong> pour une gestion fluide et efficace de toutes 
+                vos <strong>Autorisations De Stationnement (ADS)</strong>.
+              </p>
+
+              <div class="fr-my-6v">
+                <a class="fr-btn fr-mr-4v" href="{% url 'login' %}">Se connecter</a>
+                <a class="fr-btn fr-btn--secondary" href="{% url 'django_registration_register' %}">S'inscrire</a>
+              </div>
+
+              <div class="fr-notice fr-notice--info fr-mt-3v">
+                <div class="fr-notice__body">
+                  <p class="fr-notice__title fr-px-2v">
+                    Connexion requise uniquement pour : gérer les ADS (mairies/préfectures), s'inscrire sur liste d'attente (futurs chauffeurs) 
+                    ou enregistrer un taxi relais — Accès libre à toutes les autres fonctionnalités.
+                  </p>
+                </div>
+              </div>
           </div>
-          <div class="fr-tile__header">
-            <div class="fr-tile__pictogram">
-              <div class="text-5xl">👨‍💻</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="fr-col-6">
-        <div class="fr-tile fr-enlarge-link">
-          <div class="fr-tile__body">
-            <div class="fr-tile__content">
-              <h2 class="fr-tile__title">
-                <a href="{% url 'app.profiles.ads_manager_administrator' %}">Agent au sein d'une préfecture</a>
-              </h2>
-            </div>
-          </div>
-          <div class="fr-tile__header">
-            <div class="fr-tile__pictogram">
-              <div class="text-5xl">🇫🇷‍</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="fr-col-6">
-        <div class="fr-tile fr-enlarge-link">
-          <div class="fr-tile__body">
-            <div class="fr-tile__content">
-              <h2 class="fr-tile__title">
-                <a href="{% url 'app.profiles.driver' %}">Chauffeur de taxi</a>
-              </h2>
-            </div>
-          </div>
-          <div class="fr-tile__header">
-            <div class="fr-tile__pictogram">
-              <div class="text-5xl">🚕</div>
-            </div>
+
+          <div class="fr-col-12 fr-col-lg-4">
+            <img 
+              class="fr-ml-6v"
+              width="60%"
+              height="60%"
+              alt=""
+              src="../images/logo_homepage.png"
+            />
           </div>
         </div>
       </div>
-      <div class="fr-col-6">
-        <div class="fr-tile fr-enlarge-link">
-          <div class="fr-tile__body">
-            <div class="fr-tile__content">
-              <h2 class="fr-tile__title">
-                <a href="{% url 'app.profiles.vehicules-relais' %}">Détenteur d'un taxi relais (véhicule de remplacement)</a>
-              </h2>
+    </div>
+
+    <div class="homepage-section background-light-grey">
+      <div class="fr-container">
+        <h2 class="text-center">Les services en libre accès</h2>
+        <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+          <div class="fr-col-6">
+            <div class="fr-tile fr-enlarge-link" id="tile-reglementation">
+              <div class="fr-tile__body">
+                <div class="fr-tile__content">
+                  <h3 class="fr-tile__title">
+                    <a href="{% url 'app.reglementation' %}">Réglementation</a>
+                  </h3>
+                  <p class="fr-tile__detail">Accéder aux informations officielles sur la réglementation des taxis.</p>
+                </div>
+              </div>
+              <div class="fr-tile__header">
+                <div class="fr-tile__pictogram">
+                  <img src="../images/homepage/icone_reglementation.png" width="80px">
+                </div>
+              </div>
             </div>
           </div>
-          <div class="fr-tile__header">
-            <div class="fr-tile__pictogram">
-              <div class="text-5xl">🦺</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="fr-col-6">
-        <div class="fr-tile fr-enlarge-link">
-          <div class="fr-tile__body">
-            <div class="fr-tile__content">
-              <h2 class="fr-tile__title">
-                <a href="{% url 'app.reglementation' %}">Réglementation</a>
-              </h2>
-            </div>
-          </div>
-          <div class="fr-tile__header">
-            <div class="fr-tile__pictogram">
-              <div class="text-5xl">📚</div>
+          <div class="fr-col-6">
+            <div class="fr-tile fr-enlarge-link" id="tile-repertoire">
+              <div class="fr-tile__body">
+                <div class="fr-tile__content">
+                  <h3 class="fr-tile__title">
+                    <a href="{% url 'vehicules-relais.index' %}">Répertoires des taxis relais</a>
+                  </h3>
+                  <p class="fr-tile__detail">Consulter la liste complète des taxis relais disponibles.</p>
+                </div>
+              </div>
+              <div class="fr-tile__header">
+                <div class="fr-tile__pictogram">
+                  <img src="../images/homepage/icone_repertoire.png" width="80px">
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="homepage-section">
+      <div class="fr-container text-center">
+        <h2 class="blue-france text-left">Une solution qui fait ses preuves</h2>
+        <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle fr-grid-row--center fr-mb-4v">
+          <div class="fr-col-4">
+            <div class="text-center blue-france fr-display--xs fr-mb-2v">
+              35%
+            </div>
+            <div class="text-center">
+              de collectivités engagées dans les départements participants
+            </div>
+          </div>
+          <div class="fr-col-4">
+            <div class="text-center blue-france fr-display--xs fr-mb-2v">
+              29
+            </div>
+            <div class="text-center">
+              départements déployés
+            </div>
+          </div>
+          <div class="fr-col-4">
+            <div class="text-center blue-france fr-display--xs fr-mb-2v">
+              92,2%
+            </div>
+            <div class="text-center">
+              de taux de fiabilité des données
+            </div>
+          </div>
+        </div>
+        <a class="fr-link" href="{% url 'app.stats' %}">Voir plus de statistiques</a>
+      </div>
+    </div>
+
+    <div class="homepage-section background-light-grey">
+      <div class="fr-container">
+        <h2>Notre newsletter</h2>
+        <div class="fr-grid-row fr-grid-row--gutters justify-between">
+          <div class="fr-col-5">
+            <p>
+              Abonnez-vous pour recevoir des nouvelles tous les trimestres de MesADS
+            </p>
+
+            <a class="fr-btn" href="/">Demander une démonstration</a>
+          </div>
+          <div class="fr-col-5">
+            <p>
+              Retrouver nos anciennes infolettres
+            </p>
+            <p>
+              <a class="fr-link" href="/">
+                Infolettre n°2 - Avril 2023
+              </a>
+            </p>
+            <p>
+              <a class="fr-link" href="/">
+                Infolettre n°1 - Janvier 2023
+              </a>
+            </p>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="homepage-section">
+      <div class="fr-container text-center fr-pt-3v">
+        <a class="fr-btn fr-btn--secondary" href="mailto:{{ MESADS_CONTACT_EMAIL }}">Nous contacter</a>
+      </div>
+    </div>
+    
   {% else %}
     <p class="fr-text--lead text-center">
       MesADS est l'outil de référence du secteur taxi. La plateforme propose actuellement deux fonctionnalités: la gestion des licences de taxi <strong>pour les administrations</strong> (registre des ADS) et l'accès à la liste des véhicules de remplacement <strong>pour les chauffeurs de taxi et propriétaires de véhicules relais</strong> (répertoires des taxis relais).
