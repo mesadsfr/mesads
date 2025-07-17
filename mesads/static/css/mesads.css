@@ -1,0 +1,15 @@
+.homepage-section {
+    padding: 2rem 0;
+}
+
+.blue-france {
+    color: var(--text-title-blue-france);
+}
+
+.background-light-grey {
+    background-color: var(--blue-france-950-100);
+}
+
+.background-blue-france {
+    background-color: var(--text-title-blue-france);
+}
