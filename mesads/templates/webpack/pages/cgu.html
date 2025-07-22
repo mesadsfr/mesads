@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block body %}
+<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+  <button class="fr-breadcrumb__button"
+          aria-expanded="false"
+          aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+  <div class="fr-collapse" id="breadcrumb-1">
+    <ol class="fr-breadcrumb__list">
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Page d'accueil</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" aria-current="page">CGU</a>
+      </li>
+    </ol>
+  </div>
+</nav>
+
+<h1 class="text-center">Conditions Générales d’Utilisation de MesADS (Autorisations De Stationnement taxi)</h1>
+
+<p>
+  Les présentes conditions générales d’utilisation (dites “CGU”) ont pour objet l’encadrement juridique des modalités de mise à 
+  disposition du site et des services proposés par MesADS.
+</p>
+<p>Les présentes CGU sont accessibles sur le site à la rubrique “CGU”.</p>
+
+<h2>Article 1 – Champ d’application</h2>
+
+<p>
+  La plateforme MesADS est un outil public numérique mis à disposition par la Fabrique Numérique du Ministère de la Transition Écologique, 
+  dans le cadre de la plateforme beta.gouv.fr.
+</p>
+
+<p>
+  Cette opportunité est rendue possible par la mise en œuvre d’un système d’information selon les méthodes des “Startups d'État”, 
+  opéré par la mission Incubateur de Services Numériques au sein de la Direction Interministérielle du Numérique, dénommée “DINUM” dans la suite, 
+  pour le compte de la Direction Générale des Infrastructures, des Transports et de la Mobilité, dénommées “DGITM”.
+</p>
+
+<h2>Article 2 - Objet</h2>
+
+<p>
+  MesADS centralise la gestion administrative du secteur taxis en France. Elle permet aux collectivités et préfectures de gérer les autorisations de 
+  stationnement et listes d'attente tout en offrant aux chauffeurs l'accès à la règlementation et aux véhicules de remplacement. 
+  MesADS est l'outil national unique qui connecte administrations et professionnels pour une gestion efficace du secteur.
+</p>
+
+<h2>Article 3 - Définition</h2>
+
+<p>
+  <ul>
+    <li>
+      <strong>ADS</strong> : Autorisation De Stationnement
+    </li>
+    <li>
+      <strong>Gestionnaire</strong> : Administration (commune, EPCI, Préfecture) ayant compétence sur les ADS.
+    </li>
+    <li>
+      <strong>Taxi relai</strong> : Véhicule utilisé temporairement en cas d'immobilisation d'origine mécanique, à la suite d'une panne ou d'un accident, 
+      ou de vol d'un véhicule taxi ou de ses équipements spéciaux.
+    </li>
+    <li>
+      <strong>Détenteur / Taxi relais</strong> : Personne physique ou morale enregistrant un véhicule de remplacement dit « taxi relais ».
+    </li>
+    <li>
+      <strong>Service</strong> : La plateforme MesADS.
+    </li>
+    <li>
+      <strong>Utilisateur</strong> : Toute personne accédant au service, disposant ou non d’un compte.
+    </li>
+  </ul>
+</p>
+
+<h2>Article 4 - Fonctionnalités du service</h2>
+
+<p>
+  Le service permet :
+  <ul>
+    <li>
+      La gestion des autorisations de stationnement taxis par les administrations (Communes, EPCI, Préfectures).
+    </li>
+    <li>
+      L’enregistrement des taxis relais par les détenteurs d’un véhicule de remplacement conformément à la réglementation en vigueur,
+    </li>
+    <li>
+      La consultation des répertoires départementaux des taxis relais mis à disposition pour assurer la continuité du service,
+    </li>
+    <li>
+      Le suivi des demandes et la mise à disposition d'un tableau de bord adapté à chaque profil utilisateur
+    </li>
+    <li>
+      La connexion sécurisée via un compte utilisateur,
+    </li>
+  </ul>
+</p>
+
+<p>
+  L'accès au service est gratuit. Certaines fonctionnalités sont réservées aux utilisateurs identifiés par compte personnel et validation administrative.
+</p>
+
+<p>
+  L'utilisateur est responsable de la sécurité de son compte et de ses identifiants. Toute usurpation ou usage frauduleux doit être signalé.
+</p>
+
+<h2>
+  Article 5 - Qualité des données publiées
+</h2>
+
+<p>
+  Le service s'efforce d'assurer l'exactitude, la mise à jour régulière et la fiabilité des données publiées, notamment celles relatives aux 
+  autorisations de stationnement (ADS) et aux taxis relais. Néanmoins, l'État ne saurait être tenu pour responsable d'éventuelles erreurs ou omissions.
+</p>
+
+<p>
+  Les gestionnaires locaux sont responsables de la mise à jour des données qu'ils saisissent.
+</p>
+
+<h2>
+  Article 6 - Propriété intellectuell
+</h2>
+
+<p>
+  Ce site est la propriété exclusive du ministère de l’Aménagement du Territoire et de la Décentralisation. 
+  Toute reproduction ou représentation totale ou partielle de ce site par quelque procédé que ce soit, 
+  sans l’autorisation expresse de son propriétaire est interdite et constituerait une contrefaçon sanctionnée par 
+  les articles L. 335-2 du Code de la propriété intellectuelle.
+</p>
+
+<h2>
+  Article 7 - Protection des données personnelles (RGPD)
+</h2>
+
+<h3>
+  7.1 Responsable du traitement
+</h3>
+
+<p>
+  Le ministère de l’Aménagement du Territoire et de la Décentralisation est responsable du traitement des données personnelles collectées via MesADS.
+</p>
+
+<h3>
+  7.2 Finalités
+</h3>
+
+<p>
+  Les données sont collectées pour :
+  <ul>
+    <li>
+      La gestion des autorisations de stationnement (ADS)
+    </li>
+    <li>
+      L’enregistrement et la publication des taxis relais,
+    </li>
+    <li>
+      Le suivi des demandes,
+    </li>
+    <li>
+      La sécurité du service et la gestion des connexions,
+    </li>
+    <li>
+      Les statistiques d’usage anonymisées.
+    </li>
+  </ul>
+</p>
+
+<h3>7.3 Données traitées</h3>
+
+<p>
+  <ul>
+    <li>
+      Identité : nom, prénom, e-mail professionnel, numéros de téléphone
+    </li>
+    <li>
+      Données administratives et professionnelles : numéros d’autorisation et d’immatriculation, carte professionnelle, SIRET, 
+      caractéristiques du véhicules (carburation, nombre de places, PMR, conventionné CPAM)
+    </li>
+  </ul>
+</p>
+
+<h3>7.4 Durée de conservation</h3>
+
+<p>
+  Les données sont conservées pendant la durée nécessaire à la gestion des autorisations et obligations légales.
+</p>
+
+<h3>7.5 Droits des personnes</h3>
+
+<p>
+  Vous disposez d'un droit d'accès, de rectification, d'opposition, d'effacement dans les limites du cadre légal. 
+</p>
+<p>
+  Contact : <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+</p>
+<p>
+  Vous pouvez aussi introduire une réclamation auprès de la CNIL.
+</p>
+
+<h2>
+  Article 8 - Révision des CGU
+</h2>
+
+<p>
+  Les CGU peuvent être modifiées à tout moment. Toute modification substantielle sera signalée aux utilisateurs via notification ou e-mail.
+</p>
+
+<h2>
+  Article 9 - Loi applicable et juridiction
+</h2>
+
+<p>
+  Les présentes CGU sont régies par le droit français. En cas de litige, les tribunaux français sont compétents.
+</p>
+
+<h2>Article 10 - Contact</h2>
+
+<p>
+  Pour toute question sur le service ou les présentes CGU : <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+</p>
+
+{% endblock %}
