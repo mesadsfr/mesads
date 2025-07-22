@@ -141,6 +141,11 @@ urlpatterns += [
         name="app.accessibility",
     ),
     path(
+        "cgu",
+        TemplateView.as_view(template_name="pages/cgu.html"),
+        name="app.cgu",
+    ),
+    path(
         "reglementation",
         views.ReglementationView.as_view(),
         name="app.reglementation",

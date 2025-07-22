@@ -46,6 +46,10 @@ urls:
     title: "Mentions légales de MesADS"
     description: "Consultez nos mentions légales."
 
+  app.cgu:
+    title: "MesADS - Conditions générales d'utilisation"
+    description: "Consultez nos conditions générales d'utilisation"
+
   ###
   ### Registration
   ###
