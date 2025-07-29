@@ -37,6 +37,12 @@ class PasswordResetStrictForm(PasswordResetForm):
 
 
 class OTPAuthenticationForm(AuthenticationForm):
+    remember_me = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(),
+        label="Se souvenir de moi",
+    )
+
     otp = forms.CharField(
         required=False,
         label="Vérification",
