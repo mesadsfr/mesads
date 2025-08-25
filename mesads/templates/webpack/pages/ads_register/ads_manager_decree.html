@@ -1,13 +1,17 @@
-{% extends "./base.html" %}
-{% block main %}
+{% extends "base_container.html" %}
+{% block body-content %}
   <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-    <button class="fr-breadcrumb__button"
-            aria-expanded="false"
-            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d'Ariane
+    </button>
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
         <li>
-          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
         </li>
         <li>
           <a class="fr-breadcrumb__link"
@@ -19,6 +23,7 @@
       </ol>
     </div>
   </nav>
+  
   <h1>Arrêté de {{ ads_manager.content_object.display_fulltext }}</h1>
   <p class="fr-text--lead">
     Vous avez la possibilité d'insérer l'arrêté délimitant le nombre d'ADS au sein de votre administration.
@@ -34,4 +39,4 @@
     <button type="submit" class="fr-btn">Valider le formulaire</button>
   </form>
   <script src="ads_manager_decree.ts"></script>
-{% endblock main %}
+{% endblock body-content %}

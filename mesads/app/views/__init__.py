@@ -22,6 +22,7 @@ from .ads_manager_admin import (  # noqa: F401
     ADSManagerAdminUpdatesView,
 )
 from .ads_manager_request import (  # noqa: F401
+    DemandeGestionADSView,
     ADSManagerRequestView,
 )
 from .dashboards import DashboardsView  # noqa: F401
