@@ -1,21 +1,18 @@
-{% extends "base.html" %}
-{% block body %}
-  <div class="fr-grid-row fr-grid-row--center">
-    <div class="fr-col-12 fr-col-sm-8 fr-col-md-6">
-      {% if activation_error.code == 'already_activated' %}
-        <h1>Création de votre compte Mes ADS terminée</h1>
-        <p class="fr-text--lead">
-          Votre compte Mes ADS est désormais actif. Rendez-vous sur la page de <a href="{% url 'login' %}">connexion</a> pour accéder à votre compte.
-        </p>
-      {% else %}
-        <h1>Échec de l'inscription</h1>
-        <p class="fr-text--lead">
-          <strong>Le lien d'activation que vous avez suivi n'est pas correct</strong>. Vérifiez que vous avez bien copié tout le lien pour valider votre inscription.
-        </p>
-      {% endif %}
-      <p>
-        Si vous rencontrez le moindre problème, vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>.
+{% extends "base_container.html" %}
+{% block body-content %}
+<div class="fr-grid-row fr-grid-row--center">
+  <div class="fr-col-12 fr-col-sm-8 fr-col-md-6">
+    {% if activation_error.code == 'already_activated' %}
+      <h1 class="text-center">Création de votre compte Mes ADS terminée</h1>
+      <p class="fr-text--lead">
+        Votre compte Mes ADS est désormais actif. Rendez-vous sur la page de <a href="{% url 'login' %}">connexion</a> pour accéder à votre compte.
       </p>
-    </div>
+    {% else %}
+      <h1 class="text-center">Échec de l'inscription</h1>
+      <p class="fr-text--lead">
+        <strong>Le lien d'activation que vous avez suivi n'est pas correct</strong>. Vérifiez que vous avez bien copié tout le lien pour valider votre inscription.
+      </p>
+    {% endif %}
   </div>
-{% endblock body %}
+</div>
+{% endblock %}

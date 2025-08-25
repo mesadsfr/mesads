@@ -1,84 +1,144 @@
-{% extends "base.html" %}
-{% block body %}
-  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-    <button class="fr-breadcrumb__button"
-            aria-expanded="false"
-            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
-    <div class="fr-collapse" id="breadcrumb-1">
-      <ol class="fr-breadcrumb__list">
-        <li>
-          <a class="fr-breadcrumb__link" href="{% url 'login' %}">Connexion</a>
-        </li>
-        <li>
-          <a class="fr-breadcrumb__link" aria-current="page">Créer un compte</a>
-        </li>
-      </ol>
-    </div>
-  </nav>
-  <div class="fr-grid-row fr-grid-row--center">
-    <div class="fr-col-12 fr-col-md-8">
-      <h1>Créez votre compte Mes ADS</h1>
-      <p class="fr-text--lead">Renseignez vos informations afin de créer votre compte MesADS.</p>
-      <form method="post" action="{% url 'django_registration_register' %}">
-        {% csrf_token %}
-        <!-- Username -->
-        <div class="fr-input-group{% if form.errors.email %} fr-input-group--error{% endif %}">
-          <label class="fr-label" for="{{ form.email.name }}">{{ form.email.label }} :</label>
-          <p class="fr-hint-text">
-            Privilégiez une adresse professionnelle ou une adresse dédiée à la gestion des ADS (adresse partagée ou adresse personnelle)
-          </p>
-          <input class="fr-input{% if form.errors.email %} fr-input--error{% endif %}"
-                 type="text"
-                 id="{{ form.email.name }}"
-                 name="{{ form.email.name }}"
-                 value="{{ form.email.value|default:"" }}" />
-          {% for error in form.errors.email %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
-        </div>
-        <!-- Password -->
-        <div class="fr-input-group{% if form.errors.password1 %} fr-input-group--error{% endif %}">
-          <label class="fr-label" for="{{ form.password1.name }}">{{ form.password1.label }} :</label>
-          <input class="fr-input{% if form.errors.password1 %} fr-input--error{% endif %}"
-                 type="password"
-                 id="{{ form.password1.name }}"
-                 name="{{ form.password1.name }}"
-                 value="{{ form.password1.value|default:"" }}" />
-          {% for error in form.errors.password1 %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
-        </div>
-        <!-- Password confirm -->
-        <div class="fr-input-group{% if form.errors.password2 %} fr-input-group--error{% endif %}">
-          <label class="fr-label" for="{{ form.password2.name }}">{{ form.password2.label }} :</label>
-          <input class="fr-input{% if form.errors.password2 %} fr-input--error{% endif %}"
-                 type="password"
-                 id="{{ form.password2.name }}"
-                 name="{{ form.password2.name }}"
-                 value="{{ form.password2.value|default:"" }}" />
-          {% for error in form.errors.password2 %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
-        </div>
-        <!-- Non-fields errors -->
-        {% if form.non_field_errors %}
-          <div class="fr-input-group fr-input-group--error">
-            {% for error in form.non_field_errors %}
-              <!-- Non-field error -->
-              <p class="fr-error-text">{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
-        <div class="fr-highlight fr-callout--brown-caramel">
-          <p class="fr-text--lg"></p>
-        </div>
-        <div class="fr-mb-2w fr-alert fr-alert--info">
-          <p class="fr-alert__title">Activation de votre compte</p>
-          <p>
-            Vous allez recevoir un lien d'activation par e-mail. Il est fréquent que ce mail ne soit pas reçu à cause de filtres anti-spams. Si vous ne recevez pas ce mail, vérifiez votre dossier de courriers indésirables.
-          </p>
-          <p>
-            Si malgré tout, vous ne le trouvez pas, contactez-nous à l'adresse <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
-          </p>
-        </div>
-        <div class="fr-input-group">
-          <button type="submit" class="fr-btn">Créez votre compte</button>
-        </div>
-      </form>
-    </div>
+{% extends "base_container.html" %}
+{% block body-content %}
+<!-- Breadcrumb -->
+<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+  <button class="fr-breadcrumb__button"
+          aria-expanded="false"
+          aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+  <div class="fr-collapse" id="breadcrumb-1">
+    <ol class="fr-breadcrumb__list">
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" aria-current="page">Inscription</a>
+      </li>
+    </ol>
   </div>
-{% endblock body %}
+</nav>
+
+<!-- Formulaire d'inscription -->
+<div class="fr-grid-row fr-grid-row--center">
+  <div class="fr-col-12 fr-col-md-6">
+
+    <h1 class="text-center">Créez votre compte Mes ADS</h1>
+    <p class="fr-text--lead">Renseignez vos informations afin de créer votre compte MesADS.</p>
+    
+    <form method="post" action="{% url 'django_registration_register' %}">
+      {% csrf_token %}
+
+      <!-- Username -->
+      <div class="fr-input-group{% if form.errors.email %} fr-input-group--error{% endif %}">
+        <label
+          class="fr-label"
+          for="{{ form.email.name }}"
+        >
+          {{ form.email.label }} :
+        </label>
+
+        <p class="fr-hint-text">
+          Privilégiez une adresse professionnelle ou une adresse dédiée à la gestion des ADS (adresse partagée ou adresse personnelle)
+        </p>
+
+        <input
+          class="fr-input"
+          type="text"
+          id="{{ form.email.name }}"
+          name="{{ form.email.name }}"
+          value="{{ form.email.value|default:"" }}"
+          aria-describedby="email-messages"
+          aria-required="true"
+        />
+
+        <div class="fr-messages-group" id="email-messages" aria-live="assertive">
+          {% for error in form.errors.email %}
+            <p class="fr-message fr-message--error">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+      </div>
+
+      <!-- Password -->
+      <div class="fr-password{% if form.errors.password1 %} fr-input-group--error{% endif %}">
+        
+        <label
+          class="fr-label"
+          for="{{ form.password1.name }}"
+        >
+          {{ form.password1.label }} :
+        </label>
+
+        <input
+          class="fr-password__input fr-input"
+          type="password"
+          id="{{ form.password1.name }}"
+          name="{{ form.password1.name }}"
+          value="{{ form.password1.value|default:"" }}"
+          aria-describedby="password1-messages"
+          aria-required="true"
+        />
+
+        <div class="fr-messages-group" id="password1-messages" aria-live="assertive">
+          {% for error in form.errors.password1 %}
+            <p class="fr-message fr-message--error">{{ error }}</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Password confirm -->
+      <div class="fr-password{% if form.errors.password2 %} fr-input-group--error{% endif %}">
+        
+        <label
+          class="fr-label"
+          for="{{ form.password2.name }}"
+        >
+          {{ form.password2.label }} :
+        </label>
+
+        <input
+          class="fr-password__input fr-input"
+          type="password"
+          id="{{ form.password2.name }}"
+          name="{{ form.password2.name }}"
+          value="{{ form.password2.value|default:"" }}"
+          aria-describedby="password2-messages"
+          aria-required="true"
+        />
+
+        <div class="fr-messages-group" id="password2-messages" aria-live="assertive">
+          {% for error in form.errors.password2 %}
+            <p class="fr-message fr-message--error">{{ error }}</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Non-fields errors -->
+      {% if form.non_field_errors %}
+        <div class="fr-messages-group" aria-live="assertive">
+          {% for error in form.non_field_errors %}
+            <!-- Non-field error -->
+            <p class="fr-message fr-message--error">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="fr-highlight fr-callout--brown-caramel">
+        <p class="fr-text--lg"></p>
+      </div>
+      <div class="fr-mb-2w fr-alert fr-alert--info">
+        <p class="fr-alert__title">Activation de votre compte</p>
+        <p>
+          Vous allez recevoir un lien d'activation par e-mail. Il est fréquent que ce mail ne soit pas reçu à cause de filtres anti-spams. Si vous ne recevez pas ce mail, vérifiez votre dossier de courriers indésirables.
+        </p>
+        <p>
+          Si malgré tout, vous ne le trouvez pas, contactez-nous à l'adresse <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+        </p>
+      </div>
+      <div class="fr-input-group">
+        <button type="submit" class="fr-btn">Créez votre compte</button>
+      </div>
+    </form>
+  </div>
+</div>
+  
+{% endblock %}

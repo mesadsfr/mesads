@@ -209,7 +209,13 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME": "mesads.users.validators.UppercaseValidator",
+    },
+    {
+        "NAME": "mesads.users.validators.LowercaseValidator",
+    },
+    {
+        "NAME": "mesads.users.validators.DigitValidator",
     },
 ]
 
