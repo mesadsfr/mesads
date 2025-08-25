@@ -1,6 +1,7 @@
 from django.contrib.auth.views import PasswordResetView
 from django.conf import settings
 from django.urls import include, path
+from django.views.generic import TemplateView
 
 from .forms import PasswordResetStrictForm
 from .views import CustomRegistrationView, OTPLoginView
@@ -23,6 +24,11 @@ urlpatterns = [
             extra_email_context={"MESADS_CONTACT_EMAIL": settings.MESADS_CONTACT_EMAIL},
         ),
         name="password_reset",
+    ),
+    path(
+        "inscription/",
+        TemplateView.as_view(template_name="registration/pre_register.html"),
+        name="pre_register",
     ),
     path(
         "login/",
