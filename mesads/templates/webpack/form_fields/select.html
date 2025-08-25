@@ -1,18 +1,37 @@
-<div class="fr-select-group{% if field_errors %} fr-select-group--error{% endif %}{% if bold %} font-bold{% endif %}"
-     {% if x_show %}x-show="{{ x_show }}"{% endif %}
-     {% if x_transition %}x-transition{% endif %}>
+<div
+  class="fr-select-group{% if field_errors %} fr-select-group--error{% endif %}{% if bold %} font-bold{% endif %}"
+  {% if x_show %}x-show="{{ x_show }}"{% endif %}
+  {% if x_transition %}x-transition{% endif %}
+>
+
   <label class="fr-label" for="{{ field.id_for_label }}">
     {{ field.label }}
     {% if required %}*{% endif %}
-    {% if field.help_text %}<span class="fr-hint-text">{{ field.help_text }}</span>{% endif %}
+    {% if field.help_text %}
+      <span class="fr-hint-text">{{ field.help_text }}</span>
+    {% endif %}
   </label>
-  <select class="fr-select{% if field_errors %} fr-select--error{% endif %}"
-          id="{{ field.id_for_label }}"
-          name="{{ field.html_name }}"
-          {% if x_model %}x-model="{{ x_model }}"{% endif %}
-          {% if readonly %}disabled{% endif %}>
-    {% if empty_option %}<option disabled selected value>Sélectionnez une option</option>{% endif %}
-    {% for option in field %}{{ option }}{% endfor %}
+
+  <select
+    class="fr-select{% if field_errors %} fr-select--error{% endif %}"
+    id="{{ field.id_for_label }}"
+    name="{{ field.html_name }}"
+    {% if x_model %}x-model="{{ x_model }}"{% endif %}
+    :disabled="
+      typeof update !== 'undefined'
+        ? (!update || {{ readonly|yesno:'true,false' }})
+        : {{ readonly|yesno:'true,false' }}
+    "
+  >
+    {% if empty_option %}
+      <option disabled selected value>Sélectionnez une option</option>
+    {% endif %}
+    {% for option in field %}
+      {{ option }}
+    {% endfor %}
   </select>
-  {% for error in field_errors %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
+  
+  {% for error in field_errors %}
+    <p class="fr-error-text">{{ error }}</p>
+  {% endfor %}
 </div>

@@ -1,14 +1,18 @@
-{% extends "./base.html" %}
+{% extends "base_container.html" %}
 {% load str_to_date %}
-{% block main %}
+{% block body-content %}
   <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-    <button class="fr-breadcrumb__button"
-            aria-expanded="false"
-            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d'Ariane
+    </button>
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
         <li>
-          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
         </li>
         <li>
           <a class="fr-breadcrumb__link"
@@ -24,344 +28,482 @@
       </ol>
     </div>
   </nav>
-  <div class="fr-notice fr-notice--info fr-mb-3w">
-    <div class="fr-container">
-      <div class="fr-notice__body">
-        <p>
-          <span class="fr-notice__title">Pour modifier les informations de cette ADS,</span>
-          <span class="fr-notice__desc">
-            éditez les champs du formulaire et cliquez sur "Valider les modifications de l'ADS" en bas de cette page.
-            <br />
-            <br />
-            En cas de location-gérance, les informations du locataire-gérant doivent être renseignées dans la partie "conducteur" en bas du formulaire.
-            <br />
-            <br />
-            Les anciennes informations s'enregistrent automatiquement dans l'historique de l'ADS que vous pourrez consulter sur le lien ci-dessous.
-            <br />
-            Vous pouvez aussi accéder aux modèles d'arrêtés en cliquant sur le lien "accéder aux modèles".
-          </span>
-        </p>
-      </div>
-    </div>
-  </div>
-  {% if ads %}
-    {% if ads_manager.content_type.name == 'commune' %}
-      <p>
-        📜&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-   href="{% url 'app.ads.decree' manager_id=ads_manager.id ads_id=ads.id %}">
-        Accéder aux modèles d'arrêtés municipaux
-      </a>
-    </p>
-  {% endif %}
-  <p>
-    🕰️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-   href="{% url 'app.ads.history' manager_id=ads_manager.id ads_id=ads.id %}">Voir l'historique des modifications</a>
-  </p>
-{% endif %}
-{% if ads %}
-  <h1>ADS numéro {{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})</h1>
-  {% if not latest_ads_update_log or latest_ads_update_log.is_outdated %}
-    <div class="fr-alert fr-alert--warning fr-mb-3w">
-      <h3 class="fr-alert__title">Vérification de l'ADS nécessaire</h3>
-      <p>
-        {% if latest_ads_update_log %}
-          Les informations de cette ADS n'ont pas été mises à jour depuis le {{ latest_ads_update_log.update_at|date:"d/m/Y" }}.
-        {% endif %}
-        Veuillez valider que les informations sont correctes, et valider en bas de la page.
-      </p>
-    </div>
-  {% elif not latest_ads_update_log.is_complete and not latest_ads_update_log.is_outdated %}
-    <div class="fr-alert fr-alert--warning fr-mb-3w">
-      <h3 class="fr-alert__title">Informations incomplètes</h3>
-      <p>
-        Les informations suivantes sont nécessaires :
-        <ul>
-          {% for field in latest_ads_update_log.get_missing_fields %}<li>{{ field }}</li>{% endfor %}
-        </ul>
-      </p>
-    </div>
-  {% endif %}
-{% else %}
-  <h1>Enregistrement d'une ADS</h1>
-{% endif %}
-{% if ads_manager.is_locked %}
-  <div class="fr-highlight">
-    <p>
-      Cette ADS appartient à un gestionnaire pour lequel les modifications manuelles ont été bloquées, car les données sont mises à jour automatiquement. Vous ne pouvez pas créer, modifier ou supprimer les ADS de cette administration.
-    </p>
-    <p>
-      Si vous pensez qu'il s'agit d'une erreur, vous pouvez contacter notre équipe sur <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
-    </p>
-  </div>
-{% endif %}
-<div class="fr-grid-row" x-data="get_x_data()">
-  <form method="post" enctype="multipart/form-data">
-    {% if form.non_field_errors %}
-      <div class="fr-input-group fr-input-group--error">
-        {% for error in form.non_field_errors %}
-          <!-- Non-field error -->
-          <p class="fr-error-text">{{ error }}</p>
-        {% endfor %}
-      </div>
-    {% endif %}
-    {% csrf_token %}
-    <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
-      <legend class="text-2xl font-semibold">Informations générales</legend>
-      <!-- EPCI commune -->
-      {% if ads_manager.content_type.name == 'EPCI' %}
-        {% include "form_fields/select-autocomplete.html" with field=form.epci_commune field_errors=form.errors.epci_commune %}
-      {% endif %}
-      <!-- ADS number -->
-      {% include "form_fields/string.html" with field=form.number field_errors=form.errors.number required=form.fields.number.required readonly=ads_manager.is_locked bold=True %}
-      <!-- ADS creation date -->
-      {% include "form_fields/date.html" with x_model="ads_creation_date" field=form.ads_creation_date field_errors=form.errors.ads_creation_date required=form.fields.ads_creation_date.required readonly=ads_manager.is_locked bold=True %}
-      <!-- ADS in use? -->
-      {% include "form_fields/select.html" with x_model="ads_in_use" empty_option=True field=form.ads_in_use field_errors=form.errors.ads_in_use required=form.fields.ads_in_use.required readonly=ads_manager.is_locked bold=True %}
-      <template x-if="ads_in_use === 'false'">
-        <div class="fr-alert fr-alert--error fr-mb-3w">
-          L'ADS est actuellement vacante.
-          Une ADS qui a été retirée ou non renouvelée <strong>doit être réattribuée dans un délai de 3 mois</strong>
-          à un demandeur de la liste d'attente, en respectant la procédure inidquée
-          aux l'articles R3121-5 et  R3121-13 du Code des transports.
-          liste d'attente (article R3121-5 du Code des transports).
-          <br />
-          <br />
-          Si l'ADS n'a pas été réattribuée dans ce délai, nous vous invitons à consulter votre Préfecture.
-        </div>
-      </template>
-      <template x-if="ads_creation_date && ads_before_2014 && ads_in_use === 'true'">
-        <div class="fr-alert fr-alert--info fr-mb-3w">
-          Vous renseignez actuellement les informations d'une <strong>« ancienne ADS »</strong> qui a été créée avant la réforme de 2014.
-          <br />
-          <br />
-          <strong>Cette ADS n'a pas de durée de validité</strong> et reste cessible même si la dernière cession est intervenue après le 1er octobre 2014.
-        </div>
-      </template>
-      <template x-if="ads_creation_date && !ads_before_2014 && ads_in_use === 'true'">
-        <div class="fr-alert fr-alert--info fr-mb-3w">
-          Vous renseignez actuellement les informations d'une <strong>« nouvelle ADS »</strong>, <strong>incessible</strong> et <strong>délivrée gratuitement pour une durée renouvelable de 5 ans</strong>.
-          <br />
-          <br />
-          Si ce n'est pas le cas (s'il s'agit d'une ADS dont le titulaire actuel a racheté les droits au précédent titulaire par exemple), nous vous invitons à modifier la date de création initiale; vous aurez ensuite la possibilité d'ajouter la date de la dernière cession.
-        </div>
-      </template>
-      <template x-if="ads_in_use === 'true' && !ads_creation_date">
+
+  <div {% if ads %}x-data="{update: false}"{% else %}x-data="{update: true}"{% endif %}>
+    {% if ads %}
+      <h1>
+        ADS #{{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})
+        <button
+          x-show="!update"
+          @click="update = !update"
+          class="fr-btn"
+        >
+          Modifier
+        </button>
+      </h1>
+
+      {% if not latest_ads_update_log or latest_ads_update_log.is_outdated %}
         <div class="fr-alert fr-alert--warning fr-mb-3w">
-          Aucune date de création n'a encore été enregistrée pour cette ADS.
-          <br />
-          <br />
-          Nous vous invitons à <strong>renseigner une date de création ci-dessus</strong> afin de déterminer le régime juridique applicable à l'ADS.
+          <h3 class="fr-alert__title">Vérification de l'ADS nécessaire</h3>
+          <p>
+            {% if latest_ads_update_log %}
+              Les informations de cette ADS n'ont pas été mises à jour depuis le {{ latest_ads_update_log.update_at|date:"d/m/Y" }}.
+            {% endif %}
+            Veuillez valider que les informations sont correctes, et valider en bas de la page.
+          </p>
         </div>
-      </template>
-      <!-- ADS renew date -->
-      <template x-if="ads_in_use === 'true' && !ads_before_2014">
-        <div x-show="!ads_before_2014" x-transition class="fr-input-group">
-          {% include "form_fields/date.html" with field=form.ads_renew_date field_errors=form.errors.ads_renew_date required=form.fields.ads_renew_date.required readonly=ads_manager.is_locked %}
+
+      {% elif not latest_ads_update_log.is_complete and not latest_ads_update_log.is_outdated %}
+        <div class="fr-alert fr-alert--warning fr-mb-3w">
+          <h3 class="fr-alert__title">Informations incomplètes</h3>
+          <p>
+            Les informations suivantes sont nécessaires :
+            <ul>
+              {% for field in latest_ads_update_log.get_missing_fields %}<li>{{ field }}</li>{% endfor %}
+            </ul>
+          </p>
         </div>
-      </template>
-      <!-- ADS attribution date -->
-      <template x-if="ads_in_use === 'true' && should_display_attribution_date">
-        <div x-show="should_display_attribution_date"
-             x-transition
-             class="fr-input-group">
-          {% include "form_fields/date.html" with field=form.attribution_date field_errors=form.errors.attribution_date required=form.fields.attribution_date.required readonly=ads_manager.is_locked %}
+      {% endif %}
+
+    {% else %}
+      <h1>Enregistrement d'une ADS</h1>
+    {% endif %}
+
+    <div x-show="!update" class="fr-notice fr-notice--info fr-mb-3w">
+      <div class="fr-container">
+        <div class="fr-notice__body">
+          <p>
+            <span class="fr-notice__title">Pour toute modification sur l'ADS,</span>
+            <span class="fr-notice__desc">
+              (changement de véhicule, de titulaire, etc), il convient de cliquer sur "Modifier"
+            </span>
+          </p>
         </div>
-      </template>
-      <!-- Accepted by CPAM -->
-      <template x-if="ads_in_use === 'true'">
-        {% include "form_fields/select.html" with field=form.accepted_cpam field_errors=form.errors.accepted_cpam required=form.fields.accepted_cpam.required readonly=ads_manager.is_locked %}
-      </template>
-    </fieldset>
-    <template x-if="ads_in_use === 'true'">
-      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
-        <legend class="text-2xl font-semibold">Le titulaire (« propriétaire » de l'ADS)</legend>
-        <!-- Owner name -->
-        {% include "form_fields/string.html" with field=form.owner_name field_errors=form.errors.owner_name required=form.fields.owner_name.required readonly=ads_manager.is_locked bold=True %}
-        <!-- Owner SIRET -->
-        {% include "form_fields/string.html" with field=form.owner_siret field_errors=form.errors.owner_siret required=form.fields.owner_siret.required readonly=ads_manager.is_locked bold=True %}
-        <!-- Owner phone -->
-        {% include "form_fields/string.html" with field=form.owner_phone field_errors=form.errors.owner_phone required=form.fields.owner_phone.required readonly=ads_manager.is_locked %}
-        <!-- Owner mobile -->
-        {% include "form_fields/string.html" with field=form.owner_mobile field_errors=form.errors.owner_mobile required=form.fields.owner_mobile.required readonly=ads_manager.is_locked %}
-        <!-- Owner email -->
-        {% include "form_fields/string.html" with field=form.owner_email field_errors=form.errors.owner_email required=form.fields.owner_email.required html_type="email" readonly=ads_manager.is_locked %}
-      </fieldset>
-    </template>
-    <template x-if="ads_in_use === 'true'">
-      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
-        <legend class="text-2xl font-semibold">Le véhicule</legend>
-        <!-- Immatriculation plate -->
-        {% include "form_fields/string.html" with field=form.immatriculation_plate field_errors=form.errors.immatriculation_plate required=form.fields.immatriculation_plate.required readonly=ads_manager.is_locked bold=True %}
-        <!-- Compatible PMR ? -->
-        {% include "form_fields/select.html" with field=form.vehicle_compatible_pmr field_errors=form.errors.vehicle_compatible_pmr required=form.fields.vehicle_compatible_pmr.required readonly=ads_manager.is_locked bold=True %}
-        <!-- Eco vehicle ? -->
-        {% include "form_fields/select.html" with field=form.eco_vehicle field_errors=form.errors.eco_vehicle required=form.fields.eco_vehicle.required readonly=ads_manager.is_locked bold=True %}
-      </fieldset>
-    </template>
-    <template x-if="ads_in_use === 'true'">
-      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
-        <legend class="text-2xl font-semibold">Informations conducteur</legend>
-        <div class="fr-text--xs">
-          Pour supprimer ce conducteur, effacez tous les champs de celui-ci et validez le formulaire.
-        </div>
-        <div class="fr-input-group" x-show="!ads_before_2014" x-transition>
-          <div class="fr-alert fr-alert--info fr-mb-3w">
+      </div>
+    </div>
+
+    <div x-show="update">
+
+      <div class="fr-notice fr-notice--info fr-mb-3w">
+        <div class="fr-container">
+          <div class="fr-notice__body">
             <p>
-              Pour les nouvelles ADS (créées après le 1<sup>er</sup> Octobre 2014), le conducteur est obligatoirement le titulaire de l'ADS.
+              <span class="fr-notice__title">Pour modifier l'ADS</span>
+              <span class="fr-notice__desc">
+                (changement de véhicule, de titulaire, etc.), éditez les champs du formulaire et cliquez sur “enregistrer” en bas de cette page.
+                </br>
+                </br>
+                En cas de location-gérance, les informations du locataire-gérant doivent être renseignées dans la partie “conducteur” en bas du formulaire.
+                </br>
+                </br>
+                Les anciennes informations s’enregistrent automatiquement dans l’historique de l’ADS que vous pourrez consulter sur le lien ci-dessous.
+                </br>
+                </br>
+                Vous pouvez aussi accéder aux modèles d’arrêtés en cliquant sur le lien “accéder aux modèles”.
+              </span>
             </p>
           </div>
         </div>
-        <div id="ads-users" class="fr-input-group">
-          {{ ads_users_formset.management_form }}
-          {% if ads_users_formset.non_form_errors %}
-            <div class="fr-input-group fr-input-group--error fr-ml-2w">
-              {% for error in ads_users_formset.non_form_errors %}
-                <!-- Non-field error -->
-                <p class="fr-error-text">{{ error }}</p>
-              {% endfor %}
-            </div>
-          {% endif %}
-          {% for ads_user_form in ads_users_formset %}
-            <template x-if="(!ads_before_2014 && {{ forloop.counter0 }} > 0)">
-              <input type="hidden" name="{{ ads_user_form.DELETE.html_name }}" value="on" />
-            </template>
-            <template x-if="!ads_creation_date || ads_before_2014 || (!ads_before_2014 && {{ forloop.counter0 }} == 0)">
-              <div class="fr-form-group ads-user-form fr-mt-3w">
-                <fieldset class="fr-fieldset">
-                  <legend class="fr-fieldset__legend">Conducteur n°{{ forloop.counter }}</legend>
-                  <div class="fr-pl-3w"
-                       x-data="{'status': '{{ ads_user_form.status.value }}'}">
-                    {% if ads_user_form.non_field_errors %}
-                      <div class="fr-input-group fr-input-group--error">
-                        {% for error in ads_user_form.non_field_errors %}
-                          <!-- Non-field error -->
-                          <p class="fr-error-text">{{ error }}</p>
-                        {% endfor %}
-                      </div>
-                    {% endif %}
-                    <!-- User status -->
-                    <template x-if="ads_before_2014">
-                      {% include "form_fields/select.html" with x_model="status" field=ads_user_form.status field_errors=ads_user_form.errors.status required=ads_user_form.fields.status.required readonly=ads_manager.is_locked %}
-                    </template>
-                    <template x-if="!ads_before_2014">
-                      <input type="hidden"
-                             name="{{ ads_user_form.status.html_name }}"
-                             value="titulaire_exploitant" />
-                    </template>
-                    <!-- Date location gérance -->
-                    <template x-if="status === 'locataire_gerant'">
-                      {% include "form_fields/date.html" with field=ads_user_form.date_location_gerance field_errors=ads_user_form.errors.date_location_gerance required=ads_user_form.fields.date_location_gerance.required readonly=ads_manager.is_locked %}
-                    </template>
-                    <!-- User name -->
-                    <template x-if="ads_before_2014 && status !== 'titulaire_exploitant'">
-                      {% include "form_fields/string.html" with field=ads_user_form.name field_errors=ads_user_form.errors.name required=ads_user_form.fields.name.required readonly=ads_manager.is_locked %}
-                    </template>
-                    <!-- User SIRET -->
-                    <template x-if="ads_before_2014 && status !== 'titulaire_exploitant' && status !== 'legal_representative' && status !== 'salarie' ">
-                      {% include "form_fields/string.html" with field=ads_user_form.siret field_errors=ads_user_form.errors.siret required=ads_user_form.fields.siret.required readonly=ads_manager.is_locked %}
-                    </template>
-                    <!-- Professional licence number -->
-                    {% include "form_fields/string.html" with field=ads_user_form.license_number field_errors=ads_user_form.errors.license_number required=ads_user_form.fields.license_number.required readonly=ads_manager.is_locked bold=True %}
-                  </div>
-                </fieldset>
-              </div>
-            </template>
-            {% for hidden_field in ads_user_form.hidden_fields %}{{ hidden_field }}{% endfor %}
-          {% endfor %}
-          {% comment %}Template to render a new form when user wants to add an ADSUser{% endcomment %}
-          <template x-for="i in extraADSUserForms">
-            <div class="fr-form-group ads-user-form fr-mt-3w">
-              <fieldset class="fr-fieldset">
-                <legend class="fr-fieldset__legend">
-                  Conducteur n°<span x-text="{{ ads_users_formset|length }} + i"></span>
-                </legend>
-                <div class="fr-pl-3w" x-data="{'status': ''}">
-                  {% if ads_user_form.non_field_errors %}
-                    <div class="fr-input-group fr-input-group--error">
-                      {% for error in ads_user_form.non_field_errors %}
-                        <!-- Non-field error -->
-                        <p class="fr-error-text">{{ error }}</p>
-                      {% endfor %}
-                    </div>
-                  {% endif %}
-                  <!-- User status -->
-                  {% include "form_fields/select.html" with x_model="status" field=ads_users_formset.empty_form.status field_errors=ads_users_formset.empty_form.errors.status required=ads_users_formset.empty_form.fields.status.required readonly=ads_manager.is_locked %}
-                  <!-- Date location gérance -->
-                  <template x-if="status === 'locataire_gerant'">
-                    {% include "form_fields/date.html" with field=ads_users_formset.empty_form.date_location_gerance field_errors=ads_users_formset.empty_form.errors.date_location_gerance required=ads_users_formset.empty_form.fields.date_location_gerance.required readonly=ads_manager.is_locked %}
-                  </template>
-                  <!-- User name -->
-                  <template x-if="status !== 'titulaire_exploitant'">
-                    {% include "form_fields/string.html" with field=ads_users_formset.empty_form.name field_errors=ads_users_formset.empty_form.errors.name required=ads_users_formset.empty_form.fields.name.required readonly=ads_manager.is_locked %}
-                  </template>
-                  <!-- User SIRET  -->
-                  <template x-if="status !== 'titulaire_exploitant' && status !== 'legal_representative' && status !== 'salarie'">
-                    {% include "form_fields/string.html" with field=ads_users_formset.empty_form.siret field_errors=ads_users_formset.empty_form.errors.siret required=ads_users_formset.empty_form.fields.siret.required readonly=ads_manager.is_locked %}
-                  </template>
-                  <!-- Professional licence number -->
-                  {% include "form_fields/string.html" with field=ads_users_formset.empty_form.license_number field_errors=ads_users_formset.empty_form.errors.license_number required=ads_users_formset.empty_form.fields.license_number.required readonly=ads_manager.is_locked %}
-                </div>
-              </fieldset>
-              {% for hidden_field in ads_users_formset.empty_form.hidden_fields %}{{ hidden_field }}{% endfor %}
-            </div>
-          </template>
-          <template x-if="ads_before_2014">
-            <button type="button"
-                    class="fr-btn fr-btn--sm fr-icon-add-circle-line fr-btn--icon-left fr-btn--secondary"
-                    @click="extraADSUserForms++"
-                    x-add-ads-user-button
-                    x-transition
-                    {% if ads_manager.is_locked %}disabled{% endif %}>Ajouter un nouveau conducteur</button>
-          </template>
-        </div>
-      </fieldset>
-    </template>
-    <template x-if="ads_in_use === 'true'">
-      <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
-        <legend class="text-2xl font-semibold">Documents liés à l'ADS</legend>
-        <p>Vous avez la possibilité d'envoyer un ou plusieurs documents avec l'arrêté portant l'attribution de l'ADS.</p>
-        {% include "./formset_files.html" with formset=ads_legal_files_formset disabled=ads_manager.is_locked %}
-      </fieldset>
-    </template>
-    <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
-      <legend class="text-2xl font-semibold">Informations complémentaires</legend>
-      {% include "form_fields/textarea.html" with field=form.notes field_errors=form.errors.notes required=form.fields.notes.required %}
-    </fieldset>
-    {% comment %} Certify information {% endcomment %}
-    <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
-      <legend class="text-2xl font-semibold">Vérification des informations</legend>
-      {% include "form_fields/bool.html" with field=form.certify field_errors=form.errors.certify required=form.fields.certify.required %}
-    </fieldset>
-    <!-- Submit buttons -->
-    <div class="fr-input-group">
+      </div>
+
       {% if ads %}
-        <ul class="fr-btns-group">
-          <li>
-            <button type="submit"
-                    class="fr-btn"
-                    {% if ads_manager.is_locked %}disabled{% endif %}>Valider les modifications de l'ADS</button>
-          </li>
-          {% if not ads_manager.is_locked %}
-            <li>
-              <a class="fr-link fr-icon-delete-line fr-link--icon-left !text-[var(--text-default-error)]"
-                 href="{% url 'app.ads.delete' manager_id=ads_manager.id ads_id=ads.id %}">Supprimer cette ADS</a>
-            </li>
-          {% endif %}
-        </ul>
-      {% else %}
-        <button type="submit" class="fr-btn">Enregistrer l'ADS</button>
+        {% if ads_manager.content_type.name == 'commune' %}
+          <p>
+            <a
+              class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+              href="{% url 'app.ads.decree' manager_id=ads_manager.id ads_id=ads.id %}"
+            >
+              <span aria-hidden="true" class="fr-icon-question-line"></span>
+              Accéder aux modèles d'arrêtés municipaux
+            </a>
+          </p>
+        {% endif %}
+
+      <p>
+        <a
+          class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+          href="{% url 'app.ads.history' manager_id=ads_manager.id ads_id=ads.id %}"
+        >
+          <span class="fr-icon-draft-line" aria-hidden="true"></span>
+          Voir l'historique des modifications
+        </a>
+      </p>
       {% endif %}
+
     </div>
-  </form>
-</div>
-<script id="data" type="application/json">
-{
-  "ads_creation_date": "{{ form.ads_creation_date.value|str_to_date|date:"Y-m-d"|default:"" }}",
-  "ads_in_use": "{% if form.ads_in_use.value is True %}true{% elif form.ads_in_use.value is False %}false{% endif %}"
-}
-</script>
-<script src="./ads.ts"></script>
-{% endblock main %}
+
+    {% if ads_manager.is_locked %}
+      <div class="fr-highlight">
+        <p>
+          Cette ADS appartient à un gestionnaire pour lequel les modifications manuelles ont été bloquées, car les données sont mises à 
+          jour automatiquement. Vous ne pouvez pas créer, modifier ou supprimer les ADS de cette administration.
+        </p>
+        <p>
+          Si vous pensez qu'il s'agit d'une erreur, vous pouvez contacter notre équipe sur 
+          <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+        </p>
+      </div>
+    {% endif %}
+
+    <div class="fr-grid-row" x-data="get_x_data()">
+      <form method="post" enctype="multipart/form-data">
+
+        {% if form.non_field_errors %}
+          <div class="fr-input-group fr-input-group--error">
+            {% for error in form.non_field_errors %}
+              <!-- Non-field error -->
+              <p class="fr-error-text">{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+        {% csrf_token %}
+        
+        <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
+          <legend class="text-2xl font-semibold">Informations générales</legend>
+
+          <!-- EPCI commune -->
+          {% if ads_manager.content_type.name == 'EPCI' %}
+            {% include "form_fields/select-autocomplete.html" with field=form.epci_commune field_errors=form.errors.epci_commune %}
+          {% endif %}
+          
+          <!-- ADS number -->
+          {% include "form_fields/string.html" with field=form.number field_errors=form.errors.number required=form.fields.number.required readonly=ads_manager.is_locked bold=True %}
+          
+          <!-- ADS creation date -->
+          {% include "form_fields/date.html" with x_model="ads_creation_date" field=form.ads_creation_date field_errors=form.errors.ads_creation_date required=form.fields.ads_creation_date.required readonly=ads_manager.is_locked bold=True %}
+          
+          <!-- ADS in use? -->
+          {% include "form_fields/select.html" with x_model="ads_in_use" empty_option=True field=form.ads_in_use field_errors=form.errors.ads_in_use required=form.fields.ads_in_use.required readonly=ads_manager.is_locked bold=True %}
+          
+          <template x-if="ads_in_use === 'false'">
+            <div class="fr-alert fr-alert--error fr-mb-3w">
+              L'ADS est actuellement vacante.
+              Une ADS qui a été retirée ou non renouvelée <strong>doit être réattribuée dans un délai de 3 mois</strong>
+              à un demandeur de la liste d'attente, en respectant la procédure inidquée
+              aux l'articles R3121-5 et  R3121-13 du Code des transports.
+              liste d'attente (article R3121-5 du Code des transports).
+              <br />
+              <br />
+              Si l'ADS n'a pas été réattribuée dans ce délai, nous vous invitons à consulter votre Préfecture.
+            </div>
+          </template>
+
+          <template x-if="ads_creation_date && ads_before_2014 && ads_in_use === 'true'">
+            <div class="fr-alert fr-alert--info fr-mb-3w">
+              Vous renseignez actuellement les informations d'une <strong>« ancienne ADS »</strong> qui a été créée avant la réforme de 2014.
+              <br />
+              <br />
+              <strong>Cette ADS n'a pas de durée de validité</strong> et reste cessible même si la dernière cession est intervenue après le 1er octobre 2014.
+            </div>
+          </template>
+
+          <template x-if="ads_creation_date && !ads_before_2014 && ads_in_use === 'true'">
+            <div class="fr-alert fr-alert--info fr-mb-3w">
+              Vous renseignez actuellement les informations d'une <strong>« nouvelle ADS »</strong>, <strong>incessible</strong> et <strong>délivrée gratuitement pour une durée renouvelable de 5 ans</strong>.
+              <br />
+              <br />
+              Si ce n'est pas le cas (s'il s'agit d'une ADS dont le titulaire actuel a racheté les droits au précédent titulaire par exemple), nous vous invitons à modifier la date de création initiale; vous aurez ensuite la possibilité d'ajouter la date de la dernière cession.
+            </div>
+          </template>
+
+          <template x-if="ads_in_use === 'true' && !ads_creation_date">
+            <div class="fr-alert fr-alert--warning fr-mb-3w">
+              Aucune date de création n'a encore été enregistrée pour cette ADS.
+              <br />
+              <br />
+              Nous vous invitons à <strong>renseigner une date de création ci-dessus</strong> afin de déterminer le régime juridique applicable à l'ADS.
+            </div>
+          </template>
+
+          <!-- ADS renew date -->
+          <template x-if="ads_in_use === 'true' && !ads_before_2014">
+            <div x-show="!ads_before_2014" x-transition class="fr-input-group">
+              {% include "form_fields/date.html" with field=form.ads_renew_date field_errors=form.errors.ads_renew_date required=form.fields.ads_renew_date.required readonly=ads_manager.is_locked %}
+            </div>
+          </template>
+          <!-- ADS attribution date -->
+          <template x-if="ads_in_use === 'true' && should_display_attribution_date">
+            <div x-show="should_display_attribution_date"
+                x-transition
+                class="fr-input-group">
+              {% include "form_fields/date.html" with field=form.attribution_date field_errors=form.errors.attribution_date required=form.fields.attribution_date.required readonly=ads_manager.is_locked %}
+            </div>
+          </template>
+
+          <!-- Accepted by CPAM -->
+          <template x-if="ads_in_use === 'true'">
+            {% include "form_fields/select.html" with field=form.accepted_cpam field_errors=form.errors.accepted_cpam required=form.fields.accepted_cpam.required readonly=ads_manager.is_locked %}
+          </template>
+        </fieldset>
+
+        <template x-if="ads_in_use === 'true'">
+          <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
+            <legend class="text-2xl font-semibold">Le titulaire (« propriétaire » de l'ADS)</legend>
+            <!-- Owner name -->
+            {% include "form_fields/string.html" with field=form.owner_name field_errors=form.errors.owner_name required=form.fields.owner_name.required readonly=ads_manager.is_locked bold=True %}
+            <!-- Owner SIRET -->
+            {% include "form_fields/string.html" with field=form.owner_siret field_errors=form.errors.owner_siret required=form.fields.owner_siret.required readonly=ads_manager.is_locked bold=True %}
+            <!-- Owner phone -->
+            {% include "form_fields/string.html" with field=form.owner_phone field_errors=form.errors.owner_phone required=form.fields.owner_phone.required readonly=ads_manager.is_locked %}
+            <!-- Owner mobile -->
+            {% include "form_fields/string.html" with field=form.owner_mobile field_errors=form.errors.owner_mobile required=form.fields.owner_mobile.required readonly=ads_manager.is_locked %}
+            <!-- Owner email -->
+            {% include "form_fields/string.html" with field=form.owner_email field_errors=form.errors.owner_email required=form.fields.owner_email.required html_type="email" readonly=ads_manager.is_locked %}
+          </fieldset>
+        </template>
+
+        <template x-if="ads_in_use === 'true'">
+          <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
+            <legend class="text-2xl font-semibold">Le véhicule</legend>
+            <!-- Immatriculation plate -->
+            {% include "form_fields/string.html" with field=form.immatriculation_plate field_errors=form.errors.immatriculation_plate required=form.fields.immatriculation_plate.required readonly=ads_manager.is_locked bold=True %}
+            <!-- Compatible PMR ? -->
+            {% include "form_fields/select.html" with field=form.vehicle_compatible_pmr field_errors=form.errors.vehicle_compatible_pmr required=form.fields.vehicle_compatible_pmr.required readonly=ads_manager.is_locked bold=True %}
+            <!-- Eco vehicle ? -->
+            {% include "form_fields/select.html" with field=form.eco_vehicle field_errors=form.errors.eco_vehicle required=form.fields.eco_vehicle.required readonly=ads_manager.is_locked bold=True %}
+          </fieldset>
+        </template>
+
+        <template x-if="ads_in_use === 'true'">
+          <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
+            <legend class="text-2xl font-semibold">Informations conducteur</legend>
+            <div class="fr-text--xs">
+              Pour supprimer ce conducteur, effacez tous les champs de celui-ci et validez le formulaire.
+            </div>
+            <div class="fr-input-group" x-show="!ads_before_2014" x-transition>
+              <div class="fr-alert fr-alert--info fr-mb-3w">
+                <p>
+                  Pour les nouvelles ADS (créées après le 1<sup>er</sup> Octobre 2014), le conducteur est obligatoirement le titulaire de l'ADS.
+                </p>
+              </div>
+            </div>
+            <div id="ads-users" class="fr-input-group">
+              {{ ads_users_formset.management_form }}
+
+              {% if ads_users_formset.non_form_errors %}
+                <div class="fr-input-group fr-input-group--error fr-ml-2w">
+                  {% for error in ads_users_formset.non_form_errors %}
+                    <!-- Non-field error -->
+                    <p class="fr-error-text">{{ error }}</p>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              {% for ads_user_form in ads_users_formset %}
+
+                <template x-if="(!ads_before_2014 && {{ forloop.counter0 }} > 0)">
+                  <input type="hidden" name="{{ ads_user_form.DELETE.html_name }}" value="on" />
+                </template>
+
+                <template x-if="!ads_creation_date || ads_before_2014 || (!ads_before_2014 && {{ forloop.counter0 }} == 0)">
+                  <div class="fr-form-group ads-user-form fr-mt-3w">
+                    <fieldset class="fr-fieldset">
+                      <legend class="fr-fieldset__legend">Conducteur n°{{ forloop.counter }}</legend>
+                      <div
+                        class="fr-pl-3w"
+                        x-data="{'status': '{{ ads_user_form.status.value }}'}"
+                      >
+                        {% if ads_user_form.non_field_errors %}
+                          <div class="fr-input-group fr-input-group--error">
+                            {% for error in ads_user_form.non_field_errors %}
+                              <!-- Non-field error -->
+                              <p class="fr-error-text">{{ error }}</p>
+                            {% endfor %}
+                          </div>
+                        {% endif %}
+                        <!-- User status -->
+                        <template x-if="ads_before_2014">
+                          {% include "form_fields/select.html" with x_model="status" field=ads_user_form.status field_errors=ads_user_form.errors.status required=ads_user_form.fields.status.required readonly=ads_manager.is_locked %}
+                        </template>
+
+                        <template x-if="!ads_before_2014">
+                          <input type="hidden"
+                                name="{{ ads_user_form.status.html_name }}"
+                                value="titulaire_exploitant" />
+                        </template>
+
+                        <!-- Date location gérance -->
+                        <template x-if="status === 'locataire_gerant'">
+                          {% include "form_fields/date.html" with field=ads_user_form.date_location_gerance field_errors=ads_user_form.errors.date_location_gerance required=ads_user_form.fields.date_location_gerance.required readonly=ads_man%}
+                        </template>
+
+                        <!-- User name -->
+                        <template x-if="ads_before_2014 && status !== 'titulaire_exploitant'">
+                          {% include "form_fields/string.html" with field=ads_user_form.name field_errors=ads_user_form.errors.name required=ads_user_form.fields.name.required readonly=ads_manager.is_locked %}
+                        </template>
+
+                        <!-- User SIRET -->
+                        <template x-if="ads_before_2014 && status !== 'titulaire_exploitant' && status !== 'legal_representative' && status !== 'salarie' ">
+                          {% include "form_fields/string.html" with field=ads_user_form.siret field_errors=ads_user_form.errors.siret required=ads_user_form.fields.siret.required readonly=ads_manager.is_locked %}
+                        </template>
+
+                        <!-- Professional licence number -->
+                        {% include "form_fields/string.html" with field=ads_user_form.license_number field_errors=ads_user_form.errors.license_number required=ads_user_form.fields.license_number.required readonly=ads_manager.is_locked bold=True %}
+                      </div>
+                    </fieldset>
+                  </div>
+                </template>
+
+                {% for hidden_field in ads_user_form.hidden_fields %}
+                  {{ hidden_field }}
+                {% endfor %}
+              {% endfor %}
+
+              {% comment %}Template to render a new form when user wants to add an ADSUser{% endcomment %}
+              <template x-for="i in extraADSUserForms">
+                <div class="fr-form-group ads-user-form fr-mt-3w">
+                  <fieldset class="fr-fieldset">
+                    <legend class="fr-fieldset__legend">
+                      Conducteur n°<span x-text="{{ ads_users_formset|length }} + i"></span>
+                    </legend>
+
+                    <div class="fr-pl-3w" x-data="{'status': ''}">
+                      {% if ads_user_form.non_field_errors %}
+                        <div class="fr-input-group fr-input-group--error">
+                          {% for error in ads_user_form.non_field_errors %}
+                            <!-- Non-field error -->
+                            <p class="fr-error-text">{{ error }}</p>
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+
+                      <!-- User status -->
+                      {% include "form_fields/select.html" with x_model="status" field=ads_users_formset.empty_form.status field_errors=ads_users_formset.empty_form.errors.status required=ads_users_formset.empty_form.fields.status.required readonly=ads_manager.is_locked %}
+
+                      <!-- Date location gérance -->
+                      <template x-if="status === 'locataire_gerant'">
+                        {% include "form_fields/date.html" with field=ads_users_formset.empty_form.date_location_gerance field_errors=ads_users_formset.empty_form.errors.date_location_gerance required=ads_users_formset.empty_form.fields.date_location_gerance.required readonly=ads_manager.is_locked %}
+                      </template>
+
+                      <!-- User name -->
+                      <template x-if="status !== 'titulaire_exploitant'">
+                        {% include "form_fields/string.html" with field=ads_users_formset.empty_form.name field_errors=ads_users_formset.empty_form.errors.name required=ads_users_formset.empty_form.fields.name.required readonly=ads_manager.is_locked %}
+                      </template>
+
+                      <!-- User SIRET  -->
+                      <template x-if="status !== 'titulaire_exploitant' && status !== 'legal_representative' && status !== 'salarie'">
+                        {% include "form_fields/string.html" with field=ads_users_formset.empty_form.siret field_errors=ads_users_formset.empty_form.errors.siret required=ads_users_formset.empty_form.fields.siret.required readonly=ads_manager.is_locked %}
+                      </template>
+
+                      <!-- Professional licence number -->
+                      {% include "form_fields/string.html" with field=ads_users_formset.empty_form.license_number field_errors=ads_users_formset.empty_form.errors.license_number required=ads_users_formset.empty_form.fields.license_number.required readonly=ads_manager.is_locked %}
+                    </div>
+                  </fieldset>
+                  
+                  {% for hidden_field in ads_users_formset.empty_form.hidden_fields %}
+                    {{ hidden_field }}
+                  {% endfor %}
+                </div>
+              </template>
+
+              <template x-if="ads_before_2014">
+                <button
+                  type="button"
+                  class="fr-btn fr-btn--sm fr-icon-add-circle-line fr-btn--icon-left fr-btn--secondary"
+                  @click="extraADSUserForms++"
+                  x-add-ads-user-button
+                  x-transition
+                  :disabled="
+                    typeof update !== 'undefined'
+                      ? (!update || {{ ads_manager.is_locked|yesno:'true,false' }})
+                      : {{ ads_manager.is_locked|yesno:'true,false' }}
+                  "
+                >
+                  Ajouter un nouveau conducteur
+                </button>
+              </template>
+
+            </div>
+          </fieldset>
+        </template>
+        
+        <template x-if="ads_in_use === 'true'">
+          <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
+            <legend class="text-2xl font-semibold">Documents liés à l'ADS</legend>
+            <p>Vous avez la possibilité d'envoyer un ou plusieurs documents avec l'arrêté portant l'attribution de l'ADS.</p>
+            {% include "./formset_files.html" with formset=ads_legal_files_formset disabled=ads_manager.is_locked %}
+          </fieldset>
+        </template>
+
+        <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
+          <legend class="text-2xl font-semibold">Informations complémentaires</legend>
+          {% include "form_fields/textarea.html" with field=form.notes field_errors=form.errors.notes required=form.fields.notes.required %}
+        </fieldset>
+
+        {% comment %} Certify information {% endcomment %}
+        <fieldset class="fr-mb-3w fr-pt-1w fr-pb-2w fr-pl-2w fr-pr-2w border border-neutral-300">
+          <legend class="text-2xl font-semibold">Vérification des informations</legend>
+          {% include "form_fields/bool.html" with field=form.certify field_errors=form.errors.certify required=form.fields.certify.required %}
+        </fieldset>
+
+        <!-- Submit buttons -->
+        <div class="w-full text-center">
+          {% if ads %}
+            <div class="fr-my-6v">
+              <a 
+                href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}"
+                class="fr-btn fr-btn--secondary fr-mr-4v"
+              >
+                Retour
+              </a>
+              <button
+                type="button"
+                x-show="!update"
+                class="fr-btn fr-mr-4v"
+                @click="update = !update"
+              >
+                Modifier
+              </button>
+              <button
+                type="submit"
+                x-show="update"
+                class="fr-btn" 
+                {% if ads_manager.is_locked %}disabled{% endif %}
+              >
+                Enregistrer
+              </button>
+            </div>
+            <ul class="fr-btns-group">
+              {% if not ads_manager.is_locked %}
+                <li>
+                  <a
+                    class="fr-link fr-icon-delete-line fr-link--icon-left !text-[var(--text-default-error)]"
+                    href="{% url 'app.ads.delete' manager_id=ads_manager.id ads_id=ads.id %}"
+                  >
+                    Supprimer cette ADS
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+          {% else %}
+            <div class="fr-my-6v">
+              <a
+                href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}"
+                class="fr-btn fr-btn--secondary fr-mr-4v"
+              >
+                Retour
+              </a>
+              <button
+                type="submit"
+                class="fr-btn"
+              >
+                Enregistrer l'ADS
+              </button>
+            </div>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script id="data" type="application/json">
+  {
+    "ads_creation_date": "{{ form.ads_creation_date.value|str_to_date|date:"Y-m-d"|default:"" }}",
+    "ads_in_use": "{% if form.ads_in_use.value is True %}true{% elif form.ads_in_use.value is False %}false{% endif %}"
+  }
+  </script>
+  <script src="./ads.ts"></script>
+{% endblock body-content %}
 {% block endbody %}
   {{ block.super }}
   {% comment %}Extra javascript required to display epci_commune_form.{% endcomment %}

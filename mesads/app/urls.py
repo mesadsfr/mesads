@@ -42,6 +42,11 @@ urlpatterns = [
         name="app.ads-manager-admin.updates",
     ),
     path(
+        "registre_ads/demande_gestion_ads/",
+        login_required(views.DemandeGestionADSView.as_view()),
+        name="app.ads-manager.demande_gestion_ads",
+    ),
+    path(
         "registre_ads/gestion",
         login_required(views.ADSManagerRequestView.as_view()),
         name="app.ads-manager.index",

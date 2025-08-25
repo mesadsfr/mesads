@@ -86,6 +86,104 @@
       </div>
     </div>
 
+
+  {% else %}
+
+  {% if administrateur_ads %} 
+    <p>Je suis admin</p>
+  {% endif %}
+
+  {% if manager_ads %}
+    <div class="homepage-section">
+      <div class="fr-container">
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-12 fr-col-lg-8">
+              <h1 class="fr-mt-5w">Vos administrations en gestion</h1>
+
+              <p class="fr-text--lead ">
+                Cette page inventorie les administrations pour lesquelles vous avez demandé à gérer les ADS (licences de taxi). Vous pouvez demander à gérer les ADS pour une nouvelle administration.
+              </p>
+
+              <div class="fr-table fr-table--lg fr-table--no-scroll fr-table--no-caption">
+                <div class="fr-table__wrapper">
+                  <div class="fr-table__container">
+                    <div class="fr-table__content">
+                      <table>
+                        <caption>Administrations en gestion</caption>
+                        <thead>
+                          <tr>
+                            <th>Administration</th>
+                            <th>Nombre d'ADS</th>
+                            <th>Consulter / Modifier</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for requete in requetes_gestionnaires %}
+                            <tr>
+                              <td>{{ requete.ads_manager.content_object.display_text|capfirst }}</td>
+                              <td>
+                                {% if requete.ads_count %}
+                                  {{ requete.ads_count }}
+                                {% elif requete.ads_manager.no_ads_declared %}
+                                  <small>Ne gère aucune ADS</small>
+                                {% elif requete.ads_manager.epci_delegate %}
+                                  <small>ADS gérées par l'EPCI
+                                    <br />
+                                    <i>{{ requete.ads_manager.epci_delegate }}</i></small>
+                                {% else %}
+                                  -
+                                {% endif %}
+                                {% if requete.complete_updates_count %}
+                                  <p class="fr-text--xs">(dont {{ requete.complete_updates_count }} avec toutes les informations)</p>
+                                {% elif requete.ads_count %}
+                                  <p class="fr-text--xs text-red-500">(à vérifier)</p>
+                                {% endif %}
+                              </td>
+                              <td>
+                                {% if requete.accepted is None %}
+                                  ⏱ En attente de validation par la préfecture
+                                {% elif requete.accepted is False %}
+                                  🚫 Demande refusée
+                                {% elif requete.accepted is True %}
+                                  <a class="fr-btn fr-btn--primary"
+                                    href="{% url 'app.ads-manager.detail' manager_id=requete.ads_manager.id %}">Gérez les ADS</a>
+                                {% endif %}
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="fr-my-6v">
+                <a class="fr-btn fr-btn--secondary" href="{% url 'app.ads-manager.demande_gestion_ads' %}">Demander à gérer une autre administration</a>
+              </div>
+          </div>
+
+          <div class="fr-col-12 fr-col-lg-4">
+            <img 
+              class="fr-ml-6v fr-mt-6v"
+              width="60%"
+              height="60%"
+              alt=""
+              src="../images/logo_homepage.png"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if proprietaire_vehicule_relais %}
+    <p>Je suis proprio</p>
+  {% endif %}
+
+
+
+  {% endif %}
     <div class="homepage-section">
       <div class="fr-container text-center">
         <h2 class="blue-france text-left">Une solution qui fait ses preuves</h2>
@@ -156,59 +254,4 @@
       </div>
     </div>
     
-  {% else %}
-    <p class="fr-text--lead text-center">
-      MesADS est l'outil de référence du secteur taxi. La plateforme propose actuellement deux fonctionnalités: la gestion des licences de taxi <strong>pour les administrations</strong> (registre des ADS) et l'accès à la liste des véhicules de remplacement <strong>pour les chauffeurs de taxi et propriétaires de véhicules relais</strong> (répertoires des taxis relais).
-    </p>
-    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
-      <div class="fr-col-6">
-        <div class="fr-tile fr-enlarge-link">
-          <div class="fr-tile__body">
-            <div class="fr-tile__content">
-              <h2 class="fr-tile__title">
-                <a href="{% url 'app.ads-register.index' %}">Registre des ADS (licences de taxi)</a>
-              </h2>
-            </div>
-          </div>
-          <div class="fr-tile__header">
-            <div class="fr-tile__pictogram">
-              <div class="text-5xl">📄</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="fr-col-6">
-        <div class="fr-tile fr-enlarge-link">
-          <div class="fr-tile__body">
-            <div class="fr-tile__content">
-              <h2 class="fr-tile__title">
-                <a href="{% url 'vehicules-relais.index' %}">Répertoires des Véhicules Relais</a>
-              </h2>
-            </div>
-          </div>
-          <div class="fr-tile__header">
-            <div class="fr-tile__pictogram">
-              <div class="text-5xl">🚖</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="fr-col-6">
-        <div class="fr-tile fr-enlarge-link">
-          <div class="fr-tile__body">
-            <div class="fr-tile__content">
-              <h2 class="fr-tile__title">
-                <a href="{% url 'app.reglementation' %}">Réglementation</a>
-              </h2>
-            </div>
-          </div>
-          <div class="fr-tile__header">
-            <div class="fr-tile__pictogram">
-              <div class="text-5xl">📚</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  {% endif %}
 {% endblock body %}

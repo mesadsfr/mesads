@@ -1,6 +1,6 @@
 import json
 
-from django.db.models import Count
+from django.db.models import OuterRef, Subquery, Count, IntegerField, BooleanField
 from django.db.models.functions import TruncMonth
 from django.views.generic import TemplateView
 
@@ -9,6 +9,7 @@ from ..models import (
     ADS,
     ADSManager,
     ADSManagerRequest,
+    ADSUpdateLog,
 )
 from mesads.api.views import get_stats_by_prefecture
 from mesads.fradm.models import Prefecture
@@ -30,6 +31,64 @@ class HTTP500View(TemplateView):
 
 class HomepageView(TemplateView):
     template_name = "pages/homepage.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if self.request.user.is_authenticated:
+            ads_manager_administrators = (
+                self.request.user.adsmanageradministrator_set.all()
+            )
+            ads_manager_requests = self.request.user.adsmanagerrequest_set.all()
+            proprietaire_vehicule_relais = self.request.user.proprietaire_set.all()
+            if len(ads_manager_administrators):
+                context["administrateur_ads"] = True
+            if len(ads_manager_requests):
+                context["manager_ads"] = True
+
+                # All ADS for the manager
+                ads_count_subquery = (
+                    ADS.objects.filter(
+                        ads_manager=OuterRef("ads_manager_id"),
+                        deleted_at__isnull=True,
+                    )
+                    .values("ads_manager")
+                    .annotate(count=Count("*"))
+                    .values("count")[:1]
+                )
+
+                # For each ADS, get its latest is_complete flag
+                latest_complete = Subquery(
+                    ADSUpdateLog.objects.filter(ads=OuterRef("pk"))
+                    .order_by("-update_at")
+                    .values("is_complete")[:1],
+                    output_field=BooleanField(),
+                )
+
+                # 2) Count how many ADS under this manager have latest_complete=True
+                complete_updates_subquery_per_ads_manager = Subquery(
+                    ADS.objects.filter(ads_manager=OuterRef("ads_manager_id"))
+                    .annotate(latest_complete=latest_complete)
+                    .filter(latest_complete=True)
+                    .values("ads_manager")
+                    .annotate(count=Count("pk"))
+                    .values("count")[:1],
+                    output_field=IntegerField(),
+                )
+
+                context["requetes_gestionnaires"] = ADSManagerRequest.objects.filter(
+                    user=self.request.user
+                ).annotate(
+                    ads_count=Subquery(ads_count_subquery, output_field=IntegerField()),
+                    complete_updates_count=Subquery(
+                        complete_updates_subquery_per_ads_manager,
+                        output_field=IntegerField(),
+                    ),
+                )
+            if len(proprietaire_vehicule_relais):
+                context["proprietaire_vehicule_relais"] = True
+
+        return context
 
 
 class FAQView(TemplateView):
