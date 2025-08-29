@@ -1,5 +1,5 @@
-{% extends "./base.html" %}
-{% block main %}
+{% extends "base_container.html" %}
+{% block body-content %}
   <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
     <button class="fr-breadcrumb__button"
             aria-expanded="false"
@@ -8,7 +8,15 @@
       <ol class="fr-breadcrumb__list">
         <li>
           <a class="fr-breadcrumb__link"
-             href="{% url 'app.ads-manager-admin.details' prefecture_id=ads_manager_administrator.prefecture.id %}">{{ ads_manager_administrator.prefecture.display_text|capfirst }}</a>
+            href="{% url 'app.homepage' %}">
+            Accueil - {{ ads_manager_administrator.prefecture.display_text|capfirst }}
+          </a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link"
+            href="{% url 'app.ads-manager-admin.administrations' prefecture_id=ads_manager_administrator.prefecture.id %}">
+            Vos administrations en gestion et accès Préfecture
+          </a>
         </li>
         <li>
           <a class="fr-breadcrumb__link" aria-current="page">Modifications apportées par les gestionnaires de la préfecture</a>
@@ -67,4 +75,4 @@
       </div>
     </div>
   </div>
-{% endblock main %}
+{% endblock body-content %}

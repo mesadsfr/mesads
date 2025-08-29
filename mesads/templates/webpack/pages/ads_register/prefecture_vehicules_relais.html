@@ -1,0 +1,110 @@
+{% extends "base_container.html" %}
+{% load show_pagination_links %}
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil {{ ads_manager_administrator.prefecture.display_text|capfirst }}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Répertoires des véhicules relais</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <h1>Consulter le répertoires des véhicules relais</h1>
+  <hr class="fr-mt-3w">
+  <form method="get" action="{% url 'app.ads-manager-admin.vehicules_relais' prefecture_id=ads_manager_administrator.prefecture.id %}">
+    <div class="fr-form-group">
+      <fieldset class="fr-fieldset">
+        <div class="fr-fieldset__content">
+          {% include "form_fields/string.html" with field=form.immatriculation field_errors=form.errors.immatriculation required=form.fields.immatriculation.required %}
+        </div>
+      </fieldset>
+    </div>
+    <!-- Non-fields errors -->
+    {% if form.non_field_errors %}
+      <div class="fr-input-group fr-input-group--error">
+        {% for error in form.non_field_errors %}
+          <!-- Non-field error -->
+          <p class="fr-error-text">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <div class="fr-input-group">
+      <button type="submit" class="fr-btn">Rechercher</button>
+    </div>
+  </form>
+  <hr class="fr-mt-3w">
+    <div class="fr-table fr-table--no-scroll fr-table--lg fr-table--no-caption">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table>
+              <caption>Véhicules relais du département {{ prefecture.numero }} - {{ prefecture.libelle }}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Dép.</th>
+                  <th scope="col">№</th>
+                  <th scope="col">Type de véhicule</th>
+                  <th scope="col">
+                    Caractéristiques
+                    <br />
+                    principales
+                  </th>
+                  <th scope="col">Propriétaire du véhicule</th>
+                  <th scope="col">
+                    Ville de localisation
+                    <br />
+                    du véhicule
+                  </th>
+                  <th scope="col">Consulter</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for vehicule in vehicule_list %}
+                  <tr>
+                    <td>{{ vehicule.departement }}</td>
+                    <td>
+                      <strong>{{ vehicule.numero }}</strong>
+                    </td>
+                    <td>{{ vehicule.modele }}</td>
+                    <td>
+                      {% for feature in vehicule.main_features %}
+                        {{ feature }}
+                        <br />
+                      {% endfor %}
+                    </td>
+                    <td>{{ vehicule.proprietaire.nom }}</td>
+                    <td>
+                      {% if vehicule.commune_localisation %}
+                        {{ vehicule.commune_localisation.libelle }} ({{ vehicule.commune_localisation.departement }})
+                      {% endif %}
+                    </td>
+                    <td class="!text-right">
+                      <a class="fr-btn fr-btn--secondary fr-icon-eye-line"
+                         href="{% url 'app.ads-manager-admin.vehicule_relais_detail' prefecture_id=ads_manager_administrator.prefecture.id numero=vehicule.numero %}">Afficher les détails</a>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="6" class="text-center">Aucun véhicule relais n'est enregistré pour ce département.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% show_pagination_links page_obj %}
+    </div>
+{% endblock body-content %}
+{% block endbody %}
+  {{ block.super }}
+  {% comment %}Extra javascript to display form for new requests.{% endcomment %}
+  {{ form.media }}
+{% endblock endbody %}

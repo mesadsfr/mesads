@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 from django.db.models import OuterRef, Subquery, Count, IntegerField, BooleanField
 from django.db import transaction
 from django.template.loader import render_to_string
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import FormView
 
 from ..forms import (
@@ -21,7 +21,24 @@ from ..models import (
 class DemandeGestionADSView(FormView):
     template_name = "pages/ads_register/demande_gestion_ads.html"
     form_class = ADSManagerForm
-    success_url = reverse_lazy("app.homepage")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["ads_manager_administrator"] = self.kwargs.get(
+            "ads_manager_administrator"
+        )
+        return context
+
+    def get_success_url(self):
+        administrator = self.kwargs.get("ads_manager_administrator")
+        return (
+            reverse(
+                "app.ads-manager-admin.administrations",
+                kwargs={"prefecture_id": administrator.prefecture.id},
+            )
+            if administrator
+            else reverse("app.homepage")
+        )
 
     def form_valid(self, form):
         _, created = ADSManagerRequest.objects.get_or_create(

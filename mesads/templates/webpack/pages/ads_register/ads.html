@@ -11,16 +11,39 @@
     </button>
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
-        <li>
-          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
-        </li>
-        <li>
-          <a class="fr-breadcrumb__link"
-             href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
-        </li>
+        {% if ads_manager_administrator %}
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.homepage' %}">
+              Accueil - {{ ads_manager_administrator.prefecture.display_text|capfirst }}
+            </a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager-admin.administrations' prefecture_id=ads_manager_administrator.prefecture.id %}">
+              Vos administrations en gestion et accès Préfecture
+            </a>
+          </li>
+          <li>
+            <a
+              class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager-admin.detail-administration' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads_manager.id %}"
+            >
+              {{ ads_manager.content_object.display_text|capfirst }}
+            </a>
+          </li>
+        {% else %}
+          <li>
+            <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
+          </li>
+        {% endif %}
         <li>
           {% if ads %}
-            <a class="fr-breadcrumb__link" aria-current="page">ADS numéro {{ ads.number }}</a>
+            <a class="fr-breadcrumb__link" aria-current="page">ADS #{{ ads.number }}</a>
           {% else %}
             <a class="fr-breadcrumb__link" aria-current="page">Enregistrement d'une ADS</a>
           {% endif %}
@@ -111,7 +134,7 @@
           <p>
             <a
               class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-              href="{% url 'app.ads.decree' manager_id=ads_manager.id ads_id=ads.id %}"
+              href="{{arrete_url}}"
             >
               <span aria-hidden="true" class="fr-icon-question-line"></span>
               Accéder aux modèles d'arrêtés municipaux
@@ -122,7 +145,7 @@
       <p>
         <a
           class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-          href="{% url 'app.ads.history' manager_id=ads_manager.id ads_id=ads.id %}"
+          href="{{history_url}}"
         >
           <span class="fr-icon-draft-line" aria-hidden="true"></span>
           Voir l'historique des modifications
@@ -441,7 +464,7 @@
           {% if ads %}
             <div class="fr-my-6v">
               <a 
-                href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}"
+                href="{{return_url}}"
                 class="fr-btn fr-btn--secondary fr-mr-4v"
               >
                 Retour
@@ -468,7 +491,7 @@
                 <li>
                   <a
                     class="fr-link fr-icon-delete-line fr-link--icon-left !text-[var(--text-default-error)]"
-                    href="{% url 'app.ads.delete' manager_id=ads_manager.id ads_id=ads.id %}"
+                    href="{{delete_url}}"
                   >
                     Supprimer cette ADS
                   </a>
@@ -478,7 +501,7 @@
           {% else %}
             <div class="fr-my-6v">
               <a
-                href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}"
+                href="{{return_url}}"
                 class="fr-btn fr-btn--secondary fr-mr-4v"
               >
                 Retour

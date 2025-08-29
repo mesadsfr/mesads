@@ -43,6 +43,9 @@ class HomepageView(TemplateView):
             proprietaire_vehicule_relais = self.request.user.proprietaire_set.all()
             if len(ads_manager_administrators):
                 context["administrateur_ads"] = True
+                context["ads_manager_administrator"] = (
+                    ads_manager_administrators.first()
+                )
             if len(ads_manager_requests):
                 context["manager_ads"] = True
 

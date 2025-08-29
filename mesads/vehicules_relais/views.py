@@ -4,7 +4,7 @@ from io import BytesIO
 from django.contrib import messages
 from django.contrib.staticfiles.finders import find
 from django.db.models.functions import Cast, Replace
-from django.db.models import CharField, F, Func, IntegerField, Value
+from django.db.models import CharField, F, IntegerField, Value
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -36,14 +36,7 @@ from .forms import (
     VehiculeCreateForm,
     VehiculeForm,
 )
-
-
-class SplitPart(Func):
-    """The SPLIT_PART PostgreSQL function is not available in Django. Create a
-    custom function to use it."""
-
-    function = "SPLIT_PART"
-    output_field = IntegerField()
+from mesads.utils_psql import SplitPart
 
 
 class IndexView(RedirectView):
