@@ -37,9 +37,66 @@ urlpatterns = [
         name="app.ads-manager-admin.requests",
     ),
     path(
-        "registre_ads/admin_gestion/<int:prefecture_id>/changements",
+        "espace-prefecture/<int:prefecture_id>/administrations/",
+        ads_manager_administrator_required(views.ADSManagerAdministratorView.as_view()),
+        name="app.ads-manager-admin.administrations",
+    ),
+    path(
+        "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/",
+        ads_manager_administrator_required(views.ADSManagerView.as_view()),
+        name="app.ads-manager-admin.detail-administration",
+    ),
+    path(
+        "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/arretes",
+        ads_manager_administrator_required(views.ads_manager_decree_view),
+        name="app.ads-manager-admin.administration-arretes",
+    ),
+    path(
+        "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/ads/",
+        ads_manager_administrator_required(views.ADSCreateView.as_view()),
+        name="app.ads-manager-admin.ads-create",
+    ),
+    path(
+        "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/ads/<int:ads_id>",
+        ads_manager_administrator_required(views.ADSView.as_view()),
+        name="app.ads-manager-admin.ads-detail",
+    ),
+    path(
+        "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/ads/<int:ads_id>/arrete",
+        ads_manager_administrator_required(views.ADSDecreeView.as_view()),
+        name="app.ads-manager-admin.ads-decree",
+    ),
+    path(
+        "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/ads/<int:ads_id>/history",
+        ads_manager_administrator_required(views.ADSHistoryView.as_view()),
+        name="app.ads-manager-admin.ads-history",
+    ),
+    path(
+        "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/ads/<int:ads_id>/delete",
+        ads_manager_administrator_required(views.ADSDeleteView.as_view()),
+        name="app.ads-manager-admin.ads-delete",
+    ),
+    path(
+        "espace-prefecture/<int:prefecture_id>/changements",
         ads_manager_administrator_required(views.ADSManagerAdminUpdatesView.as_view()),
         name="app.ads-manager-admin.updates",
+    ),
+    path(
+        "espace-prefecture/<int:prefecture_id>/demande_gestion_ads/",
+        ads_manager_administrator_required(views.DemandeGestionADSView.as_view()),
+        name="app.ads-manager-admin.demande_gestion_ads",
+    ),
+    path(
+        "espace-prefecture/<int:prefecture_id>/vehicules-relais/",
+        ads_manager_administrator_required(
+            views.RepertoireVehiculeRelaisView.as_view()
+        ),
+        name="app.ads-manager-admin.vehicules_relais",
+    ),
+    path(
+        "espace-prefecture/<int:prefecture_id>/vehicules-relais/<str:numero>/",
+        ads_manager_administrator_required(views.VehiculeView.as_view()),
+        name="app.ads-manager-admin.vehicule_relais_detail",
     ),
     path(
         "registre_ads/demande_gestion_ads/",

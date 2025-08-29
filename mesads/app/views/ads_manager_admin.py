@@ -1,11 +1,22 @@
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
+from django.db.models import (
+    OuterRef,
+    Subquery,
+    Count,
+    IntegerField,
+    BooleanField,
+    Value,
+    CharField,
+    F,
+)
+from django.db.models.functions import Cast, Replace
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.text import slugify
-from django.views.generic import RedirectView, View, TemplateView
+from django.views.generic import RedirectView, View, TemplateView, ListView
 
 from reversion.views import RevisionMixin
 
@@ -14,7 +25,11 @@ from ..models import (
     ADSManagerAdministrator,
     ADSManagerRequest,
     ADSManager,
+    ADSUpdateLog,
 )
+from mesads.app.forms import SearchVehiculeForm
+from mesads.vehicules_relais.models import Vehicule, Proprietaire
+from mesads.utils_psql import SplitPart
 
 from .export import ADSExporter
 
@@ -43,6 +58,88 @@ class ADSManagerAdminDetailsView(RevisionMixin, TemplateView):
         ).filter(accepted__isnull=True)
         ctx["pending_requests_count"] = pending_requests.count()
         return ctx
+
+
+class ADSManagerAdministratorView(TemplateView):
+    template_name = "pages/ads_register/espace_prefecture_gestionnaires.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # All ADS for the manager
+        ads_count_subquery = (
+            ADS.objects.filter(
+                ads_manager=OuterRef("ads_manager_id"),
+                deleted_at__isnull=True,
+            )
+            .values("ads_manager")
+            .annotate(count=Count("*"))
+            .values("count")[:1]
+        )
+
+        # For each ADS, get its latest is_complete flag
+        latest_complete = Subquery(
+            ADSUpdateLog.objects.filter(ads=OuterRef("pk"))
+            .order_by("-update_at")
+            .values("is_complete")[:1],
+            output_field=BooleanField(),
+        )
+
+        # 2) Count how many ADS under this manager have latest_complete=True
+        complete_updates_subquery_per_ads_manager = Subquery(
+            ADS.objects.filter(ads_manager=OuterRef("ads_manager_id"))
+            .annotate(latest_complete=latest_complete)
+            .filter(latest_complete=True)
+            .values("ads_manager")
+            .annotate(count=Count("pk"))
+            .values("count")[:1],
+            output_field=IntegerField(),
+        )
+
+        complete_ads_per_admin_per_ads_manager_administrator = Subquery(
+            ADS.objects.filter(
+                ads_manager__administrator=OuterRef("pk"),
+                deleted_at__isnull=True,
+            )
+            .annotate(latest_complete=latest_complete)
+            .filter(latest_complete=True)
+            .values("ads_manager__administrator")
+            .annotate(count=Count("pk"))
+            .values("count")[:1],
+            output_field=IntegerField(),
+        )
+
+        context["user_ads_manager_requests"] = ADSManagerRequest.objects.filter(
+            user=self.request.user
+        ).annotate(
+            ads_count=Subquery(ads_count_subquery, output_field=IntegerField()),
+            complete_updates_count=Subquery(
+                complete_updates_subquery_per_ads_manager, output_field=IntegerField()
+            ),
+        )
+
+        total_ads_per_ads_manager_admininistrator = Subquery(
+            ADS.objects.filter(
+                ads_manager__administrator=OuterRef("pk"),
+                deleted_at__isnull=True,
+            )
+            .values("ads_manager__administrator")
+            .annotate(count=Count("pk"))
+            .values("count")[:1],
+            output_field=IntegerField(),
+        )
+
+        context["ads_managers_administrator"] = (
+            ADSManagerAdministrator.objects.select_related("prefecture")
+            .filter(id=self.kwargs["ads_manager_administrator"].id)
+            .annotate(
+                ads_count=total_ads_per_ads_manager_admininistrator,
+                complete_ads_count=complete_ads_per_admin_per_ads_manager_administrator,
+            )
+            .first()
+        )
+
+        return context
 
 
 class ADSManagerAdminRequestsView(RevisionMixin, TemplateView):
@@ -293,3 +390,65 @@ class ADSManagerAdminUpdatesView(TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx["updates"] = self.get_updates()
         return ctx
+
+
+class RepertoireVehiculeRelaisView(ListView):
+    template_name = "pages/ads_register/prefecture_vehicules_relais.html"
+    paginate_by = 100
+
+    def get_form(self):
+        return SearchVehiculeForm(self.request.GET)
+
+    def get_queryset(self):
+        # .order_by("numero") doesn't work because with a string ordering, 75-2 is higher than 75-100.
+        # Instead we split the numero field and order by the first and second part.
+        # Note the first part has to be cast to a string and not to an integer
+        # because Corsica's departement number is 2A or 2B.
+        qs = (
+            Vehicule.objects.filter(
+                departement__id=self.kwargs.get(
+                    "ads_manager_administrator"
+                ).prefecture.id
+            )
+            .annotate(
+                part1=Cast(SplitPart("numero", Value("-"), Value(1)), CharField()),
+                part2=Cast(SplitPart("numero", Value("-"), Value(2)), IntegerField()),
+                immatriculation_clean=Replace(
+                    F("immatriculation"), Value("-"), Value("")
+                ),
+            )
+            .order_by("part1", "part2")
+            .select_related("proprietaire")
+        )
+
+        form = self.get_form()
+        if form.is_valid():
+            immatriculation = form.cleaned_data["immatriculation"]
+            if immatriculation:
+                qs = qs.filter(
+                    immatriculation_clean__icontains=immatriculation.replace("-", "")
+                )
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form = self.get_form()
+
+        context["form"] = form
+        context["ads_manager_administrator"] = self.kwargs.get(
+            "ads_manager_administrator"
+        )
+
+        return context
+
+
+class VehiculeView(TemplateView):
+    template_name = "pages/ads_register/prefecture_vehicule_relais_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["vehicule"] = get_object_or_404(Vehicule, numero=kwargs["numero"])
+        context["ads_manager_administrator"] = self.kwargs.get(
+            "ads_manager_administrator"
+        )
+        return context

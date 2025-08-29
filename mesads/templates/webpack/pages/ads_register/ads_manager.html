@@ -12,12 +12,30 @@
     </button>
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
-        <li>
-          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
-        </li>
-        <li>
-          <a class="fr-breadcrumb__link" aria-current="page">{{ ads_manager.content_object.display_text|capfirst }}</a>
-        </li>
+        {% if ads_manager_administrator %}
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.homepage' %}">
+              Accueil - {{ ads_manager_administrator.prefecture.display_text|capfirst }}
+            </a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager-admin.administrations' prefecture_id=ads_manager_administrator.prefecture.id %}">
+              Vos administrations en gestion et accès Préfecture
+            </a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link" aria-current="page">{{ ads_manager.content_object.display_text|capfirst }}</a>
+          </li>
+        {% else %}
+          <li>
+            <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link" aria-current="page">{{ ads_manager.content_object.display_text|capfirst }}</a>
+          </li>
+        {% endif %}
       </ol>
     </div>
   </nav>
@@ -29,7 +47,7 @@
     <p>
       <a
         class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-        href="{% url 'app.ads-manager.decree.detail' manager_id=ads_manager.id %}"
+        href="{{arretes_url}}"
       >
         <span aria-hidden="true" class="fr-icon-question-line"></span>
         Arrêté délimitant le nombre d'ADS
@@ -48,7 +66,7 @@
     <p>
       <a
         class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-        href="{% url 'app.ads.create' manager_id=ads_manager.id %}"
+        href="{{creation_ads_url}}"
       >
         <span class="fr-icon-draft-line" aria-hidden="true"></span>
         Enregistrer une ADS
@@ -175,7 +193,16 @@
                   <tr>
                     {% if ads_manager.content_type.name == 'EPCI' %}<td>{{ ads.epci_commune.libelle|default:"" }}</td>{% endif %}
                     <td>
-                      <a href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}">#{{ ads.number }}</a>
+                      <a
+                        href="
+                          {% if ads_manager_administrator %}
+                          {% url 'app.ads-manager-admin.ads-detail' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads_manager.id ads_id=ads.id %}
+                          {% else %}
+                          {% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}
+                          {% endif %}"
+                      >
+                        #{{ ads.number }}
+                      </a>
                     </td>
                     <td>{{ ads.ads_creation_date|date:"d/m/Y"|default:"" }}</td>
                     <td>{{ ads.ads_type }}</td>
@@ -196,8 +223,15 @@
                       {{ ads.latest_update_log|date:"d/m/Y" }}
                     </td>
                     <td class="!text-right">
-                      <a class="fr-btn fr-btn--secondary fr-icon-eye-line"
-                        href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}"></a>
+                      <a
+                        class="fr-btn fr-btn--secondary fr-icon-eye-line"
+                        href="
+                          {% if ads_manager_administrator %}
+                          {% url 'app.ads-manager-admin.ads-detail' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads_manager.id ads_id=ads.id %}
+                          {% else %}
+                          {% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}
+                          {% endif %}"
+                      ></a>
                     </td>
                   </tr>
                 {% empty %}
