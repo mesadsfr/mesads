@@ -14,7 +14,7 @@ urlpatterns = [
     path("fradm/", include("mesads.fradm.urls")),
     path("admin/", admin.site.urls),
     path("", include("mesads.app.urls")),
-    path("relais/", include("mesads.vehicules_relais.urls")),
+    path("vehicule-relais/", include("mesads.vehicules_relais.urls")),
     path("__debug__/", include(debug_toolbar.urls)),
     path("markdownx/", include("markdownx.urls")),
 ]
