@@ -69,6 +69,14 @@
             id="navigation-832"
             role="navigation"
             aria-label="Menu principal">
+
+        {% if administrateur_ads %}
+        {% include "header_prefecture.html" %}
+        {% elif manager_ads %}
+        {% include "header_gestionnaire.html" %}
+        {% elif proprietaire_vehicule_relais %}
+        {% include "header_proprietaire.html" %}
+        {% else %}
         <ul class="fr-nav__list">
           <li class="fr-nav__item">
             {% url 'app.ads-manager.index' as ads_manager_index_url %}
@@ -128,6 +136,7 @@
             </div>
           </li>
         </ul>
+        {% endif %}
       </nav>
     </div>
   </div>

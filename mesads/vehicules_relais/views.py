@@ -80,22 +80,22 @@ class SearchView(ListView):
         return qs
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         form = self.get_form()
 
-        ctx["form"] = form
+        context["form"] = form
 
         # If the form is valid and at least one field is not empty
         should_display_search_results = False
         if form.is_valid() and next((v for v in form.cleaned_data.values() if v), None):
             should_display_search_results = True
-        ctx["should_display_search_results"] = should_display_search_results
+        context["should_display_search_results"] = should_display_search_results
 
-        ctx["is_proprietaire"] = (
+        context["is_proprietaire"] = (
             self.request.user.is_authenticated
             and Proprietaire.objects.filter(users__in=[self.request.user]).exists()
         )
-        return ctx
+        return context
 
 
 class VehiculeView(TemplateView):

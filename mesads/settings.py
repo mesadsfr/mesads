@@ -172,6 +172,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "mesads.context_processors.mesads_settings",
+                "mesads.context_processors.user_roles",
             ],
         },
     },

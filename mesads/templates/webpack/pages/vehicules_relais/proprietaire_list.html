@@ -1,15 +1,18 @@
-{% extends "../../base-sidemenu.html" %}
+{% extends "base_container.html" %}
 {% load show_pagination_links %}
-{% block sidemenu %}
-  {% include "./sidemenu.html" %}
-{% endblock sidemenu %}
-{% block main %}
+{% block body-content %}
   <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
     <button class="fr-breadcrumb__button"
             aria-expanded="false"
             aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'vehicules-relais.index' %}">Répertoires des véhicules relais</a>
+        </li>
         <li>
           <a class="fr-breadcrumb__link" aria-current="page">Espace propriétaire</a>
         </li>
@@ -69,4 +72,4 @@
       {% show_pagination_links page_obj %}
     </div>
   {% endif %}
-{% endblock main %}
+{% endblock body-content %}
