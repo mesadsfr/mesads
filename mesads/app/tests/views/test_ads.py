@@ -9,7 +9,7 @@ from freezegun import freeze_time
 
 from mesads.fradm.models import Commune, EPCI
 
-from ..models import (
+from mesads.app.models import (
     ADS,
     ADSLegalFile,
     ADSManager,
@@ -18,7 +18,7 @@ from ..models import (
     ADSUser,
     Notification,
 )
-from ..unittest import ClientTestCase
+from mesads.unittest import ClientTestCase
 
 
 class TestADSView(ClientTestCase):
@@ -33,7 +33,6 @@ class TestADSView(ClientTestCase):
             ("anonymous", self.anonymous_client, 302),
             ("auth", self.auth_client, 404),
             ("ads_manager 35", self.ads_manager_city35_client, 200),
-            ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(
@@ -571,7 +570,6 @@ class TestADSDeleteView(ClientTestCase):
             ("anonymous", self.anonymous_client, 302),
             ("auth", self.auth_client, 404),
             ("ads_manager 35", self.ads_manager_city35_client, 200),
-            ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(
@@ -604,7 +602,6 @@ class TestADSCreateView(ClientTestCase):
             ("anonymous", self.anonymous_client, 302),
             ("auth", self.auth_client, 404),
             ("ads_manager 35", self.ads_manager_city35_client, 200),
-            ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(
@@ -906,7 +903,6 @@ class TestADSDecreeView(ClientTestCase):
             ("anonymous", self.anonymous_client, 302),
             ("auth", self.auth_client, 404),
             ("ads_manager 35", self.ads_manager_city35_client, 200),
-            ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(
@@ -1069,7 +1065,6 @@ class TestADSHistoryView(ClientTestCase):
             ("anonymous", self.anonymous_client, 302),
             ("auth", self.auth_client, 404),
             ("ads_manager 35", self.ads_manager_city35_client, 200),
-            ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(

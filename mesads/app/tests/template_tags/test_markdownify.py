@@ -1,6 +1,6 @@
 from unittest.case import TestCase
 
-from .markdownify import markdownify
+from mesads.app.templatetags.markdownify import markdownify
 
 
 class TestMarkdownify(TestCase):

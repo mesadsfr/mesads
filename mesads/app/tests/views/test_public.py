@@ -5,7 +5,7 @@ from django.test import RequestFactory
 from mesads.app.models import ADS
 from mesads.app.views import HTTP500View
 
-from ..unittest import ClientTestCase
+from mesads.unittest import ClientTestCase
 
 
 class TestHTTP500View(ClientTestCase):
@@ -42,40 +42,6 @@ class TestProfileDriverView(ClientTestCase):
     def test_200(self):
         resp = self.anonymous_client.get("/chauffeur")
         self.assertEqual(resp.status_code, 200)
-
-
-class TestADSRegisterView(ClientTestCase):
-    def test_redirection(self):
-        for client_name, client, expected_status, redirect_url in (
-            (
-                "anonymous",
-                self.anonymous_client,
-                302,
-                "/auth/login/?next=/registre_ads/",
-            ),
-            ("auth", self.auth_client, 302, "/registre_ads/gestion"),
-            (
-                "ads_manager 35",
-                self.ads_manager_city35_client,
-                302,
-                "/registre_ads/gestion",
-            ),
-            (
-                "ads_manager_admin 35",
-                self.ads_manager_administrator_35_client,
-                302,
-                "/registre_ads/admin_gestion",
-            ),
-            ("admin", self.admin_client, 302, "/registre_ads/dashboards"),
-        ):
-            with self.subTest(
-                client_name=client_name,
-                expected_status=expected_status,
-                redirect_url=redirect_url,
-            ):
-                resp = client.get("/registre_ads/")
-                self.assertEqual(resp.status_code, expected_status)
-                self.assertEqual(resp.url, redirect_url)
 
 
 class TestFAQView(ClientTestCase):

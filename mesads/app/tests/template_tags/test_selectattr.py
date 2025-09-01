@@ -1,7 +1,7 @@
 from unittest.case import TestCase
 
 
-from .selectattr import selectattr
+from mesads.app.templatetags.selectattr import selectattr
 
 
 class Object:

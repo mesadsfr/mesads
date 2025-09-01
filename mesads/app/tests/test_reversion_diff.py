@@ -10,9 +10,9 @@ from reversion.models import Revision
 from mesads.fradm.models import Commune
 from mesads.users.models import User
 
-from .models import ADS, ADSUser, ADSManager, ADSLegalFile, ADSManagerAdministrator
-from ..fradm.models import Prefecture
-from .reversion_diff import ModelHistory, Diff
+from ..models import ADS, ADSUser, ADSManager, ADSLegalFile, ADSManagerAdministrator
+from ...fradm.models import Prefecture
+from ..reversion_diff import ModelHistory, Diff
 
 
 class TestReversionDiff(TestCase):
