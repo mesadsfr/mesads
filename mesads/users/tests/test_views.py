@@ -3,7 +3,7 @@ import re
 from django.core import mail
 from django.conf import settings
 
-from .unittest import ClientTestCase
+from ..unittest import ClientTestCase
 
 
 class TestPasswordResetView(ClientTestCase):
@@ -50,8 +50,8 @@ class TestCustomRegistrationView(ClientTestCase):
             "/auth/register/",
             {
                 "email": "sdiofnaisodfnqowifqepsio@bla.com",
-                "password1": "abcdef123__",
-                "password2": "abcdef123__",
+                "password1": "aBcdef123__",
+                "password2": "aBcdef123__",
             },
         )
         self.assertEqual(resp.status_code, 302)

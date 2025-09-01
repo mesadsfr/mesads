@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from mesads.fradm.models import Commune, Prefecture
 from mesads.fradm.unittest import ClientTestCase as BaseClientTestCase
 
-from .models import ADSManager, ADSManagerAdministrator, ADSManagerRequest
+from .app.models import ADSManager, ADSManagerAdministrator, ADSManagerRequest
 
 
 class ClientTestCase(BaseClientTestCase):

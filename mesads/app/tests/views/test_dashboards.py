@@ -1,4 +1,4 @@
-from ..unittest import ClientTestCase
+from mesads.unittest import ClientTestCase
 
 
 class TestDashboardsViews(ClientTestCase):

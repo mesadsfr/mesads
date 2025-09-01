@@ -16,7 +16,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.text import slugify
-from django.views.generic import RedirectView, View, TemplateView, ListView
+from django.views.generic import View, TemplateView, ListView
 
 from reversion.views import RevisionMixin
 
@@ -28,36 +28,10 @@ from ..models import (
     ADSUpdateLog,
 )
 from mesads.app.forms import SearchVehiculeForm
-from mesads.vehicules_relais.models import Vehicule, Proprietaire
+from mesads.vehicules_relais.models import Vehicule
 from mesads.utils_psql import SplitPart
 
 from .export import ADSExporter
-
-
-class ADSManagerAdminIndexView(RedirectView):
-    def get_redirect_url(self, *args, **kwargs):
-        administrators = ADSManagerAdministrator.objects.filter(
-            users__in=[self.request.user]
-        )
-        if len(administrators):
-            return reverse(
-                "app.ads-manager-admin.details",
-                kwargs={"prefecture_id": administrators[0].prefecture.id},
-            )
-        return reverse("app.ads-manager.index")
-
-
-class ADSManagerAdminDetailsView(RevisionMixin, TemplateView):
-
-    template_name = "pages/ads_register/ads_manager_admin.html"
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        pending_requests = ADSManagerRequest.objects.filter(
-            ads_manager__administrator=self.kwargs["ads_manager_administrator"]
-        ).filter(accepted__isnull=True)
-        ctx["pending_requests_count"] = pending_requests.count()
-        return ctx
 
 
 class ADSManagerAdministratorView(TemplateView):

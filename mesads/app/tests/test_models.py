@@ -16,7 +16,7 @@ from mesads.fradm.models import (
     EPCI,
     Prefecture,
 )
-from .models import (
+from ..models import (
     ADS,
     validate_siret,
     ADSLegalFile,
@@ -30,7 +30,7 @@ from .models import (
     validate_no_ads_declared,
 )
 
-from .unittest import ClientTestCase
+from mesads.unittest import ClientTestCase
 
 
 class TestADSManager(ClientTestCase):

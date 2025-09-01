@@ -1,16 +1,13 @@
 from datetime import datetime
 
-from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from mesads.fradm.models import Prefecture
 
-from ..models import (
+from mesads.app.models import (
     ADS,
-    ADSManager,
     ADSUser,
 )
-from ..unittest import ClientTestCase
+from mesads.unittest import ClientTestCase
 
 
 class TestADSManagerView(ClientTestCase):
@@ -19,7 +16,6 @@ class TestADSManagerView(ClientTestCase):
             ("anonymous", self.anonymous_client, 302),
             ("auth", self.auth_client, 404),
             ("ads_manager 35", self.ads_manager_city35_client, 200),
-            ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(
@@ -36,20 +32,6 @@ class TestADSManagerView(ClientTestCase):
             f"/registre_ads/gestion/{self.ads_manager_city35.id}/"
         )
         self.assertEqual(self.ads_manager_city35, resp.context["ads_manager"])
-
-        prefecture = Prefecture.objects.filter(numero="35").get()
-        ads_manager = ADSManager.objects.filter(
-            content_type=ContentType.objects.get_for_model(prefecture),
-            object_id=prefecture.id,
-        ).get()
-
-        resp = self.ads_manager_administrator_35_client.get(
-            f"/registre_ads/gestion/{ads_manager.id}/"
-        )
-        self.assertEqual(
-            self.ads_manager_administrator_35.prefecture,
-            resp.context["ads_manager"].content_object,
-        )
 
     def test_filters(self):
         """Test filtering"""
@@ -178,7 +160,6 @@ class TestExportADSManager(ClientTestCase):
             ("anonymous", self.anonymous_client, 302),
             ("auth", self.auth_client, 404),
             ("ads_manager 35", self.ads_manager_city35_client, 200),
-            ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(
@@ -221,7 +202,6 @@ class TestADSManagerDecreeView(ClientTestCase):
             ("anonymous", self.anonymous_client, 302),
             ("auth", self.auth_client, 404),
             ("ads_manager 35", self.ads_manager_city35_client, 200),
-            ("ads_manager_admin 35", self.ads_manager_administrator_35_client, 200),
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(

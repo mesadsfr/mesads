@@ -9,37 +9,16 @@ from .decorators import (
     ads_manager_administrator_required,
 )
 
-
-urlpatterns = [
-    path(
-        "registre_ads/",
-        login_required(views.ADSRegisterView.as_view()),
-        name="app.ads-register.index",
-    ),
-    path(
-        "registre_ads/dashboards",
-        staff_member_required(views.DashboardsView.as_view()),
-        name="app.dashboards.list",
-    ),
-    path(
-        "registre_ads/admin_gestion",
-        ads_manager_administrator_required(views.ADSManagerAdminIndexView.as_view()),
-        name="app.ads-manager-admin.index",
-    ),
-    path(
-        "registre_ads/admin_gestion/<int:prefecture_id>",
-        ads_manager_administrator_required(views.ADSManagerAdminDetailsView.as_view()),
-        name="app.ads-manager-admin.details",
-    ),
-    path(
-        "registre_ads/admin_gestion/<int:prefecture_id>/demandes",
-        ads_manager_administrator_required(views.ADSManagerAdminRequestsView.as_view()),
-        name="app.ads-manager-admin.requests",
-    ),
+url_prefectures = [
     path(
         "espace-prefecture/<int:prefecture_id>/administrations/",
         ads_manager_administrator_required(views.ADSManagerAdministratorView.as_view()),
         name="app.ads-manager-admin.administrations",
+    ),
+    path(
+        "espace-prefecture/<int:prefecture_id>/demandes-gestion/",
+        ads_manager_administrator_required(views.ADSManagerAdminRequestsView.as_view()),
+        name="app.ads-manager-admin.requests",
     ),
     path(
         "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/",
@@ -99,14 +78,17 @@ urlpatterns = [
         name="app.ads-manager-admin.vehicule_relais_detail",
     ),
     path(
+        "registre_ads/prefectures/<int:prefecture_id>/export",
+        ads_manager_administrator_required(views.PrefectureExportView.as_view()),
+        name="app.exports.prefecture",
+    ),
+]
+
+url_gestionnaire = [
+    path(
         "registre_ads/demande_gestion_ads/",
         login_required(views.DemandeGestionADSView.as_view()),
         name="app.ads-manager.demande_gestion_ads",
-    ),
-    path(
-        "registre_ads/gestion",
-        login_required(views.ADSManagerRequestView.as_view()),
-        name="app.ads-manager.index",
     ),
     path(
         "registre_ads/gestion/<int:manager_id>/",
@@ -148,10 +130,13 @@ urlpatterns = [
         ads_manager_required(views.ADSHistoryView.as_view()),
         name="app.ads.history",
     ),
+]
+
+url_commons = [
     path(
-        "registre_ads/prefectures/<int:prefecture_id>/export",
-        ads_manager_administrator_required(views.PrefectureExportView.as_view()),
-        name="app.exports.prefecture",
+        "registre_ads/dashboards",
+        staff_member_required(views.DashboardsView.as_view()),
+        name="app.dashboards.list",
     ),
     path(
         "gestionnaire_ads/autocomplete",
@@ -161,7 +146,7 @@ urlpatterns = [
 ]
 
 
-urlpatterns += [
+url_public = [
     path("", views.HomepageView.as_view(), name="app.homepage"),
     path("faq", views.FAQView.as_view(), name="app.faq"),
     path(
@@ -213,3 +198,6 @@ urlpatterns += [
         name="app.reglementation",
     ),
 ]
+
+
+urlpatterns = url_prefectures + url_gestionnaire + url_commons + url_public

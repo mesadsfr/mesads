@@ -16,8 +16,6 @@ from .ads_manager import (  # noqa: F401
 from .ads_manager_admin import (  # noqa: F401
     PrefectureExportView,
     ADSManagerExportView,
-    ADSManagerAdminIndexView,
-    ADSManagerAdminDetailsView,
     ADSManagerAdminRequestsView,
     ADSManagerAdminUpdatesView,
     ADSManagerAdministratorView,
@@ -26,7 +24,6 @@ from .ads_manager_admin import (  # noqa: F401
 )
 from .ads_manager_request import (  # noqa: F401
     DemandeGestionADSView,
-    ADSManagerRequestView,
 )
 from .dashboards import DashboardsView  # noqa: F401
 from .public import (  # noqa: F401
@@ -47,6 +44,6 @@ class ADSRegisterView(RedirectView):
         ads_manager_administrators = self.request.user.adsmanageradministrator_set.all()
         if len(ads_manager_administrators):
             return reverse(
-                "app.ads-manager-admin.index",
+                "app.homepage",
             )
-        return reverse("app.ads-manager.index")
+        return reverse("app.homepage")

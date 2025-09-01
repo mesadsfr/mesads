@@ -1,6 +1,6 @@
 from unittest.case import TestCase
 
-from .meta import meta
+from mesads.app.templatetags.meta import meta
 
 
 class Object:

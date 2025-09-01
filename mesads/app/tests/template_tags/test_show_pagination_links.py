@@ -3,7 +3,7 @@ from django.template import Context
 from django.test import RequestFactory, TestCase
 
 
-from .show_pagination_links import show_pagination_links
+from mesads.app.templatetags.show_pagination_links import show_pagination_links
 
 
 class TestShowPaginationLinks(TestCase):

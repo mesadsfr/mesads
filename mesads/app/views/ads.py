@@ -15,7 +15,6 @@ from django.urls import reverse
 from django.views.generic import UpdateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView
-from django.urls import reverse
 
 from formtools.wizard.views import CookieWizardView
 
@@ -110,53 +109,54 @@ class ADSView(RevisionMixin, UpdateView):
                 "app.ads-manager.detail", kwargs={"manager_id": ads_manager.id}
             )
         )
-        context["arrete_url"] = (
-            reverse(
-                "app.ads-manager-admin.ads-decree",
-                kwargs={
-                    "prefecture_id": administrator.prefecture.id,
-                    "manager_id": ads_manager.id,
-                    "ads_id": self.object.id,
-                },
-            )
-            if administrator
-            else reverse(
-                "app.ads.decree",
-                kwargs={"manager_id": ads_manager.id, "ads_id": self.object.id},
-            )
-        )
 
-        context["history_url"] = (
-            reverse(
-                "app.ads-manager-admin.ads-history",
-                kwargs={
-                    "prefecture_id": administrator.prefecture.id,
-                    "manager_id": ads_manager.id,
-                    "ads_id": self.object.id,
-                },
+        if self.object:
+            context["arrete_url"] = (
+                reverse(
+                    "app.ads-manager-admin.ads-decree",
+                    kwargs={
+                        "prefecture_id": administrator.prefecture.id,
+                        "manager_id": ads_manager.id,
+                        "ads_id": self.object.id,
+                    },
+                )
+                if administrator
+                else reverse(
+                    "app.ads.decree",
+                    kwargs={"manager_id": ads_manager.id, "ads_id": self.object.id},
+                )
             )
-            if administrator
-            else reverse(
-                "app.ads.history",
-                kwargs={"manager_id": ads_manager.id, "ads_id": self.object.id},
+            context["history_url"] = (
+                reverse(
+                    "app.ads-manager-admin.ads-history",
+                    kwargs={
+                        "prefecture_id": administrator.prefecture.id,
+                        "manager_id": ads_manager.id,
+                        "ads_id": self.object.id,
+                    },
+                )
+                if administrator
+                else reverse(
+                    "app.ads.history",
+                    kwargs={"manager_id": ads_manager.id, "ads_id": self.object.id},
+                )
             )
-        )
 
-        context["delete_url"] = (
-            reverse(
-                "app.ads-manager-admin.ads-delete",
-                kwargs={
-                    "prefecture_id": administrator.prefecture.id,
-                    "manager_id": ads_manager.id,
-                    "ads_id": self.object.id,
-                },
+            context["delete_url"] = (
+                reverse(
+                    "app.ads-manager-admin.ads-delete",
+                    kwargs={
+                        "prefecture_id": administrator.prefecture.id,
+                        "manager_id": ads_manager.id,
+                        "ads_id": self.object.id,
+                    },
+                )
+                if administrator
+                else reverse(
+                    "app.ads.delete",
+                    kwargs={"manager_id": ads_manager.id, "ads_id": self.object.id},
+                )
             )
-            if administrator
-            else reverse(
-                "app.ads.delete",
-                kwargs={"manager_id": ads_manager.id, "ads_id": self.object.id},
-            )
-        )
 
         return context
 
