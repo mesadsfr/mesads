@@ -83,14 +83,14 @@
             {% is_subpath request.path vehicules_relais_index_url 1 as is_vehicules_relais %}
             <a class="fr-nav__link"
                 href="{{ vehicules_relais_index_url }}"
-                {% if is_vehicules_relais %}aria-current="page"{% endif %}>🚖 Répertoires des Véhicules Relais</a>
+                {% if is_vehicules_relais %}aria-current="page"{% endif %}>Répertoires des taxis Relais</a>
           </li>
           <li class="fr-nav__item">
             {% url 'app.reglementation' as reglementation_url %}
             {% is_subpath request.path reglementation_url 1 as is_reglementation %}
             <a class="fr-nav__link"
                 href="{{ reglementation_url }}"
-                {% if is_reglementation %}aria-current="page"{% endif %}>📚 Réglementation taxi</a>
+                {% if is_reglementation %}aria-current="page"{% endif %}>Réglementation taxi</a>
           </li>
           <li class="fr-nav__item">
             <button
