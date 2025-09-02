@@ -2,9 +2,9 @@ from datetime import datetime
 
 from django.test import RequestFactory
 
-from mesads.app.models import ADS
+from mesads.app.models import ADS, ADSManagerRequest
 from mesads.app.views import HTTP500View
-
+from mesads.vehicules_relais.models import Proprietaire
 from mesads.unittest import ClientTestCase
 
 
@@ -22,8 +22,72 @@ class TestHTTP500View(ClientTestCase):
 
 class TestHomepageView(ClientTestCase):
     def test_200(self):
-        resp = self.anonymous_client.get("/")
-        self.assertEqual(resp.status_code, 200)
+        response = self.anonymous_client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.context.get("administrateur_ads"))
+        self.assertIsNone(response.context.get("ads_manager_administrator"))
+        self.assertIsNone(response.context.get("manager_ads"))
+        self.assertIsNone(response.context.get("requetes_gestionnaires"))
+        self.assertIsNone(response.context.get("proprietaire_vehicule_relais"))
+
+    def test_get_as_authenticated_user(self):
+        client_connecte, _ = self.create_client()
+        response = client_connecte.get("/")
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertIsNone(response.context.get("administrateur_ads"))
+        self.assertIsNone(response.context.get("ads_manager_administrator"))
+        self.assertIsNone(response.context.get("manager_ads"))
+        self.assertIsNone(response.context.get("requetes_gestionnaires"))
+        self.assertIsNone(response.context.get("proprietaire_vehicule_relais"))
+
+    def test_get_as_ads_manager(self):
+        response = self.ads_manager_city35_client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertIsNone(response.context.get("administrateur_ads"))
+        self.assertIsNone(response.context.get("ads_manager_administrator"))
+
+        self.assertTrue(response.context.get("manager_ads"))
+        self.assertQuerySetEqual(
+            response.context.get("requetes_gestionnaires"),
+            ADSManagerRequest.objects.filter(user=self.ads_manager_city35_user),
+        )
+
+        self.assertIsNone(response.context.get("proprietaire_vehicule_relais"))
+
+    def test_get_as_administrator(self):
+        response = self.ads_manager_administrator_35_client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTrue(response.context.get("administrateur_ads"))
+        self.assertEqual(
+            response.context.get("ads_manager_administrator"),
+            self.ads_manager_administrator_35,
+        )
+
+        self.assertIsNone(response.context.get("manager_ads"))
+        self.assertIsNone(response.context.get("requetes_gestionnaires"))
+        self.assertIsNone(response.context.get("proprietaire_vehicule_relais"))
+
+    def test_get_as_proprietaire(self):
+        client_proprietaire, user_proprietaire = self.create_client()
+
+        proprietaire = Proprietaire.objects.create(nom="Propriétaire")
+        proprietaire.users.set([user_proprietaire])
+
+        response = client_proprietaire.get("/")
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertIsNone(response.context.get("administrateur_ads"))
+        self.assertIsNone(response.context.get("ads_manager_administrator"))
+        self.assertIsNone(response.context.get("manager_ads"))
+        self.assertIsNone(response.context.get("requetes_gestionnaires"))
+        self.assertTrue(response.context.get("proprietaire_vehicule_relais"))
 
 
 class TestProfileADSManagerAdministratorView(ClientTestCase):

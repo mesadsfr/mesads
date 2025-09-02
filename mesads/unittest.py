@@ -19,7 +19,9 @@ class ClientTestCase(BaseClientTestCase):
         super().setUp()
 
         # Create User and authenticate flask client
-        self.ads_manager_city35_client, ads_manager_city35_user = self.create_client()
+        self.ads_manager_city35_client, self.ads_manager_city35_user = (
+            self.create_client()
+        )
 
         # Retrieve ADSManager entry for Melesse created in self.create_fixtures()
         self.commune_melesse = Commune.objects.filter(libelle="Melesse").get()
@@ -30,7 +32,7 @@ class ClientTestCase(BaseClientTestCase):
 
         # Give permissions to client by creating an entry in ADSManagerRequest
         self.ads_manager_request = ADSManagerRequest.objects.create(
-            user=ads_manager_city35_user,
+            user=self.ads_manager_city35_user,
             ads_manager=self.ads_manager_city35,
             accepted=True,
         )

@@ -1,6 +1,3 @@
-from django.urls import reverse
-from django.views.generic import RedirectView
-
 from .ads import (  # noqa: F401
     ADSDecreeView,
     ADSHistoryView,
@@ -33,17 +30,3 @@ from .public import (  # noqa: F401
     HTTP500View,
     HomepageView,
 )
-
-
-class ADSRegisterView(RedirectView):
-    """Redirect to the appropriate dashboard depending on the user's role."""
-
-    def get_redirect_url(self, *args, **kwargs):
-        if self.request.user.is_staff:
-            return reverse("app.dashboards.list")
-        ads_manager_administrators = self.request.user.adsmanageradministrator_set.all()
-        if len(ads_manager_administrators):
-            return reverse(
-                "app.homepage",
-            )
-        return reverse("app.homepage")
