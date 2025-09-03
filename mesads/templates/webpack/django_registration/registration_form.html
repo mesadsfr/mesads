@@ -37,7 +37,7 @@
         </label>
 
         <p class="fr-hint-text">
-          Privilégiez une adresse professionnelle ou une adresse dédiée à la gestion des ADS (adresse partagée ou adresse personnelle)
+          Utilisez de préférence une adresse nominative.
         </p>
 
         <input
@@ -67,6 +67,10 @@
         >
           {{ form.password1.label }} :
         </label>
+        
+        <p class="fr-hint-text">
+          Votre mot de passe doit contenir au moins 8 caractères, dont une lettre minuscule, une lettre majuscule et un chiffre.
+        </p>
 
         <input
           class="fr-password__input fr-input"
@@ -134,6 +138,22 @@
           Si malgré tout, vous ne le trouvez pas, contactez-nous à l'adresse <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
         </p>
       </div>
+
+      <!-- Acceptation CGU -->
+      <div class="fr-mb-2w fr-checkbox-group{% if form.errors.password2 %} fr-input-group--error{% endif %}">
+        <input name="{{form.cgu.name}}" id="{{form.cgu.name}}" type="checkbox" aria-describedby="checkbox-0-messages">
+        <label class="fr-label" for="{{form.cgu.name}}">
+          <span>J'accepte les&nbsp;</span>
+          <a class="fr-link" href="{% url 'app.cgu' %}">CGU</a>
+        </label>
+
+        <div class="fr-messages-group" id="checkbox-0-messages" aria-live="assertive">
+          {% for error in form.errors.cgu %}
+            <p class="fr-message fr-message--error">{{ error }}</p>
+          {% endfor %}
+        </div>
+      </div>
+
       <div class="fr-input-group">
         <button type="submit" class="fr-btn">Créez votre compte</button>
       </div>

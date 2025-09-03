@@ -10,6 +10,8 @@ from .models import User
 
 
 class CustomUserForm(RegistrationForm):
+    cgu = forms.BooleanField(required=True, label="CGU")
+
     class Meta(RegistrationForm.Meta):
         model = User
 

@@ -11,12 +11,12 @@
           <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil {{ ads_manager_administrator.prefecture.display_text|capfirst }}</a>
         </li>
         <li>
-          <a class="fr-breadcrumb__link" aria-current="page">Répertoires des véhicules relais</a>
+          <a class="fr-breadcrumb__link" aria-current="page">Répertoire des taxis relais</a>
         </li>
       </ol>
     </div>
   </nav>
-  <h1>Consulter le répertoires des véhicules relais</h1>
+  <h1>Consulter le répertoire des véhicules relais</h1>
   <hr class="fr-mt-3w">
   <form method="get" action="{% url 'app.ads-manager-admin.vehicules_relais' prefecture_id=ads_manager_administrator.prefecture.id %}">
     <div class="fr-form-group">

@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@gouvfr/dsfr": "^1.14.0",
+    "@gouvfr/dsfr": "^1.14.1",
     "@tailwindcss/postcss": "^4.1.4",
     "alpinejs": "^3.10.3",
     "chart.js": "^4.4.0",

@@ -52,6 +52,7 @@ class TestCustomRegistrationView(ClientTestCase):
                 "email": "sdiofnaisodfnqowifqepsio@bla.com",
                 "password1": "aBcdef123__",
                 "password2": "aBcdef123__",
+                "cgu": True,
             },
         )
         self.assertEqual(resp.status_code, 302)

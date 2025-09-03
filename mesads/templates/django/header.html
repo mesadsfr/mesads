@@ -26,7 +26,7 @@
               <p class="fr-header__service-title">Mes ADS</p>
             </a>
             <p class="fr-header__service-tagline">
-              🚖 La base Française des autorisations de stationnement Taxi <span class="inline-block w-fit -scale-x-100">🚕</span>
+              La base Française des autorisations de stationnement Taxi
             </p>
           </div>
         </div>
@@ -50,7 +50,13 @@
                 {% endif %}
               {% else %}
                 <li>
-                  <a class="fr-link fr-icon-close-circle-line" href="{% url 'login' %}">Connexion / Création de compte</a>
+                  <a
+                    class="fr-btn fr-btn--tertiary fr-btn--sm fr-icon-account-circle-fill"
+                    href="{% url 'login' %}"
+                  >
+                    Se connecter
+                    <span class="fr-icon-arrow-down-s-line" aria-hidden="true"></span>
+                  </a>
                 </li>
               {% endif %}
             </ul>
