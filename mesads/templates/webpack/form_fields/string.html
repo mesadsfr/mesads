@@ -6,7 +6,10 @@
 
   <label class="fr-label" for="{{ field.id_for_label }}">
     {{ field.label }}
-    {% if required %}*{% endif %}
+    {% if required %}
+      <span aria-hidden="true">*</span>
+      <span class="fr-sr-only"> (obligatoire)</span>
+    {% endif %}
     {% if field.help_text %}<span class="fr-hint-text">{{ field.help_text }}</span>{% endif %}
   </label>
 

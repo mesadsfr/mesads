@@ -171,6 +171,12 @@
     <div class="fr-grid-row" x-data="get_x_data()">
       <form method="post" enctype="multipart/form-data">
 
+        <p class="fr-text--sm">
+          Les champs marqués d’un 
+          <span aria-hidden="true">*</span>
+          sont obligatoires.
+        </p>
+
         {% if form.non_field_errors %}
           <div class="fr-input-group fr-input-group--error">
             {% for error in form.non_field_errors %}

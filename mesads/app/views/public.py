@@ -35,6 +35,8 @@ class HomepageView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        context["title"] = "Accueil - découvrez MesADS"
+
         if self.request.user.is_authenticated:
             ads_manager_administrators = (
                 self.request.user.adsmanageradministrator_set.all()
@@ -46,9 +48,13 @@ class HomepageView(TemplateView):
                 context["ads_manager_administrator"] = (
                     ads_manager_administrators.first()
                 )
-            if len(ads_manager_requests):
-                context["manager_ads"] = True
 
+                context["title"] = (
+                    f"MesADS - Accueil {context['ads_manager_administrator'].prefecture.display_text}"
+                )
+            elif len(ads_manager_requests):
+                context["manager_ads"] = True
+                context["title"] = "MesADS - Accueil gestionnaire"
                 # All ADS for the manager
                 ads_count_subquery = (
                     ADS.objects.filter(
@@ -88,7 +94,8 @@ class HomepageView(TemplateView):
                         output_field=IntegerField(),
                     ),
                 )
-            if len(proprietaire_vehicule_relais):
+            elif len(proprietaire_vehicule_relais):
+                context["title"] = "MesADS - Accueil propriétaire de taxis relais"
                 context["proprietaire_vehicule_relais"] = True
 
         return context

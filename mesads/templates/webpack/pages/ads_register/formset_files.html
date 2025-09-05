@@ -36,27 +36,26 @@
         </p>
         <p class="fr-download__desc">
           <input
-            class="fr-hidden"
-            type="checkbox"
-            name="{{ form.DELETE.html_name }}"
             id="{{ form.file.id_for_label }}-clear_id"
+            name="{{ form.DELETE.html_name }}"
+            type="checkbox"
             x-model="deleteFile"
+            class="fr-sr-only"
             {% if disabled %}disabled{% endif %}
           />
-          <label
-            class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-delete-line fr-btn--icon-left"
-            for="{{ form.file.id_for_label }}-clear_id"
-            x-show="!deleteFile"
+
+          <!-- Bouton accessible au clavier -->
+          <button
+            type="button"
+            class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-left"
+            :class="deleteFile ? 'fr-icon-download-line' : 'fr-icon-delete-line'"
+            @click="deleteFile = !deleteFile"
+            :aria-pressed="deleteFile.toString()"
+            :aria-controls="'{{ form.file.id_for_label }}-clear_id'"
+            {% if disabled %}disabled{% endif %}
           >
-            Supprimer le document
-          </label>
-          <label
-            class="fr-btn fr-btn--secondary fr-btn--sm fr-icon-download-line fr-btn--icon-left"
-            for="{{ form.file.id_for_label }}-clear_id"
-            x-show="deleteFile"
-          >
-            Annuler la suppression
-          </label>
+            <span x-text="deleteFile ? 'Annuler la suppression' : 'Supprimer le document'"></span>
+          </button>
         </p>
       {% endif %}
       {% comment %}Form errors {% endcomment %}
