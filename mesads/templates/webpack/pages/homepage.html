@@ -1,29 +1,149 @@
-{% extends "base.html" %}
+{% extends "base-banner.html" %}
+{% block banner %}
+  MesADS, le registre des ADS et des véhicules relais
+{% endblock banner %}
 {% block body %}
   {% if not request.user.is_authenticated %}
-
-    {% include "./accueil/accueil_non_connecte.html" %}
-
+    <h1 class="fr-mt-5w">Pour savoir comment utiliser MesADS, choisissez votre profil</h1>
+    <p class="fr-text--lead text-center">
+      MesADS est l'outil de référence du secteur taxi. La plateforme propose actuellement deux fonctionnalités: la gestion des licences de taxi <strong>pour les administrations</strong> (registre des ADS) et l'accès à la liste des véhicules de remplacement <strong>pour les chauffeurs de taxi et propriétaires de véhicules relais</strong> (répertoires des taxis relais).
+    </p>
+    <p class="fr-text--lead">Vous êtes…</p>
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+      <div class="fr-col-6">
+        <div class="fr-tile fr-enlarge-link">
+          <div class="fr-tile__body">
+            <div class="fr-tile__content">
+              <h2 class="fr-tile__title">
+                <a href="{% url 'app.profiles.ads_manager' %}">Chargé de la gestion des ADS de votre commune ou EPCI</a>
+              </h2>
+            </div>
+          </div>
+          <div class="fr-tile__header">
+            <div class="fr-tile__pictogram">
+              <div class="text-5xl">👨‍💻</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="fr-col-6">
+        <div class="fr-tile fr-enlarge-link">
+          <div class="fr-tile__body">
+            <div class="fr-tile__content">
+              <h2 class="fr-tile__title">
+                <a href="{% url 'app.profiles.ads_manager_administrator' %}">Agent au sein d'une préfecture</a>
+              </h2>
+            </div>
+          </div>
+          <div class="fr-tile__header">
+            <div class="fr-tile__pictogram">
+              <div class="text-5xl">🇫🇷‍</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="fr-col-6">
+        <div class="fr-tile fr-enlarge-link">
+          <div class="fr-tile__body">
+            <div class="fr-tile__content">
+              <h2 class="fr-tile__title">
+                <a href="{% url 'app.profiles.driver' %}">Chauffeur de taxi</a>
+              </h2>
+            </div>
+          </div>
+          <div class="fr-tile__header">
+            <div class="fr-tile__pictogram">
+              <div class="text-5xl">🚕</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="fr-col-6">
+        <div class="fr-tile fr-enlarge-link">
+          <div class="fr-tile__body">
+            <div class="fr-tile__content">
+              <h2 class="fr-tile__title">
+                <a href="{% url 'app.profiles.vehicules-relais' %}">Détenteur d'un taxi relais (véhicule de remplacement)</a>
+              </h2>
+            </div>
+          </div>
+          <div class="fr-tile__header">
+            <div class="fr-tile__pictogram">
+              <div class="text-5xl">🦺</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="fr-col-6">
+        <div class="fr-tile fr-enlarge-link">
+          <div class="fr-tile__body">
+            <div class="fr-tile__content">
+              <h2 class="fr-tile__title">
+                <a href="{% url 'app.reglementation' %}">Réglementation</a>
+              </h2>
+            </div>
+          </div>
+          <div class="fr-tile__header">
+            <div class="fr-tile__pictogram">
+              <div class="text-5xl">📚</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   {% else %}
-
-    {% if administrateur_ads %}
-      
-      {% include "./accueil/accueil_prefecture.html" %}
-
-    {% elif manager_ads %}
-      
-      {% include "./accueil/accueil_gestionnaire.html" %}
-
-    {% elif proprietaire_vehicule_relais %}
-      
-      {% include "./accueil/accueil_proprietaire.html" %}
-
-    {% else %}
-
-      {% include "./accueil/accueil_connecte.html" %}
-
-    {% endif %}
-
+    <p class="fr-text--lead text-center">
+      MesADS est l'outil de référence du secteur taxi. La plateforme propose actuellement deux fonctionnalités: la gestion des licences de taxi <strong>pour les administrations</strong> (registre des ADS) et l'accès à la liste des véhicules de remplacement <strong>pour les chauffeurs de taxi et propriétaires de véhicules relais</strong> (répertoires des taxis relais).
+    </p>
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+      <div class="fr-col-6">
+        <div class="fr-tile fr-enlarge-link">
+          <div class="fr-tile__body">
+            <div class="fr-tile__content">
+              <h2 class="fr-tile__title">
+                <a href="{% url 'app.ads-register.index' %}">Registre des ADS (licences de taxi)</a>
+              </h2>
+            </div>
+          </div>
+          <div class="fr-tile__header">
+            <div class="fr-tile__pictogram">
+              <div class="text-5xl">📄</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="fr-col-6">
+        <div class="fr-tile fr-enlarge-link">
+          <div class="fr-tile__body">
+            <div class="fr-tile__content">
+              <h2 class="fr-tile__title">
+                <a href="{% url 'vehicules-relais.index' %}">Répertoires des Véhicules Relais</a>
+              </h2>
+            </div>
+          </div>
+          <div class="fr-tile__header">
+            <div class="fr-tile__pictogram">
+              <div class="text-5xl">🚖</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="fr-col-6">
+        <div class="fr-tile fr-enlarge-link">
+          <div class="fr-tile__body">
+            <div class="fr-tile__content">
+              <h2 class="fr-tile__title">
+                <a href="{% url 'app.reglementation' %}">Réglementation</a>
+              </h2>
+            </div>
+          </div>
+          <div class="fr-tile__header">
+            <div class="fr-tile__pictogram">
+              <div class="text-5xl">📚</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   {% endif %}
-    
 {% endblock body %}

@@ -46,7 +46,7 @@ class TestPrefecture(TestCase):
         self.assertEqual(prefecture.display_text(), "préfecture de Police de Paris")
 
         prefecture = Prefecture(numero="35", libelle="Ille-et-Vilaine")
-        self.assertEqual(prefecture.display_text(), "préfecture de l'Ille-et-Vilaine")
+        self.assertEqual(prefecture.display_text(), "préfecture d'Ille-et-Vilaine")
 
         prefecture = Prefecture(numero="83", libelle="Var")
         self.assertEqual(prefecture.display_text(), "préfecture de Var")

@@ -3,7 +3,7 @@ urls:
   ### Root pages
   ###
   app.homepage:
-    title: "{{title}}"
+    title: Découvrez comment MesADS peut vous aider - Choisissez votre profil
     description: "Trouvez comment utiliser MesADS en sélectionnant votre profil: gestionnaire ADS, chauffeur de taxi, propriétaire de véhicules relais, ou autre."
 
   app.accessibility:
@@ -11,11 +11,11 @@ urls:
     description: "Découvrez à quel point MesADS est conforme aux normes d'accessibilité numérique."
 
   app.stats:
-    title: "Statistiques MesADS"
+    title: "Chiffres clés de MesADS"
     description: "Statistiques sur l'utilisation de MesADS : nombre d'utilisateurs, nombre d'ADS enregistrés, etc."
 
   app.faq:
-    title: "FAQ MesADS - Foire aux questions"
+    title: "Foire aux questions de MesADS"
     description: "Réponses aux questions fréquemment posées sur MesADS. Un problème technique ? Besoin d'aide ? Contactez-nous."
 
   app.profiles.ads_manager:
@@ -35,7 +35,7 @@ urls:
     description: MesADS permet aux agents préfectoraux de gérer les instructeurs ADS et les ADS aéroports de leur département.
 
   app.reglementation:
-    title: "Réglementation taxi - MesADS"
+    title: "MesADS: la réglementation taxi"
     description: Les questions fréquemment posées sur la réglementation des taxis et des véhicules relais.
 
   app.suivi:
@@ -47,18 +47,14 @@ urls:
     description: "Consultez nos mentions légales."
 
   app.cgu:
-    title: "CGU MesADS - Conditions générales d'utilisation"
+    title: "MesADS - Conditions générales d'utilisation"
     description: "Consultez nos conditions générales d'utilisation"
-
-  pre_register:
-    title: "MesADS - Choisissez votre profil"
-    description: "Choix du profil"
 
   ###
   ### Registration
   ###
   override.login:
-    title: "Connexion à MesADS"
+    title: "Connexion à l'espace MesADS"
     description: "Connectez-vous pour gérer les ADS de votre administration ou enregistrer vos véhicules relais sur MesADS."
 
   django_registration_disallowed:
@@ -106,14 +102,20 @@ urls:
   ###
   ### Registre ADS
   ###
+  app.ads-register.index:
+    # Redirection, no template to render
+    missing: true
 
   app.dashboards.list:
     title: "Dashboard MesADS"
     description: "Dashboards pour suivre le déploiement de MesADS."
 
-  app.ads-manager.demande_gestion_ads:
-    title: "MesADS - Demande de gestion d'une administration"
-    description: "MesADS - Demande de gestion d'une administration"
+  app.ads-manager-admin.index:
+    missing: true # Redirect view
+
+  app.ads-manager-admin.details:
+    title: "Votre accès préfecture"
+    description: "Accédez aux pages vous permettant de gérer votre accès préfecture."
 
   app.ads-manager-admin.requests:
     title: "Gestion et contrôle des accès des instructeurs ADS"
@@ -123,12 +125,16 @@ urls:
     title: "Les dernières modifications des ADS de votre préfecture"
     description: "Liste des dernières modifications apportées aux ADS de votre préfecture."
 
+  app.ads-manager.index:
+    title: "Accès et gestion des administrations au registre ADS"
+    description: "Configurez votre accès au registre ADS et consultez les gestionnaires ADS déjà configurées."
+
   app.ads-manager.detail:
-    title: "ADS gérées par votre administration"
+    title: "Vue d'ensemble des ADS gérées par {{ ads_manager.content_object.display_fulltext }}"
     description: "Consultez et gérez l'ensemble des ADS attribuées par {{ ads_manager.content_object.display_fulltext }}."
 
   app.ads-manager.decree.detail:
-    title: "Arrêtés délimitant le nombre d'ADS"
+    title: "Création d'arrêté municipal pour les ADS de {{ ads_manager.content_object.display_fulltext }}"
     description: "Facilitez la génération de l'arrêté municipal définissant le nombre d'ADS pour {{ ads_manager.content_object.display_fulltext }}."
 
   app.ads.create:
@@ -150,57 +156,12 @@ urls:
     missing: true # Not HTML view
 
   app.ads.history:
-    title: "Historique des modifications de l'ADS {{ ads.number }}"
+    title: "Revue de l'historique de l'ADS {{ ads.number }} chez {{ ads_manager.content_object.display_fulltext }}"
     description: "Consultez le journal des modifications apportées à l'ADS {{ ads.number }} de {{ ads_manager.content_object.display_fulltext }}."
 
   app.ads.decree:
     title: "Édition d'arrêté pour l'ADS {{ ads.number }} de {{ ads.ads_manager.content_object.display_fulltext }}"
     description: "Générez et personnalisez l'arrêté municipal pour l'ADS {{ ads.number }} de {{ ads.ads_manager.content_object.display_fulltext }}."
-
-
-  app.ads-manager-admin.administrations:
-    title: "MesADS - {{ads_manager_administrator.prefecture.display_text}}"
-    description: "Espace de la {{ads_manager_administrator.prefecture.display_text}}"
-
-  app.ads-manager-admin.detail-administration:
-    title: "MesADS - Registre des ADS de {{ads_manager.content_object.display_fulltext }}"
-    description: "Registre des ADS de {{ads_manager.content_object.display_fulltext }}"
-
-  app.ads-manager-admin.administration-arretes:
-   title: "MesADS - Arrêtés délimitant le nombre d'ADS"
-   description: "MesADS - Arrêtés délimitant le nombre d'ADS de {{ads_manager.content_object.display_fulltext }}"
-
-  app.ads-manager-admin.ads-create:
-   title: "MesADS - Enregistrement d'une ADS"
-   description: "MesADS - Enregistrement d'une ADS"
-
-  app.ads-manager-admin.ads-detail:
-   title: "MesADS - Modification ADS #{{ads.number}} - {{ads_manager.content_object.display_fulltext }}"
-   description: "MesADS - Détail d'une ADS"
-
-  app.ads-manager-admin.ads-decree:
-   title: "Édition d'arrêté pour l'ADS {{ ads.number }} de {{ ads.ads_manager.content_object.display_fulltext }}"
-   description: "MesADS - Arrêtés d'une ADS"
-  
-  app.ads-manager-admin.ads-history:
-   title: "Historique des modifications de l'ADS {{ ads.number }}"
-   description: "MesADS - Historique d'une ADS"
-
-  app.ads-manager-admin.ads-delete:
-   title: "MesADS - Suppression d'une ADS"
-   description: "MesADS - Suppression d'une ADS"
-
-  app.ads-manager-admin.demande_gestion_ads:
-    title: "MesADS - Demande de gestion d'une administration"
-    description: "MesADS - Demande de gestion d'une administration"
-
-  app.ads-manager-admin.vehicules_relais:
-    title: "MesADS - Véhicules relais de {{ads_manager.content_object.display_fulltext }}"
-    description: "Véhicules relais de {{ads_manager.content_object.display_fulltext }}"
-
-  app.ads-manager-admin.vehicule_relais_detail:
-    title: "MesADS - Détail d'un véhicule relais"
-    description: "MesADS - Détail d'un véhicule relais"
 
   ###
   ### Vehicules relais

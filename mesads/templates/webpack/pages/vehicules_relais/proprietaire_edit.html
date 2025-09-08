@@ -1,17 +1,14 @@
-{% extends "base_container.html" %}
-{% block body-content %}
+{% extends "../../base-sidemenu.html" %}
+{% block sidemenu %}
+  {% include "./sidemenu.html" %}
+{% endblock sidemenu %}
+{% block main %}
   <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
     <button class="fr-breadcrumb__button"
             aria-expanded="false"
             aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
-        <li>
-          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
-        </li>
-        <li>
-          <a class="fr-breadcrumb__link" href="{% url 'vehicules-relais.index' %}">Répertoires des taxis relais</a>
-        </li>
         <li>
           <a class="fr-breadcrumb__link"
              href="{% url 'vehicules-relais.proprietaire' %}">Espace propriétaire</a>
@@ -26,7 +23,7 @@
           </li>
         {% else %}
           <li>
-            <a class="fr-breadcrumb__link" aria-current="page">Créer un espace propriétaire</a>
+            <a class="fr-breadcrumb__link" aria-current="page">Créer un espace propriétaire de véhicules</a>
           </li>
         {% endif %}
       </ol>
@@ -35,7 +32,7 @@
   {% if object %}
     <h1>Modifier votre espace propriétaire</h1>
     <p class="fr-text--lead">
-      Vous pouvez mettre vos coordonnées à jour ici. <strong>Ces informations sont publiques et seront accessibles dans les répertoires des taxis relais.</strong>
+      Vous pouvez mettre vos coordonnées à jour ici. <strong>Ces informations sont publiques et seront accessibles dans les registres des taxis relais.</strong>
     </p>
   {% else %}
     <h1>Créer un espace propriétaire de véhicules</h1>
@@ -74,4 +71,4 @@
       </button>
     </div>
   </form>
-{% endblock body-content %}
+{% endblock main %}

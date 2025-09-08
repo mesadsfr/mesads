@@ -20,14 +20,16 @@ class ADSExporter:
             ADS.objects.select_related(
                 "ads_manager__administrator__prefecture",
             )
-            .prefetch_related("ads_manager__content_object", "adslegalfile_set")
+            .prefetch_related(
+                "ads_manager__content_object",
+                'adslegalfile_set'
+            )
             .annotate(
                 ads_users_status=ArrayAgg("adsuser__status"),
                 ads_users_names=ArrayAgg("adsuser__name"),
                 ads_users_sirets=ArrayAgg("adsuser__siret"),
                 ads_users_licenses=ArrayAgg("adsuser__license_number"),
             )
-            .order_by("ads_manager")
         )
 
     def display_bool(self, value):
@@ -76,7 +78,7 @@ class ADSExporter:
             "Téléphone fixe du titulaire de l'ADS",
             "Téléphone mobile du titulaire de l'ADS",
             "Email du titulaire de l'ADS",
-            "Nombre de documents enregistrés (arrêtés municipaux, …)",
+            "Nombre de documents enregistrés (arrêtés municipaux, …)"
         )
         # If one of the ADS in the list has, let's say, 4 drivers, driver_headers
         # will be appended 4 times to headers.

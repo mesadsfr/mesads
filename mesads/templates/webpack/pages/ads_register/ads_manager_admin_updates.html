@@ -1,5 +1,5 @@
-{% extends "base_container.html" %}
-{% block body-content %}
+{% extends "./base.html" %}
+{% block main %}
   <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
     <button class="fr-breadcrumb__button"
             aria-expanded="false"
@@ -8,15 +8,7 @@
       <ol class="fr-breadcrumb__list">
         <li>
           <a class="fr-breadcrumb__link"
-            href="{% url 'app.homepage' %}">
-            Accueil - {{ ads_manager_administrator.prefecture.display_text|capfirst }}
-          </a>
-        </li>
-        <li>
-          <a class="fr-breadcrumb__link"
-            href="{% url 'app.ads-manager-admin.administrations' prefecture_id=ads_manager_administrator.prefecture.id %}">
-            Vos administrations en gestion et accès Préfecture
-          </a>
+             href="{% url 'app.ads-manager-admin.details' prefecture_id=ads_manager_administrator.prefecture.id %}">{{ ads_manager_administrator.prefecture.display_text|capfirst }}</a>
         </li>
         <li>
           <a class="fr-breadcrumb__link" aria-current="page">Modifications apportées par les gestionnaires de la préfecture</a>
@@ -48,7 +40,7 @@
                 {% for update in updates %}
                   <tr>
                     <td>
-                      <a href="{% url 'app.ads-manager-admin.ads-history' prefecture_id=ads_manager_administrator.prefecture.id manager_id=update.ads_manager.id ads_id=update.ads.id %}">
+                      <a href="{% url 'app.ads.history' manager_id=update.ads_manager.id ads_id=update.ads.id %}">
                         {% comment %} Before, dates were stored as DateField instead of DateTimeField. Avoid displaying the time if it's 00:00. {% endcomment %}
                         {% if update.ads.last_update.hour == 0 and update.ads.last_update.minute == 0 %}
                           {{ update.ads.last_update|date:"d/m/Y" }}
@@ -75,4 +67,4 @@
       </div>
     </div>
   </div>
-{% endblock body-content %}
+{% endblock main %}

@@ -26,7 +26,7 @@
               <p class="fr-header__service-title">Mes ADS</p>
             </a>
             <p class="fr-header__service-tagline">
-              La base Française des autorisations de stationnement Taxi
+              🚖 La base Française des autorisations de stationnement Taxi <span class="inline-block w-fit -scale-x-100">🚕</span>
             </p>
           </div>
         </div>
@@ -50,13 +50,7 @@
                 {% endif %}
               {% else %}
                 <li>
-                  <a
-                    class="fr-btn fr-btn--tertiary fr-btn--sm fr-icon-account-circle-fill"
-                    href="{% url 'login' %}"
-                  >
-                    Se connecter
-                    <span class="fr-icon-arrow-down-s-line" aria-hidden="true"></span>
-                  </a>
+                  <a class="fr-link fr-icon-close-circle-line" href="{% url 'login' %}">Connexion / Création de compte</a>
                 </li>
               {% endif %}
             </ul>
@@ -75,28 +69,27 @@
             id="navigation-832"
             role="navigation"
             aria-label="Menu principal">
-
-        {% if administrateur_ads %}
-        {% include "header_prefecture.html" %}
-        {% elif manager_ads %}
-        {% include "header_gestionnaire.html" %}
-        {% elif proprietaire_vehicule_relais %}
-        {% include "header_proprietaire.html" %}
-        {% else %}
         <ul class="fr-nav__list">
+          <li class="fr-nav__item">
+            {% url 'app.ads-manager.index' as ads_manager_index_url %}
+            {% is_subpath request.path ads_manager_index_url 1 as is_ads_register %}
+            <a class="fr-nav__link"
+                href="{{ ads_manager_index_url }}"
+                {% if is_ads_register %}aria-current="page"{% endif %}>📄 Registre des ADS</a>
+          </li>
           <li class="fr-nav__item">
             {% url 'vehicules-relais.index' as vehicules_relais_index_url %}
             {% is_subpath request.path vehicules_relais_index_url 1 as is_vehicules_relais %}
             <a class="fr-nav__link"
                 href="{{ vehicules_relais_index_url }}"
-                {% if is_vehicules_relais %}aria-current="page"{% endif %}>Répertoires des taxis Relais</a>
+                {% if is_vehicules_relais %}aria-current="page"{% endif %}>🚖 Répertoires des Véhicules Relais</a>
           </li>
           <li class="fr-nav__item">
             {% url 'app.reglementation' as reglementation_url %}
             {% is_subpath request.path reglementation_url 1 as is_reglementation %}
             <a class="fr-nav__link"
                 href="{{ reglementation_url }}"
-                {% if is_reglementation %}aria-current="page"{% endif %}>Réglementation taxi</a>
+                {% if is_reglementation %}aria-current="page"{% endif %}>📚 Réglementation taxi</a>
           </li>
           <li class="fr-nav__item">
             <button
@@ -135,7 +128,6 @@
             </div>
           </li>
         </ul>
-        {% endif %}
       </nav>
     </div>
   </div>
