@@ -1,7 +1,6 @@
 import json
-import math
 
-from django.db.models import OuterRef, Subquery, Count, IntegerField, BooleanField, Q
+from django.db.models import Count
 from django.db.models.functions import TruncMonth
 from django.views.generic import TemplateView
 
@@ -10,8 +9,6 @@ from ..models import (
     ADS,
     ADSManager,
     ADSManagerRequest,
-    ADSUpdateLog,
-    ADSManagerAdministrator,
 )
 from mesads.api.views import get_stats_by_prefecture
 from mesads.fradm.models import Prefecture
@@ -33,110 +30,6 @@ class HTTP500View(TemplateView):
 
 class HomepageView(TemplateView):
     template_name = "pages/homepage.html"
-
-    def get_statistiques(self):
-        ads_administrators = ADSManagerAdministrator.objects.select_related(
-            "prefecture"
-        ).annotate(
-            ads_count=Count(
-                "adsmanager__ads",
-                filter=Q(adsmanager__ads__deleted_at__isnull=True),
-                distinct=True,
-            )
-        )
-        stats = {
-            "prefecture_taux_enregistrement": 0,
-            "taux_enregistrement": 0,
-            "total_ads": 0,
-        }
-        total_expected = 0
-
-        for ads_administrator in ads_administrators:
-            if ads_administrator.expected_ads_count:
-                taux = (
-                    ads_administrator.ads_count / ads_administrator.expected_ads_count
-                )
-                if taux >= 0.7:
-                    stats["prefecture_taux_enregistrement"] += 1
-                total_expected += ads_administrator.expected_ads_count
-            stats["total_ads"] += ads_administrator.ads_count
-
-        stats["taux_enregistrement"] = (
-            math.floor((stats["total_ads"] / total_expected) * 100)
-            if total_expected
-            else 0
-        )
-
-        return stats
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context["title"] = "Accueil - découvrez MesADS"
-        context["stats"] = self.get_statistiques()
-
-        if self.request.user.is_authenticated:
-            ads_manager_administrators = (
-                self.request.user.adsmanageradministrator_set.all()
-            )
-            ads_manager_requests = self.request.user.adsmanagerrequest_set.all()
-            proprietaire_vehicule_relais = self.request.user.proprietaire_set.all()
-            if len(ads_manager_administrators):
-                context["administrateur_ads"] = True
-                context["ads_manager_administrator"] = (
-                    ads_manager_administrators.first()
-                )
-
-                context["title"] = (
-                    f"MesADS - Accueil {context['ads_manager_administrator'].prefecture.display_text}"
-                )
-            elif len(ads_manager_requests):
-                context["manager_ads"] = True
-                context["title"] = "MesADS - Accueil gestionnaire"
-                # All ADS for the manager
-                ads_count_subquery = (
-                    ADS.objects.filter(
-                        ads_manager=OuterRef("ads_manager_id"),
-                        deleted_at__isnull=True,
-                    )
-                    .values("ads_manager")
-                    .annotate(count=Count("*"))
-                    .values("count")[:1]
-                )
-
-                # For each ADS, get its latest is_complete flag
-                latest_complete = Subquery(
-                    ADSUpdateLog.objects.filter(ads=OuterRef("pk"))
-                    .order_by("-update_at")
-                    .values("is_complete")[:1],
-                    output_field=BooleanField(),
-                )
-
-                # 2) Count how many ADS under this manager have latest_complete=True
-                complete_updates_subquery_per_ads_manager = Subquery(
-                    ADS.objects.filter(ads_manager=OuterRef("ads_manager_id"))
-                    .annotate(latest_complete=latest_complete)
-                    .filter(latest_complete=True)
-                    .values("ads_manager")
-                    .annotate(count=Count("pk"))
-                    .values("count")[:1],
-                    output_field=IntegerField(),
-                )
-
-                context["requetes_gestionnaires"] = ADSManagerRequest.objects.filter(
-                    user=self.request.user
-                ).annotate(
-                    ads_count=Subquery(ads_count_subquery, output_field=IntegerField()),
-                    complete_updates_count=Subquery(
-                        complete_updates_subquery_per_ads_manager,
-                        output_field=IntegerField(),
-                    ),
-                )
-            elif len(proprietaire_vehicule_relais):
-                context["title"] = "MesADS - Accueil propriétaire de taxis relais"
-                context["proprietaire_vehicule_relais"] = True
-
-        return context
 
 
 class FAQView(TemplateView):

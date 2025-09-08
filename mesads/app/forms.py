@@ -450,7 +450,3 @@ class ADSManagerAutocompleteForm(forms.Form):
         label="Gestionnaires ADS",
         required=False,
     )
-
-
-class SearchVehiculeForm(forms.Form):
-    immatriculation = forms.CharField(required=False)

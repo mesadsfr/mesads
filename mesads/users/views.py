@@ -106,10 +106,4 @@ class OTPLoginView(LoginView):
 
         # If no OTP is required, proceed to log in immediately.
         auth_login(self.request, user)
-
-        remember = form.cleaned_data.get("remember_me")
-        if not remember:
-            self.request.session.set_expiry(0)
-            self.request.session.modified = True
-
         return HttpResponseRedirect(self.get_success_url())

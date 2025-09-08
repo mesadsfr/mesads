@@ -4,7 +4,7 @@ from io import BytesIO
 from django.contrib import messages
 from django.contrib.staticfiles.finders import find
 from django.db.models.functions import Cast, Replace
-from django.db.models import CharField, F, IntegerField, Value
+from django.db.models import CharField, F, Func, IntegerField, Value
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -36,7 +36,14 @@ from .forms import (
     VehiculeCreateForm,
     VehiculeForm,
 )
-from mesads.utils_psql import SplitPart
+
+
+class SplitPart(Func):
+    """The SPLIT_PART PostgreSQL function is not available in Django. Create a
+    custom function to use it."""
+
+    function = "SPLIT_PART"
+    output_field = IntegerField()
 
 
 class IndexView(RedirectView):
@@ -80,22 +87,22 @@ class SearchView(ListView):
         return qs
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         form = self.get_form()
 
-        context["form"] = form
+        ctx["form"] = form
 
         # If the form is valid and at least one field is not empty
         should_display_search_results = False
         if form.is_valid() and next((v for v in form.cleaned_data.values() if v), None):
             should_display_search_results = True
-        context["should_display_search_results"] = should_display_search_results
+        ctx["should_display_search_results"] = should_display_search_results
 
-        context["is_proprietaire"] = (
+        ctx["is_proprietaire"] = (
             self.request.user.is_authenticated
             and Proprietaire.objects.filter(users__in=[self.request.user]).exists()
         )
-        return context
+        return ctx
 
 
 class VehiculeView(TemplateView):

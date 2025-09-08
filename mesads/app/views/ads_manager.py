@@ -19,7 +19,6 @@ from django.db.models.functions import Replace, Now
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import ProcessFormView
 from django.views.generic.list import ListView
-from django.urls import reverse
 
 
 from dal import autocomplete
@@ -36,10 +35,6 @@ class ADSManagerView(ListView, ProcessFormView):
     template_name = "pages/ads_register/ads_manager.html"
     model = ADS
     paginate_by = 50
-
-    def dispatch(self, request, *args, **kwargs):
-        self.kwargs = kwargs
-        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.search_form = ADSSearchForm(request.GET)
@@ -127,54 +122,24 @@ class ADSManagerView(ListView, ProcessFormView):
         )
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["search_form"] = self.search_form
+        ctx = super().get_context_data(**kwargs)
+        ctx["search_form"] = self.search_form
 
         # search_defined is a boolean, set to True of any of the search form
         # parameter is defined.
-        context["search_defined"] = any(
+        ctx["search_defined"] = any(
             (v is not None and v != "" for v in self.search_form.cleaned_data.values())
         )
 
-        context["edit_form"] = self.get_form()
-        context["ads_manager"] = context["edit_form"].instance
-
-        administrator = self.kwargs.get("ads_manager_administrator")
-        context["ads_manager_administrator"] = administrator
-
-        ads_manager = context["ads_manager"]
-        context["arretes_url"] = (
-            reverse(
-                "app.ads-manager-admin.administration-arretes",
-                kwargs={
-                    "prefecture_id": administrator.prefecture.id,
-                    "manager_id": ads_manager.id,
-                },
-            )
-            if administrator
-            else reverse(
-                "app.ads-manager.decree.detail", kwargs={"manager_id": ads_manager.id}
-            )
-        )
-        context["creation_ads_url"] = (
-            reverse(
-                "app.ads-manager-admin.ads-create",
-                kwargs={
-                    "prefecture_id": administrator.prefecture.id,
-                    "manager_id": ads_manager.id,
-                },
-            )
-            if administrator
-            else reverse("app.ads.create", kwargs={"manager_id": ads_manager.id})
-        )
-
-        return context
+        ctx["edit_form"] = self.get_form()
+        ctx["ads_manager"] = ctx["edit_form"].instance
+        return ctx
 
 
-def ads_manager_decree_view(request, manager_id, **kwargs):
+def ads_manager_decree_view(request, manager_id):
     """Decree limiting the number of ADS for an ADSManager."""
     ads_manager = get_object_or_404(ADSManager, id=manager_id)
-    administrator = kwargs.get("ads_manager_administrator")
+
     if request.method == "POST":
         formset = ADSManagerDecreeFormSet(
             request.POST, request.FILES, instance=ads_manager
@@ -182,12 +147,6 @@ def ads_manager_decree_view(request, manager_id, **kwargs):
         if formset.is_valid():
             formset.save()
             messages.success(request, "Les modifications ont été enregistrées.")
-            if administrator:
-                return redirect(
-                    "app.ads-manager-admin.administration-arretes",
-                    prefecture_id=administrator.prefecture.id,
-                    manager_id=manager_id,
-                )
             return redirect("app.ads-manager.decree.detail", manager_id=manager_id)
     else:
         formset = ADSManagerDecreeFormSet(instance=ads_manager)
@@ -197,7 +156,6 @@ def ads_manager_decree_view(request, manager_id, **kwargs):
         "pages/ads_register/ads_manager_decree.html",
         context={
             "ads_manager": ads_manager,
-            "ads_manager_administrator": administrator,
             "formset": formset,
         },
     )

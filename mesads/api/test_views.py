@@ -5,7 +5,7 @@ from django.utils import timezone
 
 
 from mesads.app.models import ADS, ADSUpdateFile, ADSUpdateLog
-from mesads.unittest import ClientTestCase
+from mesads.app.unittest import ClientTestCase
 
 
 class TestADSUpdatesViewSet(ClientTestCase):

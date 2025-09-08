@@ -1,5 +1,5 @@
-{% extends "base_container.html" %}
-{% block body-content %}
+{% extends "./base.html" %}
+{% block main %}
   <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
     <button class="fr-breadcrumb__button"
             aria-expanded="false"
@@ -8,141 +8,117 @@
       <ol class="fr-breadcrumb__list">
         <li>
           <a class="fr-breadcrumb__link"
-             href="{% url 'app.homepage' %}">
-             Accueil - {{ ads_manager_administrator.prefecture.display_text|capfirst }}
-          </a>
+             href="{% url 'app.ads-manager-admin.details' prefecture_id=ads_manager_administrator.prefecture.id %}">{{ ads_manager_administrator.prefecture.display_text|capfirst }}</a>
         </li>
         <li>
-          <a class="fr-breadcrumb__link" aria-current="page">Demandes d'accès gestionnaire </a>
+          <a class="fr-breadcrumb__link" aria-current="page">Modifications apportées par les gestionnaires de la préfecture</a>
         </li>
       </ol>
     </div>
   </nav>
+  <h1>Demandes d'accès</h1>
+  <p class="fr-text--lead">
+    Vous trouverez ci-dessous les demandes d'accès des administrations souhaitant gérer leurs ADS.
+  </p>
+  <div class="fr-alert fr-alert--warning">
+    <h3 class="fr-alert__title">Attention : vérifiez l'origine des demandes</h3>
+    <p>
+      Avant d'accepter une demande, assurez-vous que la demande provient bien d'un agent travaillant pour une administration dépendant de votre préfecture.
+    </p>
+  </div>
+  <p class="fr-mt-3w">
+    Si vous avez la moindre question, ou si vous souhaitez révoquer un accès, contactez notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+  </p>
+  <div class="fr-grid-row">
+    <div class="fr-table fr-table--no-caption fr-table--md fr-table--no-scroll">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table>
+              <caption>Demandes pour la {{ ads_manager_administrator.prefecture.display_text }}</caption>
+              <thead>
+                <tr>
+                  <th>Utilisateur</th>
+                  <th>
+                    {% if sort == "name" %}
+                      Administration ▲
+                    {% else %}
+                      <a href="?sort=name">Administration ▶</a>
+                    {% endif %}
+                  </th>
+                  <th>
+                    {% if sort == "name" %}
+                      <a href="?">📅 Date de
+                        <br />
+                      la demande ▶</a>
+                    {% else %}
+                      📅 Date de la demande ▲
+                    {% endif %}
+                  </th>
+                  <th>Dernière connexion de l'utilisateur</th>
+                  <th>🔎 Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ads_manager_request in ads_manager_requests %}
+                  <tr class="table-row-{% if ads_manager_request.accepted is True %}success{% elif ads_manager_request.accepted is False %}failure{% else %}unknown{% endif %}">
+                    <td {% if ads_manager_request.accepted is False %}class="line-through"{% endif %}>
+                      {{ ads_manager_request.user.email }}
+                    </td>
+                    <td>{{ ads_manager_request.ads_manager.content_object.display_text|capfirst }}</td>
+                    <td>{{ ads_manager_request.created_at|date:"d/m/Y" }}</td>
+                    <td>{{ ads_manager_request.user.last_login|date:"d/m/Y" }}</td>
+                    <td>
+                      {% comment %}
+                    Display the button to accept/deny when the request is pending.
 
-  <div class="fr-grid-row fr-grid-row--gutters">
-    <div class="fr-col-12 fr-col-lg-8">
-      <h1>
-        {{ ads_manager_administrator.prefecture.display_text|capfirst }} : gérer les accès des collectivités et EPCI
-      </h1>
-      <p class="fr-text--lead">
-        Vous trouverez ci-dessous les demandes d'accès des administrations souhaitant gérer leurs ADS.
-      </p>
-      <div class="fr-alert fr-alert--warning">
-        <h3 class="fr-alert__title">Attention : vérifiez l'origine des demandes</h3>
-        <p>
-          Avant d’accepter une demande, assurez-vous qu’elle provient bien d’un agent travaillant pour une administration dépendant de votre préfecture. Vous pouvez accepter plusieurs demandes d'accès pour une même commune (ou EPCI) gérée par plusieurs gestionnaires.
-        </p>
-      </div>
-      <p class="fr-mt-3w">
-        Pour toute question concernant les accès, contactez notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
-      </p>
-      <div class="fr-grid-row">
-        <div class="fr-table fr-table--no-caption fr-table--md fr-table--no-scroll">
-          <div class="fr-table__wrapper">
-            <div class="fr-table__container">
-              <div class="fr-table__content">
-                <table>
-                  <caption>Demandes pour la {{ ads_manager_administrator.prefecture.display_text }}</caption>
-                  <thead>
-                    <tr>
-                      <th>Utilisateur</th>
-                      <th>
-                        {% if sort == "name" %}
-                          Administration ▲
-                        {% else %}
-                          <a href="?sort=name">Administration ▶</a>
-                        {% endif %}
-                      </th>
-                      <th>
-                        {% if sort == "name" %}
-                          <a href="?">Date de la demande ▶</a>
-                        {% else %}
-                          Date de la demande ▲
-                        {% endif %}
-                      </th>
-                      <th>Dernière connexion de l'utilisateur</th>
-                      <th>Statut</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for ads_manager_request in ads_manager_requests %}
-                      <tr class="table-row-{% if ads_manager_request.accepted is True %}success{% elif ads_manager_request.accepted is False %}failure{% else %}unknown{% endif %}">
-                        <td {% if ads_manager_request.accepted is False %}class="line-through"{% endif %}>
-                          {{ ads_manager_request.user.email }}
-                        </td>
-                        <td>{{ ads_manager_request.ads_manager.content_object.display_text|capfirst }}</td>
-                        <td>{{ ads_manager_request.created_at|date:"d/m/Y" }}</td>
-                        <td>{{ ads_manager_request.user.last_login|date:"d/m/Y" }}</td>
-                        <td>
-                          {% comment %}
-                        Display the button to accept/deny when the request is pending.
-
-                        In the past, we used to also display the buttons when the request
-                        was accepted or denied. It was error prone. Instead, we want the
-                        users to contact our team to revoke an access, or grant when the
-                        request has been mistakenly denied.
-                          {% endcomment %}
-                          {% if ads_manager_request.accepted is None %}
-                            <div class="fr-grid-row fr-grid-row--gutters">
-                              <div class="fr-p-1w">
-                                <form method="post">
-                                  {% csrf_token %}
-                                  <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
-                                  <input type="hidden" name="action" value="accept" />
-                                  <button title="Accepter" type="submit" class="fr-btn fr-btn--tertiary fr-btn--sm">
-                                    <span aria-hidden="true" class="fr-icon-check-line"></span>
-                                    <span class="fr-sr-only">Accepter</span>
-                                  </button>
-                                </form>
-                              </div>
-                              <div class="fr-p-1w">
-                                <form method="post">
-                                  {% csrf_token %}
-                                  <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
-                                  <input type="hidden" name="action" value="deny" />
-                                  <button title="Refuser" type="submit" class="fr-btn fr-btn--tertiary fr-btn--sm">
-                                    <span aria-hidden="true" class="fr-icon-close-line"></span>
-                                    <span class="fr-sr-only">Refuser</span>
-                                  </button>
-                                </form>
-                              </div>
-                            </div>
-                          {% else %}
-                            <div>
-                              Demande
-                              {% if ads_manager_request.accepted %}
-                                <strong>acceptée</strong>
-                              {% else %}
-                                <strong>refusée</strong>
-                              {% endif %}
-                              {% if ads_manager_request.last_update_at %}le {{ ads_manager_request.last_update_at|date:"d/m/Y" }}{% endif %}
-                            {% endif %}
+                    In the past, we used to also display the buttons when the request
+                    was accepted or denied. It was error prone. Instead, we want the
+                    users to contact our team to revoke an access, or grant when the
+                    request has been mistakenly denied.
+                      {% endcomment %}
+                      {% if ads_manager_request.accepted is None %}
+                        <div class="fr-grid-row fr-grid-row--gutters">
+                          <div class="fr-p-1w">
+                            <form method="post">
+                              {% csrf_token %}
+                              <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
+                              <input type="hidden" name="action" value="accept" />
+                              <button type="submit" class="fr-btn fr-btn--sm">Accepter</button>
+                            </form>
                           </div>
-                        </td>
-                      </tr>
-                    {% empty %}
-                      <tr>
-                        <td colspan="4">Aucune demande en cours</td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                          <div class="fr-p-1w">
+                            <form method="post">
+                              {% csrf_token %}
+                              <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
+                              <input type="hidden" name="action" value="deny" />
+                              <button type="submit" class="fr-btn fr-btn--sm">Refuser</button>
+                            </form>
+                          </div>
+                        </div>
+                      {% else %}
+                        <div>
+                          Demande
+                          {% if ads_manager_request.accepted %}
+                            <strong>acceptée</strong>
+                          {% else %}
+                            <strong>refusée</strong>
+                          {% endif %}
+                          {% if ads_manager_request.last_update_at %}le {{ ads_manager_request.last_update_at|date:"d/m/Y" }}{% endif %}
+                        {% endif %}
+                      </div>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="4">Aucune demande en cours</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
-    
-    <div class="fr-col-12 fr-col-lg-4">
-      <img 
-        class="fr-ml-6v fr-mt-6v"
-        width="60%"
-        height="60%"
-        alt=""
-        src="../../images/logo_prefecture.png"
-      />
-    </div>
   </div>
-  
-{% endblock body-content %}
+{% endblock main %}
