@@ -1,260 +1,320 @@
-{% extends "./base.html" %}
+{% extends "base_container.html" %}
 {% load show_pagination_links %}
-{% block main %}
+{% block body-content %}
+
   <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-    <button class="fr-breadcrumb__button"
-            aria-expanded="false"
-            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d'Ariane
+    </button>
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
-        <li>
-          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
-        </li>
-        <li>
-          <a class="fr-breadcrumb__link" aria-current="page">{{ ads_manager.content_object.display_text|capfirst }}</a>
-        </li>
+        {% if ads_manager_administrator %}
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.homepage' %}">
+              Accueil - {{ ads_manager_administrator.prefecture.display_text|capfirst }}
+            </a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager-admin.administrations' prefecture_id=ads_manager_administrator.prefecture.id %}">
+              Vos administrations en gestion et accès Préfecture
+            </a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link" aria-current="page">{{ ads_manager.content_object.display_text|capfirst }}</a>
+          </li>
+        {% else %}
+          <li>
+            <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link" aria-current="page">{{ ads_manager.content_object.display_text|capfirst }}</a>
+          </li>
+        {% endif %}
       </ol>
     </div>
   </nav>
-  <h1>ADS de {{ ads_manager.content_object.display_fulltext }}</h1>
-  <p class="fr-text--lead">Gérez ici les autorisations de stationnement (ADS) de votre administration.</p>
-  <p>
-    📚&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-   href="{% url 'app.reglementation' %}">Réglementation taxi</a>
-  </p>
+
+  <h1>Gérer le registre des ADS</h1>
+  <p class="fr-text--lead">Vous êtes gestionnaire des ADS de la {{ ads_manager.content_object.display_text }}.</p>
+
   {% if not ads_manager.is_locked and not ads_manager.no_ads_declared %}
     <p>
-      📜️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-   href="{% url 'app.ads-manager.decree.detail' manager_id=ads_manager.id %}">Arrêté délimitant le nombre d'ADS
-      {% if ads_manager.adsmanagerdecree_set.count %}
-        <strong>({{ ads_manager.adsmanagerdecree_set.count }}
-          {% if ads_manager.adsmanagerdecree_set.count > 1 %}
-            documents enregistrés
-          {% else %}
-            document enregistré
-          {% endif %}
-        )</strong>
-      {% endif %}
-    </a>
-  </p>
-  <p>
-    ✍️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-   href="{% url 'app.ads.create' manager_id=ads_manager.id %}">Enregistrer une ADS</a>
-  </p>
-  <p>
-    📗️&nbsp;<a class="fr-link fr-icon-arrow-down-line fr-link--icon-right"
-   href="{% url 'app.exports.ads-manager' manager_id=ads_manager.id %}">Télécharger toutes les ADS au format excel</a>
-  </p>
-{% endif %}
-{% comment %}
-  Display the list of ADS if the list is not empty, or if the user has searched for something.
-{% endcomment %}
-{% if ads_list.count or search_defined %}
-  <div x-data="{ displayFilters: new URLSearchParams(window.location.search).get('q') || new URLSearchParams(window.location.search).get('accepted_cpam')}">
-    <p id="ADSFiltersButton">
-      <button x-show="! displayFilters"
-              x-on:click="displayFilters = true"
-              class="fr-link fr-icon-arrow-right-line fr-link--icon-right">🔎&nbsp;Rechercher une ADS</button>
-      <button x-show="displayFilters"
-              x-on:click="displayFilters = false"
-              class="fr-link fr-icon-arrow-down-line fr-link--icon-right">🔎&nbsp;Rechercher une ADS</button>
+      <a
+        class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+        href="{{arretes_url}}"
+      >
+        <span aria-hidden="true" class="fr-icon-question-line"></span>
+        Arrêté délimitant le nombre d'ADS
+        {% if ads_manager.adsmanagerdecree_set.count %}
+          
+          <strong>({{ ads_manager.adsmanagerdecree_set.count }}
+            {% if ads_manager.adsmanagerdecree_set.count > 1 %}
+              documents enregistrés
+            {% else %}
+              document enregistré
+            {% endif %}
+          )</strong>
+        {% endif %}
+      </a>
     </p>
-    <div class="fr-notice fr-notice--info">
-      <div class="fr-container">
-        <div class="fr-notice__body">
-          <p>
-            <span class="fr-notice__title">Pour toute modification sur l'ADS</span>
-            <span class="fr-notice__desc">
-              (changement de véhicule, de
-              titulaire etc) il convient de cliquer sur "consulter ou modifier" au
-              niveau de l'ADS concernée.
-            </span>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div x-show="displayFilters" id="ADSFilters" x-transition>
-      <h6>Filtrer les ADS</h6>
-      <form method="get" class="fr-mb-3w">
-        <!-- form.q -->
-        <div class="fr-col-lg-6 fr-input-group{% if search_form.q.errors %} fr-input-group--error{% endif %}">
-          <label class="fr-label" for="{{ search_form.q.id_for_label }}">
-            Rechercher par nom ou SIRET du titulaire, ou de l'exploitant, numéro de l'ADS, plaque d'immatriculation du véhicule
-            {% if ads_manager.content_type.name == 'EPCI' %}, commune…{% endif %}
-          </label>
-          <input class="fr-input{% if search_form.q.errors %} fr-input--error{% endif %}"
-                 type="text"
-                 id="{{ search_form.q.id_for_label }}"
-                 name="{{ search_form.q.html_name }}"
-                 value="{{ search_form.q.value|default:"" }}" />
-          {% for error in search_form.q.errors %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
-        </div>
-        <!-- form.accepted_cpam  -->
-        <div class="fr-col-lg-6 fr-select-group{% if search_form.accepted_cpam.errors %} fr-select-group--error{% endif %}">
-          <label class="fr-label" for="{{ search_form.accepted_cpam.id_for_label }}">
-            Lister seulement les ADS conventionnées CPAM ?
-          </label>
-          <select class="fr-select{% if search_form.accepted_cpam.errors %} fr-select--error{% endif %}"
-                  id="{{ search_form.accepted_cpam.id_for_label }}"
-                  name="{{ search_form.accepted_cpam.html_name }}">
-            {% for option in search_form.accepted_cpam %}{{ option }}{% endfor %}
-          </select>
-          {% for error in search_form.accepted_cpam.errors %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
-        </div>
-        <div class="fr-input-group">
-          <button type="submit" class="fr-btn">Filtrer</button>
-        </div>
-      </form>
-    </div>
-  </div>
-  <div class="fr-table fr-table--md fr-table--no-scroll">
-    <div class="fr-table__wrapper">
-      <div class="fr-table__container">
-        <div class="fr-table__content">
-          <table>
-            <thead>
-              <tr>
-                {% if ads_manager.content_type.name == 'EPCI' %}<th>🌆 Commune</th>{% endif %}
-                <th>ADS</th>
-                <th>Date de création</th>
-                <th>Type de l'ADS</th>
-                <th>Titulaire</th>
-                <th>Immatriculation</th>
-                <th>Dernière mise à jour</th>
-                <th class="!text-right">Consulter / Modifier</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for ads in ads_list %}
-                <tr>
-                  {% if ads_manager.content_type.name == 'EPCI' %}<td>{{ ads.epci_commune.libelle|default:"" }}</td>{% endif %}
-                  <td>
-                    <a href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}">{{ ads.number }}</a>
-                  </td>
-                  <td>{{ ads.ads_creation_date|date:"d/m/Y"|default:"" }}</td>
-                  <td>{{ ads.ads_type }}</td>
-                  <td class="max-w-[300px] overflow-ellipsis overflow-hidden">{{ ads.owner_name }}</td>
-                  <td>{{ ads.immatriculation_plate }}</td>
-                  <td>
-                    <div class="fr-text--xs !text-[var(--text-default-error)]">
-                      {% if ads.latest_update_log %}
-                        {% if ads.latest_update_log_is_outdated %}
-                          Vérification des informations nécessaire
-                        {% elif not ads.latest_update_log_is_complete %}
-                          Données incomplètes
-                        {% endif %}
-                      {% else %}
-                        Vérification des informations nécessaire
-                      {% endif %}
-                    </div>
-                    {{ ads.latest_update_log|date:"d/m/Y" }}
-                  </td>
-                  <td class="!text-right">
-                    <a class="fr-btn fr-btn--secondary fr-icon-eye-line"
-                       href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}"></a>
-                  </td>
-                </tr>
-              {% empty %}
-                <tr>
-                  <td colspan="{% if ads_manager.content_type.name == 'EPCI' %}8{% else %}7{% endif %}">Aucun résultat</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    {% show_pagination_links page_obj %}
-  </div>
-  {% comment %}No ADS registered for this ADSManager{% endcomment %}
-{% else %}
-  {% if ads_manager.is_locked %}
-    <div class="fr-alert fr-alert--info fr-mt-2w">
-      <h3 class="fr-alert__title">Aucune ADS enregistrée</h3>
-      <p>
-        Les ADS de votre administration sont importées automatiquement par notre équipe, mais aucune n'est actuellement enregistrée.
+    <p>
+      <a
+        class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+        href="{{creation_ads_url}}"
+      >
+        <span class="fr-icon-draft-line" aria-hidden="true"></span>
+        Enregistrer une ADS
+      </a>
+    </p>
+    <p>
+      <a
+        class="fr-link fr-icon-arrow-down-line fr-link--icon-right"
+        href="{% url 'app.exports.ads-manager' manager_id=ads_manager.id %}"
+      >
+        <span class="fr-icon-file-download-line" aria-hidden="true"></span>
+        Télécharger toutes les ADS au format excel
+      </a>
+    </p>
+  {% endif %}
+
+  {% comment %}
+    Display the list of ADS if the list is not empty, or if the user has searched for something.
+  {% endcomment %}
+
+  {% if ads_list.count or search_defined %}
+    <div x-data="{ displayFilters: new URLSearchParams(window.location.search).get('q') || new URLSearchParams(window.location.search).get('accepted_cpam')}">
+      <p id="ADSFiltersButton">
+        <button
+          x-show="! displayFilters"
+          x-on:click="displayFilters = true"
+          class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+        >
+          🔎&nbsp;Rechercher une ADS
+        </button>
+        <button
+          x-show="displayFilters"
+          x-on:click="displayFilters = false"
+          class="fr-link fr-icon-arrow-down-line fr-link--icon-right"
+        >
+          🔎&nbsp;Rechercher une ADS
+        </button>
       </p>
-    </div>
-  {% else %}
-    {% if ads_manager.no_ads_declared %}
-      <div class="fr-alert fr-alert--info fr-mt-2w">
-        <h3 class="fr-alert__title">Aucune ADS enregistrée</h3>
-        <p>
-          Vous avez déclaré que votre administration ne gère aucune ADS. Si il s'agit d'une erreur, ou si votre administration est dorénavant gestionnaire d'ADS, décochez la case du menu ci-dessous.
-        </p>
+
+      <div class="fr-notice fr-notice--info">
+        <div class="fr-container">
+          <div class="fr-notice__body">
+            <p>
+              <span class="fr-notice__title">Pour toute modification sur l'ADS</span>
+              <span class="fr-notice__desc">
+                (changement de véhicule, de titulaire, etc.), il convient de cliquer sur “consulter ou modifier” 
+                au niveau de l’ADS concernée pour la mettre à jour et ajouter l'arrêté modificatif. Une modification, y compris dans le cadre d'une cession, 
+                ne provoque pas la suppression de l'ADS actuelle.
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
-    {% elif ads_manager.epci_delegate %}
+
+      <div x-show="displayFilters" id="ADSFilters" x-transition>
+        <h6>Filtrer les ADS</h6>
+        <form method="get" class="fr-mb-3w">
+
+          <!-- form.q -->
+          <div class="fr-col-lg-6 fr-input-group{% if search_form.q.errors %} fr-input-group--error{% endif %}">
+            <label class="fr-label" for="{{ search_form.q.id_for_label }}">
+              Rechercher par nom ou SIRET du titulaire, ou de l'exploitant, numéro de l'ADS, plaque d'immatriculation du véhicule
+              {% if ads_manager.content_type.name == 'EPCI' %}, commune…{% endif %}
+            </label>
+            <input
+              class="fr-input{% if search_form.q.errors %} fr-input--error{% endif %}"
+              type="text"
+              id="{{ search_form.q.id_for_label }}"
+              name="{{ search_form.q.html_name }}"
+              value="{{ search_form.q.value|default:"" }}"
+            />
+
+            {% for error in search_form.q.errors %}
+              <p class="fr-error-text">{{ error }}</p>
+            {% endfor %}
+          </div>
+
+          <!-- form.accepted_cpam  -->
+          <div class="fr-col-lg-6 fr-select-group{% if search_form.accepted_cpam.errors %} fr-select-group--error{% endif %}">
+            <label class="fr-label" for="{{ search_form.accepted_cpam.id_for_label }}">
+              Lister seulement les ADS conventionnées CPAM ?
+            </label>
+            <select
+              class="fr-select{% if search_form.accepted_cpam.errors %} fr-select--error{% endif %}"
+              id="{{ search_form.accepted_cpam.id_for_label }}"
+              name="{{ search_form.accepted_cpam.html_name }}"
+            >
+              {% for option in search_form.accepted_cpam %}
+                {{ option }}
+              {% endfor %}
+            </select>
+
+            {% for error in search_form.accepted_cpam.errors %}
+              <p class="fr-error-text">{{ error }}</p>
+            {% endfor %}
+          </div>
+
+          <div class="fr-input-group">
+            <button type="submit" class="fr-btn">Filtrer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="fr-table fr-table--md fr-table--no-scroll">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table>
+              <thead>
+                <tr>
+                  {% if ads_manager.content_type.name == 'EPCI' %}<th>🌆 Commune</th>{% endif %}
+                  <th>#ADS</th>
+                  <th>Date de création</th>
+                  <th>Type d'ADS</th>
+                  <th>Titulaire</th>
+                  <th>Plaque d'immatriculation</th>
+                  <th>Dernière mise à jour</th>
+                  <th class="!text-right">Consulter / Modifier</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ads in ads_list %}
+                  <tr>
+                    {% if ads_manager.content_type.name == 'EPCI' %}<td>{{ ads.epci_commune.libelle|default:"" }}</td>{% endif %}
+                    <td>
+                      <a
+                        href="
+                          {% if ads_manager_administrator %}
+                          {% url 'app.ads-manager-admin.ads-detail' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads_manager.id ads_id=ads.id %}
+                          {% else %}
+                          {% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}
+                          {% endif %}"
+                      >
+                        #{{ ads.number }}
+                      </a>
+                    </td>
+                    <td>{{ ads.ads_creation_date|date:"d/m/Y"|default:"" }}</td>
+                    <td>{{ ads.ads_type }}</td>
+                    <td class="max-w-[300px] overflow-ellipsis overflow-hidden">{{ ads.owner_name }}</td>
+                    <td>{{ ads.immatriculation_plate }}</td>
+                    <td>
+                      <div class="fr-text--xs !text-[var(--text-default-error)]">
+                        {% if ads.latest_update_log %}
+                          {% if ads.latest_update_log_is_outdated %}
+                            Vérification des informations nécessaire
+                          {% elif not ads.latest_update_log_is_complete %}
+                            Données incomplètes
+                          {% endif %}
+                        {% else %}
+                          Vérification des informations nécessaire
+                        {% endif %}
+                      </div>
+                      {{ ads.latest_update_log|date:"d/m/Y" }}
+                    </td>
+                    <td class="!text-right">
+                      <a
+                        class="fr-btn fr-btn--secondary fr-icon-eye-line"
+                        href="
+                          {% if ads_manager_administrator %}
+                          {% url 'app.ads-manager-admin.ads-detail' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads_manager.id ads_id=ads.id %}
+                          {% else %}
+                          {% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}
+                          {% endif %}"
+                      ></a>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="{% if ads_manager.content_type.name == 'EPCI' %}8{% else %}7{% endif %}">Aucun résultat</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% show_pagination_links page_obj %}
+    </div>
+    {% comment %}No ADS registered for this ADSManager{% endcomment %}
+
+  {% else %}
+
+    {% if ads_manager.is_locked %}
       <div class="fr-alert fr-alert--info fr-mt-2w">
         <h3 class="fr-alert__title">Aucune ADS enregistrée</h3>
         <p>
-          La gestion des ADS de votre administration est déléguée à l'EPCI <strong>{{ ads_manager.epci_delegate }}</strong>
+          Les ADS de votre administration sont importées automatiquement par notre équipe, mais aucune n'est actuellement enregistrée.
         </p>
       </div>
     {% else %}
-      <div class="fr-alert fr-alert--warning fr-mt-2w">
-        <h3 class="fr-alert__title">Aucune ADS enregistrée</h3>
-        <p>Aucune ADS n'est actuellement enregistrée pour votre administration. Vous pouvez :</p>
-        <ul>
-          <li>Enregistrer une nouvelle ADS en utilisant le lien ci-dessus</li>
-          <li>
-            <strong>ou</strong> déclarer que votre administration ne gère aucune ADS avec le formulaire ci-dessous
-          </li>
-          <li>
-            <strong>ou</strong> utiliser le formulaire ci-dessous si la gestion des ADS de votre administration est déléguée à une EPCI
-          </li>
-        </ul>
-      </div>
-    {% endif %}
-    {% if form.non_field_errors %}
-      <div class="fr-input-group fr-input-group--error">
-        {% for error in form.non_field_errors %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
-      </div>
-    {% endif %}
-    <div class="fr-accordions-group fr-mt-2w">
-      <section class="fr-accordion">
-        <h3 class="fr-accordion__title">
-          <button class="fr-accordion__btn"
-                  aria-expanded="false"
-                  aria-controls="accordion-115">Votre administration ne gère aucune ADS</button>
-        </h3>
-        <div class="{% if not ads_manager.no_ads_declared %}fr-collapse {% endif %}"
-             id="accordion-115">
-          <form method="post">
-            {% csrf_token %}
-            {% include "form_fields/bool.html" with field=edit_form.no_ads_declared field_errors=edit_form.errors.no_ads_declared required=edit_form.fields.no_ads_declared.required %}
-            <div class="fr-col-3 fr-input-group fr-mt-2w">
-              <ul class="fr-btns-group">
-                <li>
-                  <button type="submit" class="fr-btn">Valider</button>
-                </li>
-              </ul>
-            </div>
-          </form>
+
+      {% if ads_manager.no_ads_declared %}
+        <div class="fr-alert fr-alert--info fr-mt-2w">
+          <h3 class="fr-alert__title">Aucune ADS enregistrée</h3>
+          <p>
+            Vous avez déclaré que votre administration ne gère aucune ADS. Si il s'agit d'une erreur, ou si votre administration est dorénavant gestionnaire d'ADS, décochez la case du menu ci-dessous.
+          </p>
         </div>
-      </section>
-      {% if not edit_form.fields.epci_delegate.disabled %}
+
+      {% elif ads_manager.epci_delegate %}
+        <div class="fr-alert fr-alert--info fr-mt-2w">
+          <h3 class="fr-alert__title">Aucune ADS enregistrée</h3>
+          <p>
+            La gestion des ADS de votre administration est déléguée à l'EPCI <strong>{{ ads_manager.epci_delegate }}</strong>
+          </p>
+        </div>
+
+      {% else %}
+        <div class="fr-alert fr-alert--warning fr-mt-2w">
+          <h3 class="fr-alert__title">Aucune ADS enregistrée</h3>
+          <p>Aucune ADS n'est actuellement enregistrée pour votre administration. Vous pouvez :</p>
+          <ul>
+            <li>Enregistrer une nouvelle ADS en utilisant le lien ci-dessus</li>
+            <li>
+              <strong>ou</strong> déclarer que votre administration ne gère aucune ADS avec le formulaire ci-dessous
+            </li>
+            <li>
+              <strong>ou</strong> utiliser le formulaire ci-dessous si la gestion des ADS de votre administration est déléguée à une EPCI
+            </li>
+          </ul>
+        </div>
+      {% endif %}
+
+      {% if form.non_field_errors %}
+        <div class="fr-input-group fr-input-group--error">
+          {% for error in form.non_field_errors %}
+            <p class="fr-error-text">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="fr-accordions-group fr-mt-2w">
         <section class="fr-accordion">
           <h3 class="fr-accordion__title">
-            <button class="fr-accordion__btn"
-                    aria-expanded="false"
-                    aria-controls="accordion-116">
-              La gestion des ADS de votre administration est déléguée à un EPCI
+            <button
+              class="fr-accordion__btn"
+              aria-expanded="false"
+              aria-controls="accordion-115"
+            >
+              Votre administration ne gère aucune ADS
             </button>
           </h3>
-          <div class="{% if not ads_manager.epci_delegate %}fr-collapse {% endif %}"
-               id="accordion-116">
+          <div class="{% if not ads_manager.no_ads_declared %}fr-collapse {% endif %}"
+              id="accordion-115">
             <form method="post">
               {% csrf_token %}
-              <div class="fr-select-group{% if edit_form.errors.epci_delegate %} fr-select-group--error{% endif %}">
-                <label class="fr-label" for="{{ edit_form.epci_delegate.id_for_label }}">
-                  {{ edit_form.epci_delegate.label }}
-                  {% if edit_form.epci_delegate.help_text %}
-                    <span class="fr-hint-text">{{ edit_form.epci_delegate.help_text }}</span>
-                  {% endif %}
-                </label>
-                {{ edit_form.epci_delegate }}
-                {% for error in edit_form.epci_delegate.errors %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
-              </div>
+              {% include "form_fields/bool.html" with field=edit_form.no_ads_declared field_errors=edit_form.errors.no_ads_declared required=edit_form.fields.no_ads_declared.required %}
               <div class="fr-col-3 fr-input-group fr-mt-2w">
                 <ul class="fr-btns-group">
                   <li>
@@ -265,13 +325,50 @@
             </form>
           </div>
         </section>
-      {% endif %}
-    </div>
+
+        {% if not edit_form.fields.epci_delegate.disabled %}
+          <section class="fr-accordion">
+            <h3 class="fr-accordion__title">
+              <button
+                class="fr-accordion__btn"
+                aria-expanded="false"
+                aria-controls="accordion-116"
+              >
+                La gestion des ADS de votre administration est déléguée à un EPCI
+              </button>
+            </h3>
+            <div class="{% if not ads_manager.epci_delegate %}fr-collapse {% endif %}"
+                id="accordion-116">
+              <form method="post">
+                {% csrf_token %}
+                <div class="fr-select-group{% if edit_form.errors.epci_delegate %} fr-select-group--error{% endif %}">
+
+                  <label class="fr-label" for="{{ edit_form.epci_delegate.id_for_label }}">
+                    {{ edit_form.epci_delegate.label }}
+                    {% if edit_form.epci_delegate.help_text %}
+                      <span class="fr-hint-text">{{ edit_form.epci_delegate.help_text }}</span>
+                    {% endif %}
+                  </label>
+                  {{ edit_form.epci_delegate }}
+
+                  {% for error in edit_form.epci_delegate.errors %}
+                    <p class="fr-error-text">{{ error }}</p>
+                  {% endfor %}
+                </div>
+
+                <div class="fr-col-3 fr-input-group fr-mt-2w">
+                  <ul class="fr-btns-group">
+                    <li>
+                      <button type="submit" class="fr-btn">Valider</button>
+                    </li>
+                  </ul>
+                </div>
+              </form>
+            </div>
+          </section>
+        {% endif %}
+      </div>
+    {% endif %}
   {% endif %}
-{% endif %}
-<script src="ads_manager.ts"></script>
-{% endblock main %}
-{% block endbody %}
-  {{ block.super }}
-  {{ edit_form.media }}
-{% endblock endbody %}
+  <script src="ads_manager.ts"></script>
+{% endblock body-content %}

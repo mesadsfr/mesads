@@ -1,28 +1,62 @@
-{% extends "./base.html" %}
-{% block main %}
+{% extends "base_container.html" %}
+{% block body-content %}
+
   <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-    <button class="fr-breadcrumb__button"
-            aria-expanded="false"
-            aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d’Ariane
+    </button>
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
-        <li>
-          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
-        </li>
-        <li>
-          <a class="fr-breadcrumb__link"
-             href="{% url 'app.ads-manager.detail' manager_id=ads.ads_manager.id %}">{{ ads.ads_manager.content_object.display_text|capfirst }}</a>
-        </li>
-        <li>
-          <a class="fr-breadcrumb__link"
-             href="{% url 'app.ads.detail' manager_id=ads.ads_manager.id ads_id=ads.id %}">ADS numéro {{ ads.number }}</a>
-        </li>
+        {% if ads_manager_administrator %}
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.homepage' %}">
+              Accueil - {{ ads_manager_administrator.prefecture.display_text|capfirst }}
+            </a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager-admin.administrations' prefecture_id=ads_manager_administrator.prefecture.id %}">
+              Vos administrations en gestion et accès Préfecture
+            </a>
+          </li>
+          <li>
+            <a
+              class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager-admin.detail-administration' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads.ads_manager.id %}"
+            >
+              {{ ads.ads_manager.content_object.display_text|capfirst }}
+            </a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager-admin.ads-detail' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads.ads_manager.id ads_id=ads.id %}">ADS #{{ ads.number }}</a>
+          </li>
+
+        {% else %}
+          <li>
+            <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager.detail' manager_id=ads.ads_manager.id %}">{{ ads.ads_manager.content_object.display_text|capfirst }}</a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.ads.detail' manager_id=ads.ads_manager.id ads_id=ads.id %}">ADS #{{ ads.number }}</a>
+          </li>
+        {% endif %}
         <li>
           <a class="fr-breadcrumb__link" aria-current="page">Génération d'un arrêté</a>
         </li>
       </ol>
     </div>
   </nav>
+
   <form method="post" enctype="multipart/form-data">
     <div class="fr-stepper">
       <h2 class="fr-stepper__title">
@@ -68,10 +102,13 @@
       </div>
     {% endif %}
     {% csrf_token %}
+
     {% if wizard.steps.index == 0 %}
-      {% include "form_fields/select.html" with field_title=form.is_old_ads.label field_description=form.is_old_ads.help_text field=form.is_old_ads field_errors=form.errors.is_old_ads required=form.fields.is_old_ads.required %}
+      {% include "form_fields/select.html" with field_title=form.is_old_ads.label  field_description=form.is_old_ads.help_text field=form.is_old_ads field_errors=form.errors.is_old_ads required=form.fields.is_old_ads.required %}
+    
     {% elif wizard.steps.index == 1 %}
       {% include "form_fields/select.html" with field_title=form.decree_creation_reason.label field_description=form.decree_creation_reason.help_text field=form.decree_creation_reason field_errors=form.errors.decree_creation_reason required=form.fields.decree_creation_reason.required %}
+    
     {% elif wizard.steps.index == 2 %}
       <!-- General decree information -->
       {% include "form_fields/string.html" with field_title=form.decree_number.label field_description=form.decree_number.help_text field=form.decree_number field_errors=form.errors.decree_number required=form.fields.decree_number.required %}
@@ -101,24 +138,32 @@
       {% include "form_fields/string.html" with field_title=form.decree_number_taxi_activity.label field_description=form.decree_number_taxi_activity.help_text field=form.decree_number_taxi_activity field_errors=form.errors.decree_number_taxi_activity required=form.fields.decree_number_taxi_activity.required %}
     {% else %}
       <p>
-        Le modèle d'arrêté municipal est prêt à être téléchargé. Vous pouvez cliquer sur le bouton ci-dessous, ou revenir à l'étape précédente afin de changer les paramètres.
+        Le modèle d'arrêté municipal est prêt à être téléchargé. Vous pouvez cliquer sur le bouton ci-dessous, ou revenir à 
+        l'étape précédente afin de changer les paramètres.
       </p>
     {% endif %}
     <!-- Submit button -->
-    {% comment %}Set display flex and order because the first submit button is the automatic action triggered when the user presses "enter" in the form.{% endcomment %}
+    {% comment %}
+      Set display flex and order because the first submit button is the automatic action triggered when the user presses "enter" in the form.
+    {% endcomment %}
     <div class="flex">
+
       {% if wizard.steps.next %}
         <button type="submit" class="fr-btn order-2">Étape suivante</button>
       {% else %}
         <button type="submit" class="fr-btn order-2">Télécharger l'arrêté municipal</button>
       {% endif %}
       {% if wizard.steps.prev %}
-        <button style="order: 1"
-                name="wizard_goto_step"
-                class="fr-btn fr-btn--tertiary-no-outline"
-                type="submit"
-                value="{{ wizard.steps.prev }}">Étape précédente</button>
+        <button
+          style="order: 1"
+          name="wizard_goto_step"
+          class="fr-btn fr-btn--tertiary-no-outline"
+          type="submit"
+          value="{{ wizard.steps.prev }}"
+        >
+          Étape précédente
+        </button>
       {% endif %}
     </div>
   </form>
-{% endblock main %}
+{% endblock body-content %}

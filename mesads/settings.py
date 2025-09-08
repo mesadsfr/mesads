@@ -172,6 +172,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "mesads.context_processors.mesads_settings",
+                "mesads.context_processors.user_roles",
             ],
         },
     },
@@ -209,7 +210,13 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME": "mesads.users.validators.UppercaseValidator",
+    },
+    {
+        "NAME": "mesads.users.validators.LowercaseValidator",
+    },
+    {
+        "NAME": "mesads.users.validators.DigitValidator",
     },
 ]
 

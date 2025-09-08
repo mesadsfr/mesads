@@ -1,113 +1,40 @@
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import send_mail
-from django.db.models import OuterRef, Subquery, Count, IntegerField, BooleanField
-from django.db import transaction
 from django.template.loader import render_to_string
-from django.urls import reverse_lazy
+from django.urls import reverse
 from django.views.generic.edit import FormView
 
 from ..forms import (
     ADSManagerForm,
 )
 from ..models import (
-    ADS,
-    ADSManagerAdministrator,
     ADSManagerRequest,
-    ADSUpdateLog,
 )
 
 
-class ADSManagerRequestView(FormView):
-    template_name = "pages/ads_register/ads_manager_request.html"
+class DemandeGestionADSView(FormView):
+    template_name = "pages/ads_register/demande_gestion_ads.html"
     form_class = ADSManagerForm
-    success_url = reverse_lazy("app.ads-manager.index")
 
     def get_context_data(self, **kwargs):
-        """Expose the list of ADSManagerAdministrators for which current user
-        is configured.
+        context = super().get_context_data(**kwargs)
+        context["ads_manager_administrator"] = self.kwargs.get(
+            "ads_manager_administrator"
+        )
+        return context
 
-        It is also accessible through user.adsmanageradministrator_set.all, but
-        we need to prefetch ads_managers__content_object to reduce the number
-        of SQL queries generated.
-        """
-        ctx = super().get_context_data(**kwargs)
-
-        # All ADS for the manager
-        ads_count_subquery = (
-            ADS.objects.filter(
-                ads_manager=OuterRef("ads_manager_id"),
-                deleted_at__isnull=True,
+    def get_success_url(self):
+        administrator = self.kwargs.get("ads_manager_administrator")
+        return (
+            reverse(
+                "app.ads-manager-admin.administrations",
+                kwargs={"prefecture_id": administrator.prefecture.id},
             )
-            .values("ads_manager")
-            .annotate(count=Count("*"))
-            .values("count")[:1]
+            if administrator
+            else reverse("app.homepage")
         )
 
-        # For each ADS, get its latest is_complete flag
-        latest_complete = Subquery(
-            ADSUpdateLog.objects.filter(ads=OuterRef("pk"))
-            .order_by("-update_at")
-            .values("is_complete")[:1],
-            output_field=BooleanField(),
-        )
-
-        # 2) Count how many ADS under this manager have latest_complete=True
-        complete_updates_subquery_per_ads_manager = Subquery(
-            ADS.objects.filter(ads_manager=OuterRef("ads_manager_id"))
-            .annotate(latest_complete=latest_complete)
-            .filter(latest_complete=True)
-            .values("ads_manager")
-            .annotate(count=Count("pk"))
-            .values("count")[:1],
-            output_field=IntegerField(),
-        )
-
-        complete_ads_per_admin_per_ads_manager_administrator = Subquery(
-            ADS.objects.filter(
-                ads_manager__administrator=OuterRef("pk"),
-                deleted_at__isnull=True,
-            )
-            .annotate(latest_complete=latest_complete)
-            .filter(latest_complete=True)
-            .values("ads_manager__administrator")
-            .annotate(count=Count("pk"))
-            .values("count")[:1],
-            output_field=IntegerField(),
-        )
-
-        ctx["user_ads_manager_requests"] = ADSManagerRequest.objects.filter(
-            user=self.request.user
-        ).annotate(
-            ads_count=Subquery(ads_count_subquery, output_field=IntegerField()),
-            complete_updates_count=Subquery(
-                complete_updates_subquery_per_ads_manager, output_field=IntegerField()
-            ),
-        )
-
-        total_ads_per_ads_manager_admininistrator = Subquery(
-            ADS.objects.filter(
-                ads_manager__administrator=OuterRef("pk"),
-                deleted_at__isnull=True,
-            )
-            .values("ads_manager__administrator")
-            .annotate(count=Count("pk"))
-            .values("count")[:1],
-            output_field=IntegerField(),
-        )
-
-        ctx["ads_managers_administrators"] = (
-            ADSManagerAdministrator.objects.select_related("prefecture")
-            .filter(users=self.request.user)
-            .annotate(
-                ads_count=total_ads_per_ads_manager_admininistrator,
-                complete_ads_count=complete_ads_per_admin_per_ads_manager_administrator,
-            )
-        )
-
-        return ctx
-
-    @transaction.atomic
     def form_valid(self, form):
         _, created = ADSManagerRequest.objects.get_or_create(
             user=self.request.user,

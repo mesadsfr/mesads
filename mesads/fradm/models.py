@@ -126,7 +126,7 @@ class Prefecture(AdministrationModel):
         if self.libelle.lower().startswith("préfecture"):
             return "p" + self.libelle[1:]
         elif self.libelle.lower()[0:1] in "aeiouy":
-            return f"préfecture d'{self.libelle}"
+            return f"préfecture de l'{self.libelle}"
         return f"préfecture de {self.libelle}"
 
     def display_fulltext(self):

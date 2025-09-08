@@ -60,28 +60,105 @@ class ADSView(RevisionMixin, UpdateView):
         return kwargs
 
     def get_success_url(self):
-        return reverse(
-            "app.ads.detail",
-            kwargs={
-                "manager_id": self.kwargs["manager_id"],
-                "ads_id": self.kwargs["ads_id"],
-            },
+        administrator = self.kwargs.get("ads_manager_administrator")
+        return (
+            reverse(
+                "app.ads-manager-admin.ads-detail",
+                kwargs={
+                    "prefecture_id": administrator.prefecture.id,
+                    "manager_id": self.kwargs["manager_id"],
+                    "ads_id": self.kwargs["ads_id"],
+                },
+            )
+            if administrator
+            else reverse(
+                "app.ads.detail",
+                kwargs={
+                    "manager_id": self.kwargs["manager_id"],
+                    "ads_id": self.kwargs["ads_id"],
+                },
+            )
         )
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
-        ctx["ads_users_formset"] = self.ads_users_formset
-        ctx["ads_legal_files_formset"] = self.ads_legal_files_formset
+        context = super().get_context_data(**kwargs)
+        context["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
+        context["ads_users_formset"] = self.ads_users_formset
+        context["ads_legal_files_formset"] = self.ads_legal_files_formset
 
-        ctx["latest_ads_update_log"] = (
+        context["latest_ads_update_log"] = (
             ADSUpdateLog.objects.filter(
                 ads=self.object,
             )
             .order_by("-update_at")
             .first()
         )
-        return ctx
+        administrator = self.kwargs.get("ads_manager_administrator")
+        ads_manager = context["ads_manager"]
+        context["ads_manager_administrator"] = administrator
+        context["return_url"] = (
+            reverse(
+                "app.ads-manager-admin.detail-administration",
+                kwargs={
+                    "prefecture_id": administrator.prefecture.id,
+                    "manager_id": ads_manager.id,
+                },
+            )
+            if administrator
+            else reverse(
+                "app.ads-manager.detail", kwargs={"manager_id": ads_manager.id}
+            )
+        )
+
+        if self.object:
+            context["arrete_url"] = (
+                reverse(
+                    "app.ads-manager-admin.ads-decree",
+                    kwargs={
+                        "prefecture_id": administrator.prefecture.id,
+                        "manager_id": ads_manager.id,
+                        "ads_id": self.object.id,
+                    },
+                )
+                if administrator
+                else reverse(
+                    "app.ads.decree",
+                    kwargs={"manager_id": ads_manager.id, "ads_id": self.object.id},
+                )
+            )
+            context["history_url"] = (
+                reverse(
+                    "app.ads-manager-admin.ads-history",
+                    kwargs={
+                        "prefecture_id": administrator.prefecture.id,
+                        "manager_id": ads_manager.id,
+                        "ads_id": self.object.id,
+                    },
+                )
+                if administrator
+                else reverse(
+                    "app.ads.history",
+                    kwargs={"manager_id": ads_manager.id, "ads_id": self.object.id},
+                )
+            )
+
+            context["delete_url"] = (
+                reverse(
+                    "app.ads-manager-admin.ads-delete",
+                    kwargs={
+                        "prefecture_id": administrator.prefecture.id,
+                        "manager_id": ads_manager.id,
+                        "ads_id": self.object.id,
+                    },
+                )
+                if administrator
+                else reverse(
+                    "app.ads.delete",
+                    kwargs={"manager_id": ads_manager.id, "ads_id": self.object.id},
+                )
+            )
+
+        return context
 
     def get_object(self, queryset=None):
         ads = get_object_or_404(ADS, id=self.kwargs["ads_id"])
@@ -226,21 +303,35 @@ class ADSDeleteView(DeleteView):
     pk_url_kwarg = "ads_id"
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
-        return ctx
+        context = super().get_context_data(**kwargs)
+        context["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
+        context["ads_manager_administrator"] = self.kwargs.get(
+            "ads_manager_administrator"
+        )
+        return context
 
     def get_success_url(self):
-        return reverse(
-            "app.ads-manager.detail",
-            kwargs={
-                "manager_id": self.kwargs["manager_id"],
-            },
+        administrator = self.kwargs.get("ads_manager_administrator")
+        return (
+            reverse(
+                "app.ads-manager-admin.detail-administration",
+                kwargs={
+                    "prefecture_id": administrator.prefecture.id,
+                    "manager_id": self.kwargs["manager_id"],
+                },
+            )
+            if administrator
+            else reverse(
+                "app.ads-manager.detail",
+                kwargs={
+                    "manager_id": self.kwargs["manager_id"],
+                },
+            )
         )
 
 
 class ADSCreateView(ADSView, CreateView):
-    def dispatch(self, request, manager_id):
+    def dispatch(self, request, manager_id, **kwargs):
         """If the ADSManager has the flag no_ads_declared to True, it is
         impossible to create ADS for it."""
         get_object_or_404(ADSManager, id=manager_id, no_ads_declared=False)
@@ -263,15 +354,30 @@ class ADSCreateView(ADSView, CreateView):
             )
         else:
             self.ads_legal_files_formset = ADSLegalFileFormSet()
-        return super().dispatch(request, manager_id)
+        return super().dispatch(request, manager_id, **kwargs)
 
     def get_object(self, queryset=None):
         return None
 
     def get_success_url(self):
-        return reverse(
-            "app.ads.detail",
-            kwargs={"manager_id": self.kwargs["manager_id"], "ads_id": self.object.id},
+        administrator = self.kwargs.get("ads_manager_administrator")
+        return (
+            reverse(
+                "app.ads-manager-admin.ads-detail",
+                kwargs={
+                    "prefecture_id": administrator.prefecture.id,
+                    "manager_id": self.kwargs["manager_id"],
+                    "ads_id": self.object.id,
+                },
+            )
+            if administrator
+            else reverse(
+                "app.ads.detail",
+                kwargs={
+                    "manager_id": self.kwargs["manager_id"],
+                    "ads_id": self.object.id,
+                },
+            )
         )
 
     def form_valid(self, form):
@@ -311,7 +417,14 @@ class CustomCookieWizardView(CookieWizardView):
         will still happen.
         """
         prefix = super().get_prefix(request, *args, **kwargs)
-        suffix = "_".join(str(kwargs[key]) for key in sorted(kwargs.keys()))
+        suffix = "_".join(
+            (
+                str(kwargs[key].prefecture.id)
+                if key == "ads_manager_administrator"
+                else str(kwargs[key])
+            )
+            for key in sorted(kwargs.keys())
+        )
         return f"{prefix}_{suffix}"
 
     def render_next_step(self, form, **kwargs):
@@ -412,9 +525,12 @@ class ADSDecreeView(CustomCookieWizardView):
         )
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx["ads"] = self.get_ads()
-        return ctx
+        context = super().get_context_data(**kwargs)
+        context["ads"] = self.get_ads()
+
+        administrator = self.kwargs.get("ads_manager_administrator")
+        context["ads_manager_administrator"] = administrator
+        return context
 
     def done(self, form_list, **kwargs):
         path = finders.find("template-arrete-municipal.docx")
@@ -445,7 +561,7 @@ class ADSDecreeView(CustomCookieWizardView):
 
         response = HttpResponse(
             content_type="application/vnd.openxmlformats",
-            headers={"Content-Disposition": 'attachment; filename="decret.docx"'},
+            headers={"Content-Disposition": 'attachment; filename="arrete.docx"'},
         )
 
         decree.save(response)
@@ -458,8 +574,8 @@ class ADSHistoryView(DetailView):
     pk_url_kwarg = "ads_id"
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx["history"] = ModelHistory(
+        context = super().get_context_data(**kwargs)
+        context["history"] = ModelHistory(
             self.object,
             ignore_fields=[
                 ADS._meta.get_field("ads_manager"),
@@ -473,4 +589,7 @@ class ADSHistoryView(DetailView):
                 ADSUser._meta.get_field("ads"),
             ],
         )
-        return ctx
+        context["ads_manager_administrator"] = self.kwargs.get(
+            "ads_manager_administrator"
+        )
+        return context

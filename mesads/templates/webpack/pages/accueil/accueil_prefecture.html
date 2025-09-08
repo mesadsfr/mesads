@@ -1,0 +1,60 @@
+<div class="homepage-section">
+  <div class="fr-container">
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12 fr-col-lg-8">
+        <h1>Espace de la {{ ads_manager_administrator.prefecture.display_text|capfirst }}</h1>
+
+        <p>
+          <a
+            class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+            href="{% url 'app.ads-manager-admin.requests' prefecture_id=ads_manager_administrator.prefecture.id %}"
+          >
+            <span class="fr-icon-feedback-line" aria-hidden="true"></span>
+            Demande d'accès des gestionnaires rattachés à votre Préfecture
+          </a>
+        </p>
+        <p>
+          <a
+            class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+            href="{% url 'app.ads-manager-admin.administrations' prefecture_id=ads_manager_administrator.prefecture.id %}"
+          >
+            <span class="fr-icon-survey-line" aria-hidden="true"></span>
+            Données liées aux ADS de votre Préfecture
+          </a>
+        </p>
+        <p>
+          <a
+            class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+            href="{% url 'app.ads-manager-admin.vehicules_relais' prefecture_id=ads_manager_administrator.prefecture.id %}"
+          >
+            <span class="fr-icon-file-pdf-line" aria-hidden="true"></span>
+            Données liées aux répertoires des taxis relais de votre préfecture
+          </a>
+        </p>
+        <p>
+          <a
+            class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+            href="{% url 'app.ads-manager-admin.updates' prefecture_id=ads_manager_administrator.prefecture.id %}"
+          >
+            <span aria-hidden="true" class="fr-icon-eye-line"></span>
+            Modifications effectuées par les gestionnaires rattachés à votre Préfecture
+          </a>
+        </p>
+      </div>
+
+      <div class="fr-col-12 fr-col-lg-4">
+        <img 
+          class="fr-ml-6v fr-mt-6v"
+          width="60%"
+          height="60%"
+          alt=""
+          src="../../images/logo_homepage.png"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include "./accueil_newsletter.html" %}
+{% include "./accueil_statistiques.html" with background_grey=True %}
+{% include "./accueil_contact.html" %}

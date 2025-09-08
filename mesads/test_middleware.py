@@ -10,8 +10,6 @@ class TestBackwardCompatibilityURLMiddleware(TestCase):
 
         # These URLs exist with the prefix /registre_ads
         for url in (
-            "/admin_gestion",
-            "/gestion",
             "/gestion/123/",
             "/gestion/3432/arrete",
         ):

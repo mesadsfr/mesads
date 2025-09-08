@@ -1,0 +1,33 @@
+
+<div class="homepage-section {% if background_grey %}background-light-grey{% endif %}">
+  <div class="fr-container text-center">
+    <h2 class="blue-france text-left">Une solution qui fait ses preuves</h2>
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-mb-4v">
+      <div class="fr-col-4">
+        <div class="text-center blue-france fr-display--xs fr-mb-2v">
+          {{stats.total_ads}}
+        </div>
+        <div class="text-center">
+          ADS enregistrées sur MesADS
+        </div>
+      </div>
+      <div class="fr-col-4">
+        <div class="text-center blue-france fr-display--xs fr-mb-2v">
+          {{stats.prefecture_taux_enregistrement}}
+        </div>
+        <div class="text-center">
+          départements ayant enregistré plus de 70% de leurs ADS
+        </div>
+      </div>
+      <div class="fr-col-4">
+        <div class="text-center blue-france fr-display--xs fr-mb-2v">
+          {{stats.taux_enregistrement}}%
+        </div>
+        <div class="text-center">
+          des ADS du territoires enregistrées.
+        </div>
+      </div>
+    </div>
+    <a class="fr-link" href="{% url 'app.stats' %}">Voir plus de statistiques</a>
+  </div>
+</div>

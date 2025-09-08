@@ -1,36 +1,81 @@
-{% extends "./base.html" %}
-{% block main %}
+{% extends "base_container.html" %}
+{% block body-content %}
+
   <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-    <button class="fr-breadcrumb__button"
-            aria-expanded="false"
-            aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d’Ariane
+    </button>
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
+        {% if ads_manager_administrator %}
+
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.homepage' %}">
+              Accueil - {{ ads_manager_administrator.prefecture.display_text|capfirst }}
+            </a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager-admin.administrations' prefecture_id=ads_manager_administrator.prefecture.id %}">
+              Vos administrations en gestion et accès Préfecture
+            </a>
+          </li>
+          <li>
+            <a
+              class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager-admin.detail-administration' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads_manager.id %}"
+            >
+              {{ ads_manager.content_object.display_text|capfirst }}
+            </a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager-admin.ads-detail' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads_manager.id ads_id=ads.id %}">ADS #{{ ads.number }}</a>
+          </li>
+        {% else %}
+          <li>
+            <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
+          </li>
+          <li>
+            <a
+              class="fr-breadcrumb__link"
+              href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}"
+            >ADS #{{ ads.number }}</a>
+          </li>
+        {% endif %}
         <li>
-          <a class="fr-breadcrumb__link" href="{% url 'app.ads-manager.index' %}">Gestion des ADS</a>
-        </li>
-        <li>
-          <a class="fr-breadcrumb__link"
-             href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
-        </li>
-        <li>
-          <a class="fr-breadcrumb__link" aria-current="page">ADS numéro {{ ads.number }}</a>
+          <a class="fr-breadcrumb__link" aria-current="page">Suppression</a>
         </li>
       </ol>
     </div>
   </nav>
-  <h1>Suppression de l'ADS numéro {{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})</h1>
+
+  <h1>
+    Suppression de l'ADS #{{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})
+  </h1>
   {% if ads.ads_manager.is_locked %}
     <p>
-      Vous ne pouvez pas supprimer cette ADS, car elle appartient à un gestionnaire pour lequel les modifications manuelles ont été bloquées car les données sont mises à jour automatiquement.
+      Vous ne pouvez pas supprimer cette ADS, car elle appartient à un gestionnaire pour lequel les modifications manuelles ont été bloquées car 
+      les données sont mises à jour automatiquement.
     </p>
   {% else %}
     <form method="post">
       {% csrf_token %}
       <p>Êtes-vous sûr de vouloir supprimer cette ADS ?</p>
-      <input class="fr-btn !bg-[var(--background-flat-error)]"
-             type="submit"
-             value="Supprimer définitivement" />
+      <input
+        class="fr-btn !bg-[var(--background-flat-error)]"
+        type="submit"
+        value="Supprimer définitivement"
+      />
     </form>
   {% endif %}
-{% endblock main %}
+{% endblock body-content %}

@@ -10,6 +10,8 @@ from .models import User
 
 
 class CustomUserForm(RegistrationForm):
+    cgu = forms.BooleanField(required=True, label="CGU")
+
     class Meta(RegistrationForm.Meta):
         model = User
 
@@ -37,6 +39,12 @@ class PasswordResetStrictForm(PasswordResetForm):
 
 
 class OTPAuthenticationForm(AuthenticationForm):
+    remember_me = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(),
+        label="Se souvenir de moi",
+    )
+
     otp = forms.CharField(
         required=False,
         label="Vérification",

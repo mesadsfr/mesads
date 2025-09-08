@@ -1,15 +1,15 @@
-{% extends "../../base-sidemenu.html" %}
+{% extends "base_container.html" %}
 {% load show_pagination_links %}
-{% block sidemenu %}
-  {% include "./sidemenu.html" %}
-{% endblock sidemenu %}
-{% block main %}
+{% block body-content %}
   <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
     <button class="fr-breadcrumb__button"
             aria-expanded="false"
             aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+        </li>
         <li>
           <a class="fr-breadcrumb__link" aria-current="page">Répertoires des véhicules relais</a>
         </li>
@@ -37,6 +37,10 @@
         </a>
       </div>
     </div>
+  {% else %}
+  <p>
+    <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'vehicules-relais.proprietaire' %}">Accès à mon espace propriétaire</a>
+  </p>
   {% endif %}
   <hr class="fr-mt-3w">
   <form method="get" action="{% url 'vehicules-relais.search' %}">
@@ -130,7 +134,7 @@
       {% show_pagination_links page_obj %}
     </div>
   {% endif %}
-{% endblock main %}
+{% endblock body-content %}
 {% block endbody %}
   {{ block.super }}
   {% comment %}Extra javascript to display form for new requests.{% endcomment %}

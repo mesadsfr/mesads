@@ -1,0 +1,144 @@
+{% extends "base_container.html" %}
+{% load static %}
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        {% if ads_manager_administrator %}
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.homepage' %}">
+              Accueil - {{ ads_manager_administrator.prefecture.display_text|capfirst }}
+            </a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager-admin.administrations' prefecture_id=ads_manager_administrator.prefecture.id %}">
+              Vos administrations en gestion et accès Préfecture
+            </a>
+          </li>
+        {% else %}
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+        </li>
+        {% endif %}
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Demande de gestion d'ADS</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  
+  <h1>Demander à gérer les ADS pour une nouvelle administration</h1>
+  <form method="post">
+    {% csrf_token %}
+    <div class="fr-form-group">
+      <fieldset class="fr-fieldset">
+        <legend class="fr-fieldset__legend fr-text--regular" id="radio-inline-legend">
+          <div class="fr-mb-2w fr-alert fr-alert--info">
+            <p class="fr-alert__title">Un problème ? Contactez-nous !</p>
+            <p>
+              Si vous avez le moindre problème, par exemple si votre demande est refusée ou met trop de temps avant d'être acceptée, vous pouvez contacter notre équipe par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+            </p>
+            <p class="fr-text--xl fr-mt-2w">La demande est exclusivement réservée aux agents de l'administration.</p>
+          </div>
+        </legend>
+        <p>
+          Sélectionnez le type d'administration pour laquelle vous souhaitez déclarer des ADS, ou déclarer l'absence d'ADS :
+        </p>
+        <div class="fr-fieldset__content">
+          <!-- Commune -->
+          <div class="fr-radio-group">
+            <input type="radio" id="radio-inline-1" name="radio-inline">
+            <label class="fr-label" for="radio-inline-1">D'une commune</label>
+            <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.commune %} fr-input-group--error{% endif %}">
+              {{ form.commune }}
+              {% for error in form.errors.commune %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
+            </div>
+          </div>
+          <!-- EPCI -->
+          <div class="fr-radio-group">
+            <input type="radio" id="radio-inline-2" name="radio-inline">
+            <label class="fr-label" for="radio-inline-2">
+              D'un établissement public à fiscalité propre (métropole, communauté de commune, communauté d'agglomération ou communauté urbaine)
+            </label>
+            <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.epci %} fr-input-group--error{% endif %}">
+              {{ form.epci }}
+              {% for error in form.errors.epci %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
+            </div>
+          </div>
+          <!-- Préfecture -->
+          <div class="fr-radio-group">
+            <input type="radio" id="radio-inline-3" name="radio-inline">
+            <label class="fr-label" for="radio-inline-3">D'une préfecture (ADS aéroport)</label>
+            <div class="fr-pl-2w fr-pb-2w fr-input-group radio-inline{% if form.errors.prefecture %} fr-input-group--error{% endif %}">
+              {{ form.prefecture }}
+              {% for error in form.errors.prefecture %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
+            </div>
+          </div>
+          {% include "form_fields/bool.html" with field=form.is_ads_manager field_errors=form.errors.is_ads_manager required=form.fields.is_ads_manager %}
+        </div>
+      </fieldset>
+    </div>
+    <!-- Non-fields errors -->
+    {% if form.non_field_errors %}
+      <div class="fr-input-group fr-input-group--error">
+        {% for error in form.non_field_errors %}
+          <!-- Non-field error -->
+          <p class="fr-error-text">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <div class="fr-input-group">
+      <button type="submit" class="fr-btn">Envoyer la demande à la préfecture</button>
+    </div>
+  </form>
+</div>
+{% endblock body-content %}
+{% block endbody %}
+  {{ block.super }}
+  {% comment %}Extra javascript to display form for new requests.{% endcomment %}
+  {{ form.media }}
+  <script type="text/javascript">
+    /*
+     * The form to create a new ADS manager shows three radio buttons to select
+     * the commune, EPCI or préfecture. When checked, a select input appears to
+     * select the administration.
+     *
+     * The code below hides the select inputs for the unchecked radio buttons.
+     *
+     * We can't easily use alpinejs here because the select inputs are managed
+     * by mesads.fradm.forms.FrenchAdministrationForm and is not so easy to add
+     * custom properties. It is much easier to write a few line of plain
+     * javascript.
+     *
+     * We also make sure the select value of related to unchecked radio buttons
+     * are always empty.
+     */
+    document.addEventListener('DOMContentLoaded', () => {
+      const radios = document.getElementsByName('radio-inline');
+
+      // Only display the selected element, hide the others
+      function setADSRequestFormVisibility() {
+        radios.forEach((radio) => {
+          const child = radio.parentElement.getElementsByClassName('radio-inline')[0];
+          child.style.display = radio.checked ? 'block' : 'none';
+
+          if (!radio.checked) {
+            $(child.getElementsByTagName('select')[0]).empty();
+          }
+        });
+      }
+
+      // Set initial rendering
+      setADSRequestFormVisibility();
+
+      // Hook to changes to reset visibility
+      radios.forEach((radio) => radio.addEventListener('change', setADSRequestFormVisibility));
+    });
+  </script>
+  <script src="ads_manager_request.ts"></script>
+{% endblock endbody %}

@@ -36,5 +36,12 @@ test:
 fasttest:
 	python manage.py test --parallel 8
 
+test-no-cov:
+	python manage.py test --failfast
+
+test-relais:
+	python manage.py test mesads.vehicules_relais --failfast
+
+
 update-requirements:
 	for package in $$(poetry show --outdated --only main | awk '{print $$1}'); do poetry add "$$package@latest"; done
