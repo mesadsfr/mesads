@@ -1,6 +1,7 @@
 import json
+import math
 
-from django.db.models import OuterRef, Subquery, Count, IntegerField, BooleanField
+from django.db.models import OuterRef, Subquery, Count, IntegerField, BooleanField, Q
 from django.db.models.functions import TruncMonth
 from django.views.generic import TemplateView
 
@@ -10,6 +11,7 @@ from ..models import (
     ADSManager,
     ADSManagerRequest,
     ADSUpdateLog,
+    ADSManagerAdministrator,
 )
 from mesads.api.views import get_stats_by_prefecture
 from mesads.fradm.models import Prefecture
@@ -32,10 +34,46 @@ class HTTP500View(TemplateView):
 class HomepageView(TemplateView):
     template_name = "pages/homepage.html"
 
+    def get_statistiques(self):
+        ads_administrators = ADSManagerAdministrator.objects.select_related(
+            "prefecture"
+        ).annotate(
+            ads_count=Count(
+                "adsmanager__ads",
+                filter=Q(adsmanager__ads__deleted_at__isnull=True),
+                distinct=True,
+            )
+        )
+        stats = {
+            "prefecture_taux_enregistrement": 0,
+            "taux_enregistrement": 0,
+            "total_ads": 0,
+        }
+        total_expected = 0
+
+        for ads_administrator in ads_administrators:
+            if ads_administrator.expected_ads_count:
+                taux = (
+                    ads_administrator.ads_count / ads_administrator.expected_ads_count
+                )
+                if taux >= 0.7:
+                    stats["prefecture_taux_enregistrement"] += 1
+                total_expected += ads_administrator.expected_ads_count
+            stats["total_ads"] += ads_administrator.ads_count
+
+        stats["taux_enregistrement"] = (
+            math.floor((stats["total_ads"] / total_expected) * 100)
+            if total_expected
+            else 0
+        )
+
+        return stats
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         context["title"] = "Accueil - découvrez MesADS"
+        context["stats"] = self.get_statistiques()
 
         if self.request.user.is_authenticated:
             ads_manager_administrators = (

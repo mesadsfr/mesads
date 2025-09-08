@@ -1,9 +1,9 @@
-{% extends "base-banner.html" %}
+{% extends "base_container.html" %}
 {% block extra_head %}
   {{ block.super }}
   <link rel="stylesheet" href="leaflet/dist/leaflet.css" />
 {% endblock extra_head %}
-{% block body %}
+{% block body-content %}
   <h1>Chiffres clés Mes ADS</h1>
   <p>
     Mes ADS est un projet en pleine évolution, démarré en 2022. Nous essayons d'améliorer le produit en fonction de vos retours. Si vous avez des questions, des suggestions, ou si vous remarquez un bug, n'hésitez surtout pas à nous contacter en utilisant le chat ou par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
@@ -227,7 +227,7 @@
 }
   </script>
   <script src="./stats.ts"></script>
-{% endblock body %}
+{% endblock body-content %}
 {% block endbody %}
   {{ block.super }}
   {% comment %}Extra javascript required to display ads_managers_select_form{% endcomment %}
