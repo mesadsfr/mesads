@@ -5,7 +5,6 @@ import yaml
 from django import template
 from django.urls import resolve
 from django.urls.exceptions import Resolver404
-from django.utils.html import escape
 from django.template import Template
 from django.utils.safestring import mark_safe
 
@@ -32,7 +31,7 @@ def html_metadata(context):
 
     ret = ""
     if metadata_title:
-        ret += f"<title>{escape(title)}</title>\n"
+        ret += f"<title>{title}</title>\n"
     if metadata_description:
-        ret += f'<meta name="description" content="{escape(description)}">\n'
+        ret += f'<meta name="description" content="{description}">\n'
     return mark_safe(ret)

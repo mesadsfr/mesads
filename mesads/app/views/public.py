@@ -88,7 +88,7 @@ class HomepageView(TemplateView):
                 )
 
                 context["title"] = (
-                    f"MesADS - Accueil {context['ads_manager_administrator'].prefecture.display_text}"
+                    f"MesADS - Accueil {context['ads_manager_administrator'].prefecture.display_text()}"
                 )
             elif len(ads_manager_requests):
                 context["manager_ads"] = True
