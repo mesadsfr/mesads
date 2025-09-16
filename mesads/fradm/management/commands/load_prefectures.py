@@ -9,7 +9,7 @@ from mesads.fradm.models import Prefecture
 
 
 class Command(BaseCommand):
-    help = "Load communes from the CSV file published by INSEE (https://www.insee.fr/fr/information/5057840)"
+    help = "Création des préfectures depuis le CSV publié par l'INSEE (https://www.insee.fr/fr/information/5057840)"
 
     def add_arguments(self, parser):
         parser.add_argument("prefectures_file", type=argparse.FileType("r"))
@@ -33,7 +33,7 @@ class Command(BaseCommand):
         # reimport communes with different values for a row.
         # If IntegrityError is raised, we need to find out why data has changed
         # and change this loader accordingly.
-        commune, created = Prefecture.objects.get_or_create(
+        _, created = Prefecture.objects.get_or_create(
             numero=row["DEP"], libelle=libelle
         )
         sys.stdout.write(self.style.SUCCESS("."))
