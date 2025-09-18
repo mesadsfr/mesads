@@ -111,6 +111,7 @@ INSTALLED_APPS = [
     "dal_queryset_sequence",
     "django.contrib.admin",
     "django.contrib.auth",
+    "mozilla_django_oidc",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
@@ -130,6 +131,7 @@ INSTALLED_APPS = [
     "mesads.fradm",
     "mesads.api",
     "mesads.vehicules_relais",
+    "mesads.mesads_oidc",
 ]
 
 CRON_CLASSES = [
@@ -149,6 +151,11 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "mesads.middleware.BackwardCompatibilityURLMiddleware",
+]
+
+AUTHENTICATION_BACKENDS = [
+    "mesads.mesads_oidc.backends.OIDCAuthenticationBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
 if DEBUG:
@@ -265,6 +272,26 @@ MEDIA_URL = "/uploads/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
+# Connexion ProConnect (OIDC)
+OIDC_RP_SIGN_ALGO = "RS256"
+OIDC_RP_CLIENT_ID = os.getenv(
+    "PROCONNECT_CLIENT_ID",
+)
+OIDC_RP_CLIENT_SECRET = os.getenv(
+    "PROCONNECT_CLIENT_SECRET",
+)
+OIDC_RP_SCOPES = "openid email given_name usual_name uid siret idp_id"
+OIDC_OP_JWKS_ENDPOINT = os.getenv("PROCONNECT_JWKS_ENDPOINT")
+OIDC_OP_AUTHORIZATION_ENDPOINT = os.getenv(
+    "PROCONNECT_AUTHORIZATION_ENDPOINT",
+)
+OIDC_OP_TOKEN_ENDPOINT = os.getenv("PROCONNECT_TOKEN_ENDPOINT")
+OIDC_OP_USER_ENDPOINT = os.getenv("PROCONNECT_USER_ENDPOINT")
+OIDC_OP_LOGOUT_ENDPOINT = os.getenv("PROCONNECT_SESSION_END")
+OIDC_AUTH_REQUEST_EXTRA_PARAMS = {"acr_values": "eidas1"}
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 4 * 60 * 60
+OIDC_STORE_ID_TOKEN = True
+ALLOW_LOGOUT_GET_METHOD = True
 # Setup INTERNAL_IPS for django-debug-toolbar.
 if DEBUG:
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
