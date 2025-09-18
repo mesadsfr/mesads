@@ -336,7 +336,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-MESADS_CRISP_WEBSITE_ID = os.environ.get("CRISP_WEBSITE_ID")
 MESADS_SENTRY_JS_URL = os.environ.get("SENTRY_JS_URL")
 
 MJML_EXEC_CMD = BASE_DIR / "node_modules/.bin/mjml"
