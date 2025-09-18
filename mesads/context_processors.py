@@ -21,12 +21,12 @@ def user_roles(request):
         if len(ads_manager_administrators):
             context["administrateur_ads"] = True
             context["ads_manager_administrator"] = ads_manager_administrators.first()
-        if len(ads_manager_requests):
+        elif len(ads_manager_requests):
             context["manager_ads"] = True
             context["requetes_gestionnaires"] = ADSManagerRequest.objects.filter(
                 user=request.user
             )
-        if len(proprietaire_vehicule_relais):
+        elif len(proprietaire_vehicule_relais):
             context["proprietaire_vehicule_relais"] = True
 
     return context

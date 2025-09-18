@@ -95,7 +95,8 @@ class ADSView(RevisionMixin, UpdateView):
         )
         administrator = self.kwargs.get("ads_manager_administrator")
         ads_manager = context["ads_manager"]
-        context["ads_manager_administrator"] = administrator
+        if administrator:
+            context["ads_manager_administrator"] = administrator
         context["return_url"] = (
             reverse(
                 "app.ads-manager-admin.detail-administration",
@@ -305,9 +306,6 @@ class ADSDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
-        context["ads_manager_administrator"] = self.kwargs.get(
-            "ads_manager_administrator"
-        )
         return context
 
     def get_success_url(self):
@@ -529,7 +527,8 @@ class ADSDecreeView(CustomCookieWizardView):
         context["ads"] = self.get_ads()
 
         administrator = self.kwargs.get("ads_manager_administrator")
-        context["ads_manager_administrator"] = administrator
+        if administrator:
+            context["ads_manager_administrator"] = administrator
         return context
 
     def done(self, form_list, **kwargs):
@@ -588,8 +587,5 @@ class ADSHistoryView(DetailView):
                 ADSLegalFile._meta.get_field("creation_date"),
                 ADSUser._meta.get_field("ads"),
             ],
-        )
-        context["ads_manager_administrator"] = self.kwargs.get(
-            "ads_manager_administrator"
         )
         return context

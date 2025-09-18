@@ -140,7 +140,8 @@ class ADSManagerView(ListView, ProcessFormView):
         context["ads_manager"] = context["edit_form"].instance
 
         administrator = self.kwargs.get("ads_manager_administrator")
-        context["ads_manager_administrator"] = administrator
+        if administrator:
+            context["ads_manager_administrator"] = administrator
 
         ads_manager = context["ads_manager"]
         context["arretes_url"] = (
