@@ -83,6 +83,7 @@ weasyprint = "^62.1"
 qrcode = "^7.4.2"
 pyotp = "^2.9.0"
 django-anymail = "^13.1"
+mozilla_django_oidc = "^4.0.1"
 
 
 [build-system]

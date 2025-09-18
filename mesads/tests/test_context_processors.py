@@ -35,6 +35,7 @@ EXCLUDE_MODULES = [
     r"jsi18n",
     r"view_on_site",
     r"admin-statistiques",
+    r"^oidc",
 ]
 
 
