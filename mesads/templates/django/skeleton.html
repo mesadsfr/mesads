@@ -68,22 +68,6 @@
             src="{% static '@gouvfr/js/dsfr.nomodule.js' %}?v=20250828"></script>
     <script type="text/javascript"
             src="{% static 'admin/js/vendor/jquery/jquery.js' %}?v=20240718"></script>
-    {% if MESADS_CRISP_WEBSITE_ID %}
-      <script type="text/javascript">
-      window.$crisp= [];
-
-      {% if user.email %}window.$crisp.push(["set", "user:email", ["{{ user.email }}"]]);{% endif %}
-
-      window.CRISP_WEBSITE_ID = "{{ MESADS_CRISP_WEBSITE_ID }}";
-      (function(){
-        d = document;
-        s = d.createElement("script");
-        s.src = "https://client.crisp.chat/l.js";
-        s.async = 1;
-        d.getElementsByTagName("head")[0].appendChild(s);
-      })();
-      </script>
-    {% endif %}
     {% if MESADS_SENTRY_JS_URL %}
       <script src="{{ MESADS_SENTRY_JS_URL }}" crossorigin="anonymous"></script>
     {% endif %}

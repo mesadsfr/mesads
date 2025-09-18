@@ -108,7 +108,7 @@ $> python manage.py import_last_update_file_from_paris
 - La boite email equipe@mesads.beta.gouv.fr configurée sur [alwaysdata](www.alwaysdata.com) transfère les emails reçus aux membres de l'équipe.
 - [brevo](https://www.brevo.com/fr/) héberge le serveur SMTP utilisé pour les emails transactionnels .
 - Afin d'avoir des sauvegardes chez plusieurs fournisseurs, les bases de données sont sauvegardées chez [Scaleway](https://www.scaleway.com/).
-- Le support des utilisateurs est géré via [Crisp](https://crisp.chat/).
+- Le support des utilisateurs est géré par mail, à l'adresse equipe@mesads.beta.gouv.fr.
 - Les exceptions en production sont remontées sur [Sentry](https://sentry.incubateur.net).
 - Les statistiques de l'application sont remontées sur [Matomo](https://stats.beta.gouv.fr).
 
