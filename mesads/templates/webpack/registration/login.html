@@ -22,6 +22,24 @@
 <div class="fr-grid-row fr-grid-row--center">
   <div class="fr-col-12 fr-col-md-6">
     <h1 class="text-center">Connexion</h1>
+
+    <h2 class="text-center">
+        Se connecter avec ProConnect
+    </h2>
+    <div class="text-center fr-connect-group">
+      <a href="{% url 'oidc_authentication_init' %}" class="fr-connect">
+        <span class="fr-connect__login">S’identifier avec</span>
+        <span class="fr-connect__brand">ProConnect</span>
+      </a>
+      <p>
+        <a href="https://www.proconnect.gouv.fr/" id="connect-link-0" target="_blank" rel="noopener" title="Qu'est-ce que ProConnect ? - nouvelle fenêtre">Qu'est-ce que ProConnect ?</a>
+      </p>
+    </div>
+    
+    <p class="fr-hr-or">
+        ou
+    </p>
+
     <p>
       Sauf mention contraire, tous les champs sont obligatoires.
     </p>

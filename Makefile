@@ -29,18 +29,18 @@ run-local-as-prod:
 
 test:
 	flake8 mesads
-	coverage run --source=. manage.py test
+	coverage run --source=. manage.py test --settings=mesads.settings_test
 	coverage report -m
 
 # Tests without coverage
 fasttest:
-	python manage.py test --parallel 8
+	python manage.py test --parallel 8 --settings=mesads.settings_test
 
 test-no-cov:
-	python manage.py test --failfast
+	python manage.py test --failfast --settings=mesads.settings_test
 
 test-relais:
-	python manage.py test mesads.vehicules_relais --failfast
+	python manage.py test mesads.vehicules_relais --failfast --settings=mesads.settings_test
 
 
 update-requirements:

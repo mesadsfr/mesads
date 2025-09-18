@@ -17,6 +17,7 @@ urlpatterns = [
     path("relais/", include("mesads.vehicules_relais.urls")),
     path("__debug__/", include(debug_toolbar.urls)),
     path("markdownx/", include("markdownx.urls")),
+    path("oidc/", include("mozilla_django_oidc.urls")),
 ]
 
 if settings.DEBUG:

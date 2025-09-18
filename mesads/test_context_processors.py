@@ -34,6 +34,7 @@ EXCLUDE_MODULES = [
     r"^template_source$",
     r"jsi18n",
     r"view_on_site",
+    r"^oidc",
 ]
 
 
