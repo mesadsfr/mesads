@@ -33,3 +33,13 @@ from .public import (  # noqa: F401
     HomepageView,
     PlanSiteView,
 )
+
+from .liste_attente import (  # noqa: F401
+    ListeAttenteView,
+    CreationInscriptionListeAttenteView,
+    ModificationInscriptionListeAttenteView,
+    ExportCSVInscriptionListeAttenteView,
+    ArchivageInscriptionListeAttenteView,
+    ArchivageConfirmationView,
+    DemandeArchiveesView,
+)
