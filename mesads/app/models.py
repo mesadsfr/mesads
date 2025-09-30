@@ -1080,3 +1080,164 @@ class Notification(models.Model):
         null=False,
         verbose_name="Recevoir une notification lorsqu'une ADS d'une administration gérée est créée ou modifiée (pour les préfectures uniquement)",
     )
+
+
+WAITING_LIST_UNIQUE_ERROR_MESSAGE = (
+    "Une entrée dans la liste d'attente avec ce numéro existe déjà."
+)
+
+
+@reversion.register
+class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
+    class Meta:
+        verbose_name = "Inscription liste d'attente"
+        verbose_name_plural = "Inscriptions liste d'attente"
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=["numero", "ads_manager_id"],
+                condition=Q(deleted_at__isnull=True),
+                name="unique_waiting_list_number",
+                violation_error_message=WAITING_LIST_UNIQUE_ERROR_MESSAGE,
+            ),
+        ]
+
+    UP_TO_DATE_DAYS = 90
+
+    derniere_maj = models.DateTimeField(
+        auto_now=True,
+        verbose_name="Date de la dernière mise à jour de l'entrée de la liste d'attente",
+        help_text="Cette date est mise à jour automatiquement à chaque fois que l'entrée de la liste d'attente est modifiée.",
+    )
+    ads_manager = models.ForeignKey(
+        ADSManager,
+        on_delete=models.RESTRICT,
+        related_name="inscriptions_liste_attente",
+        verbose_name="Gestionnaire ADS",
+    )
+
+    numero = models.CharField(
+        max_length=64,
+        blank=True,
+        verbose_name="Numéro d'enregistrement",
+        help_text=(
+            "Vous êtes libre de fixer le numéro de votre choix. Vous pouvez choisir de le générer automatiquement."
+        ),
+    )
+
+    nom = models.CharField(
+        max_length=1024,
+        verbose_name="Nom",
+        help_text=(
+            "Attention :  seule une personne physique peut être inscrite sur une liste d'attente, à l'exclusion des personnes morales (sociétés)"
+        ),
+    )
+
+    prenom = models.CharField(
+        max_length=1024,
+        verbose_name="Prénom",
+        help_text=(
+            "Attention :  seule une personne physique peut être inscrite sur une liste d'attente, à l'exclusion des personnes morales (sociétés)"
+        ),
+    )
+
+    numero_licence = models.CharField(
+        max_length=64,
+        verbose_name="N° de la carte professionnelle",
+        help_text=(
+            "Attention : il vous appartient de vérifier que le demandeur dispose d’une carte professionnelle en cours de validité au moment de l'inscription ou du renouvellement de la demande) "
+        ),
+    )
+
+    numero_telephone = models.CharField(
+        max_length=128,
+        blank=True,
+        verbose_name="Téléphone",
+    )
+
+    email = models.EmailField(
+        max_length=128,
+        blank=True,
+        verbose_name="Email",
+    )
+
+    adresse = models.CharField(
+        max_length=4096,
+        blank=True,
+        verbose_name="Adresse postale",
+    )
+
+    date_depot_inscription = models.DateField(
+        verbose_name="Date de dépôt de la demande initiale",
+    )
+
+    date_dernier_renouvellement = models.DateField(
+        verbose_name="Date de la dernière demande de renouvellement",
+    )
+
+    date_fin_validite = models.DateField(
+        verbose_name="Date de fin de validité de la demande",
+        help_text="Par défaut, la demande devient invalide si son dépôt initial ou son renouvellement date de plus d’un an.",
+    )
+
+    commentaire = models.TextField(
+        blank=True,
+        verbose_name="Commentaire",
+        help_text=(
+            "Champ libre pour les informations complémentaires utiles (date de la dernière relance, …)"
+        ),
+    )
+
+    exploitation_ads = models.BooleanField(
+        verbose_name="Sur les 5 dernières années, le conducteur a-t'il exploité une ADS pendant au moins 2 ans ?",
+        help_text=(
+            "Sont prioritaires pour une nouvelle ADS les conducteurs ayant "
+            "exploité une ADS au moins deux ans au cours des cinq dernières "
+            "années ; les demandes valides des autres ne sont attribuées qu'en "
+            "l'absence de demandes prioritaires."
+        ),
+    )
+
+    MOTIFS_ARCHIVAGE = [
+        (
+            "absence_reponse",
+            "Absence de réponse du demandeur",
+        ),
+        ("informations_erronees", "Informations erronnées"),
+        ("demande_non_renouvellee", "Demande non renouvellée"),
+        ("non_respect_conditions", "Non respect des conditions réglementaires"),
+        ("demande_candidat", "A la demande du candidat"),
+        ("autre", "Autre"),
+    ]
+
+    motif_archivage = models.CharField(
+        max_length=255,
+        choices=MOTIFS_ARCHIVAGE,
+        blank=True,
+        verbose_name="Motif d'archivage",
+    )
+
+    def __str__(self):
+        return f"Entrée {self.numero} de la liste d'attente de {self.ads_manager.content_object.display_fulltext()}"
+
+    def demande_expire(self):
+        return self.date_fin_validite < timezone.now().date()
+
+    def a_jour(self):
+        """Les informations de l'entrée de la liste d'attente sont considérées à
+        jour si elles ont été mises à jour récemment. Sinon, il est nécessaire
+        de les vérifier."""
+        return self.derniere_maj >= timezone.now() - timezone.timedelta(
+            days=self.UP_TO_DATE_DAYS
+        )
+
+    def calcul_status_pour_attribution(self):
+        if self.status != "valid":
+            return "not-valid"
+        if self.date_fin_validite < timezone.now():
+            return "not-valid-anymore"
+        if not self.a_jour():
+            return "unknown"
+        if self.exploitation_ads:
+            return "priority"
+        return "no priority"

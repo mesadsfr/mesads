@@ -35,3 +35,13 @@ from .public import (  # noqa: F401
 )
 
 from .notation_view import NotationView  # noqa: F401
+
+from .liste_attente import (  # noqa: F401
+    ListeAttenteView,
+    CreationInscriptionListeAttenteView,
+    ModificationInscriptionListeAttenteView,
+    ExportCSVInscriptionListeAttenteView,
+    ArchivageInscriptionListeAttenteView,
+    ArchivageConfirmationView,
+    DemandeArchiveesView,
+)
