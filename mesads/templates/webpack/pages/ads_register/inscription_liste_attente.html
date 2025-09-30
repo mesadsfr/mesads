@@ -1,0 +1,82 @@
+{% extends "base_container.html" %}
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d’Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">Liste d'attente {{ads_manager.content_object.display_text}}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">{% if object %}Modification de l'inscription{% else %}Nouvelle inscription{% endif %}</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <div>
+    <h1>
+      {% if object %}
+      Modification de l'inscription
+      {% else %}
+      Nouvelle inscription
+      {% endif %}
+    </h1>
+
+    <h2>{{ads_manager.content_object.display_text}}</h2>
+  </div>
+
+  <div>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        
+        <div class="fr-messages-group" aria-live="assertive">
+          {% for error in form.non_field_errors %}
+            <!-- Non-field error -->
+            <p class="fr-message fr-message--error">{{ error }}</p>
+          {% endfor %}
+        </div>
+      
+      {% endif %}
+
+      {% include "form_fields/string.html" with field=form.numero field_errors=form.errors.numero required=form.fields.numero.required %}
+
+      {% include "form_fields/string.html" with field=form.nom field_errors=form.errors.nom required=form.fields.nom.required %}
+
+      {% include "form_fields/string.html" with field=form.prenom field_errors=form.errors.prenom required=form.fields.prenom.required %}
+
+      {% include "form_fields/string.html" with field=form.numero_licence field_errors=form.errors.numero_licence required=form.fields.numero_licence.required %}
+
+      {% include "form_fields/string.html" with field=form.numero_telephone field_errors=form.errors.numero_telephone required=form.fields.numero_telephone.required %}
+
+      {% include "form_fields/string.html" with field=form.email field_errors=form.errors.email required=form.fields.email.required %}
+
+      {% include "form_fields/string.html" with field=form.adresse field_errors=form.errors.adresse required=form.fields.adresse.required %}
+
+      {% include "form_fields/bool.html" with field=form.exploitation_ads field_errors=form.errors.exploitation_ads required=form.fields.exploitation_ads.required %}
+
+      {% include "form_fields/date.html" with field=form.date_depot_inscription field_errors=form.errors.date_depot_inscription required=form.fields.date_depot_inscription.required %}
+
+      {% include "form_fields/date.html" with field=form.date_dernier_renouvellement field_errors=form.errors.date_dernier_renouvellement required=form.fields.date_dernier_renouvellement.required %}
+      
+      {% include "form_fields/date.html" with field=form.date_fin_validite field_errors=form.errors.date_fin_validite required=form.fields.date_fin_validite.required %}
+
+      {% include "form_fields/textarea.html" with field=form.commentaire field_errors=form.errors.commentaire required=form.fields.commentaire.required %}
+
+      <div class="fr-input-group">
+        <a class="fr-btn fr-btn--secondary" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">Retour</a>
+        <button type="submit" class="fr-btn">Enregistrer l'inscription</button>
+      </div>
+    </form>
+  </div>
+{% endblock body-content %}
