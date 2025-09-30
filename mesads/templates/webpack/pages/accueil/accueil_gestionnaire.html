@@ -49,8 +49,18 @@
                             {% elif requete.accepted is False %}
                               🚫 Demande refusée
                             {% elif requete.accepted is True %}
-                              <a class="fr-btn fr-btn--primary"
-                                href="{% url 'app.ads-manager.detail' manager_id=requete.ads_manager.id %}">Gérez les ADS</a>
+                              <a
+                                class="fr-btn fr-btn--primary"
+                                href="{% url 'app.ads-manager.detail' manager_id=requete.ads_manager.id %}"
+                              >
+                                Gérez les ADS
+                              </a>
+                              <a
+                                class="fr-btn fr-btn--primary mt-1"
+                                href="{% url 'app.liste_attente' manager_id=requete.ads_manager.id %}"
+                              >
+                                Gérez la liste d'attente
+                              </a>
                             {% endif %}
                           </td>
                         </tr>
