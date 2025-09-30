@@ -20,6 +20,7 @@ requests-mock = "^1.9.3"
 djlint = "^1.36.4"
 django-query-counter = "^0.4.1"
 Faker = "^37.6.0"
+factory_boy = "^3.3.3"
 
 
 [tool.coverage.run]
@@ -84,6 +85,7 @@ qrcode = "^7.4.2"
 pyotp = "^2.9.0"
 django-anymail = "^13.1"
 mozilla_django_oidc = "^4.0.1"
+python-dotenv = "^1.1.1"
 
 
 [build-system]

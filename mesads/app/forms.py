@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import re
 
 from django.contrib.contenttypes.models import ContentType
@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django import forms
 from django.forms import BaseInlineFormSet, inlineformset_factory
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 
 from dal import autocomplete
 
@@ -19,6 +20,7 @@ from .models import (
     ADSManager,
     ADSManagerDecree,
     ADSUser,
+    InscriptionListeAttente,
 )
 from .widgets import BooleanSelect
 
@@ -454,3 +456,75 @@ class ADSManagerAutocompleteForm(forms.Form):
 
 class SearchVehiculeForm(forms.Form):
     immatriculation = forms.CharField(required=False)
+
+
+class InscriptionListeAttenteForm(forms.ModelForm):
+    class Meta:
+        model = InscriptionListeAttente
+        fields = (
+            "numero",
+            "nom",
+            "prenom",
+            "numero_licence",
+            "numero_telephone",
+            "email",
+            "adresse",
+            "exploitation_ads",
+            "date_depot_inscription",
+            "date_dernier_renouvellement",
+            "date_fin_validite",
+            "commentaire",
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        today = timezone.localdate()
+
+        date_dernier_renouvellement = cleaned_data.get("date_dernier_renouvellement")
+        if (
+            date_dernier_renouvellement
+            and date_dernier_renouvellement <= today - timedelta(days=365)
+        ):
+            self.add_error(
+                "date_dernier_renouvellement",
+                "Le renouvellement semble dater de plus d’un an. Vérifiez si un dépôt de demande de renouvellement a eu lieu au cours des 12 derniers mois.",
+            )
+
+        date_fin_validite = cleaned_data.get("date_fin_validite")
+        if date_fin_validite and date_fin_validite <= today:
+            self.add_error(
+                "date_fin_validite",
+                "La demande semble expirer. Vous devez vérifier sa validité avant de pouvoir attribuer une ADS à ce demandeur.",
+            )
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        obj = super().save(commit=False)
+
+        # Auto-génération si pas de numéro
+        if not obj.numero:
+            count = InscriptionListeAttente.objects.filter(
+                date_depot_inscription=obj.date_depot_inscription
+            ).count()
+            obj.numero = (
+                f"{count + 1:03d}{obj.date_depot_inscription.strftime('%d%m%Y')}"
+            )
+
+        if commit:
+            obj.save()
+        return obj
+
+
+class ArchivageInscriptionListeAttenteForm(forms.ModelForm):
+    class Meta:
+        model = InscriptionListeAttente
+        fields = ("nom", "prenom", "numero_licence", "motif_archivage", "commentaire")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["motif_archivage"].required = True
+        self.fields["motif_archivage"].error_messages = {
+            "required": "Merci de renseigner le motif d’archivage."
+        }

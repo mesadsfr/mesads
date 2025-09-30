@@ -142,6 +142,44 @@ url_gestionnaire = [
     ),
 ]
 
+url_liste_attente = [
+    path(
+        "liste_attente/<int:manager_id>/",
+        ads_manager_required(views.ListeAttenteView.as_view()),
+        name="app.liste_attente",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/archives/",
+        ads_manager_required(views.DemandeArchiveesView.as_view()),
+        name="app.liste_attente_archives",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/export/",
+        ads_manager_required(views.ExportCSVInscriptionListeAttenteView.as_view()),
+        name="app.liste_attente_export",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/inscription/",
+        ads_manager_required(views.CreationInscriptionListeAttenteView.as_view()),
+        name="app.liste_attente_inscription",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/<int:inscription_id>/",
+        ads_manager_required(views.ModificationInscriptionListeAttenteView.as_view()),
+        name="app.liste_attente_inscription_update",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/archivage/<int:inscription_id>/",
+        ads_manager_required(views.ArchivageInscriptionListeAttenteView.as_view()),
+        name="app.liste_attente_inscription_archivage",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/archivage/confirmation/",
+        ads_manager_required(views.ArchivageConfirmationView.as_view()),
+        name="app.liste_attente_inscription_archivage_confirmation",
+    ),
+]
+
 url_commons = [
     path(
         "registre_ads/dashboards",
@@ -193,4 +231,6 @@ url_public = [
 ]
 
 
-urlpatterns = url_prefectures + url_gestionnaire + url_commons + url_public
+urlpatterns = (
+    url_prefectures + url_gestionnaire + url_commons + url_public + url_liste_attente
+)
