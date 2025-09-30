@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .models import Commune, EPCI, Prefecture
+from ..models import Commune, EPCI, Prefecture
 
 
 class TestCommune(TestCase):

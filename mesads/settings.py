@@ -19,6 +19,9 @@ import sys
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def parse_env_bool(key, default):
