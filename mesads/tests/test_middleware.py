@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase
 
-from .middleware import BackwardCompatibilityURLMiddleware
+from ..middleware import BackwardCompatibilityURLMiddleware
 
 
 class TestBackwardCompatibilityURLMiddleware(TestCase):

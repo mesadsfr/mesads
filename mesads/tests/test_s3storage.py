@@ -1,6 +1,6 @@
 import unittest
 
-from .s3storage import HackishS3Boto3Storage
+from ..s3storage import HackishS3Boto3Storage
 
 
 class TestHackishS3Boto3Storage(unittest.TestCase):
