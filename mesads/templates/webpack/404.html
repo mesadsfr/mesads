@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "base_container.html" %}
 {% block extra_head %}
   {{ block.super }}
   <title>Page introuvable</title>
 {% endblock extra_head %}
-{% block body %}
+{% block body-content %}
   <h1 class="fr-mb-4w">La page demandée n'existe pas</h1>
   <p>💨 Le lien que vous avez suivi mène vers une page qui n'existe pas.</p>
   <div class="fr-notice fr-notice--info fr-mb-2w">
@@ -24,4 +24,4 @@
   <p>
     Si vous pensez qu'il s'agit d'une erreur, n'hésitez pas à contacter notre équipe sur <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
   </p>
-{% endblock body %}
+{% endblock body-content %}

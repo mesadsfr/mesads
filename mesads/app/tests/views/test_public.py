@@ -90,24 +90,6 @@ class TestHomepageView(ClientTestCase):
         self.assertTrue(response.context.get("proprietaire_vehicule_relais"))
 
 
-class TestProfileADSManagerAdministratorView(ClientTestCase):
-    def test_200(self):
-        resp = self.anonymous_client.get("/prefecture")
-        self.assertEqual(resp.status_code, 200)
-
-
-class TestProfileADSManagerView(ClientTestCase):
-    def test_200(self):
-        resp = self.anonymous_client.get("/gestionnaire_ads")
-        self.assertEqual(resp.status_code, 200)
-
-
-class TestProfileDriverView(ClientTestCase):
-    def test_200(self):
-        resp = self.anonymous_client.get("/chauffeur")
-        self.assertEqual(resp.status_code, 200)
-
-
 class TestFAQView(ClientTestCase):
     def test_get(self):
         resp = self.client.get("/faq")

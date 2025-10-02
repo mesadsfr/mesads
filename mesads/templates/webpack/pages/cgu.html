@@ -1,6 +1,6 @@
-{% extends "base.html" %}
+{% extends "base_container.html" %}
 
-{% block body %}
+{% block body-content %}
 <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
   <button class="fr-breadcrumb__button"
           aria-expanded="false"
@@ -218,4 +218,4 @@
   Pour toute question sur le service ou les présentes CGU : <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
 </p>
 
-{% endblock %}
+{% endblock body-content %}

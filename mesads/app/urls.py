@@ -159,28 +159,6 @@ url_public = [
         TemplateView.as_view(template_name="pages/suivi.html"),
         name="app.suivi",
     ),
-    path(
-        "gestionnaire_ads",
-        TemplateView.as_view(template_name="pages/profiles_ads_manager.html"),
-        name="app.profiles.ads_manager",
-    ),
-    path(
-        "prefecture",
-        TemplateView.as_view(
-            template_name="pages/profiles_ads_manager_administrator.html"
-        ),
-        name="app.profiles.ads_manager_administrator",
-    ),
-    path(
-        "chauffeur",
-        TemplateView.as_view(template_name="pages/profiles_driver.html"),
-        name="app.profiles.driver",
-    ),
-    path(
-        "proprietaire_vehicules_relais",
-        TemplateView.as_view(template_name="pages/profiles_vehicules_relais.html"),
-        name="app.profiles.vehicules-relais",
-    ),
     path("chiffres-cles", views.StatsView.as_view(), name="app.stats"),
     path(
         "accessibilite",

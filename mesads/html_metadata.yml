@@ -18,22 +18,6 @@ urls:
     title: "FAQ MesADS - Foire aux questions"
     description: "Réponses aux questions fréquemment posées sur MesADS. Un problème technique ? Besoin d'aide ? Contactez-nous."
 
-  app.profiles.ads_manager:
-    title: "MesADS: le registre ADS pour les gestionnaires de communes et EPCI"
-    description: Respectez l'obligation d'enregistrement des ADS de votre commune ou EPCI avec MesADS. Créez votre compte pour commencer.
-
-  app.profiles.driver:
-    title: MesADS pour un chauffeur de taxi
-    description: MesADS liste les véhicules relais pour aider les chauffeurs de taxi à trouver un véhicule de remplacement en cas de panne ou d'accident.
-
-  app.profiles.vehicules-relais:
-    title: "Propriétaires de taxis relais: enregistrez-vous sur MesADS"
-    description: Respectez la réglementation facilement avec MesADS. Enregistrez et gérez vos taxis relais ici.
-
-  app.profiles.ads_manager_administrator:
-    title: "MesADS: le registre ADS pour les agents préfectoraux"
-    description: MesADS permet aux agents préfectoraux de gérer les instructeurs ADS et les ADS aéroports de leur département.
-
   app.reglementation:
     title: "Réglementation taxi - MesADS"
     description: Les questions fréquemment posées sur la réglementation des taxis et des véhicules relais.
