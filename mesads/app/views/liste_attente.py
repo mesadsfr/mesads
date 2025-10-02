@@ -36,7 +36,7 @@ class ListeAttenteView(ListView):
         search_items = search.split(" ")
         q = Q()
         for search_item in search_items:
-            q |= (
+            q &= (
                 Q(nom__icontains=search_item)
                 | Q(prenom__icontains=search_item)
                 | Q(numero__icontains=search_item)
