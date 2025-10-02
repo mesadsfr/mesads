@@ -1,0 +1,15 @@
+{% extends "admin/index.html" %}
+{% load i18n static %}
+
+{% block content %}
+  <div class="dashboard">
+    <div class="module">
+      <h2>Outils</h2>
+      <ul class="actionlist">
+        <li><a href="{% url 'admin-statistiques' %}">📈 Statistiques</a></li>
+      </ul>
+    </div>
+
+    {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
+  </div>
+{% endblock %}

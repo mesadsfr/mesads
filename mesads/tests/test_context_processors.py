@@ -34,6 +34,7 @@ EXCLUDE_MODULES = [
     r"^template_source$",
     r"jsi18n",
     r"view_on_site",
+    r"admin-statistiques",
 ]
 
 
@@ -59,7 +60,7 @@ def list_modules_urls():
 class TestHTMLMetadata(unittest.TestCase):
     def test_yaml_file(self):
         """Make sure the keys in the YAML file cover all URLs."""
-        data = pkg_resources.resource_string(__name__, "html_metadata.yml")
+        data = pkg_resources.resource_string(__name__, "../html_metadata.yml")
         metadata = yaml.safe_load(data)
         metadata_views = list(metadata.get("urls", {}).keys())
         mesads_reverses = list_modules_urls()
