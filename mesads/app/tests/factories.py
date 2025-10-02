@@ -62,7 +62,7 @@ class InscriptionListeAttenteFactory(factory.django.DjangoModelFactory):
     email = factory.Faker("email")
     adresse = factory.Faker("address", locale="fr_FR")
 
-    numero = factory.Sequence(lambda n: n + 1)
+    numero = factory.Sequence(lambda n: f"{n + 1}")
 
     numero_licence = factory.Faker("bothify", text="LIC-########")
     numero_telephone = factory.Faker("phone_number", locale="fr_FR")
