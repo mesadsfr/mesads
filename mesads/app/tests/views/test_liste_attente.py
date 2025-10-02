@@ -268,6 +268,34 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
             response, "pages/ads_register/inscription_liste_attente.html"
         )
 
+    def test_get_formulaire_modification_inscription_redirection(self):
+        ads_manager = ADSManagerFactory(for_commune=True)
+        ADSManagerRequestFactory(user=self.user, ads_manager=ads_manager)
+        inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
+        assert InscriptionListeAttente.objects.count() == 1
+        response = self.client.get(
+            reverse(
+                "app.liste_attente_inscription_update",
+                kwargs={
+                    "manager_id": ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+        )
+        self.assertRedirects(
+            response,
+            expected_url=reverse(
+                "app.liste_attente_inscription_update",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            status_code=http.HTTPStatus.FOUND,
+            target_status_code=http.HTTPStatus.OK,
+            fetch_redirect_response=True,
+        )
+
     def test_post_formulaire_modification_inscription_ok(self):
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
         assert InscriptionListeAttente.objects.count() == 1
@@ -368,6 +396,34 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
         assert response.context["form"].instance == inscription
         self.assertTemplateUsed(
             response, "pages/ads_register/archivage_inscription_liste_attente.html"
+        )
+
+    def test_get_formulaire_archivage_inscription_redirection(self):
+        ads_manager = ADSManagerFactory(for_commune=True)
+        ADSManagerRequestFactory(user=self.user, ads_manager=ads_manager)
+        inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
+        assert InscriptionListeAttente.objects.count() == 1
+        response = self.client.get(
+            reverse(
+                "app.liste_attente_inscription_archivage",
+                kwargs={
+                    "manager_id": ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+        )
+        self.assertRedirects(
+            response,
+            expected_url=reverse(
+                "app.liste_attente_inscription_archivage",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            status_code=http.HTTPStatus.FOUND,
+            target_status_code=http.HTTPStatus.OK,
+            fetch_redirect_response=True,
         )
 
     def test_post_formulaire_archivage_inscription(self):
