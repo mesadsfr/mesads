@@ -269,6 +269,9 @@ class SearchVehiculeForm(forms.Form):
 
 
 class InscriptionListeAttenteForm(forms.ModelForm):
+    ERROR_DATE_RENOUVELLEMENT = "Le renouvellement semble dater de plus d’un an. Vérifiez si un dépôt de demande de renouvellement a eu lieu au cours des 12 derniers mois."
+    ERROR_DATE_FIN_VALIDITE = "La demande semble expirer. Vous devez vérifier sa validité avant de pouvoir attribuer une ADS à ce demandeur."
+
     class Meta:
         model = InscriptionListeAttente
         fields = (
@@ -298,14 +301,14 @@ class InscriptionListeAttenteForm(forms.ModelForm):
         ):
             self.add_error(
                 "date_dernier_renouvellement",
-                "Le renouvellement semble dater de plus d’un an. Vérifiez si un dépôt de demande de renouvellement a eu lieu au cours des 12 derniers mois.",
+                self.ERROR_DATE_RENOUVELLEMENT,
             )
 
         date_fin_validite = cleaned_data.get("date_fin_validite")
         if date_fin_validite and date_fin_validite <= today:
             self.add_error(
                 "date_fin_validite",
-                "La demande semble expirer. Vous devez vérifier sa validité avant de pouvoir attribuer une ADS à ce demandeur.",
+                self.ERROR_DATE_FIN_VALIDITE,
             )
 
         return cleaned_data
