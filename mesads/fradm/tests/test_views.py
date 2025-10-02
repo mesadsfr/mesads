@@ -1,4 +1,4 @@
-from .unittest import ClientTestCase
+from ..unittest import ClientTestCase
 
 
 class TestCommuneAutocompleteView(ClientTestCase):
