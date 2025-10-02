@@ -1,4 +1,4 @@
-from datetime import datetime, date, timedelta
+from datetime import datetime, timedelta
 import re
 
 from django.contrib.contenttypes.models import ContentType
