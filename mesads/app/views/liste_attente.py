@@ -124,6 +124,20 @@ class ModificationInscriptionListeAttenteView(UpdateView):
     pk_url_kwarg = "inscription_id"
     model = InscriptionListeAttente
 
+    def dispatch(self, request, *args, **kwargs):
+        if self.get_object().ads_manager.id != self.kwargs["manager_id"]:
+            return HttpResponseRedirect(
+                redirect_to=reverse(
+                    "app.liste_attente_inscription_update",
+                    kwargs={
+                        "manager_id": self.get_object().ads_manager.id,
+                        "inscription_id": self.get_object().id,
+                    },
+                )
+            )
+
+        return super().dispatch(request, *args, **kwargs)
+
     def get_success_url(self):
         return reverse(
             "app.liste_attente",
@@ -155,6 +169,20 @@ class ArchivageInscriptionListeAttenteView(UpdateView):
     form_class = ArchivageInscriptionListeAttenteForm
     pk_url_kwarg = "inscription_id"
     model = InscriptionListeAttente
+
+    def dispatch(self, request, *args, **kwargs):
+        if self.get_object().ads_manager.id != self.kwargs["manager_id"]:
+            return HttpResponseRedirect(
+                redirect_to=reverse(
+                    "app.liste_attente_inscription_archivage",
+                    kwargs={
+                        "manager_id": self.get_object().ads_manager.id,
+                        "inscription_id": self.get_object().id,
+                    },
+                )
+            )
+
+        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse(
