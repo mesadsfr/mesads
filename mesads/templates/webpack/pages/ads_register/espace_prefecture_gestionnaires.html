@@ -69,8 +69,19 @@
                           {% elif request.accepted is False %}
                             🚫 Demande refusée
                           {% elif request.accepted is True %}
-                            <a class="fr-btn"
-                              href="{% url 'app.ads-manager-admin.detail-administration' prefecture_id=ads_manager_administrator.prefecture.id manager_id=request.ads_manager.id %}">Gérez les ADS</a>
+                            <a
+                              class="fr-btn"
+                              href="{% url 'app.ads-manager-admin.detail-administration' prefecture_id=ads_manager_administrator.prefecture.id manager_id=request.ads_manager.id %}"
+                            >
+                              Gérez les ADS
+                            </a>
+
+                            <a
+                              class="fr-btn fr-btn--primary mt-1"
+                              href="{% url 'app.liste_attente' manager_id=request.ads_manager.id %}"
+                            >
+                              Gérez la liste d'attente
+                            </a>
                           {% endif %}
                         </td>
                       </tr>
