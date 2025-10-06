@@ -210,6 +210,7 @@ class ADSAdmin(CompareVersionAdmin):
         "immatriculation_plate__iexact",
         "number__istartswith",
         "owner_name__icontains",
+        "owner_siret__iexact",
     )
 
     autocomplete_fields = (
