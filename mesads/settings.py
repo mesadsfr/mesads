@@ -282,12 +282,17 @@ MESADS_CONTACT_EMAIL = "equipe@mesads.beta.gouv.fr"
 DEFAULT_FROM_EMAIL = MESADS_CONTACT_EMAIL
 SERVER_EMAIL = MESADS_CONTACT_EMAIL
 
-
-EMAIL_HOST = os.getenv("EMAIL_HOST", "maildev")
-EMAIL_PORT = os.getenv("EMAIL_PORT", 25)
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
-EMAIL_USE_TLS = parse_env_bool("EMAIL_USE_TLS", False)
+# Configuration Mail
+if DEBUG:
+    EMAIL_HOST = os.getenv("EMAIL_HOST", "maildev")
+    EMAIL_PORT = os.getenv("EMAIL_PORT", 25)
+    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+    EMAIL_USE_TLS = parse_env_bool("EMAIL_USE_TLS", False)
+else:
+    INSTALLED_APPS += ["anymail"]
+    EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
+    ANYMAIL = {"BREVO_API_KEY": os.environ["BREVO_API_KEY"]}
 
 # Add configuration below to log SQL queries to console
 if parse_env_bool("LOGGING_ENABLED", False):
