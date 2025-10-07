@@ -281,3 +281,11 @@ urls:
   app.liste_attente_inscription_archivage_confirmation:
     title: "Archivage confirmé"
     description: "Confirmation d'archivage d'une inscription à la liste d'attente de {{ads_manager.content_object.display_text}}"
+
+  app.liste_attente_attribution:
+    title: "Liste d'attente - Attribution"
+    description: "Attribution d'une nouvelle ADS depuis la liste d'attente"
+
+  app.liste_attente_attribution_ads:
+    title: "Liste d'attente - Attribution, choix de l'ADS"
+    description: "Attribution d'une nouvelle ADS depuis la liste d'attente"

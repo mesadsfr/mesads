@@ -144,6 +144,16 @@ url_liste_attente = [
         name="app.liste_attente_archives",
     ),
     path(
+        "liste_attente/<int:manager_id>/attribution-ads/",
+        ads_manager_required(views.AttributionListeAttenteView.as_view()),
+        name="app.liste_attente_attribution",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/attribution-ads/<int:inscription_id>/",
+        ads_manager_required(views.AttributionADSInscriptionListeAttenteView.as_view()),
+        name="app.liste_attente_attribution_ads",
+    ),
+    path(
         "liste_attente/<int:manager_id>/export/",
         ads_manager_required(views.ExportCSVInscriptionListeAttenteView.as_view()),
         name="app.liste_attente_export",
