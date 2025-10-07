@@ -1,0 +1,11 @@
+<div class="fr-stepper">
+  <h2 class="fr-stepper__title"> Attribution de l'ADS<span class="fr-stepper__state">Étape 3 sur 3</span>
+  </h2>
+  <div class="fr-stepper__steps" data-fr-current-step="3" data-fr-steps="3"></div>
+  <p class="fr-stepper__details"><span class="fr-text--bold">Étape suivante :</span> Prise en compte de la réponse</p>
+</div>
+
+<div>
+  Vous allez pouvoir attribuer une ADS au demandeur en suivant le lien suivant:
+  <a href="{% url 'app.liste_attente_attribution_ads' manager_id=ads_manager.id inscription_id=demande_retenue.id %}">Attribution d'une ADS</a>
+</div>
