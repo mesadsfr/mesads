@@ -290,6 +290,8 @@ class ADSView(RevisionMixin, UpdateView):
                 )
 
         messages.success(self.request, "Les modifications ont été enregistrées.")
+        if self.inscription:
+            self.inscription.ads_attribuee()
         return HttpResponseRedirect(self.get_success_url())
 
     def send_notification(self, user, ads, is_new_ads):
@@ -445,7 +447,10 @@ class ADSCreateView(ADSView, CreateView):
         # database, we return a custom error message for "number".
         try:
             with transaction.atomic():
-                return super().form_valid(form)
+                response = super().form_valid(form)
+                if self.inscription:
+                    self.inscription.ads_attribuee()
+                return response
         except IntegrityError:
             form.add_error("number", ADS_UNIQUE_ERROR_MESSAGE)
             return super().form_invalid(form)
