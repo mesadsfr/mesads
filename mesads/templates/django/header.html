@@ -38,7 +38,7 @@
                   <a class="fr-link fr-icon-user-line" href="{% url 'password_change' %}">Changer de mot de passe</a>
                 </li>
                 <li>
-                  <form action="{% url 'logout' %}" method="post">
+                  <form action="{% url 'oidc_logout' %}" method="post">
                     {% csrf_token %}
                     <button type="submit" class="fr-link fr-icon-close-circle-line">Déconnexion</button>
                   </form>

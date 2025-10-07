@@ -89,6 +89,22 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=64,
     )
 
+    proconnect_sub = models.UUIDField(
+        "Identifiant unique proconnect", null=True, blank=True
+    )
+    proconnect_uid = models.CharField("ID chez le FI", default="", blank=True)
+    proconnect_idp_id = models.UUIDField("Identifiant du FI", null=True, blank=True)
+    proconnect_siret = models.CharField(
+        "SIRET",
+        default="",
+        blank=True,
+    )
+    proconnect_chorusdt = models.CharField(
+        "Entité ministérielle / Matricule Agent",
+        default="",
+        blank=True,
+    )
+
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

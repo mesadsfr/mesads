@@ -1,6 +1,6 @@
 *.env
 *.sql
-*.csv
+./*.csv
 .cache
 /static
 /uploads
