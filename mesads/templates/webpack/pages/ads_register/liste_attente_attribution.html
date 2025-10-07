@@ -53,66 +53,69 @@
       </p>
 
       <div class="fr-table fr-table--no-scroll fr-table--multiline" id="table-0-component">
-      <div class="fr-table__wrapper">
-        <div class="fr-table__container">
-          <div class="fr-table__content">
-            <table id="table-0">
-              <caption> Inscription retenue </caption>
-              <thead>
-                <tr>
-                  <th>N° d'enregistrement </th>
-                  <th> Nom et prénom </th>
-                  <th> N° carte pro </th>
-                  <th> Date de dépôt de la demande </th>
-                  <th> Date dernier renouvellement </th>
-                  <th> Date fin de validité </th>
-                  <th> Coordonnées </th>
-                  <th> Exploitation ADS </th>
-                  <th> Modifier ou archiver </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr id="inscription-retenue">
-                  <td>{{demande_retenue.numero}}</td>
-                  <td>{{demande_retenue.nom}} {{demande_retenue.prenom}}</td>
-                  <td>{{demande_retenue.numero_licence}}</td>
-                  <td>{{demande_retenue.date_depot_inscription}}</td>
-                  <td>{{demande_retenue.date_dernier_renouvellement}}</td>
-                  <td>{{demande_retenue.date_fin_validite}}</td>
-                  <td>{{demande_retenue.email}} {{demande_retenue.numero_telephone}}</td>
-                  <td>{% if demande_retenue.exploitation_ads %}Oui{% else %}Non{% endif %}</td>
-                  <td>
-                    <a
-                      class="fr-btn fr-btn--secondary fr-icon-eye-line"
-                      href="{% url 'app.liste_attente_inscription_update' manager_id=ads_manager.id inscription_id=demande_retenue.id %}"
-                    >
-                      <span class="fr-sr-only">
-                        Modifier
-                      </span>
-                    </a>
-                    <a
-                      class="fr-btn fr-btn--secondary fr-icon-archive-line mt-0.5"
-                      href="{% url 'app.liste_attente_inscription_archivage'  manager_id=ads_manager.id inscription_id=demande_retenue.id %}"
-                    >
-                      <span class="fr-sr-only">
-                        Archiver
-                      </span>
-                    </a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+        <div class="fr-table__wrapper">
+          <div class="fr-table__container">
+            <div class="fr-table__content">
+              <table id="table-0">
+                <caption> Inscription retenue </caption>
+                <thead>
+                  <tr>
+                    <th>N° d'enregistrement </th>
+                    <th> Nom et prénom </th>
+                    <th> N° carte pro </th>
+                    <th> Date de dépôt de la demande </th>
+                    <th> Date dernier renouvellement </th>
+                    <th> Date fin de validité </th>
+                    <th> Coordonnées </th>
+                    <th> Exploitation ADS </th>
+                    <th> Modifier ou archiver </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr id="inscription-retenue">
+                    <td>{{demande_retenue.numero}}</td>
+                    <td>{{demande_retenue.nom}} {{demande_retenue.prenom}}</td>
+                    <td>{{demande_retenue.numero_licence}}</td>
+                    <td>{{demande_retenue.date_depot_inscription}}</td>
+                    <td>{{demande_retenue.date_dernier_renouvellement}}</td>
+                    <td>{{demande_retenue.date_fin_validite}}</td>
+                    <td>{{demande_retenue.email}} {{demande_retenue.numero_telephone}}</td>
+                    <td>{% if demande_retenue.exploitation_ads %}Oui{% else %}Non{% endif %}</td>
+                    <td>
+                      <a
+                        class="fr-btn fr-btn--secondary fr-icon-eye-line"
+                        href="{% url 'app.liste_attente_inscription_update' manager_id=ads_manager.id inscription_id=demande_retenue.id %}"
+                      >
+                        <span class="fr-sr-only">
+                          Modifier
+                        </span>
+                      </a>
+                      <a
+                        class="fr-btn fr-btn--secondary fr-icon-archive-line mt-0.5"
+                        href="{% url 'app.liste_attente_inscription_archivage'  manager_id=ads_manager.id inscription_id=demande_retenue.id %}"
+                      >
+                        <span class="fr-sr-only">
+                          Archiver
+                        </span>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
 
-      {% if demande_retenue.status == "inscrit" %}
-        {% include "pages/ads_register/liste_attente_attribution_etape_1.html" %}
-      {% elif demande_retenue.status == "attente_reponse" %}
-        {% include "pages/ads_register/liste_attente_attribution_etape_2.html" %}
-      {% elif demande_retenue.status == "reponse_ok" %}
-        {% include "pages/ads_register/liste_attente_attribution_etape_3.html" %}
-      {% endif %}
+      <div class=" p-4 border-4 border-b-4 border-indigo-500 rounded-xl">
+        {% if demande_retenue.status == "inscrit" %}
+          {% include "pages/ads_register/liste_attente_attribution_etape_1.html" %}
+        {% elif demande_retenue.status == "attente_reponse" %}
+          {% include "pages/ads_register/liste_attente_attribution_etape_2.html" %}
+        {% elif demande_retenue.status == "reponse_ok" %}
+          {% include "pages/ads_register/liste_attente_attribution_etape_3.html" %}
+        {% endif %}
+      </div>
     {% else %}
       Pas de demande complète retrouvé
     {% endif %}
