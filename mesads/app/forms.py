@@ -341,3 +341,21 @@ class ArchivageInscriptionListeAttenteForm(forms.ModelForm):
         self.fields["motif_archivage"].error_messages = {
             "required": "Merci de renseigner le motif d’archivage."
         }
+
+
+class ContactInscriptionListeAttenteForm(forms.ModelForm):
+    class Meta:
+        model = InscriptionListeAttente
+        fields = ("date_contact", "delai_reponse")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["date_contact"].required = True
+        self.fields["date_contact"].error_messages = {
+            "required": "Merci de renseigner la date de contact."
+        }
+        self.fields["delai_reponse"].required = True
+        self.fields["delai_reponse"].initial = 15
+        self.fields["delai_reponse"].error_messages = {
+            "required": "Merci de renseigner le délai de réponse."
+        }
