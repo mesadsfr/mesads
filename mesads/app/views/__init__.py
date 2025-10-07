@@ -46,4 +46,6 @@ from .liste_attente import (  # noqa: F401
     DemandeArchiveesView,
     AttributionListeAttenteView,
     AttributionADSInscriptionListeAttenteView,
+    ModeleCourrierArchivageView,
+    ModeleCourrierContactView,
 )
