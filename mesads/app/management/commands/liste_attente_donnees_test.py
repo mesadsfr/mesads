@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from datetime import date, timedelta
 from mesads.app.models import InscriptionListeAttente, ADSManager
@@ -12,10 +12,17 @@ class Command(BaseCommand):
         "ADSManager."
     )
 
+    def add_arguments(self, parser):
+        # Arg positionnel : `python manage.py init_test_data 123`
+        parser.add_argument("manager_id", type=int, help="ID de l'objet cible")
+
     def handle(self, *args, **options):
         with transaction.atomic():
-            manager_id = 73052
-            ads_manager = ADSManager.objects.get(id=manager_id)
+            manager_id = options["manager_id"]
+            try:
+                ads_manager = ADSManager.objects.get(id=manager_id)
+            except ADSManager.DoesNotExist:
+                raise CommandError(f"Objet avec id={manager_id} introuvable.")
             f = Faker("fr_FR")
 
             inscriptions = []
