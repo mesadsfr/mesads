@@ -2,14 +2,17 @@ import io
 import xlsxwriter
 import datetime
 
+from django.conf import settings
 from django.db import IntegrityError, transaction, models
 from django.db.models import Case, When, IntegerField, Q, Value
 from django.db.models.functions import Replace
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, FileResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, View, TemplateView
 from django.urls import reverse
 from django.utils import timezone
+from pathlib import Path
+
 from mesads.app.models import (
     InscriptionListeAttente,
     ADSManager,
@@ -327,6 +330,39 @@ class ArchivageInscriptionListeAttenteView(UpdateView):
         inscription = form.save(commit=False)
         inscription.delete()
         return HttpResponseRedirect(self.get_success_url())
+
+
+class ModeleCourrierArchivageView(View):
+    def get(self, request, *args, **kwargs):
+        file_path = (
+            Path(settings.BASE_DIR)
+            / "mesads"
+            / "docs"
+            / "courrier_archive_liste_attente.docx"
+        )
+        if not file_path.exists():
+            raise Http404("Fichier introuvable")
+        return FileResponse(
+            open(file_path, "rb"),
+            as_attachment=True,
+            filename="Courrier d'archivage liste d'attente.docx",
+            content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
+
+
+class ModeleCourrierContactView(View):
+    def get(self, request, *args, **kwargs):
+        file_path = (
+            Path(settings.BASE_DIR) / "mesads" / "docs" / "courrier_contact.docx"
+        )
+        if not file_path.exists():
+            raise Http404("Fichier introuvable")
+        return FileResponse(
+            open(file_path, "rb"),
+            as_attachment=True,
+            filename="Courrier d'acceptation d'une demande et délivrance d'une ADS - liste d'attente.docx",
+            content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
 
 
 class ArchivageConfirmationView(TemplateView):

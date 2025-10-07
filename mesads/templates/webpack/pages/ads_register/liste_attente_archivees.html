@@ -43,6 +43,14 @@
         <button title="Rechercher" type="submit" class="fr-btn">Rechercher</button>
       </form>
 
+      <a
+        class="fr-btn fr-btn--icon-left fr-icon-draft-line"
+        target="_blank"
+        href="{% url 'app.liste_attente_archive_modele' manager_id=ads_manager.id %}"
+      >
+        Accéder au modèle du courrier d'archivage
+      </a>
+
     </div>
     <div class="fr-table fr-table--no-scroll fr-table--multiline" id="table-0-component">
       <div class="fr-table__wrapper">
