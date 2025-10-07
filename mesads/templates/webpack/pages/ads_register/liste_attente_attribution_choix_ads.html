@@ -34,32 +34,38 @@
     <h2>{{ads_manager.content_object.display_text}}</h2>
   </div>
 
-  <div>
-    Vous pouvez créer une nouvelle ADS ou attribuer au demandeur une ADS existante
+  <div class="">
 
-
-    <a
-      class="fr-btn fr-btn--primary w-full"
-      href="{% url 'app.ads.create' manager_id=ads_manager.id %}?inscription_id={{inscription.id}}"
-    >
-      Nouvelle ADS
-    </a>
+    <div class="flex flex-col items-center mb-2">
+      <p>
+        <strong>
+          Vous pouvez créer une nouvelle ADS ou attribuer au demandeur une ADS existante
+        </strong>
+      </p>
+      
+      <a
+        class="fr-btn fr-btn--primary"
+        href="{% url 'app.ads.create' manager_id=ads_manager.id %}?inscription_id={{inscription.id}}"
+      >
+        Nouvelle ADS
+      </a>
+    </div>
 
     <p class="fr-hr-or">
         ou
     </p>
 
-    <div>
-      Choisir une ADS existante
-
-
-      <form method="GET" class="fr-search-bar" role="search">
-        <label class="fr-label" for="search-input"> Rechercher </label>
-        <input class="fr-input" aria-describedby="search-input-messages" placeholder="Rechercher" name="search" id="search-input" type="search" value="{{search}}">
-        <div class="fr-messages-group" id="search-input-messages" aria-live="polite">
-        </div>
-        <button title="Rechercher" type="submit" class="fr-btn">Rechercher</button>
-      </form>
+    <div class="mt-3 flex flex-col">
+      <p class="self-center"><strong>Choisir une ADS existante</strong></p>
+      <div class="flex gap-3 items-center">
+        <form method="GET" class="fr-search-bar" role="search">
+          <label class="fr-label" for="search-input"> Rechercher </label>
+          <input class="fr-input" aria-describedby="search-input-messages" placeholder="Rechercher" name="search" id="search-input" type="search" value="{{search}}">
+          <div class="fr-messages-group" id="search-input-messages" aria-live="polite">
+          </div>
+          <button title="Rechercher" type="submit" class="fr-btn">Rechercher</button>
+        </form>
+      </div>
       <div class="fr-table fr-table--md fr-table--no-scroll">
         <div class="fr-table__wrapper">
           <div class="fr-table__container">
@@ -102,9 +108,9 @@
                       </td>
                       <td class="!text-right">
                         <a
-                          class="fr-btn fr-btn--secondary fr-icon-eye-line"
+                          class="fr-btn"
                           href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}?inscription_id={{inscription.id}}"
-                        ></a>
+                        >Attribuer</a>
                       </td>
                     </tr>
                   {% empty %}

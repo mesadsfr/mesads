@@ -298,3 +298,11 @@ urls:
   app.liste_attente_attribution_ads:
     title: "Liste d'attente - Attribution, choix de l'ADS"
     description: "Attribution d'une nouvelle ADS depuis la liste d'attente"
+
+  app.liste_attente_archive_modele:
+    title: "Modèle de courrier d'archivage"
+    description: "Modèle de courrier d'archivage"
+
+  app.liste_attente_contact_modele:
+    title: "Modèle de courrier de contact"
+    description: "Modèle de courrier de contact"

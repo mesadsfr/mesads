@@ -34,7 +34,13 @@
 
       <div class="flex items-center gap-3">
         <a class="fr-btn fr-btn--secondary" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">Retour</a>
-        <a class="fr-btn fr-btn--icon-left fr-icon-draft-line" href="">Accéder au modèle du courrier d'archivage</a>
+        <a
+          class="fr-btn fr-btn--icon-left fr-icon-draft-line"
+          target="_blank"
+          href="{% url 'app.liste_attente_archive_modele' manager_id=ads_manager.id %}"
+        >
+          Accéder au modèle du courrier d'archivage
+        </a>
       </div>
 
     </div>

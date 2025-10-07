@@ -5,7 +5,7 @@
   <p class="fr-stepper__details"><span class="fr-text--bold">Étape suivante :</span> Prise en compte de la réponse</p>
 </div>
 
-<div>
+<div class="">
 
   <div class="fr-notice fr-notice--info">
     <div class="fr-container">
@@ -18,7 +18,17 @@
     </div>
   </div>
 
-  <form method="post" enctype="multipart/form-data">
+
+
+  <a
+    class="my-3 fr-btn fr-btn--icon-left fr-icon-draft-line"
+    target="_blank"
+    href="{% url 'app.liste_attente_contact_modele' manager_id=ads_manager.id %}"
+  >
+    Accéder au modèle de courrier de contact
+  </a>
+
+  <form class="my-2" method="post" enctype="multipart/form-data">
       {% csrf_token %}
 
       {{form.errors}}

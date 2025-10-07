@@ -1198,16 +1198,25 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
         ),
     )
 
+    ABSENCE_REPONSE = "absence_reponse"
+    INFORMATIONS_ERR = "informations_erronees"
+    DEMANDE_NON_RENOUVELLEE = "demande_non_renouvellee"
+    NON_RESPECT_CONDITIONS = "non_respect_conditions"
+    DEMANDE_CANDIDAT = "demande_candidat"
+    AUTRE = "autre"
+    ADS_ATTRIBUEE = "ads_attribuee"
+
     MOTIFS_ARCHIVAGE = [
         (
-            "absence_reponse",
+            ABSENCE_REPONSE,
             "Absence de réponse du demandeur",
         ),
-        ("informations_erronees", "Informations erronnées"),
-        ("demande_non_renouvellee", "Demande non renouvellée"),
-        ("non_respect_conditions", "Non respect des conditions réglementaires"),
-        ("demande_candidat", "A la demande du candidat"),
-        ("autre", "Autre"),
+        (INFORMATIONS_ERR, "Informations erronnées"),
+        (DEMANDE_NON_RENOUVELLEE, "Demande non renouvellée"),
+        (NON_RESPECT_CONDITIONS, "Non respect des conditions réglementaires"),
+        (DEMANDE_CANDIDAT, "A la demande du candidat"),
+        (AUTRE, "Autre"),
+        (ADS_ATTRIBUEE, "ADS attribuée"),
     ]
 
     motif_archivage = models.CharField(
@@ -1246,6 +1255,11 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
         null=True,
         help_text="Le délai de réponse que vous accordez au demandeur pour vous répondre (à titre informatif)",
     )
+
+    def ads_attribuee(self):
+        self.motif_archivage = self.ADS_ATTRIBUEE
+        self.save()
+        self.delete()
 
     def __str__(self):
         return f"Entrée {self.numero} de la liste d'attente de {self.ads_manager.content_object.display_fulltext()}"
