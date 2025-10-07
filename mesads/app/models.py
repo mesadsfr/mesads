@@ -1217,6 +1217,36 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
         verbose_name="Motif d'archivage",
     )
 
+    INSCRIT = "inscrit"
+    ATTENTE_REPONSE = "attente_reponse"
+    REPONSE_OK = "reponse_ok"
+    STATUTS = [
+        (INSCRIT, "Inscrit"),
+        (ATTENTE_REPONSE, "En attente de réponse du demandeur"),
+        (REPONSE_OK, "Réponse positive du demandeur"),
+    ]
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUTS,
+        blank=True,
+        verbose_name="Statut de la demande",
+        default=INSCRIT,
+    )
+
+    date_contact = models.DateField(
+        verbose_name="Date de contact du demandeur",
+        null=True,
+        blank=True,
+        help_text="Date à laquelle vous avez contacté le demandeur",
+    )
+    delai_reponse = models.PositiveIntegerField(
+        verbose_name="Délai de réponse (en jours)",
+        blank=True,
+        null=True,
+        help_text="Le délai de réponse que vous accordez au demandeur pour vous répondre (à titre informatif)",
+    )
+
     def __str__(self):
         return f"Entrée {self.numero} de la liste d'attente de {self.ads_manager.content_object.display_fulltext()}"
 

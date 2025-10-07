@@ -37,6 +37,7 @@ from ..models import (
     ADSManager,
     ADSUser,
     ADSUpdateLog,
+    InscriptionListeAttente,
     ADS_UNIQUE_ERROR_MESSAGE,
 )
 from ..reversion_diff import ModelHistory
@@ -45,6 +46,15 @@ from ..reversion_diff import ModelHistory
 class ADSView(RevisionMixin, UpdateView):
     template_name = "pages/ads_register/ads.html"
     form_class = ADSForm
+    inscription = None
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.inscription = None
+        if request.GET.get("inscription_id"):
+            self.inscription = get_object_or_404(
+                InscriptionListeAttente, id=request.GET.get("inscription_id")
+            )
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -57,7 +67,67 @@ class ADSView(RevisionMixin, UpdateView):
         if ads_manager.content_type.model_class() is EPCI:
             kwargs["epci"] = ads_manager.content_object
 
+        if self.inscription:
+            initial = kwargs.get("initial", {})
+            initial.update(
+                {
+                    "owner_name": f"{self.inscription.nom} {self.inscription.prenom}",
+                    "owner_phone": self.inscription.numero_telephone,
+                    "owner_email": self.inscription.email,
+                    "owner_siret": "",
+                    "owner_mobile": "",
+                    "accepted_cpam": None,
+                    "immatriculation_plate": "",
+                    "vehicle_compatible_pmr": None,
+                    "eco_vehicle": None,
+                }
+            )
+            kwargs["initial"] = initial
+
         return kwargs
+
+    def _users_initial_from_inscription(self):
+        if not self.inscription:
+            return None
+        return [
+            {
+                "license_number": self.inscription.numero_licence,
+            }
+        ]
+
+    def build_formsets(self, ads):
+        if self.request.method == "POST":
+            if self.inscription:
+                users_qs = ADSUser.objects.none()
+            else:
+                users_qs = ADSUser.objects.filter(ads=ads)
+
+            ads_users_fs = ADSUserFormSet(
+                self.request.POST,
+                instance=ads,
+                queryset=users_qs,
+            )
+            ads_legal_files_fs = ADSLegalFileFormSet(
+                self.request.POST, self.request.FILES, instance=ads
+            )
+            if not ads.adsuser_set.count():
+                ads_users_fs.extra = 1
+
+        else:
+            if self.inscription:
+                initial_users = self._users_initial_from_inscription()
+                ads_users_fs = ADSUserFormSet(
+                    instance=ads,
+                    queryset=ADSUser.objects.none(),  # n’affiche pas les existants
+                    initial=initial_users,
+                )
+                ads_users_fs.extra = 1
+            else:
+                ads_users_fs = ADSUserFormSet(instance=ads)
+
+            ads_legal_files_fs = ADSLegalFileFormSet(instance=ads)
+
+        return ads_users_fs, ads_legal_files_fs
 
     def get_success_url(self):
         administrator = self.kwargs.get("ads_manager_administrator")
@@ -163,25 +233,7 @@ class ADSView(RevisionMixin, UpdateView):
 
     def get_object(self, queryset=None):
         ads = get_object_or_404(ADS, id=self.kwargs["ads_id"])
-
-        if self.request.POST and self.request.POST.get(
-            ADSUserFormSet().management_form["TOTAL_FORMS"].html_name
-        ):
-            self.ads_users_formset = ADSUserFormSet(self.request.POST, instance=ads)
-        else:
-            self.ads_users_formset = ADSUserFormSet(instance=ads)
-            # Always display at least a form
-            if not ads.adsuser_set.count():
-                self.ads_users_formset.extra = 1
-
-        if self.request.POST and self.request.POST.get(
-            ADSLegalFileFormSet().management_form["TOTAL_FORMS"].html_name
-        ):
-            self.ads_legal_files_formset = ADSLegalFileFormSet(
-                self.request.POST, self.request.FILES, instance=ads
-            )
-        else:
-            self.ads_legal_files_formset = ADSLegalFileFormSet(instance=ads)
+        self.ads_users_formset, self.ads_legal_files_formset = self.build_formsets(ads)
         return ads
 
     def form_invalid(self, form):
@@ -193,6 +245,7 @@ class ADSView(RevisionMixin, UpdateView):
 
     @transaction.atomic
     def form_valid(self, form):
+
         html_name_ads_users_formset = self.ads_users_formset.management_form[
             "TOTAL_FORMS"
         ].html_name
@@ -220,7 +273,11 @@ class ADSView(RevisionMixin, UpdateView):
         else:
             try:
                 with transaction.atomic():
-                    self.ads_users_formset.save()
+                    if self.inscription:
+                        ADSUser.objects.filter(ads=self.object).delete()
+                        self.ads_users_formset.save()
+                    else:
+                        self.ads_users_formset.save()
             except IntegrityError:
                 errmsg = [
                     c
@@ -328,29 +385,55 @@ class ADSDeleteView(DeleteView):
 
 
 class ADSCreateView(ADSView, CreateView):
+    inscription = None
+
+    def get_initial(self):
+        if self.inscription:
+            return {
+                "ads_creation_date": date.today(),
+                "ads_in_use": True,
+                "owner_name": f"{self.inscription.nom} {self.inscription.prenom}",
+                "owner_phone": self.inscription.numero_telephone,
+                "owner_email": self.inscription.email,
+            }
+        else:
+            return super().get_initial()
+
+    def _ads_users_initial_from_inscription(self):
+        if not self.inscription:
+            return None
+        return [
+            {
+                "license_number": self.inscription.numero_licence,
+            }
+        ]
+
+    def get_formsets(self):
+        parent_instance = getattr(self, "object", None) or ADS()
+        if self.request.method == "POST":
+            ads_users_fs = ADSUserFormSet(self.request.POST, instance=parent_instance)
+            ads_legal_files_fs = ADSLegalFileFormSet(
+                self.request.POST, self.request.FILES, instance=parent_instance
+            )
+        else:
+            initial_users = self._ads_users_initial_from_inscription()
+            ads_users_fs = ADSUserFormSet(
+                initial=initial_users, instance=parent_instance
+            )
+            ads_legal_files_fs = ADSLegalFileFormSet(instance=parent_instance)
+        return ads_users_fs, ads_legal_files_fs
+
     def dispatch(self, request, manager_id, **kwargs):
         """If the ADSManager has the flag no_ads_declared to True, it is
         impossible to create ADS for it."""
         get_object_or_404(ADSManager, id=manager_id, no_ads_declared=False)
 
-        html_name_ads_users_formset = (
-            ADSUserFormSet().management_form["TOTAL_FORMS"].html_name
-        )
-        if self.request.POST.get(html_name_ads_users_formset):
-            self.ads_users_formset = ADSUserFormSet(self.request.POST)
-        else:
-            self.ads_users_formset = ADSUserFormSet()
-        self.ads_users_formset.extra = 1
-
-        html_name_ads_legal_files_formset = (
-            ADSLegalFileFormSet().management_form["TOTAL_FORMS"].html_name
-        )
-        if self.request.POST.get(html_name_ads_legal_files_formset):
-            self.ads_legal_files_formset = ADSLegalFileFormSet(
-                self.request.POST, self.request.FILES
+        if self.request.GET.get("inscription_id"):
+            self.inscription = get_object_or_404(
+                InscriptionListeAttente, id=self.request.GET.get("inscription_id")
             )
-        else:
-            self.ads_legal_files_formset = ADSLegalFileFormSet()
+        self.ads_users_formset, self.ads_legal_files_formset = self.get_formsets()
+        self.ads_users_formset.extra = 1
         return super().dispatch(request, manager_id, **kwargs)
 
     def get_object(self, queryset=None):
