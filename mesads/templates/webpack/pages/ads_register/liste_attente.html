@@ -116,6 +116,7 @@
                   <th> Date fin de validité </th>
                   <th> Coordonnées </th>
                   <th> Exploitation ADS </th>
+                  <th>Status</th>
                   <th> Modifier ou archiver </th>
                 </tr>
               </thead>
@@ -133,6 +134,15 @@
                       <div>{{inscription.numero_telephone}}</div>
                     </td>
                     <td>{% if inscription.exploitation_ads %}Oui{% else %}Non{% endif %}</td>
+                    <td>
+                      {% if inscription.all_filled == 1 and inscription.is_valid == 1 %}
+                      <p class="fr-badge fr-badge--success">Valide</p>
+                      {% elif inscription.all_filled == 0 %}
+                      <p class="fr-badge fr-badge--warning">Incomplète</p>
+                      {% elif inscription.is_valid == 0 %}
+                      <p class="fr-badge fr-badge--error">Expirée</p>
+                      {% endif %}
+                    </td>
                     <td>
                       <a
                         class="fr-btn fr-btn--secondary fr-icon-eye-line"
