@@ -117,7 +117,10 @@
         {% endif %}
       </div>
     {% else %}
-      Pas de demande complète retrouvé
+      <div class="mt-3 fr-alert fr-alert--error">
+        <h3 class="fr-alert__title">Pas de demande complète et valide</h3>
+        <p>Nous ne sommes pas parvenus à retrouver une demande complète et valide depuis votre liste d'attente.</p>
+      </div>
     {% endif %}
   </div>
 
@@ -140,6 +143,7 @@
                   <th> Date fin de validité </th>
                   <th> Coordonnées </th>
                   <th> Exploitation ADS </th>
+                  <th>Status</th>
                   <th> Modifier ou archiver </th>
                 </tr>
               </thead>
@@ -154,6 +158,15 @@
                     <td>{{inscription.date_fin_validite}}</td>
                     <td>{{inscription.email}} {{inscription.numero_telephone}}</td>
                     <td>{% if inscription.exploitation_ads %}Oui{% else %}Non{% endif %}</td>
+                    <td>
+                      {% if inscription.all_filled == 1 and inscription.is_valid == 1 %}
+                      <p class="fr-badge fr-badge--success">Valide</p>
+                      {% elif inscription.all_filled == 0 %}
+                      <p class="fr-badge fr-badge--warning">Incomplète</p>
+                      {% elif inscription.is_valid == 0 %}
+                      <p class="fr-badge fr-badge--error">Expirée</p>
+                      {% endif %}
+                    </td>
                     <td>
                       <a
                         class="fr-btn fr-btn--secondary fr-icon-eye-line"
