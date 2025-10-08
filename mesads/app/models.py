@@ -1212,7 +1212,7 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
             "Absence de réponse du demandeur",
         ),
         (INFORMATIONS_ERR, "Informations erronnées"),
-        (DEMANDE_NON_RENOUVELLEE, "Demande non renouvellée"),
+        (DEMANDE_NON_RENOUVELLEE, "Demande non renouvelée"),
         (NON_RESPECT_CONDITIONS, "Non respect des conditions réglementaires"),
         (DEMANDE_CANDIDAT, "A la demande du candidat"),
         (AUTRE, "Autre"),
