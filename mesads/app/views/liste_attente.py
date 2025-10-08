@@ -120,8 +120,10 @@ class AttributionListeAttenteView(ListView):
             output_field=IntegerField(),
         )
         qs = qs.filter(ads_manager__id=self.kwargs["manager_id"])
-        qs = qs.annotate(all_filled=all_filled).order_by(
-            "-all_filled", "-exploitation_ads", "date_depot_inscription"
+        qs = (
+            qs.annotate(all_filled=all_filled)
+            .order_by("-all_filled", "-exploitation_ads", "date_depot_inscription")
+            .exclude(date_fin_validite__lt=datetime.date.today())
         )
         return qs
 
