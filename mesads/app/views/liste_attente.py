@@ -3,6 +3,7 @@ import xlsxwriter
 import datetime
 
 from django.conf import settings
+from django.contrib import messages
 from django.db import IntegrityError, transaction, models
 from django.db.models import Case, When, IntegerField, Q, Value
 from django.db.models.functions import Replace
@@ -35,7 +36,33 @@ class ListeAttenteView(ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        qs = qs.filter(ads_manager__id=self.kwargs["manager_id"])
+        all_filled = Case(
+            When(
+                Q(nom__isnull=False)
+                & ~Q(nom="")
+                & Q(prenom__isnull=False)
+                & ~Q(prenom="")
+                & Q(adresse__isnull=False)
+                & ~Q(adresse="")
+                & Q(email__isnull=False)
+                & ~Q(email="")
+                & Q(numero_licence__isnull=False)
+                & ~Q(numero_licence="")
+                & Q(numero_telephone__isnull=False)
+                & ~Q(numero_telephone=""),
+                then=1,
+            ),
+            default=0,
+            output_field=IntegerField(),
+        )
+        qs = qs.filter(ads_manager__id=self.kwargs["manager_id"]).annotate(
+            all_filled=all_filled,
+            is_valid=Case(
+                When(date_fin_validite__gte=datetime.date.today(), then=1),
+                default=0,
+                output_field=IntegerField(),
+            ),
+        )
         search = self.request.GET.get("search", "").strip()
         if not search:
             return qs
@@ -121,7 +148,14 @@ class AttributionListeAttenteView(ListView):
         )
         qs = qs.filter(ads_manager__id=self.kwargs["manager_id"])
         qs = (
-            qs.annotate(all_filled=all_filled)
+            qs.annotate(
+                all_filled=all_filled,
+                is_valid=Case(
+                    When(date_fin_validite__gte=datetime.date.today(), then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                ),
+            )
             .order_by("-all_filled", "-exploitation_ads", "date_depot_inscription")
             .exclude(date_fin_validite__lt=datetime.date.today())
         )
@@ -129,8 +163,15 @@ class AttributionListeAttenteView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["demande_retenue"] = self.get_queryset().filter(all_filled=1).first()
-        if context["demande_retenue"].status == InscriptionListeAttente.INSCRIT:
+        context["demande_retenue"] = (
+            self.get_queryset()
+            .filter(all_filled=1, date_fin_validite__lt=datetime.date.today())
+            .first()
+        )
+        if (
+            context["demande_retenue"] is not None
+            and context["demande_retenue"].status == InscriptionListeAttente.INSCRIT
+        ):
             context["form"] = ContactInscriptionListeAttenteForm
         context["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
         return context
@@ -228,6 +269,13 @@ class CreationInscriptionListeAttenteView(CreateView):
             },
         )
 
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            "Le formulaire contient des erreurs. Veuillez les corriger avant de soumettre à nouveau.",
+        )
+        return super().form_invalid(form)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
@@ -276,6 +324,13 @@ class ModificationInscriptionListeAttenteView(UpdateView):
                 "manager_id": self.kwargs["manager_id"],
             },
         )
+
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            "Le formulaire contient des erreurs. Veuillez les corriger avant de soumettre à nouveau.",
+        )
+        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
