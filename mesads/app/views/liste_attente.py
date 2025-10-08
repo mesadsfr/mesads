@@ -30,7 +30,7 @@ class ListeAttenteView(ListView):
     template_name = "pages/ads_register/liste_attente.html"
     model = InscriptionListeAttente
     paginate_by = 50
-    ordering = "-date_depot_inscription"
+    ordering = "date_depot_inscription"
     context_object_name = "inscriptions"
 
     def get_queryset(self):
