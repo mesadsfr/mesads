@@ -30,3 +30,17 @@ from .public import (  # noqa: F401
     HTTP500View,
     HomepageView,
 )
+
+from .liste_attente import (  # noqa: F401
+    ListeAttenteView,
+    CreationInscriptionListeAttenteView,
+    ModificationInscriptionListeAttenteView,
+    ExportCSVInscriptionListeAttenteView,
+    ArchivageInscriptionListeAttenteView,
+    ArchivageConfirmationView,
+    DemandeArchiveesView,
+    AttributionListeAttenteView,
+    AttributionADSInscriptionListeAttenteView,
+    ModeleCourrierArchivageView,
+    ModeleCourrierContactView,
+)

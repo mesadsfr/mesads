@@ -1,0 +1,34 @@
+<div class="fr-stepper">
+  <h2 class="fr-stepper__title">Prise en compte de la réponse <span class="fr-stepper__state">Étape 2 sur 3</span>
+  </h2>
+  <div class="fr-stepper__steps" data-fr-current-step="2" data-fr-steps="3"></div>
+  <p class="fr-stepper__details"><span class="fr-text--bold">Étape suivante :</span> Attribution de l'ADS</p>
+</div>
+
+<div>
+  <p>
+    Vous avez contacté le candidat le {{demande_retenue.date_contact}} et avez défini un délai de réponse de {{demande_retenue.delai_reponse}} jours.
+  </p>
+
+  <p>
+    En cas de refus ou d'absence de réponse de la part du demandeur, vous pouvez archiver la demande.
+  </p>
+
+
+  <div class="flex gap-3">
+    <a
+      class="fr-btn fr-btn--secondary"
+      href="{% url 'app.liste_attente_inscription_archivage'  manager_id=ads_manager.id inscription_id=demande_retenue.id %}"
+    >
+      Archiver
+    </a>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input id="inscription_id" name="inscription_id" type="hidden" value="{{demande_retenue.id}}" />
+      <div class="fr-input-group">
+        <button type="submit" name="action" value="validation_reponse" class="fr-btn">Valider une réponse positive du candidat</button>
+      </div>
+    </form>
+
+  </div>
+</div>

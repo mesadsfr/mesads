@@ -244,3 +244,49 @@ urls:
 
   vehicules-relais.proprietaire.vehicule.recepisse:
     missing: true # Not HTML view
+
+  # Liste attente
+
+  app.liste_attente:
+    title: "Liste d'attente {{ads_manager.content_object.display_text}}"
+    description: "Consulter la liste d'attente de {{ads_manager.content_object.display_text}}"
+
+  app.liste_attente_archives:
+    title: "Archive liste d'attente {{ads_manager.content_object.display_text}}"
+    description: "Consulter les archives de la liste d'attente de {{ads_manager.content_object.display_text}}"
+
+  app.liste_attente_export:
+    title: "Export excel liste d'attente {{ads_manager.content_object.display_text}}"
+    description: "Exporter la liste d'attente de {{ads_manager.content_object.display_text}}"
+
+  app.liste_attente_inscription:
+    title: "Inscription à la liste d'attente {{ads_manager.content_object.display_text}}"
+    description: "Ajout d'une inscription à la liste d'attente de {{ads_manager.content_object.display_text}}"
+
+  app.liste_attente_inscription_update:
+    title: "Inscription à la liste d'attente {{ads_manager.content_object.display_text}}"
+    description: "Modification d'une inscription à la liste d'attente de {{ads_manager.content_object.display_text}}"
+
+  app.liste_attente_inscription_archivage:
+    title: "Archivage inscription"
+    description: "Archivage d'une inscription à la liste d'attente de {{ads_manager.content_object.display_text}}"
+
+  app.liste_attente_inscription_archivage_confirmation:
+    title: "Archivage confirmé"
+    description: "Confirmation d'archivage d'une inscription à la liste d'attente de {{ads_manager.content_object.display_text}}"
+
+  app.liste_attente_attribution:
+    title: "Liste d'attente - Attribution"
+    description: "Attribution d'une nouvelle ADS depuis la liste d'attente"
+
+  app.liste_attente_attribution_ads:
+    title: "Liste d'attente - Attribution, choix de l'ADS"
+    description: "Attribution d'une nouvelle ADS depuis la liste d'attente"
+
+  app.liste_attente_archive_modele:
+    title: "Modèle de courrier d'archivage"
+    description: "Modèle de courrier d'archivage"
+
+  app.liste_attente_contact_modele:
+    title: "Modèle de courrier de contact"
+    description: "Modèle de courrier de contact"

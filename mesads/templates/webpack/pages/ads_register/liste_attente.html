@@ -1,0 +1,187 @@
+{% extends "base_container.html" %}
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d’Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Liste d'attente {{ads_manager.content_object.display_text}}</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <div>
+    <h1>Gérer la liste d'attente</h1>
+
+    <h2>{{ads_manager.content_object.display_text}}</h2>
+
+    <div class="flex gap-3">
+      <div class="fr-btns-group">
+        <a
+          class="fr-btn fr-btn--primary w-full"
+          href="{% url 'app.liste_attente_inscription' manager_id=ads_manager.id %}"
+        >
+          Nouvelle demande d'inscription
+        </a>
+        <a
+          class="fr-btn fr-btn--primary mt-1 w-full"
+          href="{% url 'app.liste_attente_attribution' manager_id=ads_manager.id %}"
+        >
+          Attribuer une ADS
+        </a>
+        <a
+          class="fr-btn fr-btn--secondary mt-1 w-full"
+          href="{% url 'app.liste_attente_archives' manager_id=ads_manager.id %}"
+        >
+          Demandes archivées
+        </a>
+      </div>
+
+      <div>
+        <div class="fr-notice fr-notice--info">
+          <div class="fr-container">
+            <div class="fr-notice__body">
+              <p>
+                <span class="fr-notice__title"></span>
+                Une fois inscrit, les chauffeurs de taxi doivent renouveler chaque année à la date anniversaire leur inscription par 
+                tout moyen permettant d'en accuser réception afin d’être maintenu sur la liste d’attente (cf. R.3121-13 du code des transports) 
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="fr-notice fr-notice--info">
+          <div class="fr-container">
+            <div class="fr-notice__body">
+              <p>
+                <span class="fr-notice__title"></span>
+                La liste est présentée par ordre chronologique des dates de demandes initiales.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    
+    
+  </div>
+
+  
+
+  <div class="mt-3 flex flex-col">
+    <div class="flex gap-3 items-center">
+      <form method="GET" class="fr-search-bar" role="search">
+        <label class="fr-label" for="search-input"> Rechercher </label>
+        <input class="fr-input" aria-describedby="search-input-messages" placeholder="Rechercher" name="search" id="search-input" type="search" value="{{search}}">
+        <div class="fr-messages-group" id="search-input-messages" aria-live="polite">
+        </div>
+        <button title="Rechercher" type="submit" class="fr-btn">Rechercher</button>
+      </form>
+
+      <div>
+        <a
+          id="link-1"
+          href="{% url 'app.liste_attente_export' manager_id=ads_manager.id %}"
+          target="_blank"
+          class="fr-link"
+        >
+          Télécharger toutes les inscriptions sur liste d'attente en format Excel
+        </a>
+      </div>
+
+    </div>
+    <div class="fr-table fr-table--no-scroll fr-table--multiline" id="table-0-component">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table id="table-0">
+              <caption> Liste d'attente de la {{ads_manager.content_object.display_text}} </caption>
+              <thead>
+                <tr>
+                  <th>N° d'enregistrement </th>
+                  <th> Nom et prénom </th>
+                  <th> N° carte pro </th>
+                  <th> Date de dépôt de la demande </th>
+                  <th> Date dernier renouvellement </th>
+                  <th> Date fin de validité </th>
+                  <th> Coordonnées </th>
+                  <th> Exploitation ADS </th>
+                  <th> Modifier ou archiver </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for inscription in inscriptions %}
+                  <tr id="inscription-{{forloop.counter}}" data-row-key="{{forloop.counter}}">
+                    <td>{{inscription.numero}}</td>
+                    <td>{{inscription.nom}} {{inscription.prenom}}</td>
+                    <td>{{inscription.numero_licence}}</td>
+                    <td>{{inscription.date_depot_inscription}}</td>
+                    <td>{{inscription.date_dernier_renouvellement}}</td>
+                    <td>{{inscription.date_fin_validite}}</td>
+                    <td>{{inscription.email}} {{inscription.numero_telephone}}</td>
+                    <td>{% if inscription.exploitation_ads %}Oui{% else %}Non{% endif %}</td>
+                    <td>
+                      <a
+                        class="fr-btn fr-btn--secondary fr-icon-eye-line"
+                        href="{% url 'app.liste_attente_inscription_update' manager_id=ads_manager.id inscription_id=inscription.id %}"
+                      >
+                        <span class="fr-sr-only">
+                          Modifier
+                        </span>
+                      </a>
+                      <a
+                        class="fr-btn fr-btn--secondary fr-icon-archive-line mt-0.5"
+                        href="{% url 'app.liste_attente_inscription_archivage'  manager_id=ads_manager.id inscription_id=inscription.id %}"
+                      >
+                        <span class="fr-sr-only">
+                          Archiver
+                        </span>
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav role="navigation" class="fr-pagination self-center" aria-label="Pagination">
+      <ul class="fr-pagination__list">
+
+        {% if page_obj.has_previous %}
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--first" href="?page=1&search={{search}}"> Première page </a>
+        </li>
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="?page={{page_obj.previous_page_number}}&search={{search}}" title="Page précédente"> Page précédente </a>
+        </li>
+        {% endif %}
+        <li>
+          <a class="fr-pagination__link" aria-current="page" title="Page {{page_obj.number}}"> {{page_obj.number}} </a>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="?page={{page_obj.next_page_number}}&search={{search}}" title="Page suivante"> Page suivante </a>
+        </li>
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--last" href="?page={{ page_obj.paginator.num_pages }}&search={{search}}" title="Dernière page"> Dernière page </a>
+        </li>
+
+        {% endif %}
+
+      </ul>
+    </nav>
+  </div>
+{% endblock body-content %}

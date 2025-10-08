@@ -1,0 +1,133 @@
+{% extends "base_container.html" %}
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d’Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">
+            Liste d'attente {{ads_manager.content_object.display_text}}
+          </a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.liste_attente_attribution' manager_id=ads_manager.id %}">
+            Liste d'attente {{ads_manager.content_object.display_text}}
+          </a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Choix de l'ADS</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <div>
+    <h1>Attribution d'une ADS</h1>
+    <h2>{{ads_manager.content_object.display_text}}</h2>
+  </div>
+
+  <div class="">
+
+    <div class="flex flex-col items-center mb-2">
+      <p>
+        <strong>
+          Vous pouvez créer une nouvelle ADS ou attribuer au demandeur une ADS existante
+        </strong>
+      </p>
+      
+      <a
+        class="fr-btn fr-btn--primary"
+        href="{% url 'app.ads.create' manager_id=ads_manager.id %}?inscription_id={{inscription.id}}"
+      >
+        Nouvelle ADS
+      </a>
+    </div>
+
+    <p class="fr-hr-or">
+        ou
+    </p>
+
+    <div class="mt-3 flex flex-col">
+      <p class="self-center"><strong>Choisir une ADS existante</strong></p>
+      <div class="flex gap-3 items-center">
+        <form method="GET" class="fr-search-bar" role="search">
+          <label class="fr-label" for="search-input"> Rechercher </label>
+          <input class="fr-input" aria-describedby="search-input-messages" placeholder="Rechercher" name="search" id="search-input" type="search" value="{{search}}">
+          <div class="fr-messages-group" id="search-input-messages" aria-live="polite">
+          </div>
+          <button title="Rechercher" type="submit" class="fr-btn">Rechercher</button>
+        </form>
+      </div>
+      <div class="fr-table fr-table--md fr-table--no-scroll">
+        <div class="fr-table__wrapper">
+          <div class="fr-table__container">
+            <div class="fr-table__content">
+              <table>
+                <thead>
+                  <tr>
+                    {% if ads_manager.content_type.name == 'EPCI' %}<th>🌆 Commune</th>{% endif %}
+                    <th>#ADS</th>
+                    <th>Date de création</th>
+                    <th>Type d'ADS</th>
+                    <th>Titulaire</th>
+                    <th>Plaque d'immatriculation</th>
+                    <th>Dernière mise à jour</th>
+                    <th class="!text-right">Consulter / Modifier</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for ads in ads_disponibles %}
+                    <tr>
+                      {% if ads_manager.content_type.name == 'EPCI' %}<td>{{ ads.epci_commune.libelle|default:"" }}</td>{% endif %}
+                      <td>#{{ ads.number }}</td>
+                      <td>{{ ads.ads_creation_date|date:"d/m/Y"|default:"" }}</td>
+                      <td>{{ ads.ads_type }}</td>
+                      <td class="max-w-[300px] overflow-ellipsis overflow-hidden">{{ ads.owner_name }}</td>
+                      <td>{{ ads.immatriculation_plate }}</td>
+                      <td>
+                        <div class="fr-text--xs !text-[var(--text-default-error)]">
+                          {% if ads.latest_update_log %}
+                            {% if ads.latest_update_log_is_outdated %}
+                              Vérification des informations nécessaire
+                            {% elif not ads.latest_update_log_is_complete %}
+                              Données incomplètes
+                            {% endif %}
+                          {% else %}
+                            Vérification des informations nécessaire
+                          {% endif %}
+                        </div>
+                        {{ ads.latest_update_log|date:"d/m/Y" }}
+                      </td>
+                      <td class="!text-right">
+                        <a
+                          class="fr-btn"
+                          href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}?inscription_id={{inscription.id}}"
+                        >Attribuer</a>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="{% if ads_manager.content_type.name == 'EPCI' %}8{% else %}7{% endif %}">Aucun résultat</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  
+{% endblock body-content %}

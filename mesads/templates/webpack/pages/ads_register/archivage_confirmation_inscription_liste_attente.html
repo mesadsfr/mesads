@@ -1,0 +1,52 @@
+{% extends "base_container.html" %}
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d’Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">Liste d'attente {{ads_manager.content_object.display_text}}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Archivage confirmé</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <div>
+    <h1>Archivage confirmé</h1>
+
+    <h2>{{ads_manager.content_object.display_text}}</h2>
+
+    <div class="flex flex-col items-center">
+      <p>
+        L'inscription du chauffeur de taxi a bien été archivée
+      </p>
+
+      <div class="flex items-center gap-3">
+        <a class="fr-btn fr-btn--secondary" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">Retour</a>
+        <a
+          class="fr-btn fr-btn--icon-left fr-icon-draft-line"
+          target="_blank"
+          href="{% url 'app.liste_attente_archive_modele' manager_id=ads_manager.id %}"
+        >
+          Accéder au modèle du courrier d'archivage
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <div>
+    
+  </div>
+{% endblock body-content %}
