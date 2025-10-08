@@ -22,7 +22,7 @@
   <div>
     <h1>Gérer la liste d'attente</h1>
 
-    <h2>{{ads_manager.content_object.display_text}}</h2>
+    <h2>{{ads_manager.content_object.display_text|capfirst}}</h2>
 
     <div class="flex gap-3">
       <div class="fr-btns-group">
@@ -128,7 +128,10 @@
                     <td>{{inscription.date_depot_inscription}}</td>
                     <td>{{inscription.date_dernier_renouvellement}}</td>
                     <td>{{inscription.date_fin_validite}}</td>
-                    <td>{{inscription.email}} {{inscription.numero_telephone}}</td>
+                    <td>
+                      <div>{{inscription.email}}</div>
+                      <div>{{inscription.numero_telephone}}</div>
+                    </td>
                     <td>{% if inscription.exploitation_ads %}Oui{% else %}Non{% endif %}</td>
                     <td>
                       <a
