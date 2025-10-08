@@ -1,0 +1,93 @@
+{% extends "base_container.html" %}
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d’Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.listes_attentes' %}">Listes d'attente publiques</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Liste d'attente {{ads_manager.content_object.display_text}}</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <div>
+    <h1>Liste d'attente de la {{ads_manager.content_object.display_text}}</h1>
+
+    <p>
+      Cette liste d’attente est indicative et est présentée par ordre chronologique des dates de dépôt des 
+      demandes, sous réserve de modifications récentes qui n’auraient pas encore été enregistrées.
+    </p>
+    <p>
+      Pour toute demande de renseignements, veuillez vous rapprocher directement de l’administration concernée.
+    </p>
+  </div>
+
+  
+
+  <div class="mt-3 flex flex-col items-center w-full">
+    <div class="fr-table fr-table--no-scroll fr-table--multiline" id="table-0-component">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table id="table-0">
+              <thead>
+                <tr>
+                  <th>N° d'enregistrement </th>
+                  <th> Date de dépôt de la demande </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for inscription in inscriptions %}
+                  <tr id="inscription-{{forloop.counter}}" data-row-key="{{forloop.counter}}">
+                    <td>{{inscription.numero}}</td>
+                    <td>{{inscription.date_depot_inscription}}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <nav role="navigation" class="fr-pagination self-center" aria-label="Pagination">
+      <ul class="fr-pagination__list">
+
+        {% if page_obj.has_previous %}
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--first" href="?page=1"> Première page </a>
+        </li>
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="?page={{page_obj.previous_page_number}}" title="Page précédente"> Page précédente </a>
+        </li>
+        {% endif %}
+        <li>
+          <a class="fr-pagination__link" aria-current="page" title="Page {{page_obj.number}}"> {{page_obj.number}} </a>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="?page={{page_obj.next_page_number}}" title="Page suivante"> Page suivante </a>
+        </li>
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--last" href="?page={{ page_obj.paginator.num_pages }}" title="Dernière page"> Dernière page </a>
+        </li>
+
+        {% endif %}
+
+      </ul>
+    </nav>
+  </div>
+{% endblock body-content %}

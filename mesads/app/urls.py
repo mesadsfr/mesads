@@ -188,6 +188,11 @@ url_liste_attente = [
         ads_manager_required(views.ArchivageConfirmationView.as_view()),
         name="app.liste_attente_inscription_archivage_confirmation",
     ),
+    path(
+        "liste_attente/<int:manager_id>/make-public/",
+        ads_manager_required(views.ChangementStatutListeView.as_view()),
+        name="app.liste_attente_make_public",
+    ),
 ]
 
 url_commons = [
@@ -238,6 +243,16 @@ url_public = [
         "plan-site",
         views.PlanSiteView.as_view(),
         name="app.plan_site",
+    ),
+    path(
+        "listes-attente",
+        views.ListesAttentesPubliquesView.as_view(),
+        name="app.listes_attentes",
+    ),
+    path(
+        "listes-attente/publique/<int:manager_id>/",
+        views.ListeAttentePublique.as_view(),
+        name="app.liste_attente_publique",
     ),
 ]
 

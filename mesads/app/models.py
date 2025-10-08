@@ -198,6 +198,11 @@ class ADSManager(SmartValidationMixin, models.Model):
         help_text="Cochez cette case pour empêcher la gestion manuelle des ADS pour cette administration",
     )
 
+    liste_attente_publique = models.BooleanField(
+        default=False,
+        help_text="Cochez cette case pour que la liste d'attente de l'administration soit publique.",
+    )
+
 
 @cleanup.ignore
 class ADSManagerDecree(models.Model):

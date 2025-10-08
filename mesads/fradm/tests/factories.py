@@ -21,3 +21,4 @@ class CommuneFactory(factory.django.DjangoModelFactory):
         model = Commune
 
     insee = factory.Sequence(lambda n: "{:08d}".format(n + 1))
+    libelle = factory.Faker("pystr", min_chars=10, max_chars=10)
