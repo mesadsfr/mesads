@@ -165,7 +165,7 @@ class AttributionListeAttenteView(ListView):
         context = super().get_context_data(**kwargs)
         context["demande_retenue"] = (
             self.get_queryset()
-            .filter(all_filled=1, date_fin_validite__lt=datetime.date.today())
+            .filter(all_filled=1, date_fin_validite__gte=datetime.date.today())
             .first()
         )
         if (
