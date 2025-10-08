@@ -298,3 +298,14 @@ urls:
 
   app.liste_attente_contact_modele:
     missing: true
+
+  app.listes_attentes:
+    title: "Listes d'attente publiques - MesADS"
+    description: "Listes d'attente en accès public sur MesADS"
+  
+  app.liste_attente_publique:
+    title: "Liste d'attente publique {{ads_manager.content_object.display_text}} - MesADS"
+    description: "Liste d'attente publique de l'administration {{ads_manager.content_object.display_text}} sur MesADS"
+
+  app.liste_attente_make_public:
+    missing: true

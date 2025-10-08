@@ -5,10 +5,16 @@ import datetime
 from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError, transaction, models
-from django.db.models import Case, When, IntegerField, Q
+from django.db.models import Case, When, IntegerField, Q, Value, Count, F
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse, Http404
 from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, CreateView, UpdateView, View, TemplateView
+from django.views.generic import (
+    ListView,
+    CreateView,
+    UpdateView,
+    View,
+    TemplateView,
+)
 from django.urls import reverse
 from django.utils import timezone
 from pathlib import Path
@@ -561,3 +567,89 @@ class ExportCSVInscriptionListeAttenteView(View):
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
         return response
+
+
+class ListesAttentesPubliquesView(ListView):
+    template_name = "pages/ads_register/listes_attentes_publiques.html"
+    model = ADSManager
+    paginate_by = 50
+    context_object_name = "ads_managers"
+
+    def get_queryset(self):
+        qs = super().get_queryset().filter(liste_attente_publique=True)
+        search = self.request.GET.get("search", "").strip()
+
+        if search:
+            qs = qs.annotate(
+                name_search=Case(
+                    When(content_type__model="epci", then=F("epci__name")),
+                    When(
+                        content_type__model="prefecture",
+                        then=F("prefecture__libelle"),
+                    ),
+                    When(content_type__model="commune", then=F("commune__libelle")),
+                    default=Value(""),
+                )
+            )
+            qs = qs.filter(name_search__icontains=search)
+        qs = qs.annotate(
+            nombre_inscriptions_liste=Count(
+                "inscriptions_liste_attente",
+                filter=Q(
+                    inscriptions_liste_attente__date_fin_validite__gte=datetime.date.today()
+                ),
+            )
+        )
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search"] = self.request.GET.get("search", "")
+        return context
+
+
+class ListeAttentePublique(ListView):
+    template_name = "pages/ads_register/liste_attente_publique.html"
+    model = InscriptionListeAttente
+    paginate_by = 50
+    context_object_name = "inscriptions"
+    ordering = ["date_depot_inscription"]
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(
+            ads_manager__id=self.kwargs["manager_id"],
+            date_fin_validite__gte=datetime.date.today(),
+        )
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["ads_manager"] = get_object_or_404(
+            ADSManager, id=self.kwargs["manager_id"], liste_attente_publique=True
+        )
+        return context
+
+
+class ChangementStatutListeView(View):
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        ads_manager = get_object_or_404(ADSManager, id=kwargs["manager_id"])
+        liste_attente_publique = self.request.POST.get("liste_attente_publique")
+        ads_manager.liste_attente_publique = liste_attente_publique == "1"
+        ads_manager.save()
+        messages.success(
+            request,
+            (
+                "La liste d'attente a été rendue publique"
+                if ads_manager.liste_attente_publique is True
+                else "La liste d'attente a été rendu privée"
+            ),
+        )
+
+        return HttpResponseRedirect(
+            redirect_to=reverse(
+                "app.liste_attente", kwargs={"manager_id": ads_manager.id}
+            )
+        )

@@ -1,0 +1,113 @@
+{% extends "base_container.html" %}
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d’Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Listes d'attente publiques</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <div>
+    <h1>Consulter la liste d'attente d'une commune</h1>    
+  </div>
+
+  
+
+  <div class="mt-3 flex flex-col">
+    <div class="flex gap-3 items-center">
+      <form method="GET" class="fr-search-bar" role="search">
+        <label class="fr-label" for="search-input"> Rechercher </label>
+        <input class="fr-input" aria-describedby="search-input-messages" placeholder="Rechercher" name="search" id="search-input" type="search" value="{{search}}">
+        <div class="fr-messages-group" id="search-input-messages" aria-live="polite">
+        </div>
+        <button title="Rechercher" type="submit" class="fr-btn">Rechercher</button>
+      </form>
+
+    </div>
+    <div class="fr-table fr-table--no-scroll fr-table--multiline" id="table-0-component">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table id="table-0">
+              <caption> Listes d'attentes publiques </caption>
+              <thead>
+                <tr>
+                  <th> Libellé </th>
+                  <th> Département </th>
+                  <th> Nombre d'inscriptions </th>
+                  <th>Consulter</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ads_manager in ads_managers %}
+                  <tr id="inscription-{{forloop.counter}}" data-row-key="{{forloop.counter}}">
+                    <td>{{ads_manager.content_object.display_text|capfirst}}</td>
+                    <td>{{ads_manager.administrator.prefecture.libelle}}</td>
+                    <td>{{ads_manager.nombre_inscriptions_liste}}</td>
+                    <td>
+                      <a
+                        class="fr-btn fr-btn--secondary fr-icon-eye-line"
+                        href="{% url 'app.liste_attente_publique' manager_id=ads_manager.id %}"
+                      >
+                        <span class="fr-sr-only">
+                          Consulter
+                        </span>
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+
+                {% if not ads_managers %}
+                  <tr>
+                    <td colspan="4">
+                      L'administration recherchée n'existe pas, ou n'a pas rendu sa liste d'attente publique sur MesADS 
+                    </td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav role="navigation" class="fr-pagination self-center" aria-label="Pagination">
+      <ul class="fr-pagination__list">
+
+        {% if page_obj.has_previous %}
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--first" href="?page=1&search={{search}}"> Première page </a>
+        </li>
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="?page={{page_obj.previous_page_number}}&search={{search}}" title="Page précédente"> Page précédente </a>
+        </li>
+        {% endif %}
+        <li>
+          <a class="fr-pagination__link" aria-current="page" title="Page {{page_obj.number}}"> {{page_obj.number}} </a>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="?page={{page_obj.next_page_number}}&search={{search}}" title="Page suivante"> Page suivante </a>
+        </li>
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--last" href="?page={{ page_obj.paginator.num_pages }}&search={{search}}" title="Dernière page"> Dernière page </a>
+        </li>
+
+        {% endif %}
+
+      </ul>
+    </nav>
+  </div>
+{% endblock body-content %}

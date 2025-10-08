@@ -48,4 +48,7 @@ from .liste_attente import (  # noqa: F401
     InscriptionTraitementListeAttenteView,
     ModeleCourrierArchivageView,
     ModeleCourrierContactView,
+    ListesAttentesPubliquesView,
+    ListeAttentePublique,
+    ChangementStatutListeView,
 )
