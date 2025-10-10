@@ -87,6 +87,10 @@ urls:
     title: "Réinitialisation du mot de passe MesADS"
     description: "Votre mot de passe MesADS a été réinitialisé."
 
+  users_user_export_gestionnaire:
+    title: "Export csv gestionnaires"
+    description: "Page d'export csv de gestionnaires"
+
   ###
   ### Registre ADS
   ###
