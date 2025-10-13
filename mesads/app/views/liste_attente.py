@@ -24,6 +24,7 @@ from mesads.app.forms import (
     InscriptionListeAttenteForm,
     ArchivageInscriptionListeAttenteForm,
     ContactInscriptionListeAttenteForm,
+    UpdateDelaiInscriptionListeAttenteForm,
 )
 
 
@@ -173,6 +174,16 @@ class AttributionListeAttenteView(ListView):
             and context["demande_retenue"].status == InscriptionListeAttente.INSCRIT
         ):
             context["form"] = ContactInscriptionListeAttenteForm
+
+        if (
+            context["demande_retenue"] is not None
+            and context["demande_retenue"].status
+            == InscriptionListeAttente.ATTENTE_REPONSE
+        ):
+            context["form"] = UpdateDelaiInscriptionListeAttenteForm(
+                instance=context["demande_retenue"]
+            )
+
         context["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
         return context
 
@@ -200,6 +211,27 @@ class AttributionListeAttenteView(ListView):
                 context = self.get_context_data(**kwargs)
                 context["form"] = form
                 return self.render_to_response(context)
+
+        if action == "update_delai":
+            form = UpdateDelaiInscriptionListeAttenteForm(request.POST)
+            inscription = InscriptionListeAttente.objects.get(
+                id=request.POST.get("inscription_id")
+            )
+            if form.is_valid():
+                data = form.cleaned_data
+                inscription.delai_reponse = data.get("delai_reponse")
+                inscription.save()
+                return HttpResponseRedirect(
+                    redirect_to=reverse(
+                        "app.liste_attente_attribution",
+                        kwargs={"manager_id": kwargs.get("manager_id")},
+                    )
+                )
+            else:
+                context = self.get_context_data(**kwargs)
+                context["form"] = form
+                return self.render_to_response(context)
+
         if action == "validation_reponse":
             inscription = InscriptionListeAttente.objects.get(
                 id=request.POST.get("inscription_id")
@@ -382,6 +414,13 @@ class ArchivageInscriptionListeAttenteView(UpdateView):
         context = super().get_context_data(**kwargs)
         context["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
         return context
+
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            "Le formulaire contient des erreurs. Veuillez les corriger avant de soumettre à nouveau.",
+        )
+        return super().form_invalid(form)
 
     def form_valid(self, form):
         inscription = form.save(commit=False)

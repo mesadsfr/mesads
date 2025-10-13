@@ -515,12 +515,24 @@ class InscriptionListeAttenteForm(forms.ModelForm):
                 f"{count + 1:03d}{obj.date_depot_inscription.strftime('%d%m%Y')}"
             )
 
+        if not obj.date_dernier_renouvellement:
+            obj.date_dernier_renouvellement = obj.date_depot_inscription
+
+        if not obj.date_fin_validite:
+            obj.date_fin_validite = obj.date_dernier_renouvellement + timedelta(
+                days=365
+            )
+
         if commit:
             obj.save()
         return obj
 
 
 class ArchivageInscriptionListeAttenteForm(forms.ModelForm):
+    ERROR_COMMENTAIRE_AUTRE = (
+        'Ce champ est obligatoire si vous choisissez le motif "Autre"'
+    )
+
     class Meta:
         model = InscriptionListeAttente
         fields = ("nom", "prenom", "numero_licence", "motif_archivage", "commentaire")
@@ -531,6 +543,20 @@ class ArchivageInscriptionListeAttenteForm(forms.ModelForm):
         self.fields["motif_archivage"].error_messages = {
             "required": "Merci de renseigner le motif d’archivage."
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        motif = cleaned_data.get("motif_archivage")
+        if motif == InscriptionListeAttente.AUTRE and not cleaned_data.get(
+            "commentaire"
+        ):
+            self.add_error(
+                "commentaire",
+                self.ERROR_COMMENTAIRE_AUTRE,
+            )
+
+        return cleaned_data
 
 
 class ContactInscriptionListeAttenteForm(forms.ModelForm):
@@ -546,6 +572,19 @@ class ContactInscriptionListeAttenteForm(forms.ModelForm):
         }
         self.fields["delai_reponse"].required = True
         self.fields["delai_reponse"].initial = 15
+        self.fields["delai_reponse"].error_messages = {
+            "required": "Merci de renseigner le délai de réponse."
+        }
+
+
+class UpdateDelaiInscriptionListeAttenteForm(forms.ModelForm):
+    class Meta:
+        model = InscriptionListeAttente
+        fields = ("delai_reponse",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["delai_reponse"].required = True
         self.fields["delai_reponse"].error_messages = {
             "required": "Merci de renseigner le délai de réponse."
         }

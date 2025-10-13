@@ -1121,7 +1121,7 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
         blank=True,
         verbose_name="Numéro d'enregistrement",
         help_text=(
-            "Vous êtes libre de fixer le numéro de votre choix. Vous pouvez choisir de le générer automatiquement."
+            "Vous êtes libre de fixer le numéro de votre choix. SI vous ne remplissez pas ce champ, un numéro sera généré automatiquement."
         ),
     )
 
@@ -1172,12 +1172,13 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
     )
 
     date_dernier_renouvellement = models.DateField(
-        verbose_name="Date de la dernière demande de renouvellement",
+        verbose_name="Date de la dernière demande de renouvellement", blank=True
     )
 
     date_fin_validite = models.DateField(
         verbose_name="Date de fin de validité de la demande",
         help_text="Par défaut, la demande devient invalide si son dépôt initial ou son renouvellement date de plus d’un an.",
+        blank=True,
     )
 
     commentaire = models.TextField(
