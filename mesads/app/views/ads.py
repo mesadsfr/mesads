@@ -119,6 +119,12 @@ class ADSView(RevisionMixin, UpdateView):
 
     def get_success_url(self):
         administrator = self.kwargs.get("ads_manager_administrator")
+
+        if self.inscription:
+            return reverse(
+                "app.liste_attente", kwargs={"manager_id": self.kwargs["manager_id"]}
+            )
+
         return (
             reverse(
                 "app.ads-manager-admin.ads-detail",
@@ -168,6 +174,17 @@ class ADSView(RevisionMixin, UpdateView):
                 "app.ads-manager.detail", kwargs={"manager_id": ads_manager.id}
             )
         )
+        if self.inscription:
+            context["inscription_id"] = (
+                self.inscription.id if self.inscription else None
+            )
+            context["return_url"] = reverse(
+                "app.liste_attente_attribution_ads",
+                kwargs={
+                    "manager_id": ads_manager.id,
+                    "inscription_id": self.inscription.id,
+                },
+            )
 
         if self.object:
             context["arrete_url"] = (
@@ -419,6 +436,12 @@ class ADSCreateView(ADSView, CreateView):
 
     def get_success_url(self):
         administrator = self.kwargs.get("ads_manager_administrator")
+
+        if self.inscription:
+            return reverse(
+                "app.liste_attente", kwargs={"manager_id": self.kwargs["manager_id"]}
+            )
+
         return (
             reverse(
                 "app.ads-manager-admin.ads-detail",
