@@ -11,7 +11,25 @@
     </button>
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
-        {% if ads_manager_administrator %}
+        {% if inscription_id %}
+          <li>
+            <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Administrations en gestion</a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">
+              Liste d'attente {{ads_manager.content_object.display_text}}
+            </a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link" href="{% url 'app.liste_attente_attribution' manager_id=ads_manager.id %}">
+              Attribution
+            </a>
+          </li>
+          <li>
+            <a class="fr-breadcrumb__link" href="{% url 'app.liste_attente_attribution_ads' manager_id=ads_manager.id inscription_id=inscription_id %}">Choix de l'ADS</a>
+          </li>
+
+        {% elif ads_manager_administrator %}
           <li>
             <a class="fr-breadcrumb__link"
               href="{% url 'app.homepage' %}">
@@ -34,7 +52,7 @@
           </li>
         {% else %}
           <li>
-            <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+            <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Administrations en gestion</a>
           </li>
           <li>
             <a class="fr-breadcrumb__link"
