@@ -11,7 +11,7 @@
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
         <li>
-          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Administrations en gestion</a>
         </li>
         <li>
           <a class="fr-breadcrumb__link" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">Liste d'attente {{ads_manager.content_object.display_text}}</a>
@@ -29,7 +29,7 @@
 
     <div class="flex flex-col items-center">
       <p>
-        L'inscription du chauffeur de taxi a bien été archivée
+        L'inscription a bien été archivée
       </p>
 
       <div class="flex items-center gap-3">
