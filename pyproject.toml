@@ -19,6 +19,7 @@ coverage = {version = "^6.4.1", extras = ["toml"]}
 requests-mock = "^1.9.3"
 djlint = "^1.36.4"
 django-query-counter = "^0.4.1"
+Faker = "^37.6.0"
 
 
 [tool.coverage.run]
@@ -38,8 +39,11 @@ omit = [
     # This file is mostly a copy of django classes, to allow authentication
     # with email. There's no value to add unittests here.
     "mesads/users/models.py",
-
     "mesads/app/crons.py",
+    # Commandes a destination de la preprod pour peupler des données
+    "mesads/app/management/commands/ads_donnees_test.py",
+    "mesads/app/management/commands/load_ads_managers.py",
+    "mesads/fradm/management/commands/load_*.py",
 ]
 
 [tool.coverage.report]
@@ -79,6 +83,7 @@ weasyprint = "^62.1"
 qrcode = "^7.4.2"
 pyotp = "^2.9.0"
 django-anymail = "^13.1"
+mozilla_django_oidc = "^4.0.1"
 
 
 [build-system]

@@ -15,50 +15,44 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         with transaction.atomic():
-            self.create_ads_managers_for_prefectures()
-            self.create_ads_managers_for_epci()
-            # self.create_ads_managers_for_communes()
-            self.create_administrators()
+            prefectures = self.create_administrators()
+            self.create_ads_managers_for_prefectures(prefectures)
+            self.create_ads_managers_for_epci(prefectures)
+            self.create_ads_managers_for_communes(prefectures)
 
-    def create_ads_managers_for_prefectures(self):
+    def create_ads_managers_for_prefectures(self, prefectures):
         for prefecture in Prefecture.objects.all():
             ADSManager.objects.get_or_create(
                 content_type=ContentType.objects.get_for_model(prefecture),
                 object_id=prefecture.id,
+                administrator=prefectures[prefecture.numero],
             )
 
-    def create_ads_managers_for_epci(self):
+    def create_ads_managers_for_epci(self, prefectures):
         for epci in EPCI.objects.all():
             ADSManager.objects.get_or_create(
-                content_type=ContentType.objects.get_for_model(epci), object_id=epci.id
+                content_type=ContentType.objects.get_for_model(epci),
+                object_id=epci.id,
+                administrator=prefectures[epci.departement],
             )
 
-    def create_ads_managers_for_communes(self):
+    def create_ads_managers_for_communes(self, prefectures):
         for commune in Commune.objects.all():
             ADSManager.objects.get_or_create(
                 content_type=ContentType.objects.get_for_model(commune),
                 object_id=commune.id,
+                administrator=prefectures[commune.departement],
             )
 
     def create_administrators(self):
         """For each prefecture, create a new ADSManagerAdministrator object and
         add the ressources managed by the prefecture.
         """
+        prefectures = {}
         for prefecture in Prefecture.objects.all():
             # Create ADSManagerAdministrator for this Prefecture.
             admin, created = ADSManagerAdministrator.objects.get_or_create(
                 prefecture=prefecture
             )
-
-            ADSManager.objects.filter(prefecture__id=prefecture.id).update(
-                administrator=admin
-            )
-
-            # Prefecture.numero is prefixed with a 0 for numero < 10.
-            ADSManager.objects.filter(
-                epci__departement=prefecture.numero.lstrip("0")
-            ).update(administrator=admin)
-
-            ADSManager.objects.filter(
-                commune__departement=prefecture.numero.lstrip("0")
-            ).update(administrator=admin)
+            prefectures[prefecture.numero] = admin
+        return prefectures
