@@ -50,10 +50,11 @@ class ADSView(RevisionMixin, UpdateView):
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-        self.inscription = None
         if request.GET.get("inscription_id"):
             self.inscription = get_object_or_404(
-                InscriptionListeAttente, id=request.GET.get("inscription_id")
+                InscriptionListeAttente,
+                id=request.GET.get("inscription_id"),
+                manager_id=kwargs.get("manager_id"),
             )
 
     def get_form_kwargs(self):
@@ -449,7 +450,9 @@ class ADSCreateView(ADSView, CreateView):
 
         if self.request.GET.get("inscription_id"):
             self.inscription = get_object_or_404(
-                InscriptionListeAttente, id=self.request.GET.get("inscription_id")
+                InscriptionListeAttente,
+                id=self.request.GET.get("inscription_id"),
+                manager_id=manager_id,
             )
         self.ads_users_formset, self.ads_legal_files_formset = self.get_formsets()
         self.ads_users_formset.extra = 1

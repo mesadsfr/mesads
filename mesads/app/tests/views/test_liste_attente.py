@@ -4,10 +4,11 @@ import http
 from django.urls import reverse
 
 from mesads.app.models import InscriptionListeAttente, WAITING_LIST_UNIQUE_ERROR_MESSAGE
-from mesads.users.unittest import ClientTestCase
+from mesads.users.unittest import ClientTestCase as BaseClientTestCase
 from mesads.app.forms import (
     InscriptionListeAttenteForm,
     ArchivageInscriptionListeAttenteForm,
+    ContactInscriptionListeAttenteForm,
 )
 
 from ..factories import (
@@ -17,7 +18,7 @@ from ..factories import (
 )
 
 
-class TestADSManagerAdminRequestsView(ClientTestCase):
+class ClientTestCase(BaseClientTestCase):
     def setUp(self):
         super().setUp()
         self.client, self.user = self.create_client()
@@ -31,6 +32,8 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
         # Enable logging
         logging.disable(logging.NOTSET)
 
+
+class TestListeAttenteView(ClientTestCase):
     def test_get_liste_attente(self):
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
         other_ads_manager = ADSManagerFactory(for_commune=True)
@@ -46,9 +49,9 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
         response = self.client.get(
             reverse("app.liste_attente", kwargs={"manager_id": self.ads_manager.id})
         )
-        assert inscription in response.context["inscriptions"]
-        assert other_inscription not in response.context["inscriptions"]
-        assert inscription_archived not in response.context["inscriptions"]
+        self.assertIn(inscription, response.context["inscriptions"])
+        self.assertNotIn(other_inscription, response.context["inscriptions"])
+        self.assertNotIn(inscription_archived, response.context["inscriptions"])
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertTemplateUsed(response, "pages/ads_register/liste_attente.html")
 
@@ -60,11 +63,13 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
         response = self.client.get(
             f"{reverse('app.liste_attente', kwargs={'manager_id': self.ads_manager.id})}?search={inscription_1.nom}+{inscription_1.prenom}"
         )
-        assert inscription_1 in response.context["inscriptions"]
-        assert inscription_2 not in response.context["inscriptions"]
-        assert inscription_3 not in response.context["inscriptions"]
+        self.assertIn(inscription_1, response.context["inscriptions"])
+        self.assertNotIn(inscription_2, response.context["inscriptions"])
+        self.assertNotIn(inscription_3, response.context["inscriptions"])
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
 
+
+class TestListeAttenteArchivesView(ClientTestCase):
     def test_get_liste_attente_archives(self):
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
         other_ads_manager = ADSManagerFactory(for_commune=True)
@@ -87,10 +92,10 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
                 "app.liste_attente_archives", kwargs={"manager_id": self.ads_manager.id}
             )
         )
-        assert inscription_archived in response.context["inscriptions"]
-        assert other_inscription not in response.context["inscriptions"]
-        assert other_inscription_archived not in response.context["inscriptions"]
-        assert inscription not in response.context["inscriptions"]
+        self.assertIn(inscription_archived, response.context["inscriptions"])
+        self.assertNotIn(other_inscription, response.context["inscriptions"])
+        self.assertNotIn(other_inscription_archived, response.context["inscriptions"])
+        self.assertNotIn(inscription, response.context["inscriptions"])
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertTemplateUsed(
             response, "pages/ads_register/liste_attente_archivees.html"
@@ -111,13 +116,15 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
         response = self.client.get(
             f"{reverse('app.liste_attente_archives', kwargs={'manager_id': self.ads_manager.id})}?search={inscription_archived.nom}+{inscription_archived.prenom}"
         )
-        assert inscription_archived in response.context["inscriptions"]
-        assert other_inscription_archived not in response.context["inscriptions"]
+        self.assertIn(inscription_archived, response.context["inscriptions"])
+        self.assertNotIn(other_inscription_archived, response.context["inscriptions"])
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertTemplateUsed(
             response, "pages/ads_register/liste_attente_archivees.html"
         )
 
+
+class TestCreationInscriptionListeAttenteView(ClientTestCase):
     def test_get_formulaire_creation_inscription(self):
         response = self.client.get(
             reverse(
@@ -132,7 +139,7 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
         self.assertIsInstance(response.context["form"], InscriptionListeAttenteForm)
 
     def test_post_formulaire_creation_inscription_ok(self):
-        assert InscriptionListeAttente.objects.count() == 0
+        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
         response = self.client.post(
             reverse(
                 "app.liste_attente_inscription",
@@ -152,14 +159,44 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
                 + datetime.timedelta(days=365),
             },
         )
-        assert InscriptionListeAttente.objects.count() == 1
+        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
         self.assertEqual(response.status_code, http.HTTPStatus.FOUND)
         inscription = InscriptionListeAttente.objects.last()
-        assert inscription.ads_manager == self.ads_manager
+        self.assertEqual(inscription.ads_manager, self.ads_manager)
+
+    def test_post_formulaire_creation_inscription_with_only_date_inscription(self):
+        today = datetime.date.today()
+        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_inscription",
+                kwargs={"manager_id": self.ads_manager.id},
+            ),
+            data={
+                "numero": "1",
+                "nom": "John",
+                "prenom": "Doe",
+                "numero_licence": "1234ABCD",
+                "numero_telephone": "0606060606",
+                "email": "john.doe@test.com",
+                "adresse": "10 Rue du test",
+                "date_depot_inscription": today,
+                "date_dernier_renouvellement": "",
+                "date_fin_validite": "",
+            },
+        )
+        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
+        self.assertEqual(response.status_code, http.HTTPStatus.FOUND)
+        inscription = InscriptionListeAttente.objects.last()
+        self.assertEqual(inscription.ads_manager, self.ads_manager)
+        self.assertEqual(inscription.date_dernier_renouvellement, today)
+        self.assertEqual(
+            inscription.date_fin_validite, today + datetime.timedelta(days=365)
+        )
 
     def test_post_formulaire_creation_inscription_numero_invalide(self):
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
-        assert InscriptionListeAttente.objects.count() == 1
+        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
         response = self.client.post(
             reverse(
                 "app.liste_attente_inscription",
@@ -179,18 +216,19 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
                 + datetime.timedelta(days=365),
             },
         )
-        assert InscriptionListeAttente.objects.count() == 1
+        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
-        assert not response.context["form"].is_valid()
-        assert response.context["form"].errors["numero"] == [
-            WAITING_LIST_UNIQUE_ERROR_MESSAGE
-        ]
+        self.assertFalse(response.context["form"].is_valid())
+        self.assertEqual(
+            response.context["form"].errors["numero"],
+            [WAITING_LIST_UNIQUE_ERROR_MESSAGE],
+        )
 
     def test_post_formulaire_creation_inscription_numero_valide(self):
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
         inscription.delete()
-        assert InscriptionListeAttente.objects.count() == 0
-        assert InscriptionListeAttente.with_deleted.count() == 1
+        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
+        self.assertEqual(InscriptionListeAttente.with_deleted.count(), 1)
         response = self.client.post(
             reverse(
                 "app.liste_attente_inscription",
@@ -210,15 +248,15 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
                 + datetime.timedelta(days=365),
             },
         )
-        assert InscriptionListeAttente.objects.count() == 1
+        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
         self.assertEqual(response.status_code, http.HTTPStatus.FOUND)
         new_inscription = InscriptionListeAttente.objects.last()
-        assert new_inscription.ads_manager == self.ads_manager
-        assert new_inscription.numero == inscription.numero
-        assert new_inscription.id != inscription.id
+        self.assertEqual(new_inscription.ads_manager, self.ads_manager)
+        self.assertEqual(new_inscription.numero, inscription.numero)
+        self.assertNotEqual(new_inscription.id, inscription.id)
 
     def test_post_formulaire_creation_inscription_dates_invalides(self):
-        assert InscriptionListeAttente.objects.count() == 0
+        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
         response = self.client.post(
             reverse(
                 "app.liste_attente_inscription",
@@ -239,19 +277,24 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
                 "date_fin_validite": datetime.date.today() - datetime.timedelta(days=1),
             },
         )
-        assert InscriptionListeAttente.objects.count() == 0
+        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
-        assert not response.context["form"].is_valid()
-        assert response.context["form"].errors["date_dernier_renouvellement"] == [
-            InscriptionListeAttenteForm.ERROR_DATE_RENOUVELLEMENT
-        ]
-        assert response.context["form"].errors["date_fin_validite"] == [
-            InscriptionListeAttenteForm.ERROR_DATE_FIN_VALIDITE
-        ]
+        self.assertFalse(response.context["form"].is_valid())
 
+        self.assertEqual(
+            response.context["form"].errors["date_dernier_renouvellement"],
+            [InscriptionListeAttenteForm.ERROR_DATE_RENOUVELLEMENT],
+        )
+        self.assertEqual(
+            response.context["form"].errors["date_fin_validite"],
+            [InscriptionListeAttenteForm.ERROR_DATE_FIN_VALIDITE],
+        )
+
+
+class TestModificationInscriptionListeAttenteView(ClientTestCase):
     def test_get_formulaire_modification_inscription(self):
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
-        assert InscriptionListeAttente.objects.count() == 1
+        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
         response = self.client.get(
             reverse(
                 "app.liste_attente_inscription_update",
@@ -262,8 +305,8 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
             ),
         )
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
-        assert isinstance(response.context["form"], InscriptionListeAttenteForm)
-        assert response.context["form"].instance == inscription
+        self.assertIsInstance(response.context["form"], InscriptionListeAttenteForm)
+        self.assertEqual(response.context["form"].instance, inscription)
         self.assertTemplateUsed(
             response, "pages/ads_register/inscription_liste_attente.html"
         )
@@ -272,7 +315,7 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
         ads_manager = ADSManagerFactory(for_commune=True)
         ADSManagerRequestFactory(user=self.user, ads_manager=ads_manager)
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
-        assert InscriptionListeAttente.objects.count() == 1
+        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
         response = self.client.get(
             reverse(
                 "app.liste_attente_inscription_update",
@@ -298,7 +341,7 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
 
     def test_post_formulaire_modification_inscription_ok(self):
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
-        assert InscriptionListeAttente.objects.count() == 1
+        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
         data = {
             "numero": inscription.numero,
             "nom": "John",
@@ -323,18 +366,19 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
         )
         self.assertEqual(response.status_code, http.HTTPStatus.FOUND)
         inscription.refresh_from_db()
-        assert inscription.nom == data["nom"]
-        assert inscription.prenom == data["prenom"]
-        assert inscription.numero_licence == data["numero_licence"]
-        assert inscription.numero_telephone == data["numero_telephone"]
-        assert inscription.email == data["email"]
-        assert inscription.adresse == data["adresse"]
-        assert inscription.date_depot_inscription == data["date_depot_inscription"]
-        assert (
-            inscription.date_dernier_renouvellement
-            == data["date_dernier_renouvellement"]
+        self.assertEqual(inscription.nom, data["nom"])
+        self.assertEqual(inscription.prenom, data["prenom"])
+        self.assertEqual(inscription.numero_licence, data["numero_licence"])
+        self.assertEqual(inscription.numero_telephone, data["numero_telephone"])
+        self.assertEqual(inscription.email, data["email"])
+        self.assertEqual(inscription.adresse, data["adresse"])
+        self.assertEqual(
+            inscription.date_depot_inscription, data["date_depot_inscription"]
         )
-        assert inscription.date_fin_validite == data["date_fin_validite"]
+        self.assertEqual(
+            inscription.date_dernier_renouvellement, data["date_dernier_renouvellement"]
+        )
+        self.assertEqual(inscription.date_fin_validite, data["date_fin_validite"])
         self.assertRedirects(
             response,
             expected_url=reverse(
@@ -348,7 +392,7 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
     def test_post_formulaire_modification_inscription_numero_invalide(self):
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
         inscription_2 = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
-        assert InscriptionListeAttente.objects.count() == 2
+        self.assertEqual(InscriptionListeAttente.objects.count(), 2)
         data = {
             "numero": inscription_2.numero,
             "nom": "John",
@@ -372,14 +416,17 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
             data=data,
         )
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
-        assert not response.context["form"].is_valid()
-        assert response.context["form"].errors["numero"] == [
-            WAITING_LIST_UNIQUE_ERROR_MESSAGE
-        ]
+        self.assertFalse(response.context["form"].is_valid())
+        self.assertEqual(
+            response.context["form"].errors["numero"],
+            [WAITING_LIST_UNIQUE_ERROR_MESSAGE],
+        )
 
+
+class TestFormulaireArchivageView(ClientTestCase):
     def test_get_formulaire_archivage_inscription(self):
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
-        assert InscriptionListeAttente.objects.count() == 1
+        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
         response = self.client.get(
             reverse(
                 "app.liste_attente_inscription_archivage",
@@ -390,10 +437,10 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
             ),
         )
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
-        assert isinstance(
+        self.assertIsInstance(
             response.context["form"], ArchivageInscriptionListeAttenteForm
         )
-        assert response.context["form"].instance == inscription
+        self.assertEqual(response.context["form"].instance, inscription)
         self.assertTemplateUsed(
             response, "pages/ads_register/archivage_inscription_liste_attente.html"
         )
@@ -402,7 +449,7 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
         ads_manager = ADSManagerFactory(for_commune=True)
         ADSManagerRequestFactory(user=self.user, ads_manager=ads_manager)
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
-        assert InscriptionListeAttente.objects.count() == 1
+        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
         response = self.client.get(
             reverse(
                 "app.liste_attente_inscription_archivage",
@@ -428,7 +475,7 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
 
     def test_post_formulaire_archivage_inscription(self):
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
-        assert InscriptionListeAttente.objects.count() == 1
+        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
         data = {
             "nom": inscription.nom,
             "prenom": inscription.prenom,
@@ -458,10 +505,12 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
             fetch_redirect_response=True,
         )
         inscription.refresh_from_db()
-        assert inscription.motif_archivage == data["motif_archivage"]
-        assert InscriptionListeAttente.objects.count() == 0
-        assert InscriptionListeAttente.with_deleted.count() == 1
+        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
+        self.assertEqual(InscriptionListeAttente.with_deleted.count(), 1)
+        self.assertEqual(inscription.motif_archivage, data["motif_archivage"])
 
+
+class TestArchivageCOnfirmationView(ClientTestCase):
     def test_get_archivage_confirmation(self):
         response = self.client.get(
             reverse(
@@ -477,6 +526,9 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
             "pages/ads_register/archivage_confirmation_inscription_liste_attente.html",
         )
 
+
+class TestExportListeAttenteView(ClientTestCase):
+
     def test_get_export_liste_attente(self):
         InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
         InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
@@ -488,7 +540,7 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
             )
         )
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
-        assert (
-            response.headers["Content-Type"]
-            == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        self.assertEqual(
+            response.headers["Content-Type"],
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
