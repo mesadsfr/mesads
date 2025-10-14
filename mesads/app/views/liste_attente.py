@@ -32,7 +32,7 @@ class ListeAttenteView(ListView):
     template_name = "pages/ads_register/liste_attente.html"
     model = InscriptionListeAttente
     paginate_by = 50
-    ordering = "date_depot_inscription"
+    ordering = ["date_depot_inscription"]
     context_object_name = "inscriptions"
 
     def get_queryset(self):
@@ -90,7 +90,7 @@ class DemandeArchiveesView(ListView):
     template_name = "pages/ads_register/liste_attente_archivees.html"
     model = InscriptionListeAttente
     paginate_by = 50
-    ordering = "-deleted_at"
+    ordering = ["-deleted_at"]
     context_object_name = "inscriptions"
 
     def get_queryset(self):
@@ -173,7 +173,9 @@ class AttributionListeAttenteView(ListView):
             context["demande_retenue"] is not None
             and context["demande_retenue"].status == InscriptionListeAttente.INSCRIT
         ):
-            context["form"] = ContactInscriptionListeAttenteForm
+            context["form"] = ContactInscriptionListeAttenteForm(
+                instance=context["demande_retenue"]
+            )
 
         if (
             context["demande_retenue"] is not None
