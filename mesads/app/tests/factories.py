@@ -73,6 +73,8 @@ class InscriptionListeAttenteFactory(factory.django.DjangoModelFactory):
         lambda: timezone.now().date() - timedelta(days=random.randint(30, 3 * 365))
     )
 
+    status = InscriptionListeAttente.INSCRIT
+
     @factory.lazy_attribute
     def date_dernier_renouvellement(self):
         today = timezone.now().date()
