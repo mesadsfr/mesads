@@ -5,8 +5,7 @@ import datetime
 from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError, transaction, models
-from django.db.models import Case, When, IntegerField, Q, Value
-from django.db.models.functions import Replace
+from django.db.models import Case, When, IntegerField, Q
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, View, TemplateView
@@ -17,7 +16,6 @@ from pathlib import Path
 from mesads.app.models import (
     InscriptionListeAttente,
     ADSManager,
-    ADS,
     WAITING_LIST_UNIQUE_ERROR_MESSAGE,
 )
 from mesads.app.forms import (
@@ -157,141 +155,96 @@ class AttributionListeAttenteView(ListView):
                     output_field=IntegerField(),
                 ),
             )
-            .order_by("-all_filled", "-exploitation_ads", "date_depot_inscription")
+            .order_by("-exploitation_ads", "date_depot_inscription")
             .exclude(date_fin_validite__lt=datetime.date.today())
         )
         return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["demande_retenue"] = (
-            self.get_queryset()
-            .filter(all_filled=1, date_fin_validite__gte=datetime.date.today())
-            .first()
-        )
-        if (
-            context["demande_retenue"] is not None
-            and context["demande_retenue"].status == InscriptionListeAttente.INSCRIT
-        ):
-            context["form"] = ContactInscriptionListeAttenteForm(
-                instance=context["demande_retenue"]
-            )
-
-        if (
-            context["demande_retenue"] is not None
-            and context["demande_retenue"].status
-            == InscriptionListeAttente.ATTENTE_REPONSE
-        ):
-            context["form"] = UpdateDelaiInscriptionListeAttenteForm(
-                instance=context["demande_retenue"]
-            )
-
         context["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
         return context
 
-    def post(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
-        action = request.POST.get("action")
-        if action == "contact":
-            form = ContactInscriptionListeAttenteForm(request.POST)
-            inscription = InscriptionListeAttente.objects.get(
-                id=request.POST.get("inscription_id")
-            )
-            if form.is_valid():
-                data = form.cleaned_data
-                inscription.date_contact = data.get("date_contact")
-                inscription.delai_reponse = data.get("delai_reponse")
-                inscription.status = InscriptionListeAttente.ATTENTE_REPONSE
-                inscription.save()
-                return HttpResponseRedirect(
-                    redirect_to=reverse(
-                        "app.liste_attente_attribution",
-                        kwargs={"manager_id": kwargs.get("manager_id")},
-                    )
-                )
-            else:
-                context = self.get_context_data(**kwargs)
-                context["form"] = form
-                return self.render_to_response(context)
 
-        if action == "update_delai":
-            form = UpdateDelaiInscriptionListeAttenteForm(request.POST)
-            inscription = InscriptionListeAttente.objects.get(
-                id=request.POST.get("inscription_id")
-            )
-            if form.is_valid():
-                data = form.cleaned_data
-                inscription.delai_reponse = data.get("delai_reponse")
-                inscription.save()
-                return HttpResponseRedirect(
-                    redirect_to=reverse(
-                        "app.liste_attente_attribution",
-                        kwargs={"manager_id": kwargs.get("manager_id")},
-                    )
-                )
-            else:
-                context = self.get_context_data(**kwargs)
-                context["form"] = form
-                return self.render_to_response(context)
-
-        if action == "validation_reponse":
-            inscription = InscriptionListeAttente.objects.get(
-                id=request.POST.get("inscription_id")
-            )
-            inscription.status = InscriptionListeAttente.REPONSE_OK
-            inscription.save()
-            return HttpResponseRedirect(
-                redirect_to=reverse(
-                    "app.liste_attente_attribution",
-                    kwargs={"manager_id": kwargs.get("manager_id")},
-                )
-            )
-
-        return self.render_to_response(self.get_context_data(**kwargs))
-
-
-class AttributionADSInscriptionListeAttenteView(TemplateView):
-    template_name = "pages/ads_register/liste_attente_attribution_choix_ads.html"
+class InscriptionTraitementListeAttenteView(TemplateView):
+    template_name = "pages/ads_register/liste_attente_traitement_demande.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ads_manager = ADSManager.objects.get(id=self.kwargs["manager_id"])
         context["ads_manager"] = ads_manager
-        inscription = InscriptionListeAttente.objects.get(
-            id=self.kwargs["inscription_id"]
+        inscription = get_object_or_404(
+            InscriptionListeAttente, id=self.kwargs["inscription_id"]
         )
-
         context["inscription"] = inscription
 
-        ads_disponibles = ADS.objects.filter(
-            ads_manager=ads_manager,
-            ads_creation_date__gte=datetime.date(2014, 10, 1),
-        )
+        if inscription.status == InscriptionListeAttente.INSCRIT:
+            context["form"] = ContactInscriptionListeAttenteForm(instance=inscription)
 
-        search = self.request.GET.get("search", "").strip()
-        if search:
-            search_items = search.split(" ")
-            ads_disponibles = ads_disponibles.annotate(
-                clean_immatriculation_plate=Replace(
-                    "immatriculation_plate", Value("-"), Value("")
-                )
+        if inscription.status == InscriptionListeAttente.ATTENTE_REPONSE:
+            context["form"] = UpdateDelaiInscriptionListeAttenteForm(
+                instance=inscription
             )
-            q = Q()
-            for search_item in search_items:
-                q &= (
-                    Q(owner_siret__icontains=search_item)
-                    | Q(owner_name__icontains=search_item)
-                    | Q(clean_immatriculation_plate__icontains=search_item)
-                    | Q(epci_commune__libelle__icontains=search_item)
-                    | Q(number__icontains=search_item)
-                )
-            ads_disponibles = ads_disponibles.filter(q)
-            context["search"] = search
-        context["ads_disponibles"] = ads_disponibles
+
         return context
 
+    def get_post_redirect_url(self, inscription):
+        return reverse(
+            "app.liste_attente_traitement_demande",
+            kwargs={
+                "manager_id": self.kwargs.get("manager_id"),
+                "inscription_id": inscription.id,
+            },
+        )
 
-class CreationInscriptionListeAttenteView(CreateView):
+    def _response_invalid_form(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
+        context["form"] = form
+        return self.render_to_response(context)
+
+    def _handle_form(self, form_class, inscription, **kwargs):
+        form = form_class(self.request.POST, instance=inscription)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(
+                redirect_to=self.get_post_redirect_url(inscription)
+            )
+        else:
+            return self._response_invalid_form(form, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        action = request.POST.get("action")
+        inscription = get_object_or_404(
+            InscriptionListeAttente,
+            id=self.kwargs["inscription_id"],
+            ads_manager=self.kwargs["manager_id"],
+        )
+        if action == "contact":
+            return self._handle_form(
+                ContactInscriptionListeAttenteForm, inscription, **kwargs
+            )
+
+        elif action == "update_delai":
+            return self._handle_form(
+                UpdateDelaiInscriptionListeAttenteForm, inscription, **kwargs
+            )
+
+        elif action == "validation_reponse":
+            inscription.status = InscriptionListeAttente.REPONSE_OK
+            inscription.save()
+            return HttpResponseRedirect(
+                redirect_to=self.get_post_redirect_url(inscription)
+            )
+
+        return self.render_to_response(self.get_context_data(**kwargs))
+
+
+class InscriptionListeAttenteMixin:
+    """
+    Mixin pour les fonctions communes entre la création/modification
+    d'inscription a la liste d'attente
+    """
+
     template_name = "pages/ads_register/inscription_liste_attente.html"
     form_class = InscriptionListeAttenteForm
 
@@ -316,10 +269,7 @@ class CreationInscriptionListeAttenteView(CreateView):
         return context
 
     def form_valid(self, form):
-        ads_manager = ADSManager.objects.get(id=self.kwargs["manager_id"])
-        form.instance.ads_manager = ads_manager
-
-        # CreateView doesn't call validate_constraints(). The try/catch below
+        # Create/UpdateView doesn't call validate_constraints(). The try/catch below
         # attemps to save the object. If IntegrityError is returned from
         # database, we return a custom error message for "number".
 
@@ -331,57 +281,35 @@ class CreationInscriptionListeAttenteView(CreateView):
             return super().form_invalid(form)
 
 
-class ModificationInscriptionListeAttenteView(UpdateView):
-    template_name = "pages/ads_register/inscription_liste_attente.html"
-    form_class = InscriptionListeAttenteForm
+class CreationInscriptionListeAttenteView(InscriptionListeAttenteMixin, CreateView):
+    def form_valid(self, form):
+        ads_manager = ADSManager.objects.get(id=self.kwargs["manager_id"])
+        form.instance.ads_manager = ads_manager
+        return super().form_valid(form)
+
+
+class ModificationInscriptionListeAttenteView(InscriptionListeAttenteMixin, UpdateView):
     pk_url_kwarg = "inscription_id"
     model = InscriptionListeAttente
 
     def dispatch(self, request, *args, **kwargs):
-        if self.get_object().ads_manager.id != self.kwargs["manager_id"]:
+        """
+        Si le manager associé a l'inscription ne correspond pas à l'id
+        du manager dans l'url, on redirige vers la bonne url
+        """
+        object = self.get_object()
+        if object.ads_manager.id != self.kwargs["manager_id"]:
             return HttpResponseRedirect(
                 redirect_to=reverse(
                     "app.liste_attente_inscription_update",
                     kwargs={
-                        "manager_id": self.get_object().ads_manager.id,
-                        "inscription_id": self.get_object().id,
+                        "manager_id": object.ads_manager.id,
+                        "inscription_id": object.id,
                     },
                 )
             )
 
         return super().dispatch(request, *args, **kwargs)
-
-    def get_success_url(self):
-        return reverse(
-            "app.liste_attente",
-            kwargs={
-                "manager_id": self.kwargs["manager_id"],
-            },
-        )
-
-    def form_invalid(self, form):
-        messages.error(
-            self.request,
-            "Le formulaire contient des erreurs. Veuillez les corriger avant de soumettre à nouveau.",
-        )
-        return super().form_invalid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
-        return context
-
-    def form_valid(self, form):
-        # CreateView doesn't call validate_constraints(). The try/catch below
-        # attemps to save the object. If IntegrityError is returned from
-        # database, we return a custom error message for "number".
-
-        try:
-            with transaction.atomic():
-                return super().form_valid(form)
-        except IntegrityError:
-            form.add_error("numero", WAITING_LIST_UNIQUE_ERROR_MESSAGE)
-            return super().form_invalid(form)
 
 
 class ArchivageInscriptionListeAttenteView(UpdateView):
