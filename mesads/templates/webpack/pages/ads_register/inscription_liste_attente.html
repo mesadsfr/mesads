@@ -65,18 +65,79 @@
 
       {% include "form_fields/bool.html" with field=form.exploitation_ads field_errors=form.errors.exploitation_ads required=form.fields.exploitation_ads.required %}
 
-      {% include "form_fields/date.html" with field=form.date_depot_inscription field_errors=form.errors.date_depot_inscription required=form.fields.date_depot_inscription.required %}
+      <div class="fr-input-group{% if form.errors.date_depot_inscription %} fr-input-group--error{% endif %}">
+        <label class="fr-label" for="{{ form.date_depot_inscription.id_for_label }}">
+          {{ form.date_depot_inscription.label }}
+          <span aria-hidden="true">*</span>
+          <span class="fr-sr-only"> (obligatoire)</span>
+          {% if form.date_depot_inscription.help_text %}<span class="fr-hint-text">{{ form.date_depot_inscription.help_text }}</span>{% endif %}
+        </label>
 
-      {% include "form_fields/date.html" with field=form.date_dernier_renouvellement field_errors=form.errors.date_dernier_renouvellement required=form.fields.date_dernier_renouvellement.required %}
-      
-      {% include "form_fields/date.html" with field=form.date_fin_validite field_errors=form.errors.date_fin_validite required=form.fields.date_fin_validite.required %}
+        <input
+          class="fr-input{% if form.date_depot_inscription.errors %} fr-input--error{% endif %}"
+          type="date"
+          id="{{ form.date_depot_inscription.id_for_label }}"
+          name="{{ form.date_depot_inscription.html_name }}"
+          value="{% if form.is_bound %}{{ form.data.date_depot_inscription|default:'' }}{% else %}{{ form.initial.date_depot_inscription|date:'Y-m-d' }}{% endif %}"
+        />
 
-      {% include "form_fields/textarea.html" with field=form.commentaire field_errors=form.errors.commentaire required=form.fields.commentaire.required %}
+        {% for error in form.date_depot_inscription.errors %}
+          <p class="fr-error-text">{{ error }}</p>
+        {% endfor %}
+      </div>
 
+      <div id="date-renouvellement-container" hidden aria-hidden="true" aria-live="polite" class="fr-input-group{% if form.errors.date_dernier_renouvellement %} fr-input-group--error{% endif %}">
+        <label class="fr-label" for="{{ form.date_dernier_renouvellement.id_for_label }}">
+          {{ form.date_dernier_renouvellement.label }}
+          <span aria-hidden="true">*</span>
+          <span class="fr-sr-only"> (obligatoire)</span>
+          {% if form.date_dernier_renouvellement.help_text %}<span class="fr-hint-text">{{ form.date_dernier_renouvellement.help_text }}</span>{% endif %}
+        </label>
+
+        <input
+          class="fr-input{% if form.date_dernier_renouvellement.errors %} fr-input--error{% endif %}"
+          type="date"
+          id="{{ form.date_dernier_renouvellement.id_for_label }}"
+          name="{{ form.date_dernier_renouvellement.html_name }}"
+          value="{% if form.is_bound %}{{ form.data.date_dernier_renouvellement|default:'' }}{% else %}{{ form.initial.date_dernier_renouvellement|date:'Y-m-d' }}{% endif %}"
+        />
+
+        {% for error in form.date_dernier_renouvellement.errors %}
+          <p class="fr-error-text">{{ error }}</p>
+        {% endfor %}
+      </div>
       <div class="fr-input-group">
         <a class="fr-btn fr-btn--secondary" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">Retour</a>
         <button type="submit" class="fr-btn">Enregistrer l'inscription</button>
       </div>
     </form>
   </div>
+
+  <script>
+    /*
+    Petit bout de javascript permettant :
+    - D'afficher la date de renouvellement si la date d'inscription est vieille de plus d'un an
+    - La masquer dans le cas inverse
+    */
+    const inputDateInscription = document.getElementById("{{form.date_depot_inscription.id_for_label}}")
+    const containerDateRenouvellement = document.getElementById("date-renouvellement-container")
+
+    function showRenouvellementDate() {
+      const today = new Date();                 
+      const oneYearSooner = new Date()
+      oneYearSooner.setFullYear(today.getFullYear() - 1)
+
+      if (inputDateInscription.valueAsDate && inputDateInscription.valueAsDate < oneYearSooner) {
+        containerDateRenouvellement.hidden = false
+        containerDateRenouvellement.setAttribute("aria-hidden", "false")
+        
+      } else {
+        containerDateRenouvellement.hidden = true
+        containerDateRenouvellement.setAttribute("aria-hidden", "true")
+      }
+    }
+
+    showRenouvellementDate()
+    inputDateInscription.addEventListener("input", showRenouvellementDate)
+  </script>
 {% endblock body-content %}
