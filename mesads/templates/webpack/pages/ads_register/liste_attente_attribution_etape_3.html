@@ -12,7 +12,7 @@
 
   <a
     class="fr-btn mt-2"
-    href="{% url 'app.liste_attente_attribution_ads' manager_id=ads_manager.id inscription_id=demande_retenue.id %}"
+    href="{% url 'app.ads.create' manager_id=ads_manager.id %}?inscription_id={{inscription.id}}"
   >
     Attribuer une ADS
   </a>

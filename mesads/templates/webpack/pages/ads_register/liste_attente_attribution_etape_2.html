@@ -7,7 +7,7 @@
 
 <div>
   <p>
-    Vous avez contacté le candidat le <strong>{{demande_retenue.date_contact}}</strong> et avez défini un délai de réponse de <strong>{{demande_retenue.delai_reponse}} jours</strong>.
+    Vous avez contacté le candidat le <strong>{{inscription.date_contact}}</strong> et avez défini un délai de réponse de <strong>{{inscription.delai_reponse}} jours</strong>.
   </p>
 
   <p>
@@ -18,7 +18,6 @@
 
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
-      <input id="inscription_id" name="inscription_id" type="hidden" value="{{demande_retenue.id}}" />
       {% include "form_fields/number.html" with field=form.delai_reponse field_errors=form.errors.delai_reponse required=form.fields.delai_reponse.required %}
       <div class="fr-input-group">
         <button type="submit" name="action" value="update_delai" class="fr-btn">Modifier</button>
@@ -30,13 +29,12 @@
   <div class="flex gap-3">
     <a
       class="fr-btn fr-btn--secondary"
-      href="{% url 'app.liste_attente_inscription_archivage'  manager_id=ads_manager.id inscription_id=demande_retenue.id %}"
+      href="{% url 'app.liste_attente_inscription_archivage'  manager_id=ads_manager.id inscription_id=inscription.id %}"
     >
       Archiver
     </a>
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
-      <input id="inscription_id" name="inscription_id" type="hidden" value="{{demande_retenue.id}}" />
       <div class="fr-input-group">
         <button type="submit" name="action" value="validation_reponse" class="fr-btn">Valider une réponse positive du candidat</button>
       </div>

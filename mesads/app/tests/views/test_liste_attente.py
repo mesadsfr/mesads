@@ -1,14 +1,21 @@
 import logging
 import datetime
 import http
+from dateutil.relativedelta import relativedelta
 from django.urls import reverse
 
-from mesads.app.models import InscriptionListeAttente, WAITING_LIST_UNIQUE_ERROR_MESSAGE
+from mesads.app.models import (
+    InscriptionListeAttente,
+    WAITING_LIST_UNIQUE_ERROR_MESSAGE,
+    ADS,
+    ADSUser,
+)
 from mesads.users.unittest import ClientTestCase as BaseClientTestCase
 from mesads.app.forms import (
     InscriptionListeAttenteForm,
     ArchivageInscriptionListeAttenteForm,
     ContactInscriptionListeAttenteForm,
+    UpdateDelaiInscriptionListeAttenteForm,
 )
 
 from ..factories import (
@@ -140,6 +147,37 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
 
     def test_post_formulaire_creation_inscription_ok(self):
         self.assertEqual(InscriptionListeAttente.objects.count(), 0)
+        today = datetime.date.today()
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_inscription",
+                kwargs={"manager_id": self.ads_manager.id},
+            ),
+            data={
+                "numero": "2",
+                "nom": "John",
+                "prenom": "Doe",
+                "numero_licence": "1234ABCD",
+                "numero_telephone": "0606060606",
+                "email": "john.doe@test.com",
+                "adresse": "10 Rue du test",
+                "date_depot_inscription": today,
+                "date_dernier_renouvellement": "",
+            },
+        )
+        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
+        self.assertEqual(response.status_code, http.HTTPStatus.FOUND)
+        inscription = InscriptionListeAttente.objects.last()
+        self.assertEqual(inscription.ads_manager, self.ads_manager)
+        self.assertIsNone(inscription.date_dernier_renouvellement)
+        self.assertEqual(
+            inscription.date_fin_validite,
+            today + relativedelta(years=1),
+        )
+
+    def test_post_formulaire_creation_inscription_with_date_renouvellement(self):
+        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
+        today = datetime.date.today()
         response = self.client.post(
             reverse(
                 "app.liste_attente_inscription",
@@ -153,18 +191,20 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
                 "numero_telephone": "0606060606",
                 "email": "john.doe@test.com",
                 "adresse": "10 Rue du test",
-                "date_depot_inscription": datetime.date.today(),
-                "date_dernier_renouvellement": datetime.date.today(),
-                "date_fin_validite": datetime.date.today()
-                + datetime.timedelta(days=365),
+                "date_depot_inscription": today - relativedelta(years=1),
+                "date_dernier_renouvellement": today,
             },
         )
         self.assertEqual(InscriptionListeAttente.objects.count(), 1)
         self.assertEqual(response.status_code, http.HTTPStatus.FOUND)
         inscription = InscriptionListeAttente.objects.last()
         self.assertEqual(inscription.ads_manager, self.ads_manager)
+        self.assertEqual(
+            inscription.date_fin_validite,
+            today + relativedelta(years=1),
+        )
 
-    def test_post_formulaire_creation_inscription_with_only_date_inscription(self):
+    def test_post_formulaire_creation_inscription_with_expired_date_depot(self):
         today = datetime.date.today()
         self.assertEqual(InscriptionListeAttente.objects.count(), 0)
         response = self.client.post(
@@ -180,18 +220,44 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
                 "numero_telephone": "0606060606",
                 "email": "john.doe@test.com",
                 "adresse": "10 Rue du test",
-                "date_depot_inscription": today,
+                "date_depot_inscription": today - relativedelta(years=2),
                 "date_dernier_renouvellement": "",
-                "date_fin_validite": "",
             },
         )
-        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
-        self.assertEqual(response.status_code, http.HTTPStatus.FOUND)
-        inscription = InscriptionListeAttente.objects.last()
-        self.assertEqual(inscription.ads_manager, self.ads_manager)
-        self.assertEqual(inscription.date_dernier_renouvellement, today)
+        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertEqual(
-            inscription.date_fin_validite, today + datetime.timedelta(days=365)
+            response.context["form"].errors["date_dernier_renouvellement"],
+            [InscriptionListeAttenteForm.ERROR_DATE_RENOUVELLEMENT_EMPTY],
+        )
+
+    def test_post_formulaire_creation_inscription_with_expired_date_renouvellement(
+        self,
+    ):
+        today = datetime.date.today()
+        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_inscription",
+                kwargs={"manager_id": self.ads_manager.id},
+            ),
+            data={
+                "numero": "1",
+                "nom": "John",
+                "prenom": "Doe",
+                "numero_licence": "1234ABCD",
+                "numero_telephone": "0606060606",
+                "email": "john.doe@test.com",
+                "adresse": "10 Rue du test",
+                "date_depot_inscription": today - relativedelta(years=3),
+                "date_dernier_renouvellement": today - relativedelta(years=2),
+            },
+        )
+        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertEqual(
+            response.context["form"].errors["date_dernier_renouvellement"],
+            [InscriptionListeAttenteForm.ERROR_DATE_RENOUVELLEMENT],
         )
 
     def test_post_formulaire_creation_inscription_numero_invalide(self):
@@ -254,41 +320,6 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
         self.assertEqual(new_inscription.ads_manager, self.ads_manager)
         self.assertEqual(new_inscription.numero, inscription.numero)
         self.assertNotEqual(new_inscription.id, inscription.id)
-
-    def test_post_formulaire_creation_inscription_dates_invalides(self):
-        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
-        response = self.client.post(
-            reverse(
-                "app.liste_attente_inscription",
-                kwargs={"manager_id": self.ads_manager.id},
-            ),
-            data={
-                "numero": "1",
-                "nom": "John",
-                "prenom": "Doe",
-                "numero_licence": "1234ABCD",
-                "numero_telephone": "0606060606",
-                "email": "john.doe@test.com",
-                "adresse": "10 Rue du test",
-                "date_depot_inscription": datetime.date.today()
-                - datetime.timedelta(days=365),
-                "date_dernier_renouvellement": datetime.date.today()
-                - datetime.timedelta(days=365),
-                "date_fin_validite": datetime.date.today() - datetime.timedelta(days=1),
-            },
-        )
-        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
-        self.assertEqual(response.status_code, http.HTTPStatus.OK)
-        self.assertFalse(response.context["form"].is_valid())
-
-        self.assertEqual(
-            response.context["form"].errors["date_dernier_renouvellement"],
-            [InscriptionListeAttenteForm.ERROR_DATE_RENOUVELLEMENT],
-        )
-        self.assertEqual(
-            response.context["form"].errors["date_fin_validite"],
-            [InscriptionListeAttenteForm.ERROR_DATE_FIN_VALIDITE],
-        )
 
 
 class TestModificationInscriptionListeAttenteView(ClientTestCase):
@@ -510,7 +541,7 @@ class TestFormulaireArchivageView(ClientTestCase):
         self.assertEqual(inscription.motif_archivage, data["motif_archivage"])
 
 
-class TestArchivageCOnfirmationView(ClientTestCase):
+class TestArchivageConfirmationView(ClientTestCase):
     def test_get_archivage_confirmation(self):
         response = self.client.get(
             reverse(
@@ -543,4 +574,511 @@ class TestExportListeAttenteView(ClientTestCase):
         self.assertEqual(
             response.headers["Content-Type"],
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+
+
+class TestListeAttenteAttributionView(ClientTestCase):
+    def test_get_liste_attente_attribution(self):
+        today = datetime.date.today()
+
+        # Inscription expiré => Ne devrait pas apparaitre
+        inscription_1 = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=2),
+            date_dernier_renouvellement=None,
+        )
+
+        # Inscription valide: doit apparaitre en seconde
+        # Car exploitation ADS = False
+        inscription_2 = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=2),
+            date_dernier_renouvellement=today,
+            exploitation_ads=False,
+        )
+
+        # Inscription valide: doit apparaitre en premier
+        inscription_3 = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=True,
+        )
+
+        response = self.client.get(
+            reverse(
+                "app.liste_attente_attribution",
+                kwargs={"manager_id": self.ads_manager.id},
+            )
+        )
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertTemplateUsed(
+            response, "pages/ads_register/liste_attente_attribution.html"
+        )
+        self.assertNotIn(inscription_1, response.context["inscriptions"])
+        self.assertListEqual(
+            list(response.context["inscriptions"]), [inscription_3, inscription_2]
+        )
+
+
+class TestTraitementDemandeView(ClientTestCase):
+    def test_get_traitement_demande_view_404(self):
+        response = self.client.get(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={"manager_id": self.ads_manager.id, "inscription_id": 42},
+            )
+        )
+        self.assertEqual(response.status_code, http.HTTPStatus.NOT_FOUND)
+
+    def test_get_traitement_demande_view_demande_archivee(self):
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=True,
+            status=InscriptionListeAttente.INSCRIT,
+        )
+        inscription.delete()
+        response = self.client.get(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            )
+        )
+        self.assertEqual(response.status_code, http.HTTPStatus.NOT_FOUND)
+
+    def test_get_traitement_demande_view_etape_1(self):
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=True,
+            status=InscriptionListeAttente.INSCRIT,
+        )
+        response = self.client.get(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            )
+        )
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertTemplateUsed(
+            "pages/ads_register/liste_attente_traitement_demande.html"
+        )
+        self.assertTemplateUsed(
+            "pages/ads_register/liste_attente_attribution_etape_1.html"
+        )
+        self.assertTemplateNotUsed(
+            "pages/ads_register/liste_attente_attribution_etape_2.html"
+        )
+        self.assertTemplateNotUsed(
+            "pages/ads_register/liste_attente_attribution_etape_3.html"
+        )
+        self.assertIsInstance(
+            response.context["form"], ContactInscriptionListeAttenteForm
+        )
+        self.assertEqual(response.context["inscription"], inscription)
+
+    def test_post_traitement_demande_view_etape_1_ok(self):
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=True,
+            status=InscriptionListeAttente.INSCRIT,
+        )
+        data = {
+            "date_contact": today,
+            "delai_reponse": 15,
+            "action": "contact",
+        }
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            data,
+        )
+        self.assertRedirects(
+            response,
+            expected_url=reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            status_code=http.HTTPStatus.FOUND,
+            target_status_code=http.HTTPStatus.OK,
+            fetch_redirect_response=True,
+        )
+        inscription.refresh_from_db()
+        self.assertEqual(inscription.date_contact, data["date_contact"])
+        self.assertEqual(inscription.delai_reponse, data["delai_reponse"])
+        self.assertEqual(inscription.status, InscriptionListeAttente.ATTENTE_REPONSE)
+
+    def test_post_traitement_demande_view_etape_1_empty_form(self):
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=True,
+            status=InscriptionListeAttente.INSCRIT,
+        )
+        data = {
+            "date_contact": "",
+            "delai_reponse": "",
+            "action": "contact",
+        }
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            data,
+        )
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertEqual(
+            response.context["form"].errors,
+            {
+                "date_contact": [ContactInscriptionListeAttenteForm.EMPTY_DATE_CONTACT],
+                "delai_reponse": [
+                    ContactInscriptionListeAttenteForm.EMPTY_DELAI_REPONSE
+                ],
+            },
+        )
+        inscription.refresh_from_db()
+        self.assertEqual(inscription.status, InscriptionListeAttente.INSCRIT)
+
+    def test_get_traitement_demande_view_etape_2(self):
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=True,
+            date_contact=today,
+            delai_reponse=15,
+            status=InscriptionListeAttente.ATTENTE_REPONSE,
+        )
+        response = self.client.get(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            )
+        )
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertTemplateUsed(
+            "pages/ads_register/liste_attente_traitement_demande.html"
+        )
+        self.assertTemplateNotUsed(
+            "pages/ads_register/liste_attente_attribution_etape_1.html"
+        )
+        self.assertTemplateUsed(
+            "pages/ads_register/liste_attente_attribution_etape_2.html"
+        )
+        self.assertTemplateNotUsed(
+            "pages/ads_register/liste_attente_attribution_etape_3.html"
+        )
+        self.assertIsInstance(
+            response.context["form"], UpdateDelaiInscriptionListeAttenteForm
+        )
+        self.assertEqual(response.context["inscription"], inscription)
+
+    def test_post_traitement_demande_view_etape_2_update_delai(self):
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=True,
+            date_contact=today,
+            delai_reponse=15,
+            status=InscriptionListeAttente.ATTENTE_REPONSE,
+        )
+        data = {
+            "delai_reponse": 10,
+            "action": "update_delai",
+        }
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            data,
+        )
+        self.assertRedirects(
+            response,
+            expected_url=reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            status_code=http.HTTPStatus.FOUND,
+            target_status_code=http.HTTPStatus.OK,
+            fetch_redirect_response=True,
+        )
+        inscription.refresh_from_db()
+        self.assertEqual(inscription.delai_reponse, data["delai_reponse"])
+        self.assertEqual(inscription.status, InscriptionListeAttente.ATTENTE_REPONSE)
+
+    def test_post_traitement_demande_view_etape_2_update_delai_empty(self):
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=True,
+            date_contact=today,
+            delai_reponse=15,
+            status=InscriptionListeAttente.ATTENTE_REPONSE,
+        )
+        data = {
+            "delai_reponse": "",
+            "action": "update_delai",
+        }
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            data,
+        )
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertEqual(
+            response.context["form"].errors,
+            {
+                "delai_reponse": [
+                    UpdateDelaiInscriptionListeAttenteForm.EMPTY_DELAI_REPONSE
+                ],
+            },
+        )
+        inscription.refresh_from_db()
+        self.assertEqual(inscription.delai_reponse, 15)
+        self.assertEqual(inscription.status, InscriptionListeAttente.ATTENTE_REPONSE)
+
+    def test_post_traitement_demande_view_etape_2_validation_reponse(self):
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=True,
+            date_contact=today,
+            delai_reponse=15,
+            status=InscriptionListeAttente.ATTENTE_REPONSE,
+        )
+        data = {
+            "action": "validation_reponse",
+        }
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            data,
+        )
+        self.assertRedirects(
+            response,
+            expected_url=reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            status_code=http.HTTPStatus.FOUND,
+            target_status_code=http.HTTPStatus.OK,
+            fetch_redirect_response=True,
+        )
+        inscription.refresh_from_db()
+        self.assertEqual(inscription.status, InscriptionListeAttente.REPONSE_OK)
+
+    def test_get_traitement_demande_view_etape_3(self):
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=True,
+            date_contact=today,
+            delai_reponse=15,
+            status=InscriptionListeAttente.REPONSE_OK,
+        )
+        response = self.client.get(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            )
+        )
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertTemplateUsed(
+            "pages/ads_register/liste_attente_traitement_demande.html"
+        )
+        self.assertTemplateNotUsed(
+            "pages/ads_register/liste_attente_attribution_etape_1.html"
+        )
+        self.assertTemplateNotUsed(
+            "pages/ads_register/liste_attente_attribution_etape_2.html"
+        )
+        self.assertTemplateUsed(
+            "pages/ads_register/liste_attente_attribution_etape_3.html"
+        )
+        self.assertEqual(response.context["inscription"], inscription)
+
+
+class TestCreationADSDepuisListeAttente(ClientTestCase):
+    def test_get_ads_creation_404(self):
+        response = self.client.get(
+            f"{reverse('app.ads.create', kwargs={'manager_id': self.ads_manager.id})}?inscription_id=42"
+        )
+        self.assertEqual(response.status_code, http.HTTPStatus.NOT_FOUND)
+
+    def test_get_ads_creation_demande_archivee(self):
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=True,
+            date_contact=today,
+            delai_reponse=15,
+            status=InscriptionListeAttente.REPONSE_OK,
+        )
+        inscription.delete()
+        response = self.client.get(
+            f"{reverse('app.ads.create', kwargs={'manager_id': self.ads_manager.id})}?inscription_id={inscription.id}"
+        )
+        self.assertEqual(response.status_code, http.HTTPStatus.NOT_FOUND)
+
+    def test_get_ads_creation_ok(self):
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=True,
+            date_contact=today,
+            delai_reponse=15,
+            status=InscriptionListeAttente.REPONSE_OK,
+        )
+        response = self.client.get(
+            f"{reverse('app.ads.create', kwargs={'manager_id': self.ads_manager.id})}?inscription_id={inscription.id}"
+        )
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertEqual(
+            response.context["form"].initial,
+            {
+                "ads_creation_date": today,
+                "ads_in_use": True,
+                "owner_name": f"{inscription.nom} {inscription.prenom}",
+                "owner_phone": inscription.numero_telephone,
+                "owner_email": inscription.email,
+            },
+        )
+        self.assertEqual(
+            response.context["ads_users_formset"].initial_extra,
+            [{"license_number": inscription.numero_licence}],
+        )
+
+    def test_post_ads_creation_ok(self):
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=True,
+            date_contact=today,
+            delai_reponse=15,
+            status=InscriptionListeAttente.REPONSE_OK,
+        )
+        self.assertEqual(ADS.objects.count(), 0)
+        self.assertEqual(ADSUser.objects.count(), 0)
+        self.assertIsNone(inscription.deleted_at)
+        data = {
+            "number": "1",
+            "ads_creation_date": today,
+            "ads_in_use": True,
+            "owner_name": f"{inscription.nom} {inscription.prenom}",
+            "owner_phone": inscription.numero_telephone,
+            "owner_email": inscription.email,
+            "adslegalfile_set-INITIAL_FORMS": ["0"],
+            "adslegalfile_set-MAX_NUM_FORMS": ["1000"],
+            "adslegalfile_set-MIN_NUM_FORMS": ["0"],
+            "adslegalfile_set-TOTAL_FORMS": ["0"],
+            "adsuser_set-0-ads": [""],
+            "adsuser_set-0-id": [""],
+            "adsuser_set-0-license_number": [inscription.numero_licence],
+            "adsuser_set-0-status": ["titulaire_exploitant"],
+            "adsuser_set-INITIAL_FORMS": ["0"],
+            "adsuser_set-MAX_NUM_FORMS": ["1000"],
+            "adsuser_set-MIN_NUM_FORMS": ["0"],
+            "adsuser_set-TOTAL_FORMS": ["1"],
+            "certify": ["on"],
+        }
+        response = self.client.post(
+            f"{reverse('app.ads.create', kwargs={'manager_id': self.ads_manager.id})}?inscription_id={inscription.id}",
+            data,
+        )
+        self.assertRedirects(
+            response,
+            expected_url=reverse(
+                "app.liste_attente",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                },
+            ),
+            status_code=http.HTTPStatus.FOUND,
+            target_status_code=http.HTTPStatus.OK,
+            fetch_redirect_response=True,
+        )
+        self.assertEqual(ADS.objects.count(), 1)
+        ads = ADS.objects.last()
+        self.assertEqual(ads.ads_manager, inscription.ads_manager)
+        self.assertEqual(ads.owner_name, f"{inscription.nom} {inscription.prenom}")
+        self.assertEqual(ads.owner_phone, inscription.numero_telephone)
+        self.assertEqual(ads.owner_email, inscription.email)
+        self.assertEqual(ADSUser.objects.count(), 1)
+        ads_user = ADSUser.objects.first()
+        self.assertEqual(ads_user.ads, ads)
+        self.assertEqual(ads_user.status, ADSUser.TITULAIRE_EXPLOITANT)
+        self.assertEqual(ads_user.license_number, inscription.numero_licence)
+        inscription.refresh_from_db()
+        self.assertIsNotNone(inscription.deleted_at)
+        self.assertEqual(
+            inscription.motif_archivage, InscriptionListeAttente.ADS_ATTRIBUEE
         )
