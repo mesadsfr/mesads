@@ -295,9 +295,9 @@ urls:
     title: "Liste d'attente - Attribution"
     description: "Attribution d'une nouvelle ADS depuis la liste d'attente"
 
-  app.liste_attente_attribution_ads:
-    title: "Liste d'attente - Attribution, choix de l'ADS"
-    description: "Attribution d'une nouvelle ADS depuis la liste d'attente"
+  app.liste_attente_traitement_demande:
+    title: "Liste d'attente - Traitement de la demande"
+    description: "Traitement d'une inscription de la liste d'attente"
 
   app.liste_attente_archive_modele:
     title: "Modèle de courrier d'archivage"

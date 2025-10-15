@@ -46,16 +46,6 @@ from ..reversion_diff import ModelHistory
 class ADSView(RevisionMixin, UpdateView):
     template_name = "pages/ads_register/ads.html"
     form_class = ADSForm
-    inscription = None
-
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-        if request.GET.get("inscription_id"):
-            self.inscription = get_object_or_404(
-                InscriptionListeAttente,
-                id=request.GET.get("inscription_id"),
-                manager_id=kwargs.get("manager_id"),
-            )
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -68,40 +58,11 @@ class ADSView(RevisionMixin, UpdateView):
         if ads_manager.content_type.model_class() is EPCI:
             kwargs["epci"] = ads_manager.content_object
 
-        if self.inscription:
-            initial = kwargs.get("initial", {})
-            initial.update(
-                {
-                    "owner_name": f"{self.inscription.nom} {self.inscription.prenom}",
-                    "owner_phone": self.inscription.numero_telephone,
-                    "owner_email": self.inscription.email,
-                    "owner_siret": "",
-                    "owner_mobile": "",
-                    "accepted_cpam": None,
-                    "immatriculation_plate": "",
-                    "vehicle_compatible_pmr": None,
-                    "eco_vehicle": None,
-                }
-            )
-            kwargs["initial"] = initial
-
         return kwargs
-
-    def _users_initial_from_inscription(self):
-        if not self.inscription:
-            return None
-        return [
-            {
-                "license_number": self.inscription.numero_licence,
-            }
-        ]
 
     def build_formsets(self, ads):
         if self.request.method == "POST":
-            if self.inscription:
-                users_qs = ADSUser.objects.none()
-            else:
-                users_qs = ADSUser.objects.filter(ads=ads)
+            users_qs = ADSUser.objects.filter(ads=ads)
 
             ads_users_fs = ADSUserFormSet(
                 self.request.POST,
@@ -115,28 +76,13 @@ class ADSView(RevisionMixin, UpdateView):
                 ads_users_fs.extra = 1
 
         else:
-            if self.inscription:
-                initial_users = self._users_initial_from_inscription()
-                ads_users_fs = ADSUserFormSet(
-                    instance=ads,
-                    queryset=ADSUser.objects.none(),  # n’affiche pas les existants
-                    initial=initial_users,
-                )
-                ads_users_fs.extra = 1
-            else:
-                ads_users_fs = ADSUserFormSet(instance=ads)
-
+            ads_users_fs = ADSUserFormSet(instance=ads)
             ads_legal_files_fs = ADSLegalFileFormSet(instance=ads)
 
         return ads_users_fs, ads_legal_files_fs
 
     def get_success_url(self):
         administrator = self.kwargs.get("ads_manager_administrator")
-
-        if self.inscription:
-            return reverse(
-                "app.liste_attente", kwargs={"manager_id": self.kwargs["manager_id"]}
-            )
 
         return (
             reverse(
@@ -187,17 +133,6 @@ class ADSView(RevisionMixin, UpdateView):
                 "app.ads-manager.detail", kwargs={"manager_id": ads_manager.id}
             )
         )
-        if self.inscription:
-            context["inscription_id"] = (
-                self.inscription.id if self.inscription else None
-            )
-            context["return_url"] = reverse(
-                "app.liste_attente_attribution_ads",
-                kwargs={
-                    "manager_id": ads_manager.id,
-                    "inscription_id": self.inscription.id,
-                },
-            )
 
         if self.object:
             context["arrete_url"] = (
@@ -291,11 +226,7 @@ class ADSView(RevisionMixin, UpdateView):
         else:
             try:
                 with transaction.atomic():
-                    if self.inscription:
-                        ADSUser.objects.filter(ads=self.object).delete()
-                        self.ads_users_formset.save()
-                    else:
-                        self.ads_users_formset.save()
+                    self.ads_users_formset.save()
             except IntegrityError:
                 errmsg = [
                     c
@@ -332,8 +263,6 @@ class ADSView(RevisionMixin, UpdateView):
                 )
 
         messages.success(self.request, "Les modifications ont été enregistrées.")
-        if self.inscription:
-            self.inscription.ads_attribuee()
         return HttpResponseRedirect(self.get_success_url())
 
     def send_notification(self, user, ads, is_new_ads):
@@ -452,7 +381,7 @@ class ADSCreateView(ADSView, CreateView):
             self.inscription = get_object_or_404(
                 InscriptionListeAttente,
                 id=self.request.GET.get("inscription_id"),
-                manager_id=manager_id,
+                ads_manager=manager_id,
             )
         self.ads_users_formset, self.ads_legal_files_formset = self.get_formsets()
         self.ads_users_formset.extra = 1
@@ -460,6 +389,18 @@ class ADSCreateView(ADSView, CreateView):
 
     def get_object(self, queryset=None):
         return None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if self.inscription:
+            context["inscription_id"] = self.inscription.id
+            context["return_url"] = reverse(
+                "app.liste_attente_attribution",
+                kwargs={"manager_id": self.kwargs["manager_id"]},
+            )
+
+        return context
 
     def get_success_url(self):
         administrator = self.kwargs.get("ads_manager_administrator")

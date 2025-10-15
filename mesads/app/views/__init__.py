@@ -42,7 +42,7 @@ from .liste_attente import (  # noqa: F401
     ArchivageConfirmationView,
     DemandeArchiveesView,
     AttributionListeAttenteView,
-    AttributionADSInscriptionListeAttenteView,
+    InscriptionTraitementListeAttenteView,
     ModeleCourrierArchivageView,
     ModeleCourrierContactView,
 )
