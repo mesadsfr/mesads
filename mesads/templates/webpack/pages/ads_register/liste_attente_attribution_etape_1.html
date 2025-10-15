@@ -43,7 +43,6 @@
       
       {% endif %}
 
-      <input id="inscription_id" name="inscription_id" type="hidden" value="{{demande_retenue.id}}" />
       {% include "form_fields/date.html" with field=form.date_contact field_errors=form.errors.date_contact required=form.fields.date_contact.required %}
       {% include "form_fields/number.html" with field=form.delai_reponse field_errors=form.errors.delai_reponse required=form.fields.delai_reponse.required %}
   

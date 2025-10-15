@@ -1,7 +1,6 @@
-from datetime import timedelta
-
 from django.contrib.contenttypes.models import ContentType
 from django import forms
+from dateutil.relativedelta import relativedelta
 from django.forms import BaseInlineFormSet, inlineformset_factory
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -269,8 +268,8 @@ class SearchVehiculeForm(forms.Form):
 
 
 class InscriptionListeAttenteForm(forms.ModelForm):
+    ERROR_DATE_RENOUVELLEMENT_EMPTY = "L'inscription semble dater de plus d’un an. Vérifiez si un dépôt de demande de renouvellement a eu lieu au cours des 12 derniers mois."
     ERROR_DATE_RENOUVELLEMENT = "Le renouvellement semble dater de plus d’un an. Vérifiez si un dépôt de demande de renouvellement a eu lieu au cours des 12 derniers mois."
-    ERROR_DATE_FIN_VALIDITE = "La demande semble expirer. Vous devez vérifier sa validité avant de pouvoir attribuer une ADS à ce demandeur."
 
     class Meta:
         model = InscriptionListeAttente
@@ -285,7 +284,6 @@ class InscriptionListeAttenteForm(forms.ModelForm):
             "exploitation_ads",
             "date_depot_inscription",
             "date_dernier_renouvellement",
-            "date_fin_validite",
             "commentaire",
         )
 
@@ -293,28 +291,37 @@ class InscriptionListeAttenteForm(forms.ModelForm):
         cleaned_data = super().clean()
 
         today = timezone.localdate()
-
         date_dernier_renouvellement = cleaned_data.get("date_dernier_renouvellement")
+        date_depot_inscription = cleaned_data.get("date_depot_inscription")
+
+        if date_depot_inscription and date_depot_inscription < today - relativedelta(
+            years=1
+        ):
+            if not date_dernier_renouvellement:
+                self.add_error(
+                    "date_dernier_renouvellement", self.ERROR_DATE_RENOUVELLEMENT_EMPTY
+                )
+
         if (
             date_dernier_renouvellement
-            and date_dernier_renouvellement <= today - timedelta(days=365)
+            and date_dernier_renouvellement < today - relativedelta(years=1)
         ):
             self.add_error(
                 "date_dernier_renouvellement",
                 self.ERROR_DATE_RENOUVELLEMENT,
             )
 
-        date_fin_validite = cleaned_data.get("date_fin_validite")
-        if date_fin_validite and date_fin_validite <= today:
-            self.add_error(
-                "date_fin_validite",
-                self.ERROR_DATE_FIN_VALIDITE,
-            )
-
         return cleaned_data
 
     def save(self, commit=True):
         obj = super().save(commit=False)
+
+        if obj.date_dernier_renouvellement:
+            obj.date_fin_validite = obj.date_dernier_renouvellement + relativedelta(
+                years=1
+            )
+        else:
+            obj.date_fin_validite = obj.date_depot_inscription + relativedelta(years=1)
 
         # Auto-génération si pas de numéro
         if not obj.numero:
@@ -323,14 +330,6 @@ class InscriptionListeAttenteForm(forms.ModelForm):
             ).count()
             obj.numero = (
                 f"{count + 1:03d}{obj.date_depot_inscription.strftime('%d%m%Y')}"
-            )
-
-        if not obj.date_dernier_renouvellement:
-            obj.date_dernier_renouvellement = obj.date_depot_inscription
-
-        if not obj.date_fin_validite:
-            obj.date_fin_validite = obj.date_dernier_renouvellement + timedelta(
-                days=365
             )
 
         if commit:
@@ -370,6 +369,9 @@ class ArchivageInscriptionListeAttenteForm(forms.ModelForm):
 
 
 class ContactInscriptionListeAttenteForm(forms.ModelForm):
+    EMPTY_DATE_CONTACT = "Merci de renseigner la date de contact."
+    EMPTY_DELAI_REPONSE = "Merci de renseigner le délai de réponse."
+
     class Meta:
         model = InscriptionListeAttente
         fields = ("date_contact", "delai_reponse")
@@ -378,16 +380,24 @@ class ContactInscriptionListeAttenteForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["date_contact"].required = True
         self.fields["date_contact"].error_messages = {
-            "required": "Merci de renseigner la date de contact."
+            "required": self.EMPTY_DATE_CONTACT
         }
         self.fields["delai_reponse"].required = True
-        self.fields["delai_reponse"].initial = 15
         self.fields["delai_reponse"].error_messages = {
-            "required": "Merci de renseigner le délai de réponse."
+            "required": self.EMPTY_DELAI_REPONSE
         }
+
+    def save(self, commit=True):
+        obj = super().save(commit=False)
+        obj.status = InscriptionListeAttente.ATTENTE_REPONSE
+        if commit:
+            obj.save()
+        return obj
 
 
 class UpdateDelaiInscriptionListeAttenteForm(forms.ModelForm):
+    EMPTY_DELAI_REPONSE = "Merci de renseigner le délai de réponse."
+
     class Meta:
         model = InscriptionListeAttente
         fields = ("delai_reponse",)
@@ -396,5 +406,5 @@ class UpdateDelaiInscriptionListeAttenteForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["delai_reponse"].required = True
         self.fields["delai_reponse"].error_messages = {
-            "required": "Merci de renseigner le délai de réponse."
+            "required": self.EMPTY_DELAI_REPONSE
         }
