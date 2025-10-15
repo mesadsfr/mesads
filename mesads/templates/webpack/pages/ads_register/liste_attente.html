@@ -69,11 +69,7 @@
           </div>
         </div>
       </div>
-
     </div>
-
-    
-    
   </div>
 
   
@@ -111,11 +107,15 @@
                   <th>N° d'enregistrement </th>
                   <th> Nom et prénom </th>
                   <th> N° carte pro </th>
-                  <th> Date de dépôt de la demande </th>
+                  <th> Date de dépôt </th>
                   <th> Date fin de validité </th>
                   <th> Coordonnées </th>
-                  <th> Exploitation ADS </th>
-                  <th>Statut</th>
+                  <th class="whitespace-nowrap">
+                    Exploitation ADS
+                    <button aria-describedby="tooltip" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+                    <span class="fr-tooltip fr-placement" id="tooltip" role="tooltip">Indique “Oui” si au moins une ADS a été exploitée pendant au moins deux ans au cours des cinq dernières années. Sinon, indique “Non”.</span>
+                  </th>
+                  <th>Statut de la demande</th>
                   <th> Modifier ou archiver </th>
                 </tr>
               </thead>
@@ -139,6 +139,9 @@
                       <p class="fr-badge fr-badge--warning">Incomplète</p>
                       {% elif inscription.is_valid == 0 %}
                       <p class="fr-badge fr-badge--error">Expirée</p>
+                      {% endif %}
+                      {% if inscription.status != "inscrit" %}
+                      <p class="fr-badge fr-badge--info">En cours</p>
                       {% endif %}
                     </td>
                     <td>

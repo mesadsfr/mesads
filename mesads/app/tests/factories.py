@@ -81,7 +81,11 @@ class InscriptionListeAttenteFactory(factory.django.DjangoModelFactory):
         return today - timedelta(days=random.randint(1, 364))
 
     date_fin_validite = factory.LazyAttribute(
-        lambda o: o.date_dernier_renouvellement + relativedelta(years=1)
+        lambda o: (
+            o.date_dernier_renouvellement + relativedelta(years=1)
+            if o.date_dernier_renouvellement
+            else o.date_depot_inscription + relativedelta(years=1)
+        )
     )
 
     class Params:

@@ -1,0 +1,101 @@
+{% extends "base_container.html" %}
+
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d’Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Administrations en gestion</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">
+            Liste d'attente {{ads_manager.content_object.display_text}}
+          </a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.liste_attente_attribution' manager_id=ads_manager.id %}">
+            Attribution
+          </a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Traitement de la demande</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+
+  <div class="mt-3">
+    <div class="fr-table fr-table--multiline" id="table-0-component">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table id="table-0">
+              <caption> Inscription retenue </caption>
+              <thead>
+                <tr>
+                  <th>N° d'enregistrement </th>
+                  <th> Nom et prénom </th>
+                  <th> N° carte pro </th>
+                  <th> Date de dépôt de la demande </th>
+                  <th> Date dernier renouvellement </th>
+                  <th> Date fin de validité </th>
+                  <th> Coordonnées </th>
+                  <th> Exploitation ADS </th>
+                  <th> Modifier ou archiver </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="inscription-retenue">
+                  <td>{{inscription.numero}}</td>
+                  <td>{{inscription.nom}} {{inscription.prenom}}</td>
+                  <td>{{inscription.numero_licence}}</td>
+                  <td>{{inscription.date_depot_inscription|date:"d/m/Y"}}</td>
+                  <td>{{inscription.date_dernier_renouvellement|date:"d/m/Y"}}</td>
+                  <td>{{inscription.date_fin_validite|date:"d/m/Y"}}</td>
+                  <td>{{inscription.email}} {{inscription.numero_telephone}}</td>
+                  <td>{% if inscription.exploitation_ads %}Oui{% else %}Non{% endif %}</td>
+                  <td>
+                    <a
+                      class="fr-btn fr-btn--secondary fr-icon-eye-line"
+                      href="{% url 'app.liste_attente_inscription_update' manager_id=ads_manager.id inscription_id=inscription.id %}"
+                    >
+                      <span class="fr-sr-only">
+                        Modifier
+                      </span>
+                    </a>
+                    <a
+                      class="fr-btn fr-btn--secondary fr-icon-archive-line mt-0.5"
+                      href="{% url 'app.liste_attente_inscription_archivage'  manager_id=ads_manager.id inscription_id=inscription.id %}"
+                    >
+                      <span class="fr-sr-only">
+                        Archiver
+                      </span>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6 border-4 border-b-4 border-indigo-500 rounded-xl">
+      {% if inscription.status == "inscrit" %}
+        {% include "pages/ads_register/liste_attente_attribution_etape_1.html" %}
+      {% elif inscription.status == "attente_reponse" %}
+        {% include "pages/ads_register/liste_attente_attribution_etape_2.html" %}
+      {% elif inscription.status == "reponse_ok" %}
+        {% include "pages/ads_register/liste_attente_attribution_etape_3.html" %}
+      {% endif %}
+    </div>
+  </div>
+
+{% endblock body-content %}

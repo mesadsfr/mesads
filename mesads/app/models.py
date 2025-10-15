@@ -934,7 +934,7 @@ class ADSUser(
                 raise ValidationError(
                     "Un seul exploitant peut être déclaré pour une ADS créée après le 1er octobre 2014."
                 )
-            if self.status != "titulaire_exploitant":
+            if self.status != self.TITULAIRE_EXPLOITANT:
                 raise ValidationError(
                     "Le conducteur doit nécessairement être le titulaire de l'ADS (personne physique) pour une ADS créée après le 1er octobre 2014."
                 )
@@ -946,25 +946,31 @@ class ADSUser(
         "siret": lambda _, siret: validate_siret(siret),
     }
 
+    TITULAIRE_EXPLOITANT = "titulaire_exploitant"
+    LEGAL_REPRESENTATIVE = "legal_representative"
+    SALARIE = "salarie"
+    COOPERATEUR = "cooperateur"
+    LOCATAIRE_GERANT = "locataire_gerant"
+
     ADS_USER_STATUS = [
         (
-            "titulaire_exploitant",
+            TITULAIRE_EXPLOITANT,
             "Le titulaire de l'ADS (personne physique)",
         ),
         (
-            "legal_representative",
+            LEGAL_REPRESENTATIVE,
             "Le représentant légal de la société titulaire de l'ADS (gérant ou président non salarié)",
         ),
         (
-            "salarie",
+            SALARIE,
             "Salarié du titulaire de l'ADS",
         ),
         (
-            "cooperateur",
+            COOPERATEUR,
             "Le locataire-coopérateur de l'ADS",
         ),
         (
-            "locataire_gerant",
+            LOCATAIRE_GERANT,
             "Le locataire-gérant de l'ADS",
         ),
     ]
@@ -1172,7 +1178,10 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
     )
 
     date_dernier_renouvellement = models.DateField(
-        verbose_name="Date de la dernière demande de renouvellement", blank=True
+        verbose_name="Date de la dernière demande de renouvellement",
+        blank=True,
+        null=True,
+        default=None,
     )
 
     date_fin_validite = models.DateField(
