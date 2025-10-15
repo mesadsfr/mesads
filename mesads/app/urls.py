@@ -155,8 +155,8 @@ url_liste_attente = [
     ),
     path(
         "liste_attente/<int:manager_id>/attribution-ads/<int:inscription_id>/",
-        ads_manager_required(views.AttributionADSInscriptionListeAttenteView.as_view()),
-        name="app.liste_attente_attribution_ads",
+        ads_manager_required(views.InscriptionTraitementListeAttenteView.as_view()),
+        name="app.liste_attente_traitement_demande",
     ),
     path(
         "liste_attente/<int:manager_id>/attribution-ads/modele-courrier/",
