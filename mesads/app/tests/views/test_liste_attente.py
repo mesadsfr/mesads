@@ -141,7 +141,7 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
         )
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertTemplateUsed(
-            response, "pages/ads_register/inscription_liste_attente.html"
+            response, "pages/ads_register/liste_attente_inscription.html"
         )
         self.assertIsInstance(response.context["form"], InscriptionListeAttenteForm)
 
@@ -339,7 +339,7 @@ class TestModificationInscriptionListeAttenteView(ClientTestCase):
         self.assertIsInstance(response.context["form"], InscriptionListeAttenteForm)
         self.assertEqual(response.context["form"].instance, inscription)
         self.assertTemplateUsed(
-            response, "pages/ads_register/inscription_liste_attente.html"
+            response, "pages/ads_register/liste_attente_inscription.html"
         )
 
     def test_get_formulaire_modification_inscription_redirection(self):
@@ -473,7 +473,7 @@ class TestFormulaireArchivageView(ClientTestCase):
         )
         self.assertEqual(response.context["form"].instance, inscription)
         self.assertTemplateUsed(
-            response, "pages/ads_register/archivage_inscription_liste_attente.html"
+            response, "pages/ads_register/liste_attente_archivage_inscription.html"
         )
 
     def test_get_formulaire_archivage_inscription_redirection(self):
@@ -554,7 +554,7 @@ class TestArchivageConfirmationView(ClientTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertTemplateUsed(
             response,
-            "pages/ads_register/archivage_confirmation_inscription_liste_attente.html",
+            "pages/ads_register/liste_attente_archivage_confirmation_inscription.html",
         )
 
 
