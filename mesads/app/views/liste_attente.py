@@ -245,7 +245,7 @@ class InscriptionListeAttenteMixin:
     d'inscription a la liste d'attente
     """
 
-    template_name = "pages/ads_register/inscription_liste_attente.html"
+    template_name = "pages/ads_register/liste_attente_inscription.html"
     form_class = InscriptionListeAttenteForm
 
     def get_success_url(self):
@@ -313,7 +313,7 @@ class ModificationInscriptionListeAttenteView(InscriptionListeAttenteMixin, Upda
 
 
 class ArchivageInscriptionListeAttenteView(UpdateView):
-    template_name = "pages/ads_register/archivage_inscription_liste_attente.html"
+    template_name = "pages/ads_register/liste_attente_archivage_inscription.html"
     form_class = ArchivageInscriptionListeAttenteForm
     pk_url_kwarg = "inscription_id"
     model = InscriptionListeAttente
@@ -393,7 +393,7 @@ class ModeleCourrierContactView(View):
 
 class ArchivageConfirmationView(TemplateView):
     template_name = (
-        "pages/ads_register/archivage_confirmation_inscription_liste_attente.html"
+        "pages/ads_register/liste_attente_archivage_confirmation_inscription.html"
     )
 
     def get_context_data(self, **kwargs):
