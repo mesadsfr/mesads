@@ -161,6 +161,7 @@ AUTHENTICATION_BACKENDS = [
 if DEBUG:
     MIDDLEWARE.insert(0, "query_counter.middleware.DjangoQueryCounterMiddleware")
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 ROOT_URLCONF = "mesads.urls"
 
