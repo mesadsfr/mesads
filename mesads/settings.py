@@ -258,6 +258,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_URL = "/auth/login/"
 
+MESADS_BASE_URL = os.getenv("MESADS_BASE_URL", "http://localhost:8000")
+
 # Static configuration
 STATIC_ROOT = BASE_DIR / "static"
 
