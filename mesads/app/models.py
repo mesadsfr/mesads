@@ -1163,7 +1163,6 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
 
     email = models.EmailField(
         max_length=128,
-        blank=True,
         verbose_name="Email",
     )
 
