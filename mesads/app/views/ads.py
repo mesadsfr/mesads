@@ -182,7 +182,6 @@ class ADSView(RevisionMixin, UpdateView):
             )
         else:
             self.ads_legal_files_formset = ADSLegalFileFormSet(instance=ads)
-
         return ads
 
     def form_invalid(self, form):
