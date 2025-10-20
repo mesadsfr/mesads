@@ -82,6 +82,11 @@ url_prefectures = [
         ads_manager_administrator_required(views.PrefectureExportView.as_view()),
         name="app.exports.prefecture",
     ),
+    path(
+        "registre_ads/modele-arrete",
+        ads_manager_required(views.ADSDecreeEmptyView.as_view()),
+        name="app.modele-arrete",
+    ),
 ]
 
 url_gestionnaire = [
@@ -129,6 +134,11 @@ url_gestionnaire = [
         "registre_ads/gestion/<int:manager_id>/ads/<int:ads_id>/history",
         ads_manager_required(views.ADSHistoryView.as_view()),
         name="app.ads.history",
+    ),
+    path(
+        "registre_ads/gestion/<int:manager_id>/modele-arrete",
+        ads_manager_required(views.ADSDecreeEmptyView.as_view()),
+        name="app.modele-arrete-gestionnaire",
     ),
 ]
 

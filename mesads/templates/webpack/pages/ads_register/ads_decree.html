@@ -11,7 +11,22 @@
     </button>
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
-        {% if ads_manager_administrator %}
+
+        {% if not ads %}
+          {% if ads_manager %}
+            <li>
+              <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+            </li>
+            <li>
+              <a class="fr-breadcrumb__link"
+                href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
+            </li>
+          {% else %}
+            <li>
+              <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+            </li>
+          {% endif %}
+        {% elif ads_manager_administrator %}
           <li>
             <a class="fr-breadcrumb__link"
               href="{% url 'app.homepage' %}">

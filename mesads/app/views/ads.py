@@ -1,5 +1,5 @@
 from datetime import date, datetime, timedelta
-
+from dateutil.relativedelta import relativedelta
 from docxtpl import DocxTemplate
 
 from django.conf import settings
@@ -459,9 +459,7 @@ class CustomCookieWizardView(CookieWizardView):
         return resp
 
 
-class ADSDecreeView(CustomCookieWizardView):
-    """Decree for ADS creation."""
-
+class ADSDecreeMixin(CustomCookieWizardView):
     template_name = "pages/ads_register/ads_decree.html"
     form_list = (
         ADSDecreeForm1,
@@ -471,14 +469,61 @@ class ADSDecreeView(CustomCookieWizardView):
     )
 
     def get_form_kwargs(self, step=None):
-        ret = super().get_form_kwargs(step=step)
+        form_kwargs = super().get_form_kwargs(step=step)
         if step in ("1", "2"):
             return {
                 "is_old_ads": (self.get_cleaned_data_for_step("0") or {}).get(
                     "is_old_ads"
                 )
             }
-        return ret
+        return form_kwargs
+
+    def done(self, form_list, **kwargs):
+        path = finders.find("template-arrete-municipal.docx")
+        decree = DocxTemplate(path)
+
+        cleaned_data = self.get_all_cleaned_data()
+
+        # DocxTemplate uses jinja2 to render the template. To render dates, we
+        # could use {{ date.strftime(...)}} but the month would be in English.
+        # Use the django date template filter to use correct format.
+        cleaned_data.update(
+            {
+                k + "_str": date_template_filter(v, "d F Y")
+                for k, v in cleaned_data.items()
+                if isinstance(v, date)
+            }
+        )
+
+        # Prefix the commune name with "la commune d'" or "la commune de "
+        decree_commune = cleaned_data["decree_commune"]
+        cleaned_data["decree_commune_fulltext"] = (
+            "d'%s" % decree_commune
+            if decree_commune[:1] in ("aeiouy")
+            else "de %s" % decree_commune
+        )
+
+        decree.render(cleaned_data)
+
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats",
+            headers={"Content-Disposition": 'attachment; filename="arrete.docx"'},
+        )
+
+        decree.save(response)
+        return response
+
+
+class ADSDecreeView(ADSDecreeMixin):
+    """Decree for ADS creation."""
+
+    template_name = "pages/ads_register/ads_decree.html"
+    form_list = (
+        ADSDecreeForm1,
+        ADSDecreeForm2,
+        ADSDecreeForm3,
+        ADSDecreeForm4,
+    )
 
     def get_form_initial(self, step):
         """Set fields defaults."""
@@ -531,40 +576,46 @@ class ADSDecreeView(CustomCookieWizardView):
             context["ads_manager_administrator"] = administrator
         return context
 
-    def done(self, form_list, **kwargs):
-        path = finders.find("template-arrete-municipal.docx")
-        decree = DocxTemplate(path)
 
-        cleaned_data = self.get_all_cleaned_data()
+class ADSDecreeEmptyView(ADSDecreeMixin):
+    """Decree for ADS creation."""
 
-        # DocxTemplate uses jinja2 to render the template. To render dates, we
-        # could use {{ date.strftime(...)}} but the month would be in English.
-        # Use the django date template filter to use correct format.
-        cleaned_data.update(
-            {
-                k + "_str": date_template_filter(v, "d F Y")
-                for k, v in cleaned_data.items()
-                if isinstance(v, date)
-            }
-        )
+    template_name = "pages/ads_register/ads_decree.html"
+    form_list = (
+        ADSDecreeForm1,
+        ADSDecreeForm2,
+        ADSDecreeForm3,
+        ADSDecreeForm4,
+    )
 
-        # Prefix the commune name with "la commune d'" or "la commune de "
-        decree_commune = cleaned_data["decree_commune"]
-        cleaned_data["decree_commune_fulltext"] = (
-            "d'%s" % decree_commune
-            if decree_commune[:1] in ("aeiouy")
-            else "de %s" % decree_commune
-        )
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.kwargs.get("manager_id"):
+            context["ads_manager"] = get_object_or_404(
+                ADSManager, id=self.kwargs["manager_id"]
+            )
+        return context
 
-        decree.render(cleaned_data)
+    def get_form_initial(self, step):
+        """Set fields defaults."""
+        initial = super().get_form_initial(step)
 
-        response = HttpResponse(
-            content_type="application/vnd.openxmlformats",
-            headers={"Content-Disposition": 'attachment; filename="arrete.docx"'},
-        )
+        if step == "2":
 
-        decree.save(response)
-        return response
+            now = datetime.now()
+            try:
+                today_in_5_years = now + relativedelta(years=5)
+            except ValueError:  # 29th February
+                today_in_5_years = now + timedelta(days=365 * 5)
+
+            initial.update(
+                {
+                    "decree_creation_date": now.strftime("%Y-%m-%d"),
+                    # New ADS have a validity of 5 years
+                    "ads_end_date": today_in_5_years.strftime("%Y-%m-%d"),
+                }
+            )
+        return initial
 
 
 class ADSHistoryView(DetailView):
