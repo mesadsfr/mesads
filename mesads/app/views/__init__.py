@@ -4,6 +4,7 @@ from .ads import (  # noqa: F401
     ADSCreateView,
     ADSDeleteView,
     ADSView,
+    ADSDecreeEmptyView,
 )
 from .ads_manager import (  # noqa: F401
     ADSManagerView,
