@@ -1,0 +1,24 @@
+{% extends "base_mail.mjml" %}
+
+{% block title %}Liste attente - Délai expiré{% endblock %}
+
+{% block content %}
+<mj-column>
+  <mj-text>
+    <p>
+      Le délai de réponse des demandes suivantes liées à la liste d'attente de {{ads_manager.content_object.display_fulltext}} a expiré aujourd'hui.
+    </p>
+  </mj-text>
+
+  <mj-text>
+  <ul>
+    {% for inscription in inscriptions %}
+        <li>
+            <a href="{{base_url}}{% url 'app.liste_attente_traitement_demande' manager_id=inscription.ads_manager.id inscription_id=inscription.id %}">Demande N°{{inscription.numero}}</a>
+        </li>
+    {% endfor %}
+  </ul>
+  </mj-text>
+
+</mj-column>
+{% endblock %}
