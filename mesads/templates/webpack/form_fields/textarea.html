@@ -13,6 +13,7 @@
     {% if field.help_text %}<span class="fr-hint-text">{{ field.help_text }}</span>{% endif %}
   </label>
 
+
   <textarea
     class="fr-input{% if field_errors %} fr-input--error{% endif %}"
     type="{% if html_type %}{{ html_type }}{% else %}text{% endif %}"
@@ -25,6 +26,7 @@
         : {{ readonly|yesno:'true,false' }}
     "
   >
+  {{field.value}}
   </textarea>
 
   {% for error in field_errors %}
