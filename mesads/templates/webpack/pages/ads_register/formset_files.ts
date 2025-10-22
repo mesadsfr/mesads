@@ -43,6 +43,13 @@ export default function SetupFormsetFiles() {
         form.querySelectorAll("input[type=hidden]")
       ).find((form) => form.id.match(/TOTAL_FORMS/)) as HTMLInputElement;
 
+      const items = el.parentElement?.querySelectorAll("input[type=file]");
+
+      if (items) {
+        const last = items[items?.length - 1] as HTMLInputElement;
+        last.focus();
+      }
+
       totalInput.value = (parseInt(totalInput.value, 10) + 1).toString();
     });
   });

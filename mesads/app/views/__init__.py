@@ -30,4 +30,5 @@ from .public import (  # noqa: F401
     ReglementationView,
     HTTP500View,
     HomepageView,
+    PlanSiteView,
 )
