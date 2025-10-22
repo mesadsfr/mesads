@@ -56,7 +56,7 @@ class DeleteOldUsers(CronJobBase):
         return buf.getvalue()
 
 
-class NotificationListeAttent(CronJobBase):
+class NotificationListeAttente(CronJobBase):
     # Run every day
     schedule = Schedule(run_every_mins=60 * 24)
 
