@@ -264,45 +264,43 @@ urls:
   # Liste attente
 
   app.liste_attente:
-    title: "Liste d'attente {{ads_manager.content_object.display_text}}"
+    title: "Liste d'attente {{ads_manager.content_object.display_text}} - MesADS"
     description: "Consulter la liste d'attente de {{ads_manager.content_object.display_text}}"
 
   app.liste_attente_archives:
-    title: "Archive liste d'attente {{ads_manager.content_object.display_text}}"
+    title: "Archive liste d'attente {{ads_manager.content_object.display_text}} - MesADS"
     description: "Consulter les archives de la liste d'attente de {{ads_manager.content_object.display_text}}"
 
   app.liste_attente_export:
-    title: "Export excel liste d'attente {{ads_manager.content_object.display_text}}"
+    title: "Export excel liste d'attente {{ads_manager.content_object.display_text}} - MesADS"
     description: "Exporter la liste d'attente de {{ads_manager.content_object.display_text}}"
 
   app.liste_attente_inscription:
-    title: "Inscription à la liste d'attente {{ads_manager.content_object.display_text}}"
+    title: "Inscription à la liste d'attente {{ads_manager.content_object.display_text}} - MesADS"
     description: "Ajout d'une inscription à la liste d'attente de {{ads_manager.content_object.display_text}}"
 
   app.liste_attente_inscription_update:
-    title: "Inscription à la liste d'attente {{ads_manager.content_object.display_text}}"
+    title: "Inscription à la liste d'attente {{ads_manager.content_object.display_text}} - MesADS"
     description: "Modification d'une inscription à la liste d'attente de {{ads_manager.content_object.display_text}}"
 
   app.liste_attente_inscription_archivage:
-    title: "Archivage inscription"
+    title: "Archivage inscription - MesADS"
     description: "Archivage d'une inscription à la liste d'attente de {{ads_manager.content_object.display_text}}"
 
   app.liste_attente_inscription_archivage_confirmation:
-    title: "Archivage confirmé"
+    title: "Archivage confirmé - MesADS"
     description: "Confirmation d'archivage d'une inscription à la liste d'attente de {{ads_manager.content_object.display_text}}"
 
   app.liste_attente_attribution:
-    title: "Liste d'attente - Attribution"
+    title: "Liste d'attente - Attribution - MesADS"
     description: "Attribution d'une nouvelle ADS depuis la liste d'attente"
 
   app.liste_attente_traitement_demande:
-    title: "Liste d'attente - Traitement de la demande"
+    title: "Liste d'attente - Traitement de la demande - MesADS"
     description: "Traitement d'une inscription de la liste d'attente"
 
   app.liste_attente_archive_modele:
-    title: "Modèle de courrier d'archivage"
-    description: "Modèle de courrier d'archivage"
+    missing: true
 
   app.liste_attente_contact_modele:
-    title: "Modèle de courrier de contact"
-    description: "Modèle de courrier de contact"
+    missing: true
