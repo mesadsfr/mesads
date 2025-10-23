@@ -321,6 +321,103 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
         self.assertEqual(new_inscription.numero, inscription.numero)
         self.assertNotEqual(new_inscription.id, inscription.id)
 
+    def test_post_formulaire_creation_inscription_numero_commune(self):
+        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_inscription",
+                kwargs={"manager_id": self.ads_manager.id},
+            ),
+            data={
+                "nom": "John",
+                "prenom": "Doe",
+                "numero_licence": "1234ABCD",
+                "numero_telephone": "0606060606",
+                "email": "john.doe@test.com",
+                "adresse": "10 Rue du test",
+                "date_depot_inscription": datetime.date.today(),
+                "date_dernier_renouvellement": datetime.date.today(),
+                "date_fin_validite": datetime.date.today()
+                + datetime.timedelta(days=365),
+            },
+        )
+        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
+        self.assertEqual(response.status_code, http.HTTPStatus.FOUND)
+        inscription = InscriptionListeAttente.objects.last()
+        self.assertEqual(inscription.ads_manager, self.ads_manager)
+        self.assertIn(
+            f"{self.ads_manager.content_object.insee}{inscription.date_depot_inscription.strftime('%d%m%Y')}",
+            inscription.numero,
+        )
+
+    def test_post_formulaire_creation_inscription_numero_epci(self):
+
+        client, user = self.create_client()
+        ads_manager = ADSManagerFactory(for_epci=True)
+        ADSManagerRequestFactory(user=user, ads_manager=ads_manager)
+
+        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
+        response = client.post(
+            reverse(
+                "app.liste_attente_inscription",
+                kwargs={"manager_id": ads_manager.id},
+            ),
+            data={
+                "nom": "John",
+                "prenom": "Doe",
+                "numero_licence": "1234ABCD",
+                "numero_telephone": "0606060606",
+                "email": "john.doe@test.com",
+                "adresse": "10 Rue du test",
+                "date_depot_inscription": datetime.date.today(),
+                "date_dernier_renouvellement": datetime.date.today(),
+                "date_fin_validite": datetime.date.today()
+                + datetime.timedelta(days=365),
+            },
+        )
+        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
+        self.assertEqual(response.status_code, http.HTTPStatus.FOUND)
+        inscription = InscriptionListeAttente.objects.last()
+        self.assertEqual(inscription.ads_manager, ads_manager)
+        self.assertIn(
+            f"{ads_manager.content_object.departement}{inscription.date_depot_inscription.strftime('%d%m%Y')}",
+            inscription.numero,
+        )
+
+    def test_post_formulaire_creation_inscription_numero_prefecture(self):
+
+        client, user = self.create_client()
+        ads_manager = ADSManagerFactory(for_prefecture=True)
+        ADSManagerRequestFactory(user=user, ads_manager=ads_manager)
+
+        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
+        response = client.post(
+            reverse(
+                "app.liste_attente_inscription",
+                kwargs={"manager_id": ads_manager.id},
+            ),
+            data={
+                "nom": "John",
+                "prenom": "Doe",
+                "numero_licence": "1234ABCD",
+                "numero_telephone": "0606060606",
+                "email": "john.doe@test.com",
+                "adresse": "10 Rue du test",
+                "date_depot_inscription": datetime.date.today(),
+                "date_dernier_renouvellement": datetime.date.today(),
+                "date_fin_validite": datetime.date.today()
+                + datetime.timedelta(days=365),
+            },
+        )
+        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
+        self.assertEqual(response.status_code, http.HTTPStatus.FOUND)
+        inscription = InscriptionListeAttente.objects.last()
+        self.assertEqual(inscription.ads_manager, ads_manager)
+        self.assertIn(
+            f"{ads_manager.content_object.numero}{inscription.date_depot_inscription.strftime('%d%m%Y')}",
+            inscription.numero,
+        )
+
 
 class TestModificationInscriptionListeAttenteView(ClientTestCase):
     def test_get_formulaire_modification_inscription(self):
