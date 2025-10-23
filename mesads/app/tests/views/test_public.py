@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.test import RequestFactory
+from django.urls import reverse
 
 from mesads.app.models import ADS, ADSManagerRequest
 from mesads.app.views import HTTP500View
@@ -132,3 +133,36 @@ class TestReglementationView(ClientTestCase):
     def test_get(self):
         resp = self.anonymous_client.get("/reglementation")
         self.assertEqual(resp.status_code, 200)
+
+
+class TestPlanSiteView(ClientTestCase):
+    def test_200(self):
+        response = self.anonymous_client.get(reverse("app.plan_site"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_as_authenticated_user(self):
+        client_connecte, _ = self.create_client()
+        response = client_connecte.get(reverse("app.plan_site"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_as_ads_manager(self):
+        response = self.ads_manager_city35_client.get(reverse("app.plan_site"))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_as_administrator(self):
+        response = self.ads_manager_administrator_35_client.get(
+            reverse("app.plan_site")
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_as_proprietaire(self):
+        client_proprietaire, user_proprietaire = self.create_client()
+
+        proprietaire = Proprietaire.objects.create(nom="Propriétaire")
+        proprietaire.users.set([user_proprietaire])
+
+        response = client_proprietaire.get(reverse("app.plan_site"))
+
+        self.assertEqual(response.status_code, 200)

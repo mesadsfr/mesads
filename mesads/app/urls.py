@@ -185,6 +185,11 @@ url_public = [
         views.ReglementationView.as_view(),
         name="app.reglementation",
     ),
+    path(
+        "plan-site",
+        views.PlanSiteView.as_view(),
+        name="app.plan_site",
+    ),
 ]
 
 

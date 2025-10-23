@@ -67,7 +67,7 @@
 
       {% if not latest_ads_update_log or latest_ads_update_log.is_outdated %}
         <div class="fr-alert fr-alert--warning fr-mb-3w">
-          <h3 class="fr-alert__title">Vérification de l'ADS nécessaire</h3>
+          <h2 class="fr-alert__title">Vérification de l'ADS nécessaire</h2>
           <p>
             {% if latest_ads_update_log %}
               Les informations de cette ADS n'ont pas été mises à jour depuis le {{ latest_ads_update_log.update_at|date:"d/m/Y" }}.
@@ -78,7 +78,7 @@
 
       {% elif not latest_ads_update_log.is_complete and not latest_ads_update_log.is_outdated %}
         <div class="fr-alert fr-alert--warning fr-mb-3w">
-          <h3 class="fr-alert__title">Informations incomplètes</h3>
+          <h2 class="fr-alert__title">Informations incomplètes</h2>
           <p>
             Les informations suivantes sont nécessaires :
             <ul>

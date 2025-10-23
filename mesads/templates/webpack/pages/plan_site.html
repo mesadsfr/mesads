@@ -1,0 +1,42 @@
+{% extends "base_container.html" %}
+
+{% block body-content %}
+
+<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+  <button class="fr-breadcrumb__button"
+          aria-expanded="false"
+          aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+  <div class="fr-collapse" id="breadcrumb-1">
+    <ol class="fr-breadcrumb__list">
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Page d'accueil</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link" aria-current="page">Plan du site</a>
+      </li>
+    </ol>
+  </div>
+</nav>
+
+<h1 class="text-center">Plan du site</h1>
+
+<div class="flex items-center flex-col">
+    <ul>
+        {% for lien_plan in liens_plan %}
+        <li>
+            <a href="{{lien_plan.url}}">{{lien_plan.nom_url}}</a>
+            {% if lien_plan.sub_urls %}
+            <ul>
+                {% for sub_lien_plan in lien_plan.sub_urls %}
+                    <li>
+                        <a href="{{sub_lien_plan.url}}">{{sub_lien_plan.nom_url}}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock body-content %}

@@ -4,6 +4,7 @@ import math
 from django.db.models import OuterRef, Subquery, Count, IntegerField, BooleanField, Q
 from django.db.models.functions import TruncMonth
 from django.views.generic import TemplateView
+from django.urls import reverse
 
 from ..forms import ADSManagerAutocompleteForm
 from ..models import (
@@ -355,3 +356,144 @@ class ReglementationView(TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx["entries"] = self.entries
         return ctx
+
+
+class PlanSiteView(TemplateView):
+    template_name = "pages/plan_site.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        liens_base_1 = [
+            {
+                "nom_url": "Répertoire des taxis Relais",
+                "url": reverse("vehicules-relais.index"),
+            },
+            {
+                "nom_url": "Réglementation taxi",
+                "url": reverse("app.reglementation"),
+            },
+            {"nom_url": "Foire aux questions", "url": reverse("app.faq")},
+        ]
+        liens_base_2 = [
+            {
+                "nom_url": "Conditions générales d'utilisation",
+                "url": reverse("app.cgu"),
+            },
+            {"nom_url": "Mentions légales", "url": reverse("app.legal")},
+            {
+                "nom_url": "Données personnelles et cookies",
+                "url": reverse("app.suivi"),
+            },
+            {
+                "nom_url": "Déclaration d'accessibilité",
+                "url": reverse("app.accessibility"),
+            },
+            {
+                "nom_url": "Statistiques",
+                "url": reverse("app.stats"),
+            },
+        ]
+
+        if self.request.user.is_authenticated:
+            liens_authentifie = [
+                {
+                    "nom_url": "Changer de mot de passe",
+                    "url": reverse("password_change"),
+                },
+                {"nom_url": "Déconnexion", "url": reverse("oidc_logout")},
+            ]
+            ads_manager_administrators = (
+                self.request.user.adsmanageradministrator_set.all()
+            )
+            liens_plan = []
+            ads_manager_requests = self.request.user.adsmanagerrequest_set.all()
+            proprietaire_vehicule_relais = self.request.user.proprietaire_set.all()
+            if len(ads_manager_administrators):
+                administrator = ads_manager_administrators.first()
+
+                liens_plan = [
+                    {
+                        "nom_url": "Accès prefecture",
+                        "url": reverse("app.homepage"),
+                        "sub_urls": [
+                            {
+                                "nom_url": "Demande d'accès des gestionnaires rattachés à votre Préfecture",
+                                "url": reverse(
+                                    "app.ads-manager-admin.requests",
+                                    kwargs={
+                                        "prefecture_id": administrator.prefecture.id
+                                    },
+                                ),
+                            },
+                            {
+                                "nom_url": "Données liées aux ADS de votre Préfecture",
+                                "url": reverse(
+                                    "app.ads-manager-admin.administrations",
+                                    kwargs={
+                                        "prefecture_id": administrator.prefecture.id
+                                    },
+                                ),
+                            },
+                            {
+                                "nom_url": "Données liées aux répertoires des taxis relais de votre préfecture",
+                                "url": reverse(
+                                    "app.ads-manager-admin.vehicules_relais",
+                                    kwargs={
+                                        "prefecture_id": administrator.prefecture.id
+                                    },
+                                ),
+                            },
+                            {
+                                "nom_url": "Modifications effectuées par les gestionnaires rattachés à votre Préfecture",
+                                "url": reverse(
+                                    "app.ads-manager-admin.updates",
+                                    kwargs={
+                                        "prefecture_id": administrator.prefecture.id
+                                    },
+                                ),
+                            },
+                            {
+                                "nom_url": "Accéder au modèle d'arrêté",
+                                "url": reverse("app.modele-arrete"),
+                            },
+                        ],
+                    }
+                ]
+
+            elif len(ads_manager_requests):
+                liens_plan = [
+                    {
+                        "nom_url": "Demande de gestion d'une administration",
+                        "url": reverse("app.ads-manager.demande_gestion_ads"),
+                    },
+                    {
+                        "nom_url": "Administrations en gestions",
+                        "url": reverse("app.homepage"),
+                    },
+                ]
+            elif len(proprietaire_vehicule_relais):
+                liens_plan = [
+                    {
+                        "nom_url": "Espace propriétaire",
+                        "url": reverse("vehicules-relais.proprietaire"),
+                    }
+                ]
+            else:
+                liens_plan = [
+                    {
+                        "nom_url": "Demande de gestion d'une administration",
+                        "url": reverse("app.ads-manager.demande_gestion_ads"),
+                    },
+                    {
+                        "nom_url": "Créer un espace propriétaire de taxis relais",
+                        "url": reverse("vehicules-relais.proprietaire.new"),
+                    },
+                ]
+            context["liens_plan"] = (
+                liens_base_1 + liens_authentifie + liens_plan + liens_base_2
+            )
+            return context
+        else:
+            liens_plan = [{"nom_url": "Se connecter", "url": reverse("login")}]
+            context["liens_plan"] = liens_base_1 + liens_plan + liens_base_2
+        return context

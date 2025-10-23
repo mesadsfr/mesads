@@ -38,6 +38,10 @@ urls:
     title: "MesADS - Choisissez votre profil"
     description: "Choix du profil"
 
+  app.plan_site:
+    title: "Plan du site - MesADS"
+    description: "Plan du site MesADS"
+
   ###
   ### Registration
   ###

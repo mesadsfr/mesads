@@ -52,6 +52,13 @@ Alpine.directive("add-ads-user-button", (el, { expression }, { evaluate }) => {
         entries.forEach((value) => {
           value.id = value.id.replace(/__prefix__/g, index.toString());
           value.name = value.name.replace(/__prefix__/, index.toString());
+
+          const label = value.parentNode?.querySelector(
+            ":scope > label"
+          ) as HTMLLabelElement;
+          if (label) {
+            label.htmlFor = value.id;
+          }
         });
       });
 
