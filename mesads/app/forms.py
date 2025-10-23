@@ -479,6 +479,10 @@ class InscriptionListeAttenteForm(forms.ModelForm):
             "commentaire",
         )
 
+    def __init__(self, ads_manager, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ads_manager = ads_manager
+
     def clean(self):
         cleaned_data = super().clean()
 
@@ -507,6 +511,7 @@ class InscriptionListeAttenteForm(forms.ModelForm):
 
     def save(self, commit=True):
         obj = super().save(commit=False)
+        obj.ads_manager = self.ads_manager
 
         if obj.date_dernier_renouvellement:
             obj.date_fin_validite = obj.date_dernier_renouvellement + relativedelta(
@@ -517,13 +522,19 @@ class InscriptionListeAttenteForm(forms.ModelForm):
 
         # Auto-génération si pas de numéro
         if not obj.numero:
-            count = InscriptionListeAttente.objects.filter(
-                date_depot_inscription=obj.date_depot_inscription
-            ).count()
-            obj.numero = (
-                f"{count + 1:03d}{obj.date_depot_inscription.strftime('%d%m%Y')}"
-            )
+            base_numero = ""
+            if self.ads_manager.content_type.model == "commune":
+                base_numero = self.ads_manager.content_object.insee
+            elif self.ads_manager.content_type.model == "epci":
+                base_numero = self.ads_manager.content_object.departement
+            elif self.ads_manager.content_type.model == "prefecture":
+                base_numero = self.ads_manager.content_object.numero
 
+            count = InscriptionListeAttente.objects.filter(
+                date_depot_inscription=obj.date_depot_inscription,
+                ads_manager=self.ads_manager,
+            ).count()
+            obj.numero = f"{base_numero}{obj.date_depot_inscription.strftime('%d%m%Y')}{count + 1:04d}"
         if commit:
             obj.save()
         return obj
