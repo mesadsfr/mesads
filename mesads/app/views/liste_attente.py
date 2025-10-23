@@ -247,6 +247,14 @@ class InscriptionListeAttenteMixin:
 
     template_name = "pages/ads_register/liste_attente_inscription.html"
     form_class = InscriptionListeAttenteForm
+    model = InscriptionListeAttente
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update(
+            {"ads_manager": ADSManager.objects.get(id=self.kwargs["manager_id"])}
+        )
+        return kwargs
 
     def get_success_url(self):
         return reverse(
@@ -282,15 +290,11 @@ class InscriptionListeAttenteMixin:
 
 
 class CreationInscriptionListeAttenteView(InscriptionListeAttenteMixin, CreateView):
-    def form_valid(self, form):
-        ads_manager = ADSManager.objects.get(id=self.kwargs["manager_id"])
-        form.instance.ads_manager = ads_manager
-        return super().form_valid(form)
+    pass
 
 
 class ModificationInscriptionListeAttenteView(InscriptionListeAttenteMixin, UpdateView):
     pk_url_kwarg = "inscription_id"
-    model = InscriptionListeAttente
 
     def dispatch(self, request, *args, **kwargs):
         """

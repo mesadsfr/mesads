@@ -145,6 +145,17 @@
                       {% endif %}
                     </td>
                     <td>
+
+                      {% if inscription.status != "inscrit" %}
+                        <a
+                          class="fr-btn fr-icon-draft-line mb-0.5"
+                          href="{% url 'app.liste_attente_traitement_demande' manager_id=ads_manager.id inscription_id=inscription.id %}"
+                        >
+                          <span class="fr-sr-only">
+                            Traiter
+                          </span>
+                        </a>
+                      {% endif %}
                       <a
                         class="fr-btn fr-btn--secondary fr-icon-eye-line"
                         href="{% url 'app.liste_attente_inscription_update' manager_id=ads_manager.id inscription_id=inscription.id %}"
