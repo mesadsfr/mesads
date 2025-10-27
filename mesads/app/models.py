@@ -1092,6 +1092,8 @@ WAITING_LIST_UNIQUE_ERROR_MESSAGE = (
     "Une entrée dans la liste d'attente avec ce numéro existe déjà."
 )
 
+WAITING_LIST_UNIQUE_LICENCE_ERROR_MESSAGE = "Une inscription à une liste d'attente avec ce numéro de carte professionnelle existe déjà."
+
 
 @reversion.register
 class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
@@ -1104,6 +1106,12 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
                 fields=["numero", "ads_manager_id"],
                 condition=Q(deleted_at__isnull=True),
                 name="unique_waiting_list_number",
+                violation_error_message=WAITING_LIST_UNIQUE_ERROR_MESSAGE,
+            ),
+            models.UniqueConstraint(
+                fields=["numero_licence"],
+                condition=Q(deleted_at__isnull=True),
+                name="unique_numero_licence",
                 violation_error_message=WAITING_LIST_UNIQUE_ERROR_MESSAGE,
             ),
         ]

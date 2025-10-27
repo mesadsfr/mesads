@@ -108,6 +108,14 @@
       </div>
       <div class="fr-input-group">
         <a class="fr-btn fr-btn--secondary" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">Retour</a>
+        {% if object %}
+          <a
+            class="fr-btn fr-btn--secondary"
+            href="{% url 'app.liste_attente_inscription_archivage'  manager_id=ads_manager.id inscription_id=object.id %}"
+          >
+            Archiver
+          </a>
+        {% endif %}
         <button type="submit" class="fr-btn">Enregistrer l'inscription</button>
       </div>
     </form>
