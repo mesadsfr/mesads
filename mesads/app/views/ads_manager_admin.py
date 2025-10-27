@@ -158,7 +158,7 @@ class ADSManagerAdminRequestsView(RevisionMixin, TemplateView):
         request_id = request.POST.get("request_id")
         action = request.POST.get("action")
 
-        if action not in ("accept", "deny"):
+        if action not in ("accept", "deny", "revoke", "authorize"):
             raise SuspiciousOperation("Invalid action")
 
         ads_manager_request = get_object_or_404(ADSManagerRequest, id=request_id)
@@ -170,7 +170,7 @@ class ADSManagerAdminRequestsView(RevisionMixin, TemplateView):
             adsmanager=ads_manager_request.ads_manager,
         )
 
-        if action == "accept":
+        if action == "accept" or action == "authorize":
             ads_manager_request.accepted = True
         else:
             ads_manager_request.accepted = False

@@ -52,7 +52,7 @@
     </div>
   </nav>
 
-  <div {% if ads %}x-data="{update: false}"{% else %}x-data="{update: true}"{% endif %}>
+  <div {% if ads and not form.errors %}x-data="{update: false}"{% else %}x-data="{update: true}"{% endif %}>
     {% if ads %}
       <h1>
         ADS #{{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})
@@ -106,7 +106,6 @@
     </div>
 
     <div x-show="update">
-
       <div class="fr-notice fr-notice--info fr-mb-3w">
         <div class="fr-container">
           <div class="fr-notice__body">
@@ -128,32 +127,31 @@
           </div>
         </div>
       </div>
+    </div>
 
-      {% if ads %}
-        {% if ads_manager.content_type.name == 'commune' %}
-          <p>
-            <a
-              class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-              href="{{arrete_url}}"
-            >
-              <span aria-hidden="true" class="fr-icon-question-line"></span>
-              Accéder aux modèles d'arrêtés municipaux
-            </a>
-          </p>
-        {% endif %}
-
-      <p>
-        <a
-          class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-          href="{{history_url}}"
-        >
-          <span class="fr-icon-draft-line" aria-hidden="true"></span>
-          Voir l'historique des modifications
-        </a>
-      </p>
+    {% if ads %}
+      {% if ads_manager.content_type.name == 'commune' %}
+        <p>
+          <a
+            class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+            href="{{arrete_url}}"
+          >
+            <span aria-hidden="true" class="fr-icon-question-line"></span>
+            Accéder aux modèles d'arrêtés municipaux
+          </a>
+        </p>
       {% endif %}
 
-    </div>
+    <p>
+      <a
+        class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+        href="{{history_url}}"
+      >
+        <span class="fr-icon-draft-line" aria-hidden="true"></span>
+        Voir l'historique des modifications
+      </a>
+    </p>
+    {% endif %}
 
     {% if ads_manager.is_locked %}
       <div class="fr-highlight">

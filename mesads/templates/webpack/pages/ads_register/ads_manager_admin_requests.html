@@ -62,6 +62,7 @@
                       </th>
                       <th>Dernière connexion de l'utilisateur</th>
                       <th>Statut</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -118,6 +119,27 @@
                               {% if ads_manager_request.last_update_at %}le {{ ads_manager_request.last_update_at|date:"d/m/Y" }}{% endif %}
                             {% endif %}
                           </div>
+                        </td>
+                        <td>
+                          {% if ads_manager_request.accepted %}
+                            <form method="post">
+                              {% csrf_token %}
+                              <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
+                              <input type="hidden" name="action" value="revoke" />
+                              <button class="fr-btn" type="submit">
+                                Révoquer
+                              </button>
+                            </form>
+                          {% elif ads_manager_request.accepted is not None %}
+                            <form method="post">
+                              {% csrf_token %}
+                              <input type="hidden" name="request_id" value="{{ ads_manager_request.id }}" />
+                              <input type="hidden" name="action" value="authorize" />
+                              <button class="fr-btn" type="submit">
+                                Autoriser
+                              </button>
+                            </form>
+                          {% endif %}
                         </td>
                       </tr>
                     {% empty %}
