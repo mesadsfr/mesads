@@ -48,7 +48,7 @@
                   <th> Date fin de validité </th>
                   <th> Coordonnées </th>
                   <th> Exploitation ADS </th>
-                  <th> Modifier ou archiver </th>
+                  <th> Modifier </th>
                 </tr>
               </thead>
               <tbody>
@@ -63,19 +63,11 @@
                   <td>{% if inscription.exploitation_ads %}Oui{% else %}Non{% endif %}</td>
                   <td>
                     <a
-                      class="fr-btn fr-btn--secondary fr-icon-eye-line"
+                      class="fr-btn fr-btn--secondary fr-icon-pencil-line"
                       href="{% url 'app.liste_attente_inscription_update' manager_id=ads_manager.id inscription_id=inscription.id %}"
                     >
                       <span class="fr-sr-only">
                         Modifier
-                      </span>
-                    </a>
-                    <a
-                      class="fr-btn fr-btn--secondary fr-icon-archive-line mt-0.5"
-                      href="{% url 'app.liste_attente_inscription_archivage'  manager_id=ads_manager.id inscription_id=inscription.id %}"
-                    >
-                      <span class="fr-sr-only">
-                        Archiver
                       </span>
                     </a>
                   </td>
