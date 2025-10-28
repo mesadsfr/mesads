@@ -81,3 +81,7 @@
 {% include "./accueil_newsletter.html" %}
 {% include "./accueil_statistiques.html" with background_grey=True %}
 {% include "./accueil_contact.html" %}
+
+{% if show_notation %}
+  {% include "./modale_notation.html" %}
+{% endif %}

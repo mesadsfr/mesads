@@ -1,12 +1,12 @@
 import calendar
 from datetime import date, timedelta
 
-from django.db.models import Q, OuterRef, Subquery, BooleanField
+from django.db.models import Q, OuterRef, Subquery, BooleanField, Sum
 from django.views.generic import TemplateView
 from django.utils import timezone
 
 from mesads.app.models import ADS, ADSUpdateLog
-from mesads.users.models import UserAuditEntry
+from mesads.users.models import UserAuditEntry, NoteUtilisateur
 
 
 class StatistiquesView(TemplateView):
@@ -54,6 +54,26 @@ class StatistiquesView(TemplateView):
             .count()
         )
 
+    def get_note_moyenne_qualite(self) -> tuple[float, int]:
+        notes = NoteUtilisateur.objects.filter(note_qualite__isnull=False)
+        total_notes = notes.aggregate(total=Sum("note_qualite"))["total"]
+        count = notes.count()
+        if count == 0:
+            return 0, 0
+
+        else:
+            return total_notes / count, count
+
+    def get_note_moyenne_facilite(self) -> tuple[float, int]:
+        notes = NoteUtilisateur.objects.filter(note_facilite__isnull=False)
+        total_notes = notes.aggregate(total=Sum("note_facilite"))["total"]
+        count = notes.count()
+        if count == 0:
+            return 0, 0
+
+        else:
+            return total_notes / count, count
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -77,4 +97,11 @@ class StatistiquesView(TemplateView):
         context["pourcentage_ads_valide_et_complete"] = (
             self.get_pourcentage_ads_valide()
         )
+
+        avg_note_facilite, count_note_facilite = self.get_note_moyenne_facilite()
+        avg_note_qualite, count_note_qualite = self.get_note_moyenne_qualite()
+        context["avg_note_facilite"] = avg_note_facilite
+        context["count_note_facilite"] = count_note_facilite
+        context["avg_note_qualite"] = avg_note_qualite
+        context["count_note_qualite"] = count_note_qualite
         return context

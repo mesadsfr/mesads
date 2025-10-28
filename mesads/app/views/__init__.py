@@ -32,3 +32,5 @@ from .public import (  # noqa: F401
     HomepageView,
     PlanSiteView,
 )
+
+from .notation_view import NotationView  # noqa: F401
