@@ -25,6 +25,18 @@
         grid-template-columns: max-content 1fr;
       }
     }
+
+    .notes-container {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .stats-block {
+      padding: 1rem;
+      margin: 1rem;
+      border: solid 1px black;
+      border-radius: 15px;
+    }
   </style>
 {% endblock %}
 
@@ -32,6 +44,32 @@
 {% block content %}
   <div>
     <h1>Statistiques d'usage</h1>
+
+    <div class="stats-block">
+      <h2>Notes utilisateurs</h2>
+
+      <div class="notes-container">
+        <div>
+          <h3>Note moyenne de facilite d'usage</h3>
+          <dl>
+            <dt>Note moyenne</dt>
+            <dd>{{avg_note_facilite}}</dd>
+            <dt>Nombre de notes</dt>
+            <dd>{{count_note_facilite}}</dd>
+          </dl>
+        </div>
+
+        <div>
+          <h3>Note moyenne de qualité de service</h3>
+          <dl>
+            <dt>Note moyenne</dt>
+            <dd>{{avg_note_qualite}}</dd>
+            <dt>Nombre de notes</dt>
+            <dd>{{count_note_qualite}}</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
 
     <form method="get" action="{% url 'admin-statistiques' %}">
       <fieldset class="module aligned">
@@ -58,12 +96,14 @@
       </div>
     </form>
 
-    <h2>Période du {{start_date}} au {{end_date}}</h2>
+    <div class="stats-block">
+      <h2>Période du {{start_date}} au {{end_date}}</h2>
 
-    <ul>
-      <li><strong>Nombre de connexions uniques : </strong> {{nombre_connexions}}</li>
-      <li><strong>Nombre de création et de modification d'ADS : </strong> {{nombre_creation_modification_ads}}</li>
-      <li><strong>Pourcentage d'ADS valides et complètes: </strong> {{pourcentage_ads_valide_et_complete}}%</li>
-    </ul>
+      <ul>
+        <li><strong>Nombre de connexions uniques : </strong> {{nombre_connexions}}</li>
+        <li><strong>Nombre de création et de modification d'ADS : </strong> {{nombre_creation_modification_ads}}</li>
+        <li><strong>Pourcentage d'ADS valides et complètes: </strong> {{pourcentage_ads_valide_et_complete}}%</li>
+      </ul>
+    </div>
   </div>
 {% endblock %}

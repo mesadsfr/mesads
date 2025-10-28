@@ -1,0 +1,151 @@
+<div class="fr-consent-banner">
+  <h2 class="fr-h6">Votre avis nous interesse!</h2>
+  <div class="fr-consent-banner__content">
+    <p class="fr-text--sm">Bienvenue! Afin de nous permettre de nous améliorer, nous aimerions vous permettre de noter MesADS.</p>
+  </div>
+  <form action="{% url 'app.note-service' %}" method="post">
+    {% csrf_token %}
+
+    <div class="flex gap-2">
+      <fieldset class="rating-fieldset">
+        <legend class="rating-legend">Votre avis sur la facilité d'usage du service</legend>
+
+        <!-- Message accessible (vivant) -->
+        <p id="rating-instructions" class="fr-sr-only">
+          Donnez une note de 1 à 5. 1 = très insatisfait, 5 = très satisfait.
+          Utilisez Tab pour vous déplacer dans le groupe puis Flèche gauche/droite pour choisir la note.
+        </p>
+
+        <div class="rating-stars" role="radiogroup" aria-labelledby="rating-legend-text" aria-describedby="rating-instructions">
+          <!-- 5 -->
+          <input
+            type="radio"
+            name="note_facilite"
+            id="note_facilite-5"
+            value="5"
+            class="sr-only"
+            aria-label="5 sur 5 - Excellent"
+          />
+          <label for="note_facilite-5" data-value="5" class="star" aria-hidden="true">★</label>
+
+          <!-- 4 -->
+          <input
+            type="radio"
+            name="note_facilite"
+            id="note_facilite-4"
+            value="4"
+            class="sr-only"
+            aria-label="4 sur 5 - Satisfait"
+          />
+          <label for="note_facilite-4" data-value="4" class="star" aria-hidden="true">★</label>
+
+          <!-- 3 -->
+          <input
+            type="radio"
+            name="note_facilite"
+            id="note_facilite-3"
+            value="3"
+            class="sr-only"
+            aria-label="3 sur 5 - Moyen"
+          />
+          <label for="note_facilite-3" data-value="3" class="star" aria-hidden="true">★</label>
+
+          <!-- 2 -->
+          <input
+            type="radio"
+            name="note_facilite"
+            id="note_facilite-2"
+            value="2"
+            class="sr-only"
+            aria-label="2 sur 5 - Insatisfait"
+          />
+          <label for="note_facilite-2" data-value="2" class="star" aria-hidden="true">★</label>
+
+          <!-- 1 -->
+          <input
+            type="radio"
+            name="note_facilite"
+            id="note_facilite-1"
+            value="1"
+            class="sr-only"
+            aria-label="1 sur 5 - Très insatisfait"
+          />
+          <label for="note_facilite-1" data-value="1" class="star" aria-hidden="true">★</label>
+        </div>
+
+        
+      </fieldset>
+
+      <fieldset class="rating-fieldset">
+        <legend class="rating-legend">Votre avis sur la qualité du service</legend>
+
+        <!-- Message accessible (vivant) -->
+        <p id="rating-instructions" class="fr-sr-only">
+          Donnez une note de 1 à 5. 1 = très insatisfait, 5 = très satisfait.
+          Utilisez Tab pour vous déplacer dans le groupe puis Flèche gauche/droite pour choisir la note.
+        </p>
+
+        <div class="rating-stars" role="radiogroup" aria-labelledby="rating-legend-text" aria-describedby="rating-instructions">
+          <!-- 5 -->
+          <input
+            type="radio"
+            name="note_qualite"
+            id="note_qualite-5"
+            value="5"
+            class="sr-only"
+            aria-label="5 sur 5 - Excellent"
+          />
+          <label for="note_qualite-5" data-value="5" class="star" aria-hidden="true">★</label>
+
+          <!-- 4 -->
+          <input
+            type="radio"
+            name="note_qualite"
+            id="note_qualite-4"
+            value="4"
+            class="sr-only"
+            aria-label="4 sur 5 - Satisfait"
+          />
+          <label for="note_qualite-4" data-value="4" class="star" aria-hidden="true">★</label>
+
+          <!-- 3 -->
+          <input
+            type="radio"
+            name="note_qualite"
+            id="note_qualite-3"
+            value="3"
+            class="sr-only"
+            aria-label="3 sur 5 - Moyen"
+          />
+          <label for="note_qualite-3" data-value="3" class="star" aria-hidden="true">★</label>
+
+          <!-- 2 -->
+          <input
+            type="radio"
+            name="note_qualite"
+            id="note_qualite-2"
+            value="2"
+            class="sr-only"
+            aria-label="2 sur 5 - Insatisfait"
+          />
+          <label for="note_qualite-2" data-value="2" class="star" aria-hidden="true">★</label>
+
+          <!-- 1 -->
+          <input
+            type="radio"
+            name="note_qualite"
+            id="note_qualite-1"
+            value="1"
+            class="sr-only"
+            aria-label="1 sur 5 - Très insatisfait"
+          />
+          <label for="note_qualite-1" data-value="1" class="star" aria-hidden="true">★</label>
+        </div>
+      </fieldset>
+
+    </div>
+
+    <button type="submit" name="action" value="close" class="fr-btn fr-btn--secondary">Fermer</button>
+    <button type="submit" name="action" value="note" class="fr-btn">Envoyer</button>
+  </form>
+</div>

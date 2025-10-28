@@ -69,3 +69,7 @@
 {% include "./accueil_statistiques.html" %}
 {% include "./accueil_newsletter.html" %}
 {% include "./accueil_contact.html" with background_grey=True %}
+
+{% if show_notation %}
+  {% include "./modale_notation.html" %}
+{% endif %}
