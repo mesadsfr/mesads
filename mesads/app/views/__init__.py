@@ -1,10 +1,8 @@
 from .ads import (  # noqa: F401
-    ADSDecreeView,
     ADSHistoryView,
     ADSCreateView,
     ADSDeleteView,
     ADSView,
-    ADSDecreeEmptyView,
 )
 from .ads_manager import (  # noqa: F401
     ADSManagerView,
@@ -23,6 +21,9 @@ from .ads_manager_admin import (  # noqa: F401
 from .ads_manager_request import (  # noqa: F401
     DemandeGestionADSView,
 )
+
+from .arretes import ListeArretesFilesView, TelechargementArreteView  # noqa: F401
+
 from .dashboards import DashboardsView  # noqa: F401
 from .public import (  # noqa: F401
     FAQView,

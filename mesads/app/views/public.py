@@ -452,10 +452,6 @@ class PlanSiteView(TemplateView):
                                     },
                                 ),
                             },
-                            {
-                                "nom_url": "Accéder au modèle d'arrêté",
-                                "url": reverse("app.modele-arrete"),
-                            },
                         ],
                     }
                 ]
