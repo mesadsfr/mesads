@@ -1,0 +1,63 @@
+{% extends "base_container.html" %}
+{% load static %}
+{% block body-content %}
+
+<nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+  <button
+    class="fr-breadcrumb__button"
+    aria-expanded="false"
+    aria-controls="breadcrumb-1"
+  >
+    Voir le fil d’Ariane
+  </button>
+  <div class="fr-collapse" id="breadcrumb-1">
+    <ol class="fr-breadcrumb__list">
+      <li>
+        <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+      </li>
+      <li>
+        <a class="fr-breadcrumb__link"
+          href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
+      </li>
+      {% if ads %}
+        <li>
+          <a class="fr-breadcrumb__link"
+            href="{% url 'app.ads.detail' manager_id=ads.ads_manager.id ads_id=ads.id %}">ADS #{{ ads.number }}</a>
+        </li>
+      {% endif %}
+      <li>
+        <a class="fr-breadcrumb__link" aria-current="page">Modèles d'arrêtés</a>
+      </li>
+    </ol>
+  </div>
+</nav>
+
+<h1>
+  Modèles d'arrêtés
+</h1>
+
+<ul>
+  <li>
+    <a class="fr-link" href="{% url 'app.arrete-download' manager_id=ads_manager.id %}?modele_arrete=changement_vehicule_old">Arrêté de changement de véhicule (ancienne ADS)</a>
+  </li>
+  <li>
+    <a class="fr-link" href="{% url 'app.arrete-download' manager_id=ads_manager.id %}?modele_arrete=changement_vehicule_new">Arrêté de changement de véhicule (nouvelle ADS)</a>
+  </li>
+  <li>
+    <a class="fr-link" href="{% url 'app.arrete-download' manager_id=ads_manager.id %}?modele_arrete=nombre_ads">Arrêté délimitant le nombre d'ADS</a>
+  </li>
+  <li>
+    <a class="fr-link" href="{% url 'app.arrete-download' manager_id=ads_manager.id %}?modele_arrete=location_gerance">Arrêté de passage en location/gérance (ancienne ADS)</a>
+  </li>
+  <li>
+    <a class="fr-link" href="{% url 'app.arrete-download' manager_id=ads_manager.id %}?modele_arrete=creation_nouvelle_ads">Arrêté de création d'une nouvelle ADS</a>
+  </li>
+  <li>
+    <a class="fr-link" href="{% url 'app.arrete-download' manager_id=ads_manager.id %}?modele_arrete=renouvellement_ads">Arrêté de renouvellement d'ADS (nouvelle ADS)</a>
+  </li>
+  <li>
+    <a class="fr-link" href="{% url 'app.arrete-download' manager_id=ads_manager.id %}?modele_arrete=changement_titulaire_old">Arrêté de changement de titulaire (ancienne ADS)</a>
+  </li>
+</ul>
+
+{% endblock body-content %}

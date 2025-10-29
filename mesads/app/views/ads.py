@@ -1,32 +1,20 @@
-from datetime import date, datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from docxtpl import DocxTemplate
-
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.staticfiles import finders
 from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.template.defaultfilters import date as date_template_filter
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.generic import UpdateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView
 
-from formtools.wizard.views import CookieWizardView
-
 from reversion.views import RevisionMixin
 
 from mesads.fradm.models import EPCI
 
 from ..forms import (
-    ADSDecreeForm1,
-    ADSDecreeForm2,
-    ADSDecreeForm3,
-    ADSDecreeForm4,
     ADSForm,
     ADSLegalFileFormSet,
     ADSUserFormSet,
@@ -113,19 +101,7 @@ class ADSView(RevisionMixin, UpdateView):
 
         if self.object:
             context["arrete_url"] = (
-                reverse(
-                    "app.ads-manager-admin.ads-decree",
-                    kwargs={
-                        "prefecture_id": administrator.prefecture.id,
-                        "manager_id": ads_manager.id,
-                        "ads_id": self.object.id,
-                    },
-                )
-                if administrator
-                else reverse(
-                    "app.ads.decree",
-                    kwargs={"manager_id": ads_manager.id, "ads_id": self.object.id},
-                )
+                f"{reverse('app.arretes-list', kwargs={'manager_id': ads_manager.id})}?ads_id={self.object.id}"
             )
             context["history_url"] = (
                 reverse(
@@ -390,231 +366,6 @@ class ADSCreateView(ADSView, CreateView):
         except IntegrityError:
             form.add_error("number", ADS_UNIQUE_ERROR_MESSAGE)
             return super().form_invalid(form)
-
-
-class CustomCookieWizardView(CookieWizardView):
-    def get_prefix(self, request, *args, **kwargs):
-        """By default, WizardView uses the class name as a prefix. If the user
-        opens several tabs at the same time, the storage is shared and weird
-        behavior can happen.
-
-        For example:
-
-        * tab 1: from the page to create a decree for an ADS, go to second step
-        * tab 2: from the page to create a decree for another ADS, go to second step
-        * tab 2: refresh the page to go back to first step
-        * tab 1: go to third step
-
-        If the prefix is shared, an error will be raised because the form data
-        have been deleted when the user refreshed the page in tab 2.
-
-        We append the URL parameters to the prefix to avoid this issue most of
-        the time. It is not perfect, but it is better than nothing. If the two
-        tabs edit the same object, the prefix will be the same and the issue
-        will still happen.
-        """
-        prefix = super().get_prefix(request, *args, **kwargs)
-        suffix = "_".join(
-            (
-                str(kwargs[key].prefecture.id)
-                if key == "ads_manager_administrator"
-                else str(kwargs[key])
-            )
-            for key in sorted(kwargs.keys())
-        )
-        return f"{prefix}_{suffix}"
-
-    def render_next_step(self, form, **kwargs):
-        """The base class implementation of render_next_step has a bug, with the following scenario.
-
-        Imagine a wizard with 3 steps.
-
-        1. The user is at step 1, selects a field from a list, then goes to step 2
-        2. The step 2 renders a select field with choices computed from the data
-           of step 1. The user selects a value, and goes to step 3.
-        3. The user goes back to step 2, then goes back to step 1.
-        4. Finally, the user selects another value than the first time, and goes
-           to step 2.
-
-        Since the choices of the select field are computed from the data of step
-        1, the choice previously selected and stored refers to an invalid choice.
-
-        To fix this issue, we delete the stored data of the next step before
-        going to it.
-        """
-        if self.steps.next in self.storage.data[self.storage.step_data_key]:
-            del self.storage.data[self.storage.step_data_key][self.steps.next]
-        return super().render_next_step(form, **kwargs)
-
-    def render_done(self, form, **kwargs):
-        """The custom method render_done is called at the final step of the
-        wizard. The base class resets the storage, which prevents to edit the
-        form to regenerate the decree. We override the method to prevent the
-        storage from being reset."""
-        storage_reset = self.storage.reset
-        self.storage.reset = lambda: None
-        resp = super().render_done(form, **kwargs)
-        self.storage.reset = storage_reset
-        return resp
-
-
-class ADSDecreeMixin(CustomCookieWizardView):
-    template_name = "pages/ads_register/ads_decree.html"
-    form_list = (
-        ADSDecreeForm1,
-        ADSDecreeForm2,
-        ADSDecreeForm3,
-        ADSDecreeForm4,
-    )
-
-    def get_form_kwargs(self, step=None):
-        form_kwargs = super().get_form_kwargs(step=step)
-        if step in ("1", "2"):
-            return {
-                "is_old_ads": (self.get_cleaned_data_for_step("0") or {}).get(
-                    "is_old_ads"
-                )
-            }
-        return form_kwargs
-
-    def done(self, form_list, **kwargs):
-        path = finders.find("template-arrete-municipal.docx")
-        decree = DocxTemplate(path)
-
-        cleaned_data = self.get_all_cleaned_data()
-
-        # DocxTemplate uses jinja2 to render the template. To render dates, we
-        # could use {{ date.strftime(...)}} but the month would be in English.
-        # Use the django date template filter to use correct format.
-        cleaned_data.update(
-            {
-                k + "_str": date_template_filter(v, "d F Y")
-                for k, v in cleaned_data.items()
-                if isinstance(v, date)
-            }
-        )
-
-        # Prefix the commune name with "la commune d'" or "la commune de "
-        decree_commune = cleaned_data["decree_commune"]
-        cleaned_data["decree_commune_fulltext"] = (
-            "d'%s" % decree_commune
-            if decree_commune[:1] in ("aeiouy")
-            else "de %s" % decree_commune
-        )
-
-        decree.render(cleaned_data)
-
-        response = HttpResponse(
-            content_type="application/vnd.openxmlformats",
-            headers={"Content-Disposition": 'attachment; filename="arrete.docx"'},
-        )
-
-        decree.save(response)
-        return response
-
-
-class ADSDecreeView(ADSDecreeMixin):
-    """Decree for ADS creation."""
-
-    template_name = "pages/ads_register/ads_decree.html"
-    form_list = (
-        ADSDecreeForm1,
-        ADSDecreeForm2,
-        ADSDecreeForm3,
-        ADSDecreeForm4,
-    )
-
-    def get_form_initial(self, step):
-        """Set fields defaults."""
-        ret = super().get_form_initial(step)
-        ads = self.get_ads()
-
-        if step == "0":
-            ret.update(
-                {
-                    "is_old_ads": ads.ads_creation_date
-                    and ads.ads_creation_date <= date(2014, 10, 1),
-                }
-            )
-        elif step == "2":
-            ads_user = ads.adsuser_set.first()
-
-            now = datetime.now()
-            try:
-                today_in_5_years = now.replace(year=now.year + 5)
-            except ValueError:  # 29th February
-                today_in_5_years = now + timedelta(days=365 * 5)
-
-            ret.update(
-                {
-                    "decree_creation_date": now.strftime("%Y-%m-%d"),
-                    "decree_commune": ads.ads_manager.content_object.libelle,
-                    "ads_owner": ads.owner_name,
-                    # By default, we only display the first ADSUser. If there
-                    # are more, user can edit the .docx generated manually.
-                    "tenant_ads_user": ads_user.name if ads_user else "",
-                    # New ADS have a validity of 5 years
-                    "ads_end_date": today_in_5_years.strftime("%Y-%m-%d"),
-                    "ads_number": ads.number,
-                    "immatriculation_plate": ads.immatriculation_plate,
-                }
-            )
-        return ret
-
-    def get_ads(self):
-        return get_object_or_404(
-            ADS, id=self.kwargs["ads_id"], ads_manager_id=self.kwargs["manager_id"]
-        )
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["ads"] = self.get_ads()
-
-        administrator = self.kwargs.get("ads_manager_administrator")
-        if administrator:
-            context["ads_manager_administrator"] = administrator
-        return context
-
-
-class ADSDecreeEmptyView(ADSDecreeMixin):
-    """Decree for ADS creation."""
-
-    template_name = "pages/ads_register/ads_decree.html"
-    form_list = (
-        ADSDecreeForm1,
-        ADSDecreeForm2,
-        ADSDecreeForm3,
-        ADSDecreeForm4,
-    )
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.kwargs.get("manager_id"):
-            context["ads_manager"] = get_object_or_404(
-                ADSManager, id=self.kwargs["manager_id"]
-            )
-        return context
-
-    def get_form_initial(self, step):
-        """Set fields defaults."""
-        initial = super().get_form_initial(step)
-
-        if step == "2":
-
-            now = datetime.now()
-            try:
-                today_in_5_years = now + relativedelta(years=5)
-            except ValueError:  # 29th February
-                today_in_5_years = now + timedelta(days=365 * 5)
-
-            initial.update(
-                {
-                    "decree_creation_date": now.strftime("%Y-%m-%d"),
-                    # New ADS have a validity of 5 years
-                    "ads_end_date": today_in_5_years.strftime("%Y-%m-%d"),
-                }
-            )
-        return initial
 
 
 class ADSHistoryView(DetailView):

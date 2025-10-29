@@ -41,11 +41,6 @@ url_prefectures = [
         name="app.ads-manager-admin.ads-detail",
     ),
     path(
-        "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/ads/<int:ads_id>/arrete",
-        ads_manager_administrator_required(views.ADSDecreeView.as_view()),
-        name="app.ads-manager-admin.ads-decree",
-    ),
-    path(
         "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/ads/<int:ads_id>/history",
         ads_manager_administrator_required(views.ADSHistoryView.as_view()),
         name="app.ads-manager-admin.ads-history",
@@ -81,11 +76,6 @@ url_prefectures = [
         "registre_ads/prefectures/<int:prefecture_id>/export",
         ads_manager_administrator_required(views.PrefectureExportView.as_view()),
         name="app.exports.prefecture",
-    ),
-    path(
-        "registre_ads/modele-arrete",
-        ads_manager_required(views.ADSDecreeEmptyView.as_view()),
-        name="app.modele-arrete",
     ),
 ]
 
@@ -126,19 +116,19 @@ url_gestionnaire = [
         name="app.ads.create",
     ),
     path(
-        "registre_ads/gestion/<int:manager_id>/ads/<int:ads_id>/arrete",
-        ads_manager_required(views.ADSDecreeView.as_view()),
-        name="app.ads.decree",
-    ),
-    path(
         "registre_ads/gestion/<int:manager_id>/ads/<int:ads_id>/history",
         ads_manager_required(views.ADSHistoryView.as_view()),
         name="app.ads.history",
     ),
     path(
-        "registre_ads/gestion/<int:manager_id>/modele-arrete",
-        ads_manager_required(views.ADSDecreeEmptyView.as_view()),
-        name="app.modele-arrete-gestionnaire",
+        "registre_ads/gestion/<int:manager_id>/arretes",
+        ads_manager_required(views.ListeArretesFilesView.as_view()),
+        name="app.arretes-list",
+    ),
+    path(
+        "registre_ads/gestion/<int:manager_id>/telechargement-arrete",
+        ads_manager_required(views.TelechargementArreteView.as_view()),
+        name="app.arrete-download",
     ),
 ]
 

@@ -141,21 +141,16 @@ urls:
   app.exports.ads-manager:
     missing: true # Not HTML view
 
-  app.modele-arrete:
-    title: "MesADS - Modèle d'arrếté"
-    description: "MesADS - Modèle d'arrếté"
+  app.arretes-list:
+    title: "MesADS - Modèles d'arrêtés"
+    description: "MesADS - Modèles d'arrêtés"
 
-  app.modele-arrete-gestionnaire:
-    title: "MesADS - Modèle d'arrếté"
-    description: "MesADS - Modèle d'arrếté"
+  app.arrete-download:
+    missing: true
 
   app.ads.history:
     title: "Historique des modifications de l'ADS {{ ads.number }}"
     description: "Consultez le journal des modifications apportées à l'ADS {{ ads.number }} de {{ ads_manager.content_object.display_fulltext }}."
-
-  app.ads.decree:
-    title: "Édition d'arrêté pour l'ADS {{ ads.number }} de {{ ads.ads_manager.content_object.display_fulltext }}"
-    description: "Générez et personnalisez l'arrêté municipal pour l'ADS {{ ads.number }} de {{ ads.ads_manager.content_object.display_fulltext }}."
 
 
   app.ads-manager-admin.administrations:
@@ -177,10 +172,6 @@ urls:
   app.ads-manager-admin.ads-detail:
    title: "MesADS - Modification ADS #{{ads.number}} - {{ads_manager.content_object.display_fulltext }}"
    description: "MesADS - Détail d'une ADS"
-
-  app.ads-manager-admin.ads-decree:
-   title: "Édition d'arrêté pour l'ADS {{ ads.number }} de {{ ads.ads_manager.content_object.display_fulltext }}"
-   description: "MesADS - Arrêtés d'une ADS"
   
   app.ads-manager-admin.ads-history:
    title: "Historique des modifications de l'ADS {{ ads.number }}"
