@@ -17,7 +17,6 @@ from mesads.app.models import (
     InscriptionListeAttente,
     ADSManager,
     WAITING_LIST_UNIQUE_ERROR_MESSAGE,
-    WAITING_LIST_UNIQUE_LICENCE_ERROR_MESSAGE,
 )
 from mesads.app.forms import (
     InscriptionListeAttenteForm,
@@ -147,14 +146,18 @@ class AttributionListeAttenteView(ListView):
             output_field=IntegerField(),
         )
         qs = qs.filter(ads_manager__id=self.kwargs["manager_id"])
-        qs = qs.annotate(
-            all_filled=all_filled,
-            is_valid=Case(
-                When(date_fin_validite__gte=datetime.date.today(), then=1),
-                default=0,
-                output_field=IntegerField(),
-            ),
-        ).order_by("-exploitation_ads", "date_depot_inscription")
+        qs = (
+            qs.annotate(
+                all_filled=all_filled,
+                is_valid=Case(
+                    When(date_fin_validite__gte=datetime.date.today(), then=1),
+                    default=0,
+                    output_field=IntegerField(),
+                ),
+            )
+            .exclude(is_valid=0)
+            .order_by("-exploitation_ads", "date_depot_inscription")
+        )
         return qs
 
     def get_context_data(self, **kwargs):
@@ -286,12 +289,6 @@ class InscriptionListeAttenteMixin:
 
             if "unique_waiting_list_number" in message:
                 form.add_error("numero", WAITING_LIST_UNIQUE_ERROR_MESSAGE)
-
-            if "unique_numero_licence" in message:
-                form.add_error(
-                    "numero_licence", WAITING_LIST_UNIQUE_LICENCE_ERROR_MESSAGE
-                )
-
             return super().form_invalid(form)
 
 
