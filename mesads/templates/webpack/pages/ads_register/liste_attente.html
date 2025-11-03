@@ -124,7 +124,12 @@
                   <tr id="inscription-{{forloop.counter}}" data-row-key="{{forloop.counter}}">
                     <td>{{inscription.numero}}</td>
                     <td>{{inscription.nom}} {{inscription.prenom}}</td>
-                    <td>{{inscription.numero_licence}}</td>
+                    <td>
+                      {{inscription.numero_licence}}
+                      {% if inscription.numero_licence_utilise %}
+                        <p class="fr-badge fr-badge--green-tilleul-verveine">Numéro déjà utilisé</p>
+                      {% endif %}
+                    </td>
                     <td>{{inscription.date_depot_inscription|date:"d/m/Y"}}</td>
                     <td>{{inscription.date_fin_validite|date:"d/m/Y"}}</td>
                     <td>{% if inscription.exploitation_ads %}Oui{% else %}Non{% endif %}</td>
@@ -132,7 +137,7 @@
                       {% if inscription.all_filled == 1 %}
                       <p class="fr-badge fr-badge--success">Complète</p>
                       {% elif inscription.all_filled == 0 %}
-                      <p class="fr-badge fr-badge--warning">Incomplète</p>
+                      <p class="fr-badge fr-badge--green-tilleul-verveine">Incomplète</p>
                       {% endif %}
                     </td>
                     <td>
@@ -140,7 +145,7 @@
                       <p class="fr-badge fr-badge--error">Expirée</p>
                       {% endif %}
                       {% if inscription.status != "inscrit" %}
-                      <p class="fr-badge fr-badge--info">En attente de réponse</p>
+                      <p class="fr-badge fr-badge--info">En cours d'attribution</p>
                       {% endif %}
                     </td>
                     <td>

@@ -7,7 +7,6 @@ from django.urls import reverse
 from mesads.app.models import (
     InscriptionListeAttente,
     WAITING_LIST_UNIQUE_ERROR_MESSAGE,
-    WAITING_LIST_UNIQUE_LICENCE_ERROR_MESSAGE,
     ADS,
     ADSUser,
 )
@@ -174,34 +173,6 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
         self.assertEqual(
             inscription.date_fin_validite,
             today + relativedelta(years=1),
-        )
-
-    def test_post_formulaire_creation_inscription_duplicate_licence_number(self):
-        inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
-        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
-        today = datetime.date.today()
-        response = self.client.post(
-            reverse(
-                "app.liste_attente_inscription",
-                kwargs={"manager_id": self.ads_manager.id},
-            ),
-            data={
-                "numero": "2",
-                "nom": "John",
-                "prenom": "Doe",
-                "numero_licence": inscription.numero_licence,
-                "numero_telephone": "0606060606",
-                "email": "john.doe@test.com",
-                "adresse": "10 Rue du test",
-                "date_depot_inscription": today,
-                "date_dernier_renouvellement": "",
-            },
-        )
-        self.assertEqual(InscriptionListeAttente.objects.count(), 1)
-        self.assertEqual(response.status_code, http.HTTPStatus.OK)
-        self.assertEqual(
-            response.context["form"].errors["numero_licence"],
-            [WAITING_LIST_UNIQUE_LICENCE_ERROR_MESSAGE],
         )
 
     def test_post_formulaire_creation_inscription_with_date_renouvellement(self):
@@ -707,8 +678,8 @@ class TestListeAttenteAttributionView(ClientTestCase):
     def test_get_liste_attente_attribution(self):
         today = datetime.date.today()
 
-        # Inscription expiré => apparait
-        inscription_1 = InscriptionListeAttenteFactory(
+        # Inscription expiré => apparait pas
+        InscriptionListeAttenteFactory(
             ads_manager=self.ads_manager,
             date_depot_inscription=today - relativedelta(years=3),
             date_dernier_renouvellement=None,
@@ -744,7 +715,7 @@ class TestListeAttenteAttributionView(ClientTestCase):
         )
         self.assertListEqual(
             list(response.context["inscriptions"]),
-            [inscription_1, inscription_3, inscription_2],
+            [inscription_3, inscription_2],
         )
 
 

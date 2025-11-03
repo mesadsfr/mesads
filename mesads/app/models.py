@@ -1108,12 +1108,6 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
                 name="unique_waiting_list_number",
                 violation_error_message=WAITING_LIST_UNIQUE_ERROR_MESSAGE,
             ),
-            models.UniqueConstraint(
-                fields=["numero_licence"],
-                condition=Q(deleted_at__isnull=True),
-                name="unique_numero_licence",
-                violation_error_message=WAITING_LIST_UNIQUE_ERROR_MESSAGE,
-            ),
         ]
 
     UP_TO_DATE_DAYS = 90
@@ -1302,3 +1296,10 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
         if self.exploitation_ads:
             return "priority"
         return "no priority"
+
+    def numero_licence_utilise(self):
+        return (
+            InscriptionListeAttente.objects.filter(numero_licence=self.numero_licence)
+            .exclude(pk=self.pk)
+            .exists()
+        )
