@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from dateutil.relativedelta import relativedelta
 from datetime import date, timedelta
 from mesads.app.models import InscriptionListeAttente, ADSManager
 from faker import Faker
@@ -31,7 +32,7 @@ class Command(BaseCommand):
                     date.today() - timedelta(days=400), date.today()
                 )
 
-                date_fin = date_depot + timedelta(days=365)
+                date_fin = date_depot + relativedelta(years=1)
                 inscriptions.append(
                     InscriptionListeAttente(
                         ads_manager=ads_manager,
@@ -48,7 +49,7 @@ class Command(BaseCommand):
                         date_dernier_renouvellement=date_depot,
                         date_fin_validite=date_fin,
                         commentaire="",
-                        exploitation_ads=i % 3 == 0,
+                        exploitation_ads=None,
                     )
                 )
 

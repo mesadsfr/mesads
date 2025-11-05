@@ -1207,6 +1207,8 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
             "années ; les demandes valides des autres ne sont attribuées qu'en "
             "l'absence de demandes prioritaires."
         ),
+        null=True,
+        blank=True,
     )
 
     ABSENCE_REPONSE = "absence_reponse"
@@ -1239,15 +1241,20 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
 
     INSCRIT = "inscrit"
     ATTENTE_REPONSE = "attente_reponse"
+    SAISIE_EXPLOITATION_ADS = "saisie_exploitation_ads"
     REPONSE_OK = "reponse_ok"
     STATUTS = [
         (INSCRIT, "Inscrit"),
         (ATTENTE_REPONSE, "En attente de réponse du demandeur"),
+        (
+            SAISIE_EXPLOITATION_ADS,
+            "En attente de l'information sur l'exploitation d'une ADS",
+        ),
         (REPONSE_OK, "Réponse positive du demandeur"),
     ]
 
     status = models.CharField(
-        max_length=20,
+        max_length=25,
         choices=STATUTS,
         blank=True,
         verbose_name="Statut de la demande",

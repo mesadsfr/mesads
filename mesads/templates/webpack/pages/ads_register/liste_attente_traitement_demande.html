@@ -20,7 +20,7 @@
           </a>
         </li>
         <li>
-          <a class="fr-breadcrumb__link" href="{% url 'app.liste_attente_attribution' manager_id=ads_manager.id %}">
+          <a class="fr-breadcrumb__link" href="{% url 'app.liste_attente_attribution' manager_id=ads_manager.id %}?no_modale=1">
             Attribution
           </a>
         </li>
@@ -60,7 +60,13 @@
                   <td>{{inscription.date_dernier_renouvellement|date:"d/m/Y"}}</td>
                   <td>{{inscription.date_fin_validite|date:"d/m/Y"}}</td>
                   <td>{{inscription.email}} {{inscription.numero_telephone}}</td>
-                  <td>{% if inscription.exploitation_ads %}Oui{% else %}Non{% endif %}</td>
+                  <td>
+                    {% if inscription.exploitation_ads %}
+                      Oui
+                    {% elif inscription.exploitation_ads is None == False %}
+                      Non
+                    {% endif %}
+                  </td>
                   <td>
                     <a
                       class="fr-btn fr-btn--secondary fr-icon-pencil-line"
@@ -84,8 +90,10 @@
         {% include "pages/ads_register/liste_attente_attribution_etape_1.html" %}
       {% elif inscription.status == "attente_reponse" %}
         {% include "pages/ads_register/liste_attente_attribution_etape_2.html" %}
-      {% elif inscription.status == "reponse_ok" %}
+      {% elif inscription.status == "saisie_exploitation_ads" %}
         {% include "pages/ads_register/liste_attente_attribution_etape_3.html" %}
+      {% elif inscription.status == "reponse_ok" %}
+        {% include "pages/ads_register/liste_attente_attribution_etape_4.html" %}
       {% endif %}
     </div>
   </div>
