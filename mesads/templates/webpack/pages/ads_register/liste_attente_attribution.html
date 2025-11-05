@@ -74,7 +74,13 @@
                     <td>{{inscription.nom}} {{inscription.prenom}}</td>
                     <td>{{inscription.numero_licence}}</td>
                     <td>{{inscription.date_depot_inscription|date:"d/m/Y"}}</td>
-                    <td>{% if inscription.exploitation_ads %}Oui{% else %}Non{% endif %}</td>
+                    <td>
+                      {% if inscription.exploitation_ads %}
+                        Oui
+                      {% elif inscription.exploitation_ads is None == False %}
+                        Non
+                      {% endif %}
+                    </td>
                     <td>
                       {% if inscription.all_filled == 1 %}
                       <p class="fr-badge fr-badge--success">Complète</p>
@@ -124,10 +130,10 @@
 
         {% if page_obj.has_previous %}
         <li>
-          <a class="fr-pagination__link fr-pagination__link--first" href="?page=1&search={{search}}" title="Première page"> Première page </a>
+          <a class="fr-pagination__link fr-pagination__link--first" href="?page=1&no_modale=1" title="Première page"> Première page </a>
         </li>
         <li>
-          <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="?page={{page_obj.previous_page_number}}&search={{search}}" title="Page précédente"> Page précédente </a>
+          <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="?page={{page_obj.previous_page_number}}&no_modale=1" title="Page précédente"> Page précédente </a>
         </li>
         {% endif %}
         <li>
@@ -136,10 +142,10 @@
 
         {% if page_obj.has_next %}
         <li>
-          <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="?page={{page_obj.next_page_number}}&search={{search}}" title="Page suivante"> Page suivante </a>
+          <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="?page={{page_obj.next_page_number}}&no_modale=1" title="Page suivante"> Page suivante </a>
         </li>
         <li>
-          <a class="fr-pagination__link fr-pagination__link--last" href="?page={{ page_obj.paginator.num_pages }}&search={{search}}" title="Dernière page"> Dernière page </a>
+          <a class="fr-pagination__link fr-pagination__link--last" href="?page={{ page_obj.paginator.num_pages }}&no_modale=1" title="Dernière page"> Dernière page </a>
         </li>
 
         {% endif %}
@@ -148,6 +154,7 @@
     </nav>
   </div>
 
+  {% if not no_modale %}
   <button aria-controls="modal-0" data-fr-opened="true" type="button" class="fr-btn fr-hidden">Ouvrir la modale</button>
   <dialog id="modal-0" class="fr-modal" aria-labelledby="modal-0-title" data-fr-concealing-backdrop="true">
     <div class="fr-container fr-container--fluid fr-container-md">
@@ -180,4 +187,5 @@
       </div>
     </div>
   </dialog>
+  {% endif %}
 {% endblock body-content %}

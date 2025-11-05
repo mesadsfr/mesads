@@ -281,7 +281,6 @@ class InscriptionListeAttenteForm(forms.ModelForm):
             "numero_telephone",
             "email",
             "adresse",
-            "exploitation_ads",
             "date_depot_inscription",
             "date_dernier_renouvellement",
             "commentaire",

@@ -1,0 +1,24 @@
+<div class="fr-stepper">
+  <h2 class="fr-stepper__title"> Attribution de l'ADS<span class="fr-stepper__state">Étape 4 sur 4</span>
+  </h2>
+  <div class="fr-stepper__steps" data-fr-current-step="4" data-fr-steps="4"></div>
+  <p class="fr-stepper__details"><span class="fr-text--bold">Étape suivante :</span> Prise en compte de la réponse</p>
+</div>
+
+<div>
+  {% if inscription.exploitation_ads == False %}
+    <p>
+      Bien que le demandeur n'a pas exploité d'ADS, aucun autre candidat n'en a exploité non plus, vous pouvez donc lui attribuer l'ADS si c'est bien l'inscription la plus ancienne.
+    </p>
+  {% endif %}
+  <p>
+    Vous allez maintenant pouvoir attribuer une ADS au demandeur.
+  </p>
+
+  <a
+    class="fr-btn mt-2"
+    href="{% url 'app.ads.create' manager_id=ads_manager.id %}?inscription_id={{inscription.id}}"
+  >
+    Attribuer une ADS
+  </a>
+</div>

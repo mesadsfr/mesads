@@ -372,9 +372,12 @@ class ADSCreateView(ADSView, CreateView):
 
         if self.inscription:
             context["inscription_id"] = self.inscription.id
-            context["return_url"] = reverse(
-                "app.liste_attente_attribution",
-                kwargs={"manager_id": self.kwargs["manager_id"]},
+            context["return_url"] = (
+                reverse(
+                    "app.liste_attente_attribution",
+                    kwargs={"manager_id": self.kwargs["manager_id"]},
+                )
+                + "?no_modale=1"
             )
 
         return context
