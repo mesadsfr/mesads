@@ -781,6 +781,9 @@ class TestTraitementDemandeView(ClientTestCase):
         self.assertTemplateNotUsed(
             "pages/ads_register/liste_attente_attribution_etape_3.html"
         )
+        self.assertTemplateNotUsed(
+            "pages/ads_register/liste_attente_attribution_etape_4.html"
+        )
         self.assertIsInstance(
             response.context["form"], ContactInscriptionListeAttenteForm
         )
@@ -897,6 +900,9 @@ class TestTraitementDemandeView(ClientTestCase):
         )
         self.assertTemplateNotUsed(
             "pages/ads_register/liste_attente_attribution_etape_3.html"
+        )
+        self.assertTemplateNotUsed(
+            "pages/ads_register/liste_attente_attribution_etape_4.html"
         )
         self.assertIsInstance(
             response.context["form"], UpdateDelaiInscriptionListeAttenteForm
@@ -1021,9 +1027,250 @@ class TestTraitementDemandeView(ClientTestCase):
             fetch_redirect_response=True,
         )
         inscription.refresh_from_db()
-        self.assertEqual(inscription.status, InscriptionListeAttente.REPONSE_OK)
+        self.assertEqual(
+            inscription.status, InscriptionListeAttente.SAISIE_EXPLOITATION_ADS
+        )
 
     def test_get_traitement_demande_view_etape_3(self):
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=True,
+            date_contact=today,
+            delai_reponse=15,
+            status=InscriptionListeAttente.SAISIE_EXPLOITATION_ADS,
+        )
+        response = self.client.get(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            )
+        )
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertTemplateUsed(
+            "pages/ads_register/liste_attente_traitement_demande.html"
+        )
+        self.assertTemplateNotUsed(
+            "pages/ads_register/liste_attente_attribution_etape_1.html"
+        )
+        self.assertTemplateNotUsed(
+            "pages/ads_register/liste_attente_attribution_etape_2.html"
+        )
+        self.assertTemplateUsed(
+            "pages/ads_register/liste_attente_attribution_etape_3.html"
+        )
+        self.assertTemplateNotUsed(
+            "pages/ads_register/liste_attente_attribution_etape_4.html"
+        )
+        self.assertEqual(response.context["inscription"], inscription)
+
+    def test_post_traitement_demande_view_etape_3_oui(self):
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=None,
+            date_contact=today,
+            delai_reponse=15,
+            status=InscriptionListeAttente.SAISIE_EXPLOITATION_ADS,
+        )
+        data = {
+            "action": "exploitation_ads_oui",
+        }
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            data,
+        )
+        self.assertRedirects(
+            response,
+            expected_url=reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            status_code=http.HTTPStatus.FOUND,
+            target_status_code=http.HTTPStatus.OK,
+            fetch_redirect_response=True,
+        )
+        inscription.refresh_from_db()
+        self.assertEqual(inscription.status, InscriptionListeAttente.REPONSE_OK)
+        self.assertTrue(inscription.exploitation_ads)
+
+    def test_post_traitement_demande_view_etape_4_non_cas_1(self):
+        """
+        Test pour le cas ou l'on signale que l'inscrit n'a pas exploité d'ADS
+        Et que d'autres inscriptions existent avec une exploitation d'ads connue ou encore non renseigné.
+        Dans ce cas, on remet l'inscription a l'état "Inscrit", et on redirige vers la liste d'attribution.
+        """
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=None,
+            date_contact=today,
+            delai_reponse=15,
+            status=InscriptionListeAttente.SAISIE_EXPLOITATION_ADS,
+        )
+        InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today,
+            date_dernier_renouvellement=today,
+            exploitation_ads=None,
+            status=InscriptionListeAttente.INSCRIT,
+        )
+
+        data = {
+            "action": "exploitation_ads_non",
+        }
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            data,
+        )
+        self.assertRedirects(
+            response,
+            expected_url=reverse(
+                "app.liste_attente_attribution",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                },
+            )
+            + "?no_modale=1",
+            status_code=http.HTTPStatus.FOUND,
+            target_status_code=http.HTTPStatus.OK,
+            fetch_redirect_response=True,
+        )
+        inscription.refresh_from_db()
+        self.assertEqual(inscription.status, InscriptionListeAttente.INSCRIT)
+        self.assertFalse(inscription.exploitation_ads)
+
+    def test_post_traitement_demande_view_etape_4_non_cas_2(self):
+        """
+        Test pour le cas ou l'on signale que l'inscrit n'a pas exploité d'ADS
+        Aucune des inscriptions n'a exploité une ADS, mais une inscription plus ancienne existe.
+        Dans ce cas, on remet l'inscription a l'état "Inscrit", et on redirige vers la liste d'attribution.
+        """
+        today = datetime.date.today()
+        InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=2),
+            date_dernier_renouvellement=today,
+            exploitation_ads=False,
+            status=InscriptionListeAttente.INSCRIT,
+        )
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=None,
+            date_contact=today,
+            delai_reponse=15,
+            status=InscriptionListeAttente.SAISIE_EXPLOITATION_ADS,
+        )
+        data = {
+            "action": "exploitation_ads_non",
+        }
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            data,
+        )
+        self.assertRedirects(
+            response,
+            expected_url=reverse(
+                "app.liste_attente_attribution",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                },
+            )
+            + "?no_modale=1",
+            status_code=http.HTTPStatus.FOUND,
+            target_status_code=http.HTTPStatus.OK,
+            fetch_redirect_response=True,
+        )
+        inscription.refresh_from_db()
+        self.assertEqual(inscription.status, InscriptionListeAttente.INSCRIT)
+        self.assertFalse(inscription.exploitation_ads)
+
+    def test_post_traitement_demande_view_etape_4_non_cas_3(self):
+        """
+        Test pour le cas ou l'on signale que l'inscrit n'a pas exploité d'ADS
+        Aucune des inscriptions n'a exploité une ADS, et il n'y a pas d'inscription plus ancienne.
+        Dans ce cas, on peut attribuer l'ADS meme si pas d'exploitation.
+        """
+        today = datetime.date.today()
+        InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(months=2),
+            date_dernier_renouvellement=today,
+            exploitation_ads=False,
+            status=InscriptionListeAttente.INSCRIT,
+        )
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            exploitation_ads=None,
+            date_contact=today,
+            delai_reponse=15,
+            status=InscriptionListeAttente.SAISIE_EXPLOITATION_ADS,
+        )
+        data = {
+            "action": "exploitation_ads_non",
+        }
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            data,
+        )
+        self.assertRedirects(
+            response,
+            expected_url=reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            status_code=http.HTTPStatus.FOUND,
+            target_status_code=http.HTTPStatus.OK,
+            fetch_redirect_response=True,
+        )
+        inscription.refresh_from_db()
+        self.assertEqual(inscription.status, InscriptionListeAttente.REPONSE_OK)
+        self.assertFalse(inscription.exploitation_ads)
+
+    def test_get_traitement_demande_view_etape_4(self):
         today = datetime.date.today()
         inscription = InscriptionListeAttenteFactory(
             ads_manager=self.ads_manager,
@@ -1053,8 +1300,11 @@ class TestTraitementDemandeView(ClientTestCase):
         self.assertTemplateNotUsed(
             "pages/ads_register/liste_attente_attribution_etape_2.html"
         )
-        self.assertTemplateUsed(
+        self.assertTemplateNotUsed(
             "pages/ads_register/liste_attente_attribution_etape_3.html"
+        )
+        self.assertTemplateUsed(
+            "pages/ads_register/liste_attente_attribution_etape_4.html"
         )
         self.assertEqual(response.context["inscription"], inscription)
 

@@ -63,8 +63,6 @@
 
       {% include "form_fields/string.html" with field=form.adresse field_errors=form.errors.adresse required=form.fields.adresse.required %}
 
-      {% include "form_fields/bool.html" with field=form.exploitation_ads field_errors=form.errors.exploitation_ads required=form.fields.exploitation_ads.required %}
-
       <div class="fr-input-group{% if form.errors.date_depot_inscription %} fr-input-group--error{% endif %}">
         <label class="fr-label" for="{{ form.date_depot_inscription.id_for_label }}">
           {{ form.date_depot_inscription.label }}
