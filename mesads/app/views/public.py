@@ -137,6 +137,8 @@ class HomepageView(TemplateView):
                 context["title"] = "MesADS - Accueil propriétaire de taxis relais"
                 context["proprietaire_vehicule_relais"] = True
 
+            context["show_notation"] = self.request.user.show_notation()
+
         return context
 
 

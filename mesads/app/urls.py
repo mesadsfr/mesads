@@ -143,6 +143,7 @@ url_commons = [
         views.ADSManagerAutocompleteView.as_view(),
         name="app.autocomplete.ads-manager",
     ),
+    path("note-service", views.NotationView.as_view(), name="app.note-service"),
 ]
 
 

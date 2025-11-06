@@ -1,3 +1,4 @@
+from dateutil.relativedelta import relativedelta
 from django.apps import apps
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
@@ -7,6 +8,7 @@ from django.contrib.auth.signals import (
     user_login_failed,
 )
 from django.core.mail import send_mail
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.dispatch import receiver
 from django.utils import timezone
@@ -133,6 +135,29 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Send an email to this user."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
+    def show_notation(self) -> bool:
+        note_utilisateur = NoteUtilisateur.objects.filter(user=self).first()
+        today = timezone.now().date()
+        one_month_ago = today - relativedelta(months=1)
+        six_months_ago = today - relativedelta(months=6)
+        if note_utilisateur:
+            if note_utilisateur.derniere_note is None:
+                if note_utilisateur.dernier_affichage is None:
+                    return True
+                else:
+                    return note_utilisateur.dernier_affichage < one_month_ago
+            else:
+                if note_utilisateur.derniere_note < six_months_ago:
+                    return note_utilisateur.dernier_affichage < one_month_ago
+                else:
+                    return False
+
+        else:
+            if UserAuditEntry.objects.filter(user=self, action="login").count() > 1:
+                return True
+            else:
+                return False
+
 
 class UserAuditEntry(models.Model):
     class Meta:
@@ -146,6 +171,35 @@ class UserAuditEntry(models.Model):
     )
     ip = models.GenericIPAddressField(null=True)
     body = models.TextField(null=False, blank=True)
+
+
+class NoteUtilisateur(models.Model):
+    MINIMUM_NOTE = 1
+    MAXIMUM_NOTE = 5
+
+    class Meta:
+        verbose_name = "Note de l'utilisateur"
+        verbose_name_plural = "Notes des utilisateurs"
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="note")
+    dernier_affichage = models.DateField(
+        verbose_name="Date du dernier affichage du composant de notation", null=True
+    )
+    derniere_note = models.DateField(
+        verbose_name="Date de la dernière notation", null=True
+    )
+
+    note_facilite = models.PositiveSmallIntegerField(
+        verbose_name="Note de facilité d'usage (sur 5)",
+        null=True,
+        validators=[MaxValueValidator(MINIMUM_NOTE), MinValueValidator(MAXIMUM_NOTE)],
+    )
+
+    note_qualite = models.PositiveSmallIntegerField(
+        verbose_name="Note de qualité de service (sur 5)",
+        null=True,
+        validators=[MaxValueValidator(MINIMUM_NOTE), MinValueValidator(MAXIMUM_NOTE)],
+    )
 
 
 def get_client_ip(request):

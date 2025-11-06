@@ -95,6 +95,9 @@ urls:
     title: "Export csv gestionnaires"
     description: "Page d'export csv de gestionnaires"
 
+  app.note-service:
+    missing: true
+
   ###
   ### Registre ADS
   ###
