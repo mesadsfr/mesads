@@ -88,7 +88,6 @@
                       <div>{{inscription.email}}</div>
                       <div>{{inscription.numero_telephone}}</div>
                     </td>
-                    <td>{% if inscription.exploitation_ads %}Oui{% else %}Non{% endif %}</td>
                     <td>
                       {{inscription.get_motif_archivage_display|default:"—"}}
                     </td>

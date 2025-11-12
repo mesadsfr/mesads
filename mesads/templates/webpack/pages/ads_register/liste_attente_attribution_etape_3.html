@@ -1,32 +1,19 @@
 <div class="fr-stepper">
-  <h2 class="fr-stepper__title">Informations sur l'exploitation d'ADS<span class="fr-stepper__state">Étape 3 sur 4</span>
+  <h2 class="fr-stepper__title"> Attribution de l'ADS<span class="fr-stepper__state">Étape 3 sur 3</span>
   </h2>
-  <div class="fr-stepper__steps" data-fr-current-step="3" data-fr-steps="4"></div>
-  <p class="fr-stepper__details"><span class="fr-text--bold">Étape suivante :</span> Attribution de l'ADS</p>
+  <div class="fr-stepper__steps" data-fr-current-step="3" data-fr-steps="3"></div>
+  <p class="fr-stepper__details"><span class="fr-text--bold">Étape suivante :</span></p>
 </div>
 
 <div>
   <p>
-    Est ce que le demandeur a exploité une ADS pendant au moins 2 ans au cours des cinq dernières années?
-    <ul>
-      <li>
-        Si non, alors il n'est pas prioritaire dans l'attribution d'une ADS.
-      </li>
-      <li>
-        Si oui, alors il est prioritaire dans l'attribution d'une ADS.
-      </li>
-    </ul>
+    Vous allez maintenant pouvoir attribuer une ADS au demandeur.
   </p>
 
-
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="fr-input-group">
-      <button type="submit" name="action" value="exploitation_ads_oui" class="fr-btn">Oui</button>
-      <button type="submit" name="action" value="exploitation_ads_non" class="fr-btn fr-btn--secondary">Non</button>
-    </div>
-  </form>
-
-
-
+  <a
+    class="fr-btn mt-2"
+    href="{% url 'app.ads.create' manager_id=ads_manager.id %}?inscription_id={{inscription.id}}"
+  >
+    Attribuer une ADS
+  </a>
 </div>

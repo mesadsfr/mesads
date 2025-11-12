@@ -1,8 +1,8 @@
 <div class="fr-stepper">
-  <h2 class="fr-stepper__title">Prise en compte de la réponse <span class="fr-stepper__state">Étape 2 sur 4</span>
+  <h2 class="fr-stepper__title">Prise en compte de la réponse <span class="fr-stepper__state">Étape 2 sur 3</span>
   </h2>
-  <div class="fr-stepper__steps" data-fr-current-step="2" data-fr-steps="4"></div>
-  <p class="fr-stepper__details"><span class="fr-text--bold">Étape suivante :</span> Informations sur l'exploitation d'ADS</p>
+  <div class="fr-stepper__steps" data-fr-current-step="2" data-fr-steps="3"></div>
+  <p class="fr-stepper__details"><span class="fr-text--bold">Étape suivante :</span> Attribution de l'ADS</p>
 </div>
 
 <div>
@@ -25,6 +25,25 @@
     </form>
   </div>
 
+  <hr class="fr-hr">
+
+  <div class="fr-notice fr-notice--info">
+    <div class="fr-container">
+      <div class="fr-notice__body">
+        <p>
+          <span class="fr-notice__title"></span>
+          <span class="fr-notice__desc">
+            Conformément aux dispositions de l'article L3121-5 du Code des transports, la délivrance est effectuée en priorité aux titulaires qui 
+            peuvent justifier de l'exercice de l'activité de conducteur de taxi pendant une période minimale de deux ans au cours des cinq ans 
+            précédant la date de délivrance".  
+            Il vous appartient donc de vérifier au moment de l'attribution de l'ADS si le candidat peut justifier d'une telle ancienneté d'exercice. 
+            Si ce n'est pas le cas, il convient de s'assurer qu'aucune autre demande ne remplit ce critère.
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+
 
   <div class="flex gap-3">
     <a
@@ -36,6 +55,7 @@
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <div class="fr-input-group">
+        <button type="submit" name="action" value="reset_demande" class="fr-btn fr-btn--secondary">Replacer dans la liste d'attente</button>
         <button type="submit" name="action" value="validation_reponse" class="fr-btn">Valider une réponse positive du candidat</button>
       </div>
     </form>
