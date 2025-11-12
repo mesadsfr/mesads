@@ -1197,3 +1197,109 @@ class TestCreationADSDepuisListeAttente(ClientTestCase):
         self.assertEqual(
             inscription.motif_archivage, InscriptionListeAttente.ADS_ATTRIBUEE
         )
+
+
+class TestListesAttentePubliquesView(ClientTestCase):
+    def test_get_listes_attente_publique_privee(self):
+        response = self.client.get(reverse("app.listes_attentes"))
+
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertTemplateUsed("pages/ads_register/listes_attentes_publiques.html")
+        self.assertNotIn(self.ads_manager, response.context["ads_managers"])
+
+    def test_get_listes_attente_publique(self):
+        self.ads_manager.liste_attente_publique = True
+        self.ads_manager.save()
+        response = self.client.get(reverse("app.listes_attentes"))
+
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertTemplateUsed("pages/ads_register/listes_attentes_publiques.html")
+        self.assertIn(self.ads_manager, response.context["ads_managers"])
+
+    def test_get_listes_attente_publique_search(self):
+        self.ads_manager.liste_attente_publique = True
+        self.ads_manager.save()
+        response = self.client.get(
+            reverse("app.listes_attentes")
+            + f"?search={self.ads_manager.content_object.libelle}"
+        )
+
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertTemplateUsed("pages/ads_register/listes_attentes_publiques.html")
+        self.assertIn(self.ads_manager, response.context["ads_managers"])
+
+
+class TestListeAttentePubliqueView(ClientTestCase):
+    def test_get_liste_attente_privee(self):
+        response = self.client.get(
+            reverse(
+                "app.liste_attente_publique", kwargs={"manager_id": self.ads_manager.id}
+            )
+        )
+
+        self.assertEqual(response.status_code, http.HTTPStatus.NOT_FOUND)
+
+    def test_get_liste_attente_publique(self):
+        self.ads_manager.liste_attente_publique = True
+        self.ads_manager.save()
+        response = self.client.get(
+            reverse(
+                "app.liste_attente_publique", kwargs={"manager_id": self.ads_manager.id}
+            )
+        )
+
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertTemplateUsed("pages/ads_register/liste_attente_publique.html")
+
+
+class ChangeListeAttentePublicView(ClientTestCase):
+    def test_change_liste_publique(self):
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_make_public",
+                kwargs={"manager_id": self.ads_manager.id},
+            ),
+            data={"liste_attente_publique": ["0", "1"]},
+        )
+
+        self.assertRedirects(
+            response,
+            expected_url=reverse(
+                "app.liste_attente",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                },
+            ),
+            status_code=http.HTTPStatus.FOUND,
+            target_status_code=http.HTTPStatus.OK,
+            fetch_redirect_response=True,
+        )
+        self.ads_manager.refresh_from_db()
+        self.assertTrue(self.ads_manager.liste_attente_publique)
+
+    def test_change_liste_privee(self):
+        self.ads_manager.liste_attente_publique = True
+        self.ads_manager.save()
+
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_make_public",
+                kwargs={"manager_id": self.ads_manager.id},
+            ),
+            data={"liste_attente_publique": "0"},
+        )
+
+        self.assertRedirects(
+            response,
+            expected_url=reverse(
+                "app.liste_attente",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                },
+            ),
+            status_code=http.HTTPStatus.FOUND,
+            target_status_code=http.HTTPStatus.OK,
+            fetch_redirect_response=True,
+        )
+        self.ads_manager.refresh_from_db()
+        self.assertFalse(self.ads_manager.liste_attente_publique)
