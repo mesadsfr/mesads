@@ -62,7 +62,7 @@ class StatistiquesView(TemplateView):
             return 0, 0
 
         else:
-            return total_notes / count, count
+            return round(total_notes / count, 2), count
 
     def get_note_moyenne_facilite(self) -> tuple[float, int]:
         notes = NoteUtilisateur.objects.filter(note_facilite__isnull=False)
@@ -72,7 +72,7 @@ class StatistiquesView(TemplateView):
             return 0, 0
 
         else:
-            return total_notes / count, count
+            return round(total_notes / count, 2), count
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
