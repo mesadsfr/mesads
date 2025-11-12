@@ -81,6 +81,13 @@ class ListeAttenteView(ListView):
         context = super().get_context_data(**kwargs)
         context["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
         context["search"] = self.request.GET.get("search", "")
+        context["attribution_allowed"] = (
+            InscriptionListeAttente.objects.filter(
+                ads_manager__id=self.kwargs["manager_id"],
+                date_fin_validite__lt=datetime.date.today(),
+            ).count()
+            == 0
+        )
         return context
 
 
@@ -118,7 +125,25 @@ class DemandeArchiveesView(ListView):
         return context
 
 
-class AttributionListeAttenteView(ListView):
+class AttributionRedirectMixin:
+
+    def dispatch(self, request, *args, **kwargs):
+        if (
+            InscriptionListeAttente.objects.filter(
+                ads_manager__id=kwargs["manager_id"],
+                date_fin_validite__lt=datetime.date.today(),
+            ).count()
+            != 0
+        ):
+            return HttpResponseRedirect(
+                redirect_to=reverse(
+                    "app.liste_attente", kwargs={"manager_id": kwargs["manager_id"]}
+                )
+            )
+        return super().dispatch(request, *args, **kwargs)
+
+
+class AttributionListeAttenteView(AttributionRedirectMixin, ListView):
     template_name = "pages/ads_register/liste_attente_attribution.html"
     model = InscriptionListeAttente
     paginate_by = 50
@@ -154,20 +179,9 @@ class AttributionListeAttenteView(ListView):
                     default=0,
                     output_field=IntegerField(),
                 ),
-                bucket=Case(
-                    When(exploitation_ads=False, then=1),
-                    default=0,
-                    output_field=IntegerField(),
-                ),
-                tie=Case(
-                    When(exploitation_ads=True, then=0),
-                    When(exploitation_ads__isnull=True, then=1),
-                    default=0,
-                    output_field=IntegerField(),
-                ),
             )
             .exclude(is_valid=0)
-            .order_by("bucket", "date_depot_inscription", "tie")
+            .order_by("date_depot_inscription")
         )
         return qs
 
@@ -194,7 +208,9 @@ class InscriptionTraitementListeAttenteView(TemplateView):
         context["inscription"] = inscription
 
         if inscription.status == InscriptionListeAttente.INSCRIT:
-            context["form"] = ContactInscriptionListeAttenteForm(instance=inscription)
+            context["form"] = ContactInscriptionListeAttenteForm(
+                initial={"date_contact": timezone.localdate()}, instance=inscription
+            )
 
         if inscription.status == InscriptionListeAttente.ATTENTE_REPONSE:
             context["form"] = UpdateDelaiInscriptionListeAttenteForm(
@@ -246,69 +262,23 @@ class InscriptionTraitementListeAttenteView(TemplateView):
             )
 
         elif action == "validation_reponse":
-            inscription.status = InscriptionListeAttente.SAISIE_EXPLOITATION_ADS
-            inscription.save()
-            return HttpResponseRedirect(
-                redirect_to=self.get_post_redirect_url(inscription)
-            )
-
-        elif action == "exploitation_ads_oui":
-            inscription.exploitation_ads = True
             inscription.status = InscriptionListeAttente.REPONSE_OK
             inscription.save()
             return HttpResponseRedirect(
                 redirect_to=self.get_post_redirect_url(inscription)
             )
-        elif action == "exploitation_ads_non":
-            inscription.exploitation_ads = False
+
+        elif action == "reset_demande":
+            inscription.status = InscriptionListeAttente.INSCRIT
+            inscription.delai_reponse = None
+            inscription.date_contact = None
             inscription.save()
-            if (
-                InscriptionListeAttente.objects.filter(
-                    ads_manager=inscription.ads_manager
+            return HttpResponseRedirect(
+                redirect_to=reverse(
+                    "app.liste_attente",
+                    kwargs={"manager_id": inscription.ads_manager.id},
                 )
-                .exclude(exploitation_ads=False)
-                .exists()
-            ):
-                inscription.status = InscriptionListeAttente.INSCRIT
-                inscription.save()
-                messages.info(
-                    self.request,
-                    "Comme vous avez signalé que l'inscrit n'a pas exploité d'ADS, et que d'autres demandes risquent d'être prioritaires, la demande a été remise dans la liste d'attente.",
-                )
-                return HttpResponseRedirect(
-                    redirect_to=reverse(
-                        "app.liste_attente_attribution",
-                        kwargs={"manager_id": inscription.ads_manager.id},
-                    )
-                    + "?no_modale=1"
-                )
-            elif (
-                InscriptionListeAttente.objects.filter(
-                    ads_manager=inscription.ads_manager, exploitation_ads=False
-                )
-                .order_by("date_depot_inscription")
-                .first()
-                == inscription
-            ):
-                inscription.status = InscriptionListeAttente.REPONSE_OK
-                inscription.save()
-                return HttpResponseRedirect(
-                    redirect_to=self.get_post_redirect_url(inscription)
-                )
-            else:
-                inscription.status = InscriptionListeAttente.INSCRIT
-                inscription.save()
-                messages.info(
-                    self.request,
-                    "Comme vous avez signalé que l'inscrit n'a pas exploité d'ADS, et que d'autres demandes risquent d'être prioritaires, la demande a été remise dans la liste d'attente.",
-                )
-                return HttpResponseRedirect(
-                    redirect_to=reverse(
-                        "app.liste_attente_attribution",
-                        kwargs={"manager_id": inscription.ads_manager.id},
-                    )
-                    + "?no_modale=1"
-                )
+            )
 
         return self.render_to_response(self.get_context_data(**kwargs))
 
@@ -496,7 +466,6 @@ class ExportCSVInscriptionListeAttenteView(View):
         "date_dernier_renouvellement",
         "date_fin_validite",
         "commentaire",
-        "exploitation_ads",
     ]
 
     headers = [

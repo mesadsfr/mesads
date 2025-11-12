@@ -49,7 +49,6 @@ class Command(BaseCommand):
                         date_dernier_renouvellement=date_depot,
                         date_fin_validite=date_fin,
                         commentaire="",
-                        exploitation_ads=None,
                     )
                 )
 

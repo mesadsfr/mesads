@@ -1199,18 +1199,6 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
         ),
     )
 
-    exploitation_ads = models.BooleanField(
-        verbose_name="Sur les 5 dernières années, le conducteur a-t'il exploité une ADS pendant au moins 2 ans ?",
-        help_text=(
-            "Sont prioritaires pour une nouvelle ADS les conducteurs ayant "
-            "exploité une ADS au moins deux ans au cours des cinq dernières "
-            "années ; les demandes valides des autres ne sont attribuées qu'en "
-            "l'absence de demandes prioritaires."
-        ),
-        null=True,
-        blank=True,
-    )
-
     ABSENCE_REPONSE = "absence_reponse"
     INFORMATIONS_ERR = "informations_erronees"
     DEMANDE_NON_RENOUVELLEE = "demande_non_renouvellee"
@@ -1241,15 +1229,10 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
 
     INSCRIT = "inscrit"
     ATTENTE_REPONSE = "attente_reponse"
-    SAISIE_EXPLOITATION_ADS = "saisie_exploitation_ads"
     REPONSE_OK = "reponse_ok"
     STATUTS = [
         (INSCRIT, "Inscrit"),
         (ATTENTE_REPONSE, "En attente de réponse du demandeur"),
-        (
-            SAISIE_EXPLOITATION_ADS,
-            "En attente de l'information sur l'exploitation d'une ADS",
-        ),
         (REPONSE_OK, "Réponse positive du demandeur"),
     ]
 
@@ -1300,8 +1283,6 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
             return "not-valid-anymore"
         if not self.a_jour():
             return "unknown"
-        if self.exploitation_ads:
-            return "priority"
         return "no priority"
 
     def numero_licence_utilise(self):

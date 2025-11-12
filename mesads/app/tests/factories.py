@@ -67,8 +67,6 @@ class InscriptionListeAttenteFactory(factory.django.DjangoModelFactory):
     numero_licence = factory.Faker("bothify", text="LIC-########")
     numero_telephone = factory.Faker("phone_number", locale="fr_FR")
 
-    exploitation_ads = factory.Faker("pybool")
-
     date_depot_inscription = factory.LazyFunction(
         lambda: timezone.now().date() - timedelta(days=random.randint(30, 3 * 365))
     )

@@ -57,11 +57,6 @@
                   <th> Nom et prénom </th>
                   <th> N° carte pro </th>
                   <th> Date de dépôt </th>
-                  <th>
-                    Exploitation ADS
-                    <button aria-describedby="tooltip" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
-                    <span class="fr-tooltip fr-placement" id="tooltip" role="tooltip">Indique “Oui” si au moins une ADS a été exploitée pendant au moins deux ans au cours des cinq dernières années. Sinon, indique “Non”.</span>
-                  </th>
                   <th>Etat</th>
                   <th>Statut</th>
                   <th>Traiter ou modifier</th>
@@ -74,13 +69,6 @@
                     <td>{{inscription.nom}} {{inscription.prenom}}</td>
                     <td>{{inscription.numero_licence}}</td>
                     <td>{{inscription.date_depot_inscription|date:"d/m/Y"}}</td>
-                    <td>
-                      {% if inscription.exploitation_ads %}
-                        Oui
-                      {% elif inscription.exploitation_ads is None == False %}
-                        Non
-                      {% endif %}
-                    </td>
                     <td>
                       {% if inscription.all_filled == 1 %}
                       <p class="fr-badge fr-badge--success">Complète</p>
