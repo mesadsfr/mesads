@@ -25,19 +25,36 @@
     <h2>{{ads_manager.content_object.display_text|capfirst}}</h2>
 
     <div class="flex flex-col md:flex-row gap-3">
-      <div class="fr-btns-group">
+      <div class="fr-btns-group md:w-1/2">
         <a
           class="fr-btn fr-btn--primary w-full"
           href="{% url 'app.liste_attente_inscription' manager_id=ads_manager.id %}"
         >
           Nouvelle demande d'inscription
         </a>
+        {% if attribution_allowed %}
         <a
           class="fr-btn fr-btn--primary mt-1 w-full"
           href="{% url 'app.liste_attente_attribution' manager_id=ads_manager.id %}"
+
         >
           Attribuer une ADS
         </a>
+        {% else %}
+          <button type="button" disabled class="fr-btn">Attribuer une ADS</button>
+          {% if attribution_allowed == False %}
+            <div class="mx-2 mb-3 fr-notice fr-notice--alert">
+              <div class="fr-container">
+                <div class="fr-notice__body">
+                  <p>
+                    <span class="fr-notice__title"></span>
+                    Vous devez archiver toutes les demandes expirées avant de pouvoir attribuer une ADS
+                  </p>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endif %}
         <a
           class="fr-btn fr-btn--secondary mt-1 w-full"
           href="{% url 'app.liste_attente_archives' manager_id=ads_manager.id %}"
@@ -52,13 +69,13 @@
             <div class="fr-notice__body">
               <p>
                 <span class="fr-notice__title"></span>
-                Une fois inscrits, les chauffeurs de taxi doivent renouveler chaque année à la date anniversaire leur inscription par 
-                tout moyen permettant d'en accuser réception afin d’être maintenu sur la liste d’attente (cf. R.3121-13 du code des transports) 
+                Une fois inscrits, les chauffeurs de taxi doivent renouveler chaque année leur inscription à la date anniversaire, 
+                par tout moyen permettant d'en accuser réception afin d’être maintenu sur la liste d’attente (cf. R.3121-13 du code des transports) 
               </p>
             </div>
           </div>
         </div>
-        <div class="fr-notice fr-notice--info">
+        <div class="mt-2 fr-notice fr-notice--info">
           <div class="fr-container">
             <div class="fr-notice__body">
               <p>
