@@ -1,5 +1,5 @@
-from .forms import FrenchAdministrationForm
-from .unittest import ClientTestCase
+from ..forms import FrenchAdministrationForm
+from ..unittest import ClientTestCase
 
 
 class TestFrenchAdministrationForm(ClientTestCase):

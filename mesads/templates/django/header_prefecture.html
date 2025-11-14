@@ -9,7 +9,7 @@
     {% url 'app.homepage' as ads_manager_index_url %}
     <a class="fr-nav__link"
         href="{% url 'app.ads-manager-admin.administrations' prefecture_id=ads_manager_administrator.prefecture.id  %}"
-    >Registre des ADS</a>
+    >Administrations en gestion</a>
   </li>
   <li class="fr-nav__item">
     {% url 'app.reglementation' as reglementation_url %}
@@ -17,6 +17,13 @@
     <a class="fr-nav__link"
         href="{{ reglementation_url }}"
         {% if is_reglementation %}aria-current="page"{% endif %}>Réglementation</a>
+  </li>
+  <li class="fr-nav__item">
+    {% url 'app.listes_attentes' as listes_attentes_url %}
+    {% is_subpath request.path listes_attentes_url 1 as is_listes_attentes %}
+    <a class="fr-nav__link"
+        href="{{ listes_attentes_url }}"
+        {% if is_listes_attentes %}aria-current="page"{% endif %}>Listes d'attente</a>
   </li>
   <li class="fr-nav__item">
     <button

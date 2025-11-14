@@ -40,7 +40,7 @@
                             {% if requete.complete_updates_count %}
                               <p class="fr-text--xs">(dont {{ requete.complete_updates_count }} avec toutes les informations)</p>
                             {% elif requete.ads_count %}
-                              <p class="fr-text--xs text-red-500">(à vérifier)</p>
+                              <p class="fr-text--xs text-red-500">(données à vérifier)</p>
                             {% endif %}
                           </td>
                           <td>
@@ -49,8 +49,18 @@
                             {% elif requete.accepted is False %}
                               🚫 Demande refusée
                             {% elif requete.accepted is True %}
-                              <a class="fr-btn fr-btn--primary"
-                                href="{% url 'app.ads-manager.detail' manager_id=requete.ads_manager.id %}">Gérez les ADS</a>
+                              <a
+                                class="fr-btn fr-btn--primary"
+                                href="{% url 'app.ads-manager.detail' manager_id=requete.ads_manager.id %}"
+                              >
+                                Gérer les ADS
+                              </a>
+                              <a
+                                class="fr-btn fr-btn--primary mt-1"
+                                href="{% url 'app.liste_attente' manager_id=requete.ads_manager.id %}"
+                              >
+                                Gérer la liste d'attente
+                              </a>
                             {% endif %}
                           </td>
                         </tr>

@@ -1,0 +1,57 @@
+<div class="fr-stepper">
+  <h2 class="fr-stepper__title"> Contacter le demandeur <span class="fr-stepper__state">Étape 1 sur 3</span>
+  </h2>
+  <div class="fr-stepper__steps" data-fr-current-step="1" data-fr-steps="3"></div>
+  <p class="fr-stepper__details"><span class="fr-text--bold">Étape suivante :</span> Prise en compte de la réponse</p>
+</div>
+
+<div>
+
+  <div class="fr-notice fr-notice--info">
+    <div class="fr-container">
+      <div class="fr-notice__body">
+        <p>
+          <span class="fr-notice__title">Contact : </span>
+          <span class="fr-notice__desc">
+            La réglementation ne précise pas la durée du délai qui est accordé au candidat pour répondre à l'administration. 
+            Vous êtes donc libre de définir cette durée et d'enregistrer la date à laquelle vous contactez le demandeur. 
+            Vous pouvez télécharger un modèle de courrier ou utiliser vos propres modèles.
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <a
+    class="my-5 fr-btn fr-btn--icon-left fr-icon-draft-line"
+    target="_blank"
+    href="{% url 'app.liste_attente_contact_modele' manager_id=ads_manager.id %}"
+  >
+    Accéder au modèle de courrier de contact
+  </a>
+
+
+  <form class="my-2 w-full md:w-1/2" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {{form.errors}}
+
+      {% if form.non_field_errors %}
+        
+        <div class="fr-messages-group" aria-live="assertive">
+          {% for error in form.non_field_errors %}
+            <!-- Non-field error -->
+            <p class="fr-message fr-message--error">{{ error }}</p>
+          {% endfor %}
+        </div>
+      
+      {% endif %}
+
+      {% include "form_fields/date.html" with field=form.date_contact field_errors=form.errors.date_contact required=form.fields.date_contact.required %}
+      {% include "form_fields/number.html" with field=form.delai_reponse field_errors=form.errors.delai_reponse required=form.fields.delai_reponse.required %}
+  
+      <div class="fr-input-group">
+        <button type="submit" name="action" value="contact" class="fr-btn">Confirmer</button>
+      </div>
+    </form>
+</div>

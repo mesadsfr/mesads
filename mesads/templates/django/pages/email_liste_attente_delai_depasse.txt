@@ -1,0 +1,12 @@
+{% extends "base_mail.txt" %}
+
+{% block body %}
+Le délai de réponse des demandes suivantes liées à la liste d'attente de {{ads_manager.content_object.display_fulltext}} est expiré.
+
+{% for inscription in inscriptions %}
+
+- Demande N°{{inscription.numero}} ( {{base_url}}{% url 'app.liste_attente_traitement_demande' manager_id=inscription.ads_manager.id inscription_id=inscription.id %} )
+
+{% endfor %}
+
+{% endblock %}

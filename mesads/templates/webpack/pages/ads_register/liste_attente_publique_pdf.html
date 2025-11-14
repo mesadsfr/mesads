@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <title>Liste d'attente - {{ads_manager.content_object.display_text}}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+
+            @bottom-center {
+                content: "Page " counter(page) " / " counter(pages);
+                font-size: 10px;
+                color: #555;
+            }
+        }
+        h1 {
+          text-align: center;
+        }
+    </style>
+  </head>
+
+  <body>
+    <h1>Liste d'attente de {{ads_manager.content_object.display_fulltext}}</h1>
+
+    <div class="fr-table fr-table--multiline" id="table-0-component">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table>
+              <thead>
+                <tr>
+                  <th>Numéro d'enregistrement</th>
+                  <th>Date de dépot</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for inscription in inscriptions %}
+                  <tr>
+                    <td>{{ inscription.numero }}</td>
+                    <td>{{ inscription.date_depot_inscription }}</td>
+                  </tr>
+                {% empty %}
+                    <tr>
+                      <td colspan="2">Aucun élément.</td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

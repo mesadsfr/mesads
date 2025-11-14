@@ -8,6 +8,13 @@
         {% if is_reglementation %}aria-current="page"{% endif %}>Réglementation</a>
   </li>
   <li class="fr-nav__item">
+    {% url 'app.listes_attentes' as listes_attentes_url %}
+    {% is_subpath request.path listes_attentes_url 1 as is_listes_attentes %}
+    <a class="fr-nav__link"
+        href="{{ listes_attentes_url }}"
+        {% if is_listes_attentes %}aria-current="page"{% endif %}>Listes d'attente</a>
+  </li>
+  <li class="fr-nav__item">
     <button
       id="navigation-taxis-relais-nav"
       aria-expanded="false"

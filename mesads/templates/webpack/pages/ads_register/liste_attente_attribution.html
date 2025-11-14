@@ -1,0 +1,176 @@
+{% extends "base_container.html" %}
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d’Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Administrations en gestion</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">
+            Liste d'attente {{ads_manager.content_object.display_text}}
+          </a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Attribution</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <div>
+    <h1>Liste classée des demandes</h1>
+    <h2>{{ads_manager.content_object.display_text|capfirst}}</h2>
+
+    <div class="fr-notice fr-notice--warning">
+      <div class="fr-container">
+        <div class="fr-notice__body">
+          <p>
+            <span class="fr-notice__title">Votre responsabilité dans le classement de la liste d’attente : </span>
+            <span class="fr-notice__desc">
+              Le système identifie et classe automatiquement les demandeurs éligibles au jour de l’attribution, 
+              selon les informations que vous avez fournies à l’étape précédente, lors de la finalisation de la liste d'attente. 
+              Vous êtes garant de leur exactitude.
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-3 flex flex-col">
+    <div class="fr-table fr-table--multiline" id="table-0-component">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table id="table-0">
+              <caption> Liste d'attente classée de la {{ads_manager.content_object.display_text}} </caption>
+              <thead>
+                <tr>
+                  <th>N°</th>
+                  <th> Nom et prénom </th>
+                  <th> N° carte pro </th>
+                  <th> Date de dépôt </th>
+                  <th>Etat</th>
+                  <th>Statut</th>
+                  <th>Traiter ou modifier</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for inscription in inscriptions %}
+                  <tr id="inscription-{{forloop.counter}}" data-row-key="{{forloop.counter}}">
+                    <td>{{inscription.numero}}</td>
+                    <td>{{inscription.nom}} {{inscription.prenom}}</td>
+                    <td>{{inscription.numero_licence}}</td>
+                    <td>{{inscription.date_depot_inscription|date:"d/m/Y"}}</td>
+                    <td>
+                      {% if inscription.all_filled == 1 %}
+                      <p class="fr-badge fr-badge--success">Complète</p>
+                      {% elif inscription.all_filled == 0 %}
+                      <p class="fr-badge fr-badge--green-tilleul-verveine">Incomplète</p>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if inscription.is_valid == 0 %}
+                      <p class="fr-badge fr-badge--error">Expirée</p>
+                      {% endif %}
+
+                      {% if inscription.status != "inscrit" %}
+                      <p class="fr-badge fr-badge--info">En cours d'attribution</p>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if inscription.is_valid == 1 %}
+                        <a
+                          class="fr-btn fr-icon-draft-line mt-0.5"
+                          href="{% url 'app.liste_attente_traitement_demande' manager_id=ads_manager.id inscription_id=inscription.id %}"
+                        >
+                          <span class="fr-sr-only">
+                            Traiter
+                          </span>
+                        </a>
+                      {% endif %}
+                      <a
+                        class="fr-btn fr-btn--secondary fr-icon-pencil-line"
+                        href="{% url 'app.liste_attente_inscription_update' manager_id=ads_manager.id inscription_id=inscription.id %}"
+                      >
+                        <span class="fr-sr-only">
+                          Modifier
+                        </span>
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav role="navigation" class="fr-pagination self-center" aria-label="Pagination">
+      <ul class="fr-pagination__list">
+
+        {% if page_obj.has_previous %}
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--first" href="?page=1&no_modale=1" title="Première page"> Première page </a>
+        </li>
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="?page={{page_obj.previous_page_number}}&no_modale=1" title="Page précédente"> Page précédente </a>
+        </li>
+        {% endif %}
+        <li>
+          <a class="fr-pagination__link" aria-current="page" title="Page {{page_obj.number}}"> {{page_obj.number}} </a>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="?page={{page_obj.next_page_number}}&no_modale=1" title="Page suivante"> Page suivante </a>
+        </li>
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--last" href="?page={{ page_obj.paginator.num_pages }}&no_modale=1" title="Dernière page"> Dernière page </a>
+        </li>
+
+        {% endif %}
+
+      </ul>
+    </nav>
+  </div>
+
+  {% if not no_modale %}
+  <button aria-controls="modal-0" data-fr-opened="true" type="button" class="fr-btn fr-hidden">Ouvrir la modale</button>
+  <dialog id="modal-0" class="fr-modal" aria-labelledby="modal-0-title" data-fr-concealing-backdrop="true">
+    <div class="fr-container fr-container--fluid fr-container-md">
+      <div class="fr-grid-row fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+          <div class="fr-modal__body">
+            <div class="fr-modal__header">
+              <button aria-controls="modal-0" title="Fermer" type="button" id="button-5" class="fr-btn--close fr-btn">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+              <h2 id="modal-0-title" class="fr-modal__title">
+                <span class="fr-icon-info-line fr-icon--lg" aria-hidden="true"></span> Vérification des informations
+              </h2>
+              <p>
+                Avant de procéder à l'attribution, veuillez vérifier que:
+                <ul>
+                  <li>
+                    Les demandes en cours sont bien à jour.
+                  </li>
+                </ul>
+                Si c'est déjà le cas, vous pouvez fermer cette fenêtre.
+              </p>
+              <a class="fr-btn" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">Retour à la liste d'attente</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+  {% endif %}
+{% endblock body-content %}
