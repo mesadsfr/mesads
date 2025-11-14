@@ -51,4 +51,5 @@ from .liste_attente import (  # noqa: F401
     ListesAttentesPubliquesView,
     ListeAttentePublique,
     ChangementStatutListeView,
+    ExportPDFListePubliqueView,
 )

@@ -4,10 +4,12 @@ import datetime
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.staticfiles import finders
 from django.db import IntegrityError, transaction, models
 from django.db.models import Case, When, IntegerField, Q, Value, Count, F
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse, Http404
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.views.generic import (
     ListView,
     CreateView,
@@ -18,6 +20,7 @@ from django.views.generic import (
 from django.urls import reverse
 from django.utils import timezone
 from pathlib import Path
+from weasyprint import HTML, CSS
 
 from mesads.app.models import (
     InscriptionListeAttente,
@@ -653,3 +656,36 @@ class ChangementStatutListeView(View):
                 "app.liste_attente", kwargs={"manager_id": ads_manager.id}
             )
         )
+
+
+class ExportPDFListePubliqueView(View):
+    http_method_names = ["get"]
+
+    def get(self, request, *args, **kwargs):
+        ads_manager = get_object_or_404(ADSManager, id=kwargs["manager_id"])
+
+        inscriptions = InscriptionListeAttente.objects.filter(
+            ads_manager=ads_manager,
+            date_fin_validite__gte=datetime.date.today(),
+        ).order_by("date_depot_inscription")
+
+        context = {"ads_manager": ads_manager, "inscriptions": inscriptions}
+
+        html_string = render_to_string(
+            "pages/ads_register/liste_attente_publique_pdf.html", context
+        )
+        response = HttpResponse(
+            content_type="application/pdf",
+            headers={
+                "Content-Disposition": 'attachment; filename="liste-attente-publique.pdf"'
+            },
+        )
+
+        dsfr_css_path = finders.find("@gouvfr/dsfr/dsfr.min.css")
+        stylesheets = []
+        if dsfr_css_path:
+            stylesheets.append(CSS(filename=dsfr_css_path))
+
+        HTML(string=html_string).write_pdf(target=response, stylesheets=stylesheets)
+
+        return response

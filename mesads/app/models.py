@@ -1158,7 +1158,7 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
         max_length=64,
         verbose_name="N° de la carte professionnelle",
         help_text=(
-            "Attention : il vous appartient de vérifier que le demandeur dispose d’une carte professionnelle en cours de validité au moment de l'inscription ou du renouvellement de la demande) "
+            "Attention : il vous appartient de vérifier que le demandeur dispose d’une carte professionnelle en cours de validité au moment de l'inscription ou du renouvellement de la demande "
         ),
     )
 
