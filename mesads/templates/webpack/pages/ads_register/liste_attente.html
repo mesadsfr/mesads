@@ -138,7 +138,18 @@
           target="_blank"
           class="fr-link"
         >
-          Télécharger toutes les inscriptions sur liste d'attente en format Excel
+          Télécharger toutes les inscriptions (Excel)
+        </a>
+      </div>
+
+      <div>
+        <a
+          id="link-2"
+          href="{% url 'app.liste_attente_publique_export_pdf' manager_id=ads_manager.id %}"
+          target="_blank"
+          class="fr-link"
+        >
+          Télécharger la liste d'attente publique (PDF)
         </a>
       </div>
 

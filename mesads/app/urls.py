@@ -193,6 +193,11 @@ url_liste_attente = [
         ads_manager_required(views.ChangementStatutListeView.as_view()),
         name="app.liste_attente_make_public",
     ),
+    path(
+        "liste_attente/<int:manager_id>/export/liste-publique/",
+        ads_manager_required(views.ExportPDFListePubliqueView.as_view()),
+        name="app.liste_attente_publique_export_pdf",
+    ),
 ]
 
 url_commons = [

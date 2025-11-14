@@ -40,7 +40,7 @@
                             {% if requete.complete_updates_count %}
                               <p class="fr-text--xs">(dont {{ requete.complete_updates_count }} avec toutes les informations)</p>
                             {% elif requete.ads_count %}
-                              <p class="fr-text--xs text-red-500">(à vérifier)</p>
+                              <p class="fr-text--xs text-red-500">(données à vérifier)</p>
                             {% endif %}
                           </td>
                           <td>
@@ -53,13 +53,13 @@
                                 class="fr-btn fr-btn--primary"
                                 href="{% url 'app.ads-manager.detail' manager_id=requete.ads_manager.id %}"
                               >
-                                Gérez les ADS
+                                Gérer les ADS
                               </a>
                               <a
                                 class="fr-btn fr-btn--primary mt-1"
                                 href="{% url 'app.liste_attente' manager_id=requete.ads_manager.id %}"
                               >
-                                Gérez la liste d'attente
+                                Gérer la liste d'attente
                               </a>
                             {% endif %}
                           </td>
