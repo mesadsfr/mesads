@@ -309,3 +309,6 @@ urls:
 
   app.liste_attente_make_public:
     missing: true
+
+  app.liste_attente_publique_export_pdf:
+    missing: true
