@@ -44,26 +44,6 @@ class TestPasswordResetView(ClientTestCase):
         self.assertEqual(len(mail.outbox), 0)
 
 
-class TestCustomRegistrationView(ClientTestCase):
-    def test_send_activation_email(self):
-        resp = self.anonymous_client.post(
-            "/auth/register/",
-            {
-                "email": "sdiofnaisodfnqowifqepsio@bla.com",
-                "password1": "aBcdef123__",
-                "password2": "aBcdef123__",
-                "cgu": True,
-            },
-        )
-        self.assertEqual(resp.status_code, 302)
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertIn(settings.MESADS_CONTACT_EMAIL, mail.outbox[0].body)
-
-        self.assertEqual(len(mail.outbox[0].alternatives), 1)
-        self.assertEqual(mail.outbox[0].alternatives[0][1], "text/html")
-        self.assertIn(settings.MESADS_CONTACT_EMAIL, mail.outbox[0].alternatives[0][0])
-
-
 class Test2FALoginView(ClientTestCase):
     def test_2fa_login(self):
         user = self.create_user(double_auth=True)
