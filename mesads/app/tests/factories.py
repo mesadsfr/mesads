@@ -10,6 +10,7 @@ from mesads.app.models import (
     ADSManager,
     ADSManagerRequest,
     InscriptionListeAttente,
+    ADS,
 )
 from mesads.fradm.tests.factories import PrefectureFactory, EPCIFactory, CommuneFactory
 
@@ -51,6 +52,15 @@ class ADSManagerRequestFactory(factory.django.DjangoModelFactory):
 
     ads_manager = factory.SubFactory(ADSManagerFactory)
     accepted = True
+
+
+class ADSFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ADS
+
+    ads_manager = factory.SubFactory(ADSManagerFactory)
+    number = factory.Sequence(lambda n: f"{n + 1 }")
+    ads_in_use = True
 
 
 class InscriptionListeAttenteFactory(factory.django.DjangoModelFactory):

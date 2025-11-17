@@ -1,4 +1,5 @@
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django import forms
 from dateutil.relativedelta import relativedelta
 from django.forms import BaseInlineFormSet, inlineformset_factory
@@ -418,3 +419,22 @@ class UpdateDelaiInscriptionListeAttenteForm(forms.ModelForm):
         self.fields["delai_reponse"].error_messages = {
             "required": self.EMPTY_DELAI_REPONSE
         }
+
+
+class AttributionADSForm(forms.Form):
+    numero = forms.CharField(label="Numéro de l'ADS")
+    date_attribution = forms.DateField(label="Date de signature de l'arrêté")
+
+    arrete = forms.FileField(label="Fichier de l'arrêté")
+
+    def __init__(self, *args, **kwargs):
+        self.ads_manager = kwargs.pop("ads_manager")
+        super().__init__(*args, **kwargs)
+
+    def clean_numero(self):
+        numero = self.cleaned_data["numero"]
+
+        if ADS.objects.filter(ads_manager=self.ads_manager, number=numero):
+            raise ValidationError("Ce numéro est déjà utilisé par une autre ADS.")
+
+        return numero

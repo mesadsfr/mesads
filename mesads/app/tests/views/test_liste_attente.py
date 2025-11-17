@@ -3,12 +3,15 @@ import datetime
 import http
 from dateutil.relativedelta import relativedelta
 from django.urls import reverse
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from mesads.app.models import (
     InscriptionListeAttente,
     WAITING_LIST_UNIQUE_ERROR_MESSAGE,
     ADS,
     ADSUser,
+    ADSUpdateLog,
+    ADSLegalFile,
 )
 from mesads.users.unittest import ClientTestCase as BaseClientTestCase
 from mesads.app.forms import (
@@ -22,6 +25,7 @@ from ..factories import (
     ADSManagerRequestFactory,
     ADSManagerFactory,
     InscriptionListeAttenteFactory,
+    ADSFactory,
 )
 
 
@@ -1044,7 +1048,7 @@ class TestTraitementDemandeView(ClientTestCase):
         self.assertIsNone(inscription.date_contact)
         self.assertIsNone(inscription.delai_reponse)
 
-    def test_get_traitement_demande_view_etape_4(self):
+    def test_get_traitement_demande_view_etape_3(self):
         today = datetime.date.today()
         inscription = InscriptionListeAttenteFactory(
             ads_manager=self.ads_manager,
@@ -1078,15 +1082,7 @@ class TestTraitementDemandeView(ClientTestCase):
         )
         self.assertEqual(response.context["inscription"], inscription)
 
-
-class TestCreationADSDepuisListeAttente(ClientTestCase):
-    def test_get_ads_creation_404(self):
-        response = self.client.get(
-            f"{reverse('app.ads.create', kwargs={'manager_id': self.ads_manager.id})}?inscription_id=42"
-        )
-        self.assertEqual(response.status_code, http.HTTPStatus.NOT_FOUND)
-
-    def test_get_ads_creation_demande_archivee(self):
+    def test_post_traitement_demande_view_etape_3_empty(self):
         today = datetime.date.today()
         inscription = InscriptionListeAttenteFactory(
             ads_manager=self.ads_manager,
@@ -1096,42 +1092,69 @@ class TestCreationADSDepuisListeAttente(ClientTestCase):
             delai_reponse=15,
             status=InscriptionListeAttente.REPONSE_OK,
         )
-        inscription.delete()
-        response = self.client.get(
-            f"{reverse('app.ads.create', kwargs={'manager_id': self.ads_manager.id})}?inscription_id={inscription.id}"
-        )
-        self.assertEqual(response.status_code, http.HTTPStatus.NOT_FOUND)
+        self.assertEqual(ADS.objects.count(), 0)
 
-    def test_get_ads_creation_ok(self):
-        today = datetime.date.today()
-        inscription = InscriptionListeAttenteFactory(
-            ads_manager=self.ads_manager,
-            date_depot_inscription=today - relativedelta(years=1),
-            date_dernier_renouvellement=today,
-            date_contact=today,
-            delai_reponse=15,
-            status=InscriptionListeAttente.REPONSE_OK,
-        )
-        response = self.client.get(
-            f"{reverse('app.ads.create', kwargs={'manager_id': self.ads_manager.id})}?inscription_id={inscription.id}"
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            data={"action": "attribution_ads"},
         )
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertEqual(
-            response.context["form"].initial,
+            response.context["form"].errors,
             {
-                "ads_creation_date": today,
-                "ads_in_use": True,
-                "owner_name": f"{inscription.nom} {inscription.prenom}",
-                "owner_phone": inscription.numero_telephone,
-                "owner_email": inscription.email,
+                "numero": ["Ce champ est obligatoire."],
+                "date_attribution": ["Ce champ est obligatoire."],
+                "arrete": ["Ce champ est obligatoire."],
             },
         )
-        self.assertEqual(
-            response.context["ads_users_formset"].initial_extra,
-            [{"license_number": inscription.numero_licence}],
-        )
+        self.assertEqual(ADS.objects.count(), 0)
 
-    def test_post_ads_creation_ok(self):
+    def test_post_traitement_demande_view_etape_3_used_number(self):
+        today = datetime.date.today()
+        inscription = InscriptionListeAttenteFactory(
+            ads_manager=self.ads_manager,
+            date_depot_inscription=today - relativedelta(years=1),
+            date_dernier_renouvellement=today,
+            date_contact=today,
+            delai_reponse=15,
+            status=InscriptionListeAttente.REPONSE_OK,
+        )
+        ads = ADSFactory(ads_manager=self.ads_manager)
+        self.assertEqual(ADS.objects.count(), 1)
+
+        response = self.client.post(
+            reverse(
+                "app.liste_attente_traitement_demande",
+                kwargs={
+                    "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
+                },
+            ),
+            data={
+                "action": "attribution_ads",
+                "numero": ads.number,
+                "date_attribution": today,
+                "arrete": SimpleUploadedFile(
+                    "arrete.pdf", b"Contenu arrete", content_type="application/pdf"
+                ),
+            },
+        )
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertEqual(
+            response.context["form"].errors,
+            {
+                "numero": ["Ce numéro est déjà utilisé par une autre ADS."],
+            },
+        )
+        self.assertEqual(ADS.objects.count(), 1)
+
+    def test_post_traitement_demande_view_etape_3_ok(self):
         today = datetime.date.today()
         inscription = InscriptionListeAttenteFactory(
             ads_manager=self.ads_manager,
@@ -1143,59 +1166,55 @@ class TestCreationADSDepuisListeAttente(ClientTestCase):
         )
         self.assertEqual(ADS.objects.count(), 0)
         self.assertEqual(ADSUser.objects.count(), 0)
-        self.assertIsNone(inscription.deleted_at)
-        data = {
-            "number": "1",
-            "ads_creation_date": today,
-            "ads_in_use": True,
-            "owner_name": f"{inscription.nom} {inscription.prenom}",
-            "owner_phone": inscription.numero_telephone,
-            "owner_email": inscription.email,
-            "adslegalfile_set-INITIAL_FORMS": ["0"],
-            "adslegalfile_set-MAX_NUM_FORMS": ["1000"],
-            "adslegalfile_set-MIN_NUM_FORMS": ["0"],
-            "adslegalfile_set-TOTAL_FORMS": ["0"],
-            "adsuser_set-0-ads": [""],
-            "adsuser_set-0-id": [""],
-            "adsuser_set-0-license_number": [inscription.numero_licence],
-            "adsuser_set-0-status": ["titulaire_exploitant"],
-            "adsuser_set-INITIAL_FORMS": ["0"],
-            "adsuser_set-MAX_NUM_FORMS": ["1000"],
-            "adsuser_set-MIN_NUM_FORMS": ["0"],
-            "adsuser_set-TOTAL_FORMS": ["1"],
-            "certify": ["on"],
-        }
+        self.assertEqual(ADSLegalFile.objects.count(), 0)
+        self.assertEqual(ADSUpdateLog.objects.count(), 0)
+
         response = self.client.post(
-            f"{reverse('app.ads.create', kwargs={'manager_id': self.ads_manager.id})}?inscription_id={inscription.id}",
-            data,
-        )
-        self.assertRedirects(
-            response,
-            expected_url=reverse(
-                "app.liste_attente",
+            reverse(
+                "app.liste_attente_traitement_demande",
                 kwargs={
                     "manager_id": self.ads_manager.id,
+                    "inscription_id": inscription.id,
                 },
             ),
-            status_code=http.HTTPStatus.FOUND,
-            target_status_code=http.HTTPStatus.OK,
-            fetch_redirect_response=True,
+            data={
+                "action": "attribution_ads",
+                "numero": "1",
+                "date_attribution": today,
+                "arrete": SimpleUploadedFile(
+                    "arrete.pdf", b"Contenu arrete", content_type="application/pdf"
+                ),
+            },
         )
         self.assertEqual(ADS.objects.count(), 1)
         ads = ADS.objects.last()
         self.assertEqual(ads.ads_manager, inscription.ads_manager)
+        self.assertEqual(ads.number, "1")
+        self.assertEqual(ads.ads_creation_date, today)
         self.assertEqual(ads.owner_name, f"{inscription.nom} {inscription.prenom}")
         self.assertEqual(ads.owner_phone, inscription.numero_telephone)
         self.assertEqual(ads.owner_email, inscription.email)
-        self.assertEqual(ADSUser.objects.count(), 1)
-        ads_user = ADSUser.objects.first()
-        self.assertEqual(ads_user.ads, ads)
-        self.assertEqual(ads_user.status, ADSUser.TITULAIRE_EXPLOITANT)
-        self.assertEqual(ads_user.license_number, inscription.numero_licence)
-        inscription.refresh_from_db()
-        self.assertIsNotNone(inscription.deleted_at)
+
         self.assertEqual(
-            inscription.motif_archivage, InscriptionListeAttente.ADS_ATTRIBUEE
+            ADSUser.objects.filter(
+                ads=ads,
+                status=ADSUser.TITULAIRE_EXPLOITANT,
+                license_number=inscription.numero_licence,
+            ).count(),
+            1,
+        )
+        self.assertEqual(ADSLegalFile.objects.filter(ads=ads).count(), 1)
+        self.assertEqual(ADSUpdateLog.objects.filter(ads=ads).count(), 1)
+
+        self.assertRedirects(
+            response,
+            expected_url=reverse(
+                "app.ads.detail",
+                kwargs={"manager_id": inscription.ads_manager.id, "ads_id": ads.id},
+            ),
+            status_code=http.HTTPStatus.FOUND,
+            target_status_code=http.HTTPStatus.OK,
+            fetch_redirect_response=True,
         )
 
 
