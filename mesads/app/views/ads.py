@@ -1,4 +1,3 @@
-from datetime import date
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -26,7 +25,6 @@ from ..models import (
     ADSManager,
     ADSUser,
     ADSUpdateLog,
-    InscriptionListeAttente,
     ADS_UNIQUE_ERROR_MESSAGE,
 )
 from ..reversion_diff import ModelHistory
@@ -313,27 +311,6 @@ class ADSDeleteView(DeleteView):
 class ADSCreateView(ADSView, CreateView):
     inscription = None
 
-    def get_initial(self):
-        if self.inscription:
-            return {
-                "ads_creation_date": date.today(),
-                "ads_in_use": True,
-                "owner_name": f"{self.inscription.nom} {self.inscription.prenom}",
-                "owner_phone": self.inscription.numero_telephone,
-                "owner_email": self.inscription.email,
-            }
-        else:
-            return super().get_initial()
-
-    def _ads_users_initial_from_inscription(self):
-        if not self.inscription:
-            return None
-        return [
-            {
-                "license_number": self.inscription.numero_licence,
-            }
-        ]
-
     def get_formsets(self):
         parent_instance = getattr(self, "object", None) or ADS()
         if self.request.method == "POST":
@@ -342,10 +319,7 @@ class ADSCreateView(ADSView, CreateView):
                 self.request.POST, self.request.FILES, instance=parent_instance
             )
         else:
-            initial_users = self._ads_users_initial_from_inscription()
-            ads_users_fs = ADSUserFormSet(
-                initial=initial_users, instance=parent_instance
-            )
+            ads_users_fs = ADSUserFormSet(instance=parent_instance)
             ads_legal_files_fs = ADSLegalFileFormSet(instance=parent_instance)
         return ads_users_fs, ads_legal_files_fs
 
@@ -354,12 +328,6 @@ class ADSCreateView(ADSView, CreateView):
         impossible to create ADS for it."""
         get_object_or_404(ADSManager, id=manager_id, no_ads_declared=False)
 
-        if self.request.GET.get("inscription_id"):
-            self.inscription = get_object_or_404(
-                InscriptionListeAttente,
-                id=self.request.GET.get("inscription_id"),
-                ads_manager=manager_id,
-            )
         self.ads_users_formset, self.ads_legal_files_formset = self.get_formsets()
         self.ads_users_formset.extra = 1
         return super().dispatch(request, manager_id, **kwargs)
@@ -367,28 +335,8 @@ class ADSCreateView(ADSView, CreateView):
     def get_object(self, queryset=None):
         return None
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        if self.inscription:
-            context["inscription_id"] = self.inscription.id
-            context["return_url"] = (
-                reverse(
-                    "app.liste_attente_attribution",
-                    kwargs={"manager_id": self.kwargs["manager_id"]},
-                )
-                + "?no_modale=1"
-            )
-
-        return context
-
     def get_success_url(self):
         administrator = self.kwargs.get("ads_manager_administrator")
-
-        if self.inscription:
-            return reverse(
-                "app.liste_attente", kwargs={"manager_id": self.kwargs["manager_id"]}
-            )
 
         return (
             reverse(

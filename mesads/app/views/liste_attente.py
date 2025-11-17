@@ -25,6 +25,10 @@ from weasyprint import HTML, CSS
 from mesads.app.models import (
     InscriptionListeAttente,
     ADSManager,
+    ADS,
+    ADSUser,
+    ADSLegalFile,
+    ADSUpdateLog,
     WAITING_LIST_UNIQUE_ERROR_MESSAGE,
 )
 from mesads.app.forms import (
@@ -32,6 +36,7 @@ from mesads.app.forms import (
     ArchivageInscriptionListeAttenteForm,
     ContactInscriptionListeAttenteForm,
     UpdateDelaiInscriptionListeAttenteForm,
+    AttributionADSForm,
 )
 
 
@@ -226,6 +231,9 @@ class InscriptionTraitementListeAttenteView(TemplateView):
                 instance=inscription
             )
 
+        if inscription.status == InscriptionListeAttente.REPONSE_OK:
+            context["form"] = AttributionADSForm(ads_manager=ads_manager)
+
         return context
 
     def get_post_redirect_url(self, inscription):
@@ -248,6 +256,49 @@ class InscriptionTraitementListeAttenteView(TemplateView):
             form.save()
             return HttpResponseRedirect(
                 redirect_to=self.get_post_redirect_url(inscription)
+            )
+        else:
+            return self._response_invalid_form(form, **kwargs)
+
+    def _handle_attribution(self, inscription, **kwargs):
+        form = AttributionADSForm(
+            self.request.POST, self.request.FILES, ads_manager=inscription.ads_manager
+        )
+        if form.is_valid():
+            data = form.cleaned_data
+            ads = ADS.objects.create(
+                number=form.cleaned_data["numero"],
+                ads_manager=inscription.ads_manager,
+                ads_creation_date=data["date_attribution"],
+                ads_in_use=True,
+                owner_name=f"{inscription.nom} {inscription.prenom}",
+                owner_phone=inscription.numero_telephone,
+                owner_email=inscription.email,
+            )
+            ADSLegalFile.objects.create(
+                ads=ads,
+                file=data["arrete"],
+            )
+            ADSUser.objects.create(
+                ads=ads,
+                status=ADSUser.TITULAIRE_EXPLOITANT,
+                license_number=inscription.numero_licence,
+            )
+            ADSUpdateLog.create_for_ads(ads, self.request.user)
+
+            inscription.motif_archivage = InscriptionListeAttente.ADS_ATTRIBUEE
+            inscription.delete()
+
+            messages.success(
+                self.request,
+                "L'ADS a bien été attribué. L'inscription a la liste d'attente a été archivée.",
+            )
+
+            return HttpResponseRedirect(
+                redirect_to=reverse(
+                    "app.ads.detail",
+                    kwargs={"manager_id": inscription.ads_manager.id, "ads_id": ads.id},
+                )
             )
         else:
             return self._response_invalid_form(form, **kwargs)
@@ -288,6 +339,9 @@ class InscriptionTraitementListeAttenteView(TemplateView):
                     kwargs={"manager_id": inscription.ads_manager.id},
                 )
             )
+
+        elif action == "attribution_ads":
+            return self._handle_attribution(inscription, **kwargs)
 
         return self.render_to_response(self.get_context_data(**kwargs))
 
@@ -500,13 +554,10 @@ class ExportCSVInscriptionListeAttenteView(View):
 
         # Booléen
         if isinstance(field, models.BooleanField):
-            # gère True/False/None (si null=True)
             return "Oui" if value else "Non", "text"
 
         # Dates
         if isinstance(field, models.DateField):
-            # DateField ou DateTimeField (DateTimeField hérite de DateField)
-            # si c'est un DateTimeField, on peut convertir en localtime puis ne garder que la date
             return value, "date"
 
         # Autres types -> string standard
