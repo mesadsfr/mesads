@@ -5,7 +5,7 @@ from django.db.models import Q, OuterRef, Subquery, BooleanField, Sum
 from django.views.generic import TemplateView
 from django.utils import timezone
 
-from mesads.app.models import ADS, ADSUpdateLog
+from mesads.app.models import ADS, ADSUpdateLog, InscriptionListeAttente
 from mesads.users.models import UserAuditEntry, NoteUtilisateur
 
 
@@ -54,6 +54,23 @@ class StatistiquesView(TemplateView):
             .count()
         )
 
+    def get_nombre_creation_liste_attente(
+        self, start_date: date, end_date: date
+    ) -> int:
+        return InscriptionListeAttente.objects.filter(
+            date_creation__date__gte=start_date, date_creation__date__lt=end_date
+        ).count()
+
+    def get_nombre_ads_cree_via_liste_attente(
+        self, start_date: date, end_date: date
+    ) -> int:
+        return InscriptionListeAttente.with_deleted.filter(
+            deleted_at__isnull=False,
+            deleted_at__date__gte=start_date,
+            deleted_at__date__lt=end_date,
+            motif_archivage=InscriptionListeAttente.ADS_ATTRIBUEE,
+        ).count()
+
     def get_note_moyenne_qualite(self) -> tuple[float, int]:
         notes = NoteUtilisateur.objects.filter(note_qualite__isnull=False)
         total_notes = notes.aggregate(total=Sum("note_qualite"))["total"]
@@ -96,6 +113,15 @@ class StatistiquesView(TemplateView):
         )
         context["pourcentage_ads_valide_et_complete"] = (
             self.get_pourcentage_ads_valide()
+        )
+
+        context["nombre_inscriptions_creees"] = self.get_nombre_creation_liste_attente(
+            context["start_date"], context["end_date"]
+        )
+        context["nombre_ads_liste_attente"] = (
+            self.get_nombre_ads_cree_via_liste_attente(
+                context["start_date"], context["end_date"]
+            )
         )
 
         avg_note_facilite, count_note_facilite = self.get_note_moyenne_facilite()
