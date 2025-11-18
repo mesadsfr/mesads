@@ -1117,6 +1117,12 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
 
     UP_TO_DATE_DAYS = 90
 
+    date_creation = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Date de création de l'inscription",
+        help_text="Cette date est renseigné automatiquement lors de la création de l'inscription.",
+    )
+
     derniere_maj = models.DateTimeField(
         auto_now=True,
         verbose_name="Date de la dernière mise à jour de l'entrée de la liste d'attente",

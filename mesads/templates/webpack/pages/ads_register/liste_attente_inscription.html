@@ -34,6 +34,20 @@
     <h2>{{ads_manager.content_object.display_text|capfirst}}</h2>
   </div>
 
+  {% if duplicated_licences %}
+    <div class="mb-2 fr-alert fr-alert--warning">
+      <h3 class="fr-alert__title">Numéro de carte professionnelle</h3>
+      <p>Le numéro de carte professionnelle renseigné pour cette inscription est déjà utilisé sur la liste d'attente d'une ou plusieurs administrations. Nous vous invitons à vous rapprocher de celles ci.</p>
+      <ul>
+        {% for duplicata in duplicated_licences %}
+          <li>
+            {{duplicata.ads_manager.content_object.display_text}}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
   <div>
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}

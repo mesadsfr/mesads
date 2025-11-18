@@ -425,6 +425,14 @@ class ModificationInscriptionListeAttenteView(InscriptionListeAttenteMixin, Upda
 
         return super().dispatch(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        inscriptions_with_same_licence_number = InscriptionListeAttente.objects.filter(
+            numero_licence=self.object.numero_licence
+        ).exclude(id=self.object.id)
+        context["duplicated_licences"] = inscriptions_with_same_licence_number
+        return context
+
 
 class ArchivageInscriptionListeAttenteView(UpdateView):
     template_name = "pages/ads_register/liste_attente_archivage_inscription.html"
