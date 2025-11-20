@@ -1,0 +1,260 @@
+{% extends "base_container.html" %}
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d’Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Administrations en gestion</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Liste d'attente {{ads_manager.content_object.display_text}}</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <div>
+    <h1>Gérer la liste d'attente</h1>
+
+    <h2>{{ads_manager.content_object.display_text|capfirst}}</h2>
+
+    <div class="flex flex-col md:flex-row gap-3">
+      <div class="fr-btns-group md:w-1/2">
+        <a
+          class="fr-btn fr-btn--primary w-full"
+          href="{% url 'app.liste_attente_inscription' manager_id=ads_manager.id %}"
+        >
+          Nouvelle demande d'inscription
+        </a>
+        {% if attribution_allowed %}
+        <a
+          class="fr-btn fr-btn--primary mt-1 w-full"
+          href="{% url 'app.liste_attente_attribution' manager_id=ads_manager.id %}"
+
+        >
+          Attribuer une ADS
+        </a>
+        {% else %}
+          <button type="button" disabled class="fr-btn">Attribuer une ADS</button>
+          {% if attribution_allowed == False %}
+            <div class="mx-2 mb-3 fr-notice fr-notice--alert">
+              <div class="fr-container">
+                <div class="fr-notice__body">
+                  <p>
+                    <span class="fr-notice__title"></span>
+                    Vous devez archiver toutes les demandes expirées avant de pouvoir attribuer une ADS
+                  </p>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endif %}
+        <a
+          class="fr-btn fr-btn--secondary mt-1 w-full"
+          href="{% url 'app.liste_attente_archives' manager_id=ads_manager.id %}"
+        >
+          Demandes archivées
+        </a>
+      </div>
+
+      <div>
+        <div class="fr-notice fr-notice--info">
+          <div class="fr-container">
+            <div class="fr-notice__body">
+              <p>
+                <span class="fr-notice__title"></span>
+                Une fois inscrits, les chauffeurs de taxi doivent renouveler chaque année leur inscription à la date anniversaire, 
+                par tout moyen permettant d'en accuser réception afin d’être maintenu sur la liste d’attente (cf. R.3121-13 du code des transports) 
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2 fr-notice fr-notice--info">
+          <div class="fr-container">
+            <div class="fr-notice__body">
+              <p>
+                <span class="fr-notice__title"></span>
+                La liste est présentée par ordre chronologique des dates de demandes initiales.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <form method="post" action="{% url 'app.liste_attente_make_public' manager_id=ads_manager.id %}">
+          {% csrf_token %}
+
+          <input type="hidden" name="liste_attente_publique" value="0">
+          <div class="mt-3 fr-toggle">
+            <input
+              type="checkbox"
+              class="fr-toggle__input"
+              id="toggle-2"
+              name="liste_attente_publique"
+              aria-describedby="toggle-2-hint toggle-2-messages"
+              value="1"
+              {% if ads_manager.liste_attente_publique %}checked{% endif %}
+              onchange="this.form.requestSubmit()"
+            >
+            <label class="fr-toggle__label" for="toggle-2">Rendre la liste d'attente publique</label>
+
+            <p id="toggle-2-hint" class="fr-hint-text fr-mt-1v">
+              Le changement est enregistré automatiquement.
+            </p>
+
+            <div class="fr-messages-group" id="toggle-2-messages" aria-live="polite">
+            </div>
+
+            <noscript>
+              <button class="fr-btn fr-mt-2w">Enregistrer</button>
+            </noscript>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <div class="mt-5 flex flex-col">
+    <div class="flex flex-col md:flex-row gap-3 md:items-center">
+      <form method="GET" class="fr-search-bar" role="search">
+        <label class="fr-label" for="search-input"> Rechercher </label>
+        <input class="fr-input" aria-describedby="search-input-messages" placeholder="Rechercher" name="search" id="search-input" type="search" value="{{search}}">
+        <div class="fr-messages-group" id="search-input-messages" aria-live="polite">
+        </div>
+        <button title="Rechercher" type="submit" class="fr-btn">Rechercher</button>
+      </form>
+
+      <div>
+        <a
+          id="link-1"
+          href="{% url 'app.liste_attente_export' manager_id=ads_manager.id %}"
+          target="_blank"
+          class="fr-link"
+        >
+          Télécharger toutes les inscriptions (Excel)
+        </a>
+      </div>
+
+      <div>
+        <a
+          id="link-2"
+          href="{% url 'app.liste_attente_publique_export_pdf' manager_id=ads_manager.id %}"
+          target="_blank"
+          class="fr-link"
+        >
+          Télécharger la liste d'attente publique (PDF)
+        </a>
+      </div>
+
+    </div>
+    <div class="fr-table fr-table--multiline" id="table-0-component">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table id="table-0">
+              <caption> Liste d'attente de la {{ads_manager.content_object.display_text}} </caption>
+              <thead>
+                <tr>
+                  <th>N° </th>
+                  <th> Nom et prénom </th>
+                  <th> N° carte pro </th>
+                  <th> Date de dépôt </th>
+                  <th> Date fin de validité </th>
+                  <th>Etat de la demande</th>
+                  <th>Statut de la demande</th>
+                  <th>Traiter ou modifier </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for inscription in inscriptions %}
+                  <tr id="inscription-{{forloop.counter}}" data-row-key="{{forloop.counter}}">
+                    <td>{{inscription.numero}}</td>
+                    <td>{{inscription.nom}} {{inscription.prenom}}</td>
+                    <td>
+                      {{inscription.numero_licence}}
+                      {% if inscription.numero_licence_utilise %}
+                        <p class="fr-badge fr-badge--green-tilleul-verveine">Personne inscrite sur une autre liste</p>
+                      {% endif %}
+                    </td>
+                    <td>{{inscription.date_depot_inscription|date:"d/m/Y"}}</td>
+                    <td>{{inscription.date_fin_validite|date:"d/m/Y"}}</td>
+                    <td>
+                      {% if inscription.all_filled == 1 %}
+                      <p class="fr-badge fr-badge--success">Complète</p>
+                      {% elif inscription.all_filled == 0 %}
+                      <p class="fr-badge fr-badge--green-tilleul-verveine">Incomplète</p>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if inscription.is_valid == 0 %}
+                      <p class="fr-badge fr-badge--error">Expirée</p>
+                      {% endif %}
+                      {% if inscription.status != "inscrit" %}
+                      <p class="fr-badge fr-badge--info">En cours d'attribution</p>
+                      {% endif %}
+                    </td>
+                    <td>
+
+                      {% if inscription.status != "inscrit" %}
+                        <a
+                          class="fr-btn fr-icon-draft-line mb-0.5"
+                          href="{% url 'app.liste_attente_traitement_demande' manager_id=ads_manager.id inscription_id=inscription.id %}"
+                        >
+                          <span class="fr-sr-only">
+                            Traiter
+                          </span>
+                        </a>
+                      {% endif %}
+                      <a
+                        class="fr-btn fr-btn--secondary fr-icon-pencil-line"
+                        href="{% url 'app.liste_attente_inscription_update' manager_id=ads_manager.id inscription_id=inscription.id %}"
+                      >
+                        <span class="fr-sr-only">
+                          Modifier
+                        </span>
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav role="navigation" class="fr-pagination self-center" aria-label="Pagination">
+      <ul class="fr-pagination__list">
+
+        {% if page_obj.has_previous %}
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--first" href="?page=1&search={{search}}"> Première page </a>
+        </li>
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="?page={{page_obj.previous_page_number}}&search={{search}}" title="Page précédente"> Page précédente </a>
+        </li>
+        {% endif %}
+        <li>
+          <a class="fr-pagination__link" aria-current="page" title="Page {{page_obj.number}}"> {{page_obj.number}} </a>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="?page={{page_obj.next_page_number}}&search={{search}}" title="Page suivante"> Page suivante </a>
+        </li>
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--last" href="?page={{ page_obj.paginator.num_pages }}&search={{search}}" title="Dernière page"> Dernière page </a>
+        </li>
+
+        {% endif %}
+
+      </ul>
+    </nav>
+  </div>
+{% endblock body-content %}

@@ -54,3 +54,19 @@ class DeleteOldUsers(CronJobBase):
         with redirect_stdout(buf), redirect_stderr(buf):
             call_command("remove_old_accounts")
         return buf.getvalue()
+
+
+class NotificationListeAttente(CronJobBase):
+    # Run every day
+    schedule = Schedule(run_every_mins=60 * 24)
+
+    code = "notify_liste_attente"  # unique code to represent this cron job
+
+    @sentry_exceptions
+    def do(self):
+        # Redirect stdout and stderr to a buffer to capture the output of the
+        # command. By returning it, django-cron will log it in the database.
+        buf = io.StringIO()
+        with redirect_stdout(buf), redirect_stderr(buf):
+            call_command("liste_attente_mail_delai_depasse")
+        return buf.getvalue()

@@ -254,3 +254,61 @@ urls:
 
   vehicules-relais.proprietaire.vehicule.recepisse:
     missing: true # Not HTML view
+
+  # Liste attente
+
+  app.liste_attente:
+    title: "Liste d'attente {{ads_manager.content_object.display_text}} - MesADS"
+    description: "Consulter la liste d'attente de {{ads_manager.content_object.display_text}}"
+
+  app.liste_attente_archives:
+    title: "Archive liste d'attente {{ads_manager.content_object.display_text}} - MesADS"
+    description: "Consulter les archives de la liste d'attente de {{ads_manager.content_object.display_text}}"
+
+  app.liste_attente_export:
+    title: "Export excel liste d'attente {{ads_manager.content_object.display_text}} - MesADS"
+    description: "Exporter la liste d'attente de {{ads_manager.content_object.display_text}}"
+
+  app.liste_attente_inscription:
+    title: "Inscription à la liste d'attente {{ads_manager.content_object.display_text}} - MesADS"
+    description: "Ajout d'une inscription à la liste d'attente de {{ads_manager.content_object.display_text}}"
+
+  app.liste_attente_inscription_update:
+    title: "Inscription à la liste d'attente {{ads_manager.content_object.display_text}} - MesADS"
+    description: "Modification d'une inscription à la liste d'attente de {{ads_manager.content_object.display_text}}"
+
+  app.liste_attente_inscription_archivage:
+    title: "Archivage inscription - MesADS"
+    description: "Archivage d'une inscription à la liste d'attente de {{ads_manager.content_object.display_text}}"
+
+  app.liste_attente_inscription_archivage_confirmation:
+    title: "Archivage confirmé - MesADS"
+    description: "Confirmation d'archivage d'une inscription à la liste d'attente de {{ads_manager.content_object.display_text}}"
+
+  app.liste_attente_attribution:
+    title: "Liste d'attente - Attribution - MesADS"
+    description: "Attribution d'une nouvelle ADS depuis la liste d'attente"
+
+  app.liste_attente_traitement_demande:
+    title: "Liste d'attente - Traitement de la demande - MesADS"
+    description: "Traitement d'une inscription de la liste d'attente"
+
+  app.liste_attente_archive_modele:
+    missing: true
+
+  app.liste_attente_contact_modele:
+    missing: true
+
+  app.listes_attentes:
+    title: "Listes d'attente publiques - MesADS"
+    description: "Listes d'attente en accès public sur MesADS"
+  
+  app.liste_attente_publique:
+    title: "Liste d'attente publique {{ads_manager.content_object.display_text}} - MesADS"
+    description: "Liste d'attente publique de l'administration {{ads_manager.content_object.display_text}} sur MesADS"
+
+  app.liste_attente_make_public:
+    missing: true
+
+  app.liste_attente_publique_export_pdf:
+    missing: true

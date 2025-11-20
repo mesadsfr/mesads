@@ -1,0 +1,74 @@
+{% extends "base_container.html" %}
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d’Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Administrations en gestion</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">Liste d'attente {{ads_manager.content_object.display_text}}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Archivage</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <div>
+    <h1>Archivage de la demande</h1>
+
+    <h2>{{ads_manager.content_object.display_text|capfirst}}</h2>
+
+
+    <div class="fr-notice fr-notice--info">
+      <div class="fr-container">
+        <div class="fr-notice__body">
+          <p>
+            <span class="fr-notice__title">Attention : </span>
+            vous êtes sur le point d'archiver cette inscription sur la liste d'attente.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-3">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        
+        <div class="fr-messages-group" aria-live="assertive">
+          {% for error in form.non_field_errors %}
+            <!-- Non-field error -->
+            <p class="fr-message fr-message--error">{{ error }}</p>
+          {% endfor %}
+        </div>
+      
+      {% endif %}
+
+      {% include "form_fields/string.html" with field=form.nom field_errors=form.errors.nom required=form.fields.nom.required %}
+
+      {% include "form_fields/string.html" with field=form.prenom field_errors=form.errors.prenom required=form.fields.prenom.required %}
+
+      {% include "form_fields/string.html" with field=form.numero_licence field_errors=form.errors.numero_licence required=form.fields.numero_licence.required %}
+
+      {% include "form_fields/select.html" with field=form.motif_archivage field_errors=form.errors.motif_archivage required=True %}
+
+      {% include "form_fields/textarea.html" with field=form.commentaire field_errors=form.errors.commentaire required=form.fields.commentaire.required %}
+
+      <div class="fr-input-group">
+        <a class="fr-btn fr-btn--secondary" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">Retour</a>
+        <button type="submit" class="fr-btn">Archiver la demande</button>
+      </div>
+    </form>
+  </div>
+{% endblock body-content %}

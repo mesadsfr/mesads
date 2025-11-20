@@ -47,8 +47,30 @@ class ADSView(RevisionMixin, UpdateView):
 
         return kwargs
 
+    def build_formsets(self, ads):
+        if self.request.method == "POST":
+            users_qs = ADSUser.objects.filter(ads=ads)
+
+            ads_users_fs = ADSUserFormSet(
+                self.request.POST,
+                instance=ads,
+                queryset=users_qs,
+            )
+            ads_legal_files_fs = ADSLegalFileFormSet(
+                self.request.POST, self.request.FILES, instance=ads
+            )
+            if not ads.adsuser_set.count():
+                ads_users_fs.extra = 1
+
+        else:
+            ads_users_fs = ADSUserFormSet(instance=ads)
+            ads_legal_files_fs = ADSLegalFileFormSet(instance=ads)
+
+        return ads_users_fs, ads_legal_files_fs
+
     def get_success_url(self):
         administrator = self.kwargs.get("ads_manager_administrator")
+
         return (
             reverse(
                 "app.ads-manager-admin.ads-detail",
@@ -139,25 +161,7 @@ class ADSView(RevisionMixin, UpdateView):
 
     def get_object(self, queryset=None):
         ads = get_object_or_404(ADS, id=self.kwargs["ads_id"])
-
-        if self.request.POST and self.request.POST.get(
-            ADSUserFormSet().management_form["TOTAL_FORMS"].html_name
-        ):
-            self.ads_users_formset = ADSUserFormSet(self.request.POST, instance=ads)
-        else:
-            self.ads_users_formset = ADSUserFormSet(instance=ads)
-            # Always display at least a form
-            if not ads.adsuser_set.count():
-                self.ads_users_formset.extra = 1
-
-        if self.request.POST and self.request.POST.get(
-            ADSLegalFileFormSet().management_form["TOTAL_FORMS"].html_name
-        ):
-            self.ads_legal_files_formset = ADSLegalFileFormSet(
-                self.request.POST, self.request.FILES, instance=ads
-            )
-        else:
-            self.ads_legal_files_formset = ADSLegalFileFormSet(instance=ads)
+        self.ads_users_formset, self.ads_legal_files_formset = self.build_formsets(ads)
         return ads
 
     def form_invalid(self, form):
@@ -169,6 +173,7 @@ class ADSView(RevisionMixin, UpdateView):
 
     @transaction.atomic
     def form_valid(self, form):
+
         html_name_ads_users_formset = self.ads_users_formset.management_form[
             "TOTAL_FORMS"
         ].html_name
@@ -304,29 +309,27 @@ class ADSDeleteView(DeleteView):
 
 
 class ADSCreateView(ADSView, CreateView):
+    inscription = None
+
+    def get_formsets(self):
+        parent_instance = getattr(self, "object", None) or ADS()
+        if self.request.method == "POST":
+            ads_users_fs = ADSUserFormSet(self.request.POST, instance=parent_instance)
+            ads_legal_files_fs = ADSLegalFileFormSet(
+                self.request.POST, self.request.FILES, instance=parent_instance
+            )
+        else:
+            ads_users_fs = ADSUserFormSet(instance=parent_instance)
+            ads_legal_files_fs = ADSLegalFileFormSet(instance=parent_instance)
+        return ads_users_fs, ads_legal_files_fs
+
     def dispatch(self, request, manager_id, **kwargs):
         """If the ADSManager has the flag no_ads_declared to True, it is
         impossible to create ADS for it."""
         get_object_or_404(ADSManager, id=manager_id, no_ads_declared=False)
 
-        html_name_ads_users_formset = (
-            ADSUserFormSet().management_form["TOTAL_FORMS"].html_name
-        )
-        if self.request.POST.get(html_name_ads_users_formset):
-            self.ads_users_formset = ADSUserFormSet(self.request.POST)
-        else:
-            self.ads_users_formset = ADSUserFormSet()
+        self.ads_users_formset, self.ads_legal_files_formset = self.get_formsets()
         self.ads_users_formset.extra = 1
-
-        html_name_ads_legal_files_formset = (
-            ADSLegalFileFormSet().management_form["TOTAL_FORMS"].html_name
-        )
-        if self.request.POST.get(html_name_ads_legal_files_formset):
-            self.ads_legal_files_formset = ADSLegalFileFormSet(
-                self.request.POST, self.request.FILES
-            )
-        else:
-            self.ads_legal_files_formset = ADSLegalFileFormSet()
         return super().dispatch(request, manager_id, **kwargs)
 
     def get_object(self, queryset=None):
@@ -334,6 +337,7 @@ class ADSCreateView(ADSView, CreateView):
 
     def get_success_url(self):
         administrator = self.kwargs.get("ads_manager_administrator")
+
         return (
             reverse(
                 "app.ads-manager-admin.ads-detail",
@@ -362,7 +366,10 @@ class ADSCreateView(ADSView, CreateView):
         # database, we return a custom error message for "number".
         try:
             with transaction.atomic():
-                return super().form_valid(form)
+                response = super().form_valid(form)
+                if self.inscription:
+                    self.inscription.ads_attribuee()
+                return response
         except IntegrityError:
             form.add_error("number", ADS_UNIQUE_ERROR_MESSAGE)
             return super().form_invalid(form)

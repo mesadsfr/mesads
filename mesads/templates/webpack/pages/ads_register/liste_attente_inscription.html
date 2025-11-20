@@ -1,0 +1,163 @@
+{% extends "base_container.html" %}
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d’Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Administrations en gestion</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">Liste d'attente {{ads_manager.content_object.display_text}}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">{% if object %}Modification de l'inscription{% else %}Nouvelle inscription{% endif %}</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  <div>
+    <h1>
+      {% if object %}
+      Modification de l'inscription
+      {% else %}
+      Nouvelle inscription
+      {% endif %}
+    </h1>
+
+    <h2>{{ads_manager.content_object.display_text|capfirst}}</h2>
+  </div>
+
+  {% if duplicated_licences %}
+    <div class="mb-2 fr-alert fr-alert--warning">
+      <h3 class="fr-alert__title">Numéro de carte professionnelle</h3>
+      <p>Le numéro de carte professionnelle renseigné pour cette inscription est déjà utilisé sur la liste d'attente d'une ou plusieurs administrations. Nous vous invitons à vous rapprocher de celles ci.</p>
+      <ul>
+        {% for duplicata in duplicated_licences %}
+          <li>
+            {{duplicata.ads_manager.content_object.display_text}}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <div>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        
+        <div class="fr-messages-group" aria-live="assertive">
+          {% for error in form.non_field_errors %}
+            <!-- Non-field error -->
+            <p class="fr-message fr-message--error">{{ error }}</p>
+          {% endfor %}
+        </div>
+      
+      {% endif %}
+
+      {% include "form_fields/string.html" with field=form.numero field_errors=form.errors.numero required=form.fields.numero.required %}
+
+      {% include "form_fields/string.html" with field=form.nom field_errors=form.errors.nom required=form.fields.nom.required %}
+
+      {% include "form_fields/string.html" with field=form.prenom field_errors=form.errors.prenom required=form.fields.prenom.required %}
+
+      {% include "form_fields/string.html" with field=form.numero_licence field_errors=form.errors.numero_licence required=form.fields.numero_licence.required %}
+
+      {% include "form_fields/string.html" with field=form.numero_telephone field_errors=form.errors.numero_telephone required=form.fields.numero_telephone.required %}
+
+      {% include "form_fields/string.html" with field=form.email field_errors=form.errors.email required=form.fields.email.required %}
+
+      {% include "form_fields/string.html" with field=form.adresse field_errors=form.errors.adresse required=form.fields.adresse.required %}
+
+      <div class="fr-input-group{% if form.errors.date_depot_inscription %} fr-input-group--error{% endif %}">
+        <label class="fr-label" for="{{ form.date_depot_inscription.id_for_label }}">
+          {{ form.date_depot_inscription.label }}
+          <span aria-hidden="true">*</span>
+          <span class="fr-sr-only"> (obligatoire)</span>
+          {% if form.date_depot_inscription.help_text %}<span class="fr-hint-text">{{ form.date_depot_inscription.help_text }}</span>{% endif %}
+        </label>
+
+        <input
+          class="fr-input{% if form.date_depot_inscription.errors %} fr-input--error{% endif %}"
+          type="date"
+          id="{{ form.date_depot_inscription.id_for_label }}"
+          name="{{ form.date_depot_inscription.html_name }}"
+          value="{% if form.is_bound %}{{ form.data.date_depot_inscription|default:'' }}{% else %}{{ form.initial.date_depot_inscription|date:'Y-m-d' }}{% endif %}"
+        />
+
+        {% for error in form.date_depot_inscription.errors %}
+          <p class="fr-error-text">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <div id="date-renouvellement-container" hidden aria-hidden="true" aria-live="polite" class="fr-input-group{% if form.errors.date_dernier_renouvellement %} fr-input-group--error{% endif %}">
+        <label class="fr-label" for="{{ form.date_dernier_renouvellement.id_for_label }}">
+          {{ form.date_dernier_renouvellement.label }}
+          <span aria-hidden="true">*</span>
+          <span class="fr-sr-only"> (obligatoire)</span>
+          {% if form.date_dernier_renouvellement.help_text %}<span class="fr-hint-text">{{ form.date_dernier_renouvellement.help_text }}</span>{% endif %}
+        </label>
+
+        <input
+          class="fr-input{% if form.date_dernier_renouvellement.errors %} fr-input--error{% endif %}"
+          type="date"
+          id="{{ form.date_dernier_renouvellement.id_for_label }}"
+          name="{{ form.date_dernier_renouvellement.html_name }}"
+          value="{% if form.is_bound %}{{ form.data.date_dernier_renouvellement|default:'' }}{% else %}{{ form.initial.date_dernier_renouvellement|date:'Y-m-d' }}{% endif %}"
+        />
+
+        {% for error in form.date_dernier_renouvellement.errors %}
+          <p class="fr-error-text">{{ error }}</p>
+        {% endfor %}
+      </div>
+      <div class="fr-input-group">
+        <a class="fr-btn fr-btn--secondary" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">Retour</a>
+        {% if object %}
+          <a
+            class="fr-btn fr-btn--secondary"
+            href="{% url 'app.liste_attente_inscription_archivage'  manager_id=ads_manager.id inscription_id=object.id %}"
+          >
+            Archiver
+          </a>
+        {% endif %}
+        <button type="submit" class="fr-btn">Enregistrer l'inscription</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    /*
+    Petit bout de javascript permettant :
+    - D'afficher la date de renouvellement si la date d'inscription est vieille de plus d'un an
+    - La masquer dans le cas inverse
+    */
+    const inputDateInscription = document.getElementById("{{form.date_depot_inscription.id_for_label}}")
+    const containerDateRenouvellement = document.getElementById("date-renouvellement-container")
+
+    function showRenouvellementDate() {
+      const today = new Date();                 
+      const oneYearSooner = new Date()
+      oneYearSooner.setFullYear(today.getFullYear() - 1)
+
+      if (inputDateInscription.valueAsDate && inputDateInscription.valueAsDate < oneYearSooner) {
+        containerDateRenouvellement.hidden = false
+        containerDateRenouvellement.setAttribute("aria-hidden", "false")
+        
+      } else {
+        containerDateRenouvellement.hidden = true
+        containerDateRenouvellement.setAttribute("aria-hidden", "true")
+      }
+    }
+
+    showRenouvellementDate()
+    inputDateInscription.addEventListener("input", showRenouvellementDate)
+  </script>
+{% endblock body-content %}

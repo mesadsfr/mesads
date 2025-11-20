@@ -132,6 +132,74 @@ url_gestionnaire = [
     ),
 ]
 
+url_liste_attente = [
+    path(
+        "liste_attente/<int:manager_id>/",
+        ads_manager_required(views.ListeAttenteView.as_view()),
+        name="app.liste_attente",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/archives/",
+        ads_manager_required(views.DemandeArchiveesView.as_view()),
+        name="app.liste_attente_archives",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/archives/modele-courrier/",
+        ads_manager_required(views.ModeleCourrierArchivageView.as_view()),
+        name="app.liste_attente_archive_modele",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/attribution-ads/",
+        ads_manager_required(views.AttributionListeAttenteView.as_view()),
+        name="app.liste_attente_attribution",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/attribution-ads/<int:inscription_id>/",
+        ads_manager_required(views.InscriptionTraitementListeAttenteView.as_view()),
+        name="app.liste_attente_traitement_demande",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/attribution-ads/modele-courrier/",
+        ads_manager_required(views.ModeleCourrierContactView.as_view()),
+        name="app.liste_attente_contact_modele",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/export/",
+        ads_manager_required(views.ExportCSVInscriptionListeAttenteView.as_view()),
+        name="app.liste_attente_export",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/inscription/",
+        ads_manager_required(views.CreationInscriptionListeAttenteView.as_view()),
+        name="app.liste_attente_inscription",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/<int:inscription_id>/",
+        ads_manager_required(views.ModificationInscriptionListeAttenteView.as_view()),
+        name="app.liste_attente_inscription_update",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/archivage/<int:inscription_id>/",
+        ads_manager_required(views.ArchivageInscriptionListeAttenteView.as_view()),
+        name="app.liste_attente_inscription_archivage",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/archivage/confirmation/",
+        ads_manager_required(views.ArchivageConfirmationView.as_view()),
+        name="app.liste_attente_inscription_archivage_confirmation",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/make-public/",
+        ads_manager_required(views.ChangementStatutListeView.as_view()),
+        name="app.liste_attente_make_public",
+    ),
+    path(
+        "liste_attente/<int:manager_id>/export/liste-publique/",
+        ads_manager_required(views.ExportPDFListePubliqueView.as_view()),
+        name="app.liste_attente_publique_export_pdf",
+    ),
+]
+
 url_commons = [
     path(
         "registre_ads/dashboards",
@@ -181,7 +249,19 @@ url_public = [
         views.PlanSiteView.as_view(),
         name="app.plan_site",
     ),
+    path(
+        "listes-attente",
+        views.ListesAttentesPubliquesView.as_view(),
+        name="app.listes_attentes",
+    ),
+    path(
+        "listes-attente/publique/<int:manager_id>/",
+        views.ListeAttentePublique.as_view(),
+        name="app.liste_attente_publique",
+    ),
 ]
 
 
-urlpatterns = url_prefectures + url_gestionnaire + url_commons + url_public
+urlpatterns = (
+    url_prefectures + url_gestionnaire + url_commons + url_public + url_liste_attente
+)

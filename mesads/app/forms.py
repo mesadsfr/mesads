@@ -1,7 +1,10 @@
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django import forms
+from dateutil.relativedelta import relativedelta
 from django.forms import BaseInlineFormSet, inlineformset_factory
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 
 from dal import autocomplete
 
@@ -15,6 +18,7 @@ from .models import (
     ADSManager,
     ADSManagerDecree,
     ADSUser,
+    InscriptionListeAttente,
 )
 from .widgets import BooleanSelect
 
@@ -262,3 +266,175 @@ class ADSManagerAutocompleteForm(forms.Form):
 
 class SearchVehiculeForm(forms.Form):
     immatriculation = forms.CharField(required=False)
+
+
+class InscriptionListeAttenteForm(forms.ModelForm):
+    ERROR_DATE_RENOUVELLEMENT_EMPTY = "L'inscription semble dater de plus d’un an. Vérifiez si un dépôt de demande de renouvellement a eu lieu au cours des 12 derniers mois."
+    ERROR_DATE_RENOUVELLEMENT = "Le renouvellement semble dater de plus d’un an. Vérifiez si un dépôt de demande de renouvellement a eu lieu au cours des 12 derniers mois."
+
+    class Meta:
+        model = InscriptionListeAttente
+        fields = (
+            "numero",
+            "nom",
+            "prenom",
+            "numero_licence",
+            "numero_telephone",
+            "email",
+            "adresse",
+            "date_depot_inscription",
+            "date_dernier_renouvellement",
+            "commentaire",
+        )
+
+    def __init__(self, ads_manager, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ads_manager = ads_manager
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        today = timezone.localdate()
+        date_dernier_renouvellement = cleaned_data.get("date_dernier_renouvellement")
+        date_depot_inscription = cleaned_data.get("date_depot_inscription")
+
+        if date_depot_inscription and date_depot_inscription < today - relativedelta(
+            years=1
+        ):
+            if not date_dernier_renouvellement:
+                self.add_error(
+                    "date_dernier_renouvellement", self.ERROR_DATE_RENOUVELLEMENT_EMPTY
+                )
+
+        if (
+            date_dernier_renouvellement
+            and date_dernier_renouvellement < today - relativedelta(years=1)
+        ):
+            self.add_error(
+                "date_dernier_renouvellement",
+                self.ERROR_DATE_RENOUVELLEMENT,
+            )
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        obj = super().save(commit=False)
+        obj.ads_manager = self.ads_manager
+
+        if obj.date_dernier_renouvellement:
+            obj.date_fin_validite = obj.date_dernier_renouvellement + relativedelta(
+                years=1
+            )
+        else:
+            obj.date_fin_validite = obj.date_depot_inscription + relativedelta(years=1)
+
+        # Auto-génération si pas de numéro
+        if not obj.numero:
+            base_numero = ""
+            if self.ads_manager.content_type.model == "commune":
+                base_numero = self.ads_manager.content_object.insee
+            elif self.ads_manager.content_type.model == "epci":
+                base_numero = self.ads_manager.content_object.departement
+            elif self.ads_manager.content_type.model == "prefecture":
+                base_numero = self.ads_manager.content_object.numero
+
+            count = InscriptionListeAttente.objects.filter(
+                date_depot_inscription=obj.date_depot_inscription,
+                ads_manager=self.ads_manager,
+            ).count()
+            obj.numero = f"{base_numero}{obj.date_depot_inscription.strftime('%d%m%Y')}{count + 1:04d}"
+        if commit:
+            obj.save()
+        return obj
+
+
+class ArchivageInscriptionListeAttenteForm(forms.ModelForm):
+    ERROR_COMMENTAIRE_AUTRE = (
+        'Ce champ est obligatoire si vous choisissez le motif "Autre"'
+    )
+
+    class Meta:
+        model = InscriptionListeAttente
+        fields = ("nom", "prenom", "numero_licence", "motif_archivage", "commentaire")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["motif_archivage"].required = True
+        self.fields["motif_archivage"].error_messages = {
+            "required": "Merci de renseigner le motif d’archivage."
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        motif = cleaned_data.get("motif_archivage")
+        if motif == InscriptionListeAttente.AUTRE and not cleaned_data.get(
+            "commentaire"
+        ):
+            self.add_error(
+                "commentaire",
+                self.ERROR_COMMENTAIRE_AUTRE,
+            )
+
+        return cleaned_data
+
+
+class ContactInscriptionListeAttenteForm(forms.ModelForm):
+    EMPTY_DATE_CONTACT = "Merci de renseigner la date de contact."
+    EMPTY_DELAI_REPONSE = "Merci de renseigner le délai de réponse."
+
+    class Meta:
+        model = InscriptionListeAttente
+        fields = ("date_contact", "delai_reponse")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["date_contact"].required = True
+        self.fields["date_contact"].error_messages = {
+            "required": self.EMPTY_DATE_CONTACT
+        }
+        self.fields["delai_reponse"].required = True
+        self.fields["delai_reponse"].error_messages = {
+            "required": self.EMPTY_DELAI_REPONSE
+        }
+
+    def save(self, commit=True):
+        obj = super().save(commit=False)
+        obj.status = InscriptionListeAttente.ATTENTE_REPONSE
+        if commit:
+            obj.save()
+        return obj
+
+
+class UpdateDelaiInscriptionListeAttenteForm(forms.ModelForm):
+    EMPTY_DELAI_REPONSE = "Merci de renseigner le délai de réponse."
+
+    class Meta:
+        model = InscriptionListeAttente
+        fields = ("delai_reponse",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["delai_reponse"].required = True
+        self.fields["delai_reponse"].error_messages = {
+            "required": self.EMPTY_DELAI_REPONSE
+        }
+
+
+class AttributionADSForm(forms.Form):
+    numero = forms.CharField(label="Numéro de l'ADS")
+    date_attribution = forms.DateField(label="Date de signature de l'arrêté")
+
+    arrete = forms.FileField(label="Fichier de l'arrêté")
+
+    def __init__(self, *args, **kwargs):
+        self.ads_manager = kwargs.pop("ads_manager")
+        super().__init__(*args, **kwargs)
+
+    def clean_numero(self):
+        numero = self.cleaned_data["numero"]
+
+        if ADS.objects.filter(ads_manager=self.ads_manager, number=numero):
+            raise ValidationError("Ce numéro est déjà utilisé par une autre ADS.")
+
+        return numero

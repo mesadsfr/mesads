@@ -38,6 +38,7 @@
                     <tr>
                       <th>Administration</th>
                       <th>Nombre d'ADS enregistrées</th>
+                      <th>Inscriptions à la liste d'attente</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -60,7 +61,12 @@
                           {% if request.complete_updates_count %}
                             <p class="fr-text--xs">(dont {{ request.complete_updates_count }} avec toutes les informations)</p>
                           {% elif request.ads_count %}
-                            <p class="fr-text--xs text-red-500">(à vérifier)</p>
+                            <p class="fr-text--xs text-red-500">(données à vérifier)</p>
+                          {% endif %}
+                        </td>
+                        <td>
+                          {% if request.accepted is True %}
+                          {{request.ads_manager.inscriptions_liste_attente.count}}
                           {% endif %}
                         </td>
                         <td>
@@ -69,8 +75,19 @@
                           {% elif request.accepted is False %}
                             🚫 Demande refusée
                           {% elif request.accepted is True %}
-                            <a class="fr-btn"
-                              href="{% url 'app.ads-manager-admin.detail-administration' prefecture_id=ads_manager_administrator.prefecture.id manager_id=request.ads_manager.id %}">Gérez les ADS</a>
+                            <a
+                              class="fr-btn"
+                              href="{% url 'app.ads-manager-admin.detail-administration' prefecture_id=ads_manager_administrator.prefecture.id manager_id=request.ads_manager.id %}"
+                            >
+                              Gérer les ADS
+                            </a>
+
+                            <a
+                              class="fr-btn fr-btn--primary mt-1"
+                              href="{% url 'app.liste_attente' manager_id=request.ads_manager.id %}"
+                            >
+                              Gérer la liste d'attente
+                            </a>
                           {% endif %}
                         </td>
                       </tr>
@@ -116,6 +133,7 @@
               <tr>
                 <th>Administration</th>
                 <th>Nombre d'ADS</th>
+                <th>Nombre de demandes enregistrées sur la liste d'attente</th>
                 <th>Consulter / Modifier</th>
               </tr>
             </thead>
@@ -138,12 +156,23 @@
                     {% if ads_manager.complete_updates_count %}
                       <p class="fr-text--xs">(dont {{ ads_manager.complete_updates_count }} avec toutes les informations)</p>
                     {% elif ads_manager.ads_set.count %}
-                      <p class="fr-text--xs text-red-500">(à vérifier)</p>
+                      <p class="fr-text--xs text-red-500">(données à vérifier)</p>
                     {% endif %}
                   </td>
                   <td>
+                    {{ads_manager.inscriptions_liste_attente.count}}
+                  </td>
+                  <td>
                     <a class="fr-btn"
-                       href="{% url 'app.ads-manager-admin.detail-administration' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads_manager.id %}">Consulter</a>
+                       href="{% url 'app.ads-manager-admin.detail-administration' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads_manager.id %}"
+                    >
+                      Consulter les ADS
+                    </a>
+                    <a class="mt-1 fr-btn"
+                       href="{% url 'app.liste_attente' manager_id=ads_manager.id %}"
+                    >
+                      Consulter la liste d'attente
+                    </a>
                   </td>
                 </tr>
               {% endfor %}

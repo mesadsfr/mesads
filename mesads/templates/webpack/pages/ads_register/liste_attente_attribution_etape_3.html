@@ -1,0 +1,49 @@
+<div class="fr-stepper">
+  <h2 class="fr-stepper__title"> Attribution de l'ADS<span class="fr-stepper__state">Étape 3 sur 3</span>
+  </h2>
+  <div class="fr-stepper__steps" data-fr-current-step="3" data-fr-steps="3"></div>
+  <p class="fr-stepper__details"><span class="fr-text--bold">Étape suivante :</span></p>
+</div>
+
+<div>
+  <p>
+    Vous allez maintenant pouvoir attribuer une ADS au demandeur. Pour cela, vous allez devoir prendre un arrêté, puis le renseigner dans le formulaire ci dessous. Une fois le formulaire validé, l'inscription sera automatiquement archivée.
+  </p>
+
+  <a class="fr-btn mb-2" href="{% url 'app.arrete-download' manager_id=ads_manager.id %}?modele_arrete=creation_nouvelle_ads">Modèle d'arrêté de création d'ADS</a> 
+
+  <hr />
+
+  <form class="mt-2" method="post" enctype="multipart/form-data">
+
+    {% csrf_token %}
+      
+    {% include "form_fields/string.html" with field=form.numero field_errors=form.errors.numero required=form.fields.numero.required %}
+
+    {% include "form_fields/date.html" with field=form.date_attribution field_errors=form.errors.date_attribution required=form.fields.date_attribution.required %}
+  
+    <div class="fr-upload-group {% if form.errors.arrete %}fr-upload-group--error{%endif%} mb-2">
+      <label class="fr-label" for="{{ form.arrete.id_for_label }}">
+        {{form.arrete.label}}
+        <span aria-hidden="true">*</span>
+        <span class="fr-sr-only"> (obligatoire)</span>
+      </label>
+      <input
+        class="fr-upload"
+        aria-describedby="upload-id-messages"
+        type="file"
+        id="{{ form.arrete.id_for_label }}"
+        name="{{ form.arrete.html_name }}"
+      >
+      <div class="fr-messages-group" id="upload-id-messages" aria-live="polite">
+        {% if form.errors.arrete %}
+          {% for error in form.errors.arrete %}
+            <p class="fr-message fr-message--error" id="upload-id-message-error">{{error}}</p>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+
+    <button class="fr-btn" type="submit" name="action" value="attribution_ads">Valider et attribuer</button>
+  </form>
+</div>

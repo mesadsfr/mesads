@@ -1,3 +1,23 @@
+<div class="fr-notice fr-notice--info">
+  <div class="fr-container">
+    <div class="fr-notice__body">
+      {% if requetes_gestionnaires|length == 1 and requetes_gestionnaires.0.accepted == True %}
+      <a href="{% url 'app.liste_attente' manager_id=requetes_gestionnaires.0.ads_manager.id %}">
+        <p>
+          <span class="fr-notice__title">Nouveauté: </span>
+          <span class="fr-notice__desc">il vous est désormais possible d'enregistrer la liste d'attente de votre collectivité sur MesADS</span>
+        </p>
+      </a>
+      {% else %}
+        <p>
+          <span class="fr-notice__title">Nouveauté: </span>
+          <span class="fr-notice__desc">il vous est désormais possible d'enregistrer la liste d'attente de votre collectivité sur MesADS</span>
+        </p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
 <div class="homepage-section">
   <div class="fr-container">
     <div class="fr-grid-row fr-grid-row--gutters">
@@ -40,7 +60,7 @@
                             {% if requete.complete_updates_count %}
                               <p class="fr-text--xs">(dont {{ requete.complete_updates_count }} avec toutes les informations)</p>
                             {% elif requete.ads_count %}
-                              <p class="fr-text--xs text-red-500">(à vérifier)</p>
+                              <p class="fr-text--xs text-red-500">(données à vérifier)</p>
                             {% endif %}
                           </td>
                           <td>
@@ -49,8 +69,18 @@
                             {% elif requete.accepted is False %}
                               🚫 Demande refusée
                             {% elif requete.accepted is True %}
-                              <a class="fr-btn fr-btn--primary"
-                                href="{% url 'app.ads-manager.detail' manager_id=requete.ads_manager.id %}">Gérez les ADS</a>
+                              <a
+                                class="fr-btn fr-btn--primary"
+                                href="{% url 'app.ads-manager.detail' manager_id=requete.ads_manager.id %}"
+                              >
+                                Gérer les ADS
+                              </a>
+                              <a
+                                class="fr-btn fr-btn--primary mt-1"
+                                href="{% url 'app.liste_attente' manager_id=requete.ads_manager.id %}"
+                              >
+                                Gérer la liste d'attente
+                              </a>
                             {% endif %}
                           </td>
                         </tr>

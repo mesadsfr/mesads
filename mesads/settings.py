@@ -19,6 +19,9 @@ import sys
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def parse_env_bool(key, default):
@@ -43,7 +46,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = parse_env_bool("DEBUG", True)
 
 # Only enable matomo on production
-MESADS_STATS_ENABLED = not DEBUG
+MESADS_STATS_ENABLED = parse_env_bool("MESADS_STATS_ENABLED", False)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -76,16 +79,31 @@ STORAGES = {
 
 # Upload to S3 in production, or if S3 is defined in debug mode
 if not DEBUG or os.environ.get("AWS_S3_ENDPOINT_URL"):
-    STORAGES["default"] = {
-        # See documentation in s3storage.py to understand why we use this custom storage.
-        "BACKEND": "mesads.s3storage.HackishS3Boto3Storage",
-        "OPTIONS": {
-            "bucket_name": os.environ["AWS_STORAGE_BUCKET_NAME"],
-            "access_key": os.environ["AWS_S3_ACCESS_KEY_ID"],
-            "secret_key": os.environ["AWS_S3_SECRET_ACCESS_KEY"],
-            "endpoint_url": os.environ["AWS_S3_ENDPOINT_URL"],
-        },
-    }
+    if os.environ.get("ENV", "") == "PREPROD":
+        STORAGES["default"] = {
+            # See documentation in s3storage.py to understand why we use this custom storage.
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "bucket_name": os.environ["AWS_STORAGE_BUCKET_NAME"],
+                "access_key": os.environ["AWS_S3_ACCESS_KEY_ID"],
+                "secret_key": os.environ["AWS_S3_SECRET_ACCESS_KEY"],
+                "endpoint_url": os.environ["AWS_S3_ENDPOINT_URL"],
+                "region_name": "cellar-c2",
+                "signature_version": "s3v4",
+                "addressing_style": "path",
+            },
+        }
+    else:
+        STORAGES["default"] = {
+            # See documentation in s3storage.py to understand why we use this custom storage.
+            "BACKEND": "mesads.s3storage.HackishS3Boto3Storage",
+            "OPTIONS": {
+                "bucket_name": os.environ["AWS_STORAGE_BUCKET_NAME"],
+                "access_key": os.environ["AWS_S3_ACCESS_KEY_ID"],
+                "secret_key": os.environ["AWS_S3_SECRET_ACCESS_KEY"],
+                "endpoint_url": os.environ["AWS_S3_ENDPOINT_URL"],
+            },
+        }
 
 
 ALLOWED_HOSTS = [part for part in os.getenv("ALLOWED_HOSTS", "").split(";") if part]
@@ -137,6 +155,7 @@ INSTALLED_APPS = [
 CRON_CLASSES = [
     "mesads.app.crons.ImportDataForParis",
     "mesads.app.crons.DeleteOldUsers",
+    "mesads.app.crons.NotificationListeAttente",
 ]
 
 AUTH_USER_MODEL = "users.User"
@@ -254,6 +273,8 @@ STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_URL = "/auth/login/"
+
+MESADS_BASE_URL = os.getenv("MESADS_BASE_URL", "http://localhost:8000")
 
 # Static configuration
 STATIC_ROOT = BASE_DIR / "static"
