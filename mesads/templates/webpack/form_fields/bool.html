@@ -9,11 +9,7 @@
     id="{{ field.id_for_label }}"
     name="{{ field.html_name }}"
     {% if field.value %}checked{% endif %}
-    :disabled="
-      typeof update !== 'undefined'
-        ? (!update || {{ readonly|yesno:'true,false' }})
-        : {{ readonly|yesno:'true,false' }}
-    "
+    {% if readonly %}disabled{% endif %}
   />
   
   <label class="fr-label" for="{{ field.id_for_label }}">

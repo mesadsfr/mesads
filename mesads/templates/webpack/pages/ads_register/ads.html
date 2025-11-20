@@ -70,17 +70,10 @@
     </div>
   </nav>
 
-  <div {% if ads and not form.errors %}x-data="{update: false}"{% else %}x-data="{update: true}"{% endif %}>
+  <div>
     {% if ads %}
       <h1>
         ADS #{{ ads.number }} ({{ ads.ads_manager.content_object.display_text|capfirst }})
-        <button
-          x-show="!update"
-          @click="update = !update"
-          class="fr-btn"
-        >
-          Modifier
-        </button>
       </h1>
 
       {% if not latest_ads_update_log or latest_ads_update_log.is_outdated %}
@@ -110,39 +103,24 @@
       <h1>Enregistrement d'une ADS</h1>
     {% endif %}
 
-    <div x-show="!update" class="fr-notice fr-notice--info fr-mb-3w">
+    <div class="fr-notice fr-notice--info fr-mb-3w">
       <div class="fr-container">
         <div class="fr-notice__body">
           <p>
-            <span class="fr-notice__title">Pour toute modification sur l'ADS,</span>
+            <span class="fr-notice__title">Pour modifier l'ADS</span>
             <span class="fr-notice__desc">
-              (changement de véhicule, de titulaire, etc), il convient de cliquer sur "Modifier"
+              (changement de véhicule, de titulaire, etc.), éditez les champs du formulaire et cliquez sur “enregistrer” en bas de cette page.
+              </br>
+              </br>
+              En cas de location-gérance, les informations du locataire-gérant doivent être renseignées dans la partie “conducteur” en bas du formulaire.
+              </br>
+              </br>
+              Les anciennes informations s’enregistrent automatiquement dans l’historique de l’ADS que vous pourrez consulter sur le lien ci-dessous.
+              </br>
+              </br>
+              Vous pouvez aussi accéder aux modèles d’arrêtés en cliquant sur le lien “accéder aux modèles”.
             </span>
           </p>
-        </div>
-      </div>
-    </div>
-
-    <div x-show="update">
-      <div class="fr-notice fr-notice--info fr-mb-3w">
-        <div class="fr-container">
-          <div class="fr-notice__body">
-            <p>
-              <span class="fr-notice__title">Pour modifier l'ADS</span>
-              <span class="fr-notice__desc">
-                (changement de véhicule, de titulaire, etc.), éditez les champs du formulaire et cliquez sur “enregistrer” en bas de cette page.
-                </br>
-                </br>
-                En cas de location-gérance, les informations du locataire-gérant doivent être renseignées dans la partie “conducteur” en bas du formulaire.
-                </br>
-                </br>
-                Les anciennes informations s’enregistrent automatiquement dans l’historique de l’ADS que vous pourrez consulter sur le lien ci-dessous.
-                </br>
-                </br>
-                Vous pouvez aussi accéder aux modèles d’arrêtés en cliquant sur le lien “accéder aux modèles”.
-              </span>
-            </p>
-          </div>
         </div>
       </div>
     </div>
@@ -448,11 +426,7 @@
                   @click="extraADSUserForms++"
                   x-add-ads-user-button
                   x-transition
-                  :disabled="
-                    typeof update !== 'undefined'
-                      ? (!update || {{ ads_manager.is_locked|yesno:'true,false' }})
-                      : {{ ads_manager.is_locked|yesno:'true,false' }}
-                  "
+                  {% if ads_manager.is_locked %}disabled{% endif %}
                 >
                   Ajouter un nouveau conducteur
                 </button>
@@ -492,16 +466,7 @@
                 Retour
               </a>
               <button
-                type="button"
-                x-show="!update"
-                class="fr-btn fr-mr-4v"
-                @click="update = !update"
-              >
-                Modifier
-              </button>
-              <button
                 type="submit"
-                x-show="update"
                 class="fr-btn" 
                 {% if ads_manager.is_locked %}disabled{% endif %}
               >

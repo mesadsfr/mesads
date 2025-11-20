@@ -20,11 +20,7 @@
     id="{{ field.id_for_label }}"
     name="{{ field.html_name }}"
     rows="{{ rows|default:8 }}"
-    :readonly="
-      typeof update !== 'undefined'
-        ? (!update || {{ readonly|yesno:'true,false' }})
-        : {{ readonly|yesno:'true,false' }}
-    "
+    {% if readonly %}readonly{% endif %}
   >
   {{field.value}}
   </textarea>

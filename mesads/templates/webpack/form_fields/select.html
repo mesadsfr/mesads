@@ -20,11 +20,7 @@
     id="{{ field.id_for_label }}"
     name="{{ field.html_name }}"
     {% if x_model %}x-model="{{ x_model }}"{% endif %}
-    :disabled="
-      typeof update !== 'undefined'
-        ? (!update || {{ readonly|yesno:'true,false' }})
-        : {{ readonly|yesno:'true,false' }}
-    "
+    {% if readonly %}disabled{% endif %}
   >
     {% if empty_option %}
       <option disabled selected value>Sélectionnez une option</option>
