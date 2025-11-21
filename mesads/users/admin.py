@@ -18,7 +18,7 @@ from reversion.models import Revision
 from mesads.app.models import Notification
 from mesads.vehicules_relais.models import Proprietaire
 
-from .models import User, UserAuditEntry
+from .models import User, UserAuditEntry, NoteUtilisateur
 
 
 class ADSManagerRequestFilter(admin.SimpleListFilter):
@@ -368,3 +368,73 @@ class UserAuditEntryAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+class NoteFaciliteFilter(admin.SimpleListFilter):
+    title = "Note facilité"
+    parameter_name = "note_facilite"
+
+    def lookups(self, request, model_admin):
+        return (
+            (1, "1"),
+            (2, "2"),
+            (3, "3"),
+            (4, "4"),
+            (5, "5"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(note_facilite=self.value())
+        return queryset
+
+
+class NoteQualiteFilter(admin.SimpleListFilter):
+    title = "Note qualité"
+    parameter_name = "note_qualite"
+
+    def lookups(self, request, model_admin):
+        return (
+            (1, "1"),
+            (2, "2"),
+            (3, "3"),
+            (4, "4"),
+            (5, "5"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(note_qualite=self.value())
+        return queryset
+
+
+@admin.register(NoteUtilisateur)
+class NoteUtilisateurAdmin(admin.ModelAdmin):
+    @admin.display(description="Utilisateur")
+    def utilisateur(self, note):
+        return note.user.email
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    list_display = (
+        "utilisateur",
+        "note_qualite",
+        "note_facilite",
+    )
+
+    search_fields = ("user__email__icontains",)
+
+    list_filter = [
+        NoteQualiteFilter,
+        NoteFaciliteFilter,
+    ]
+
+    def get_queryset(self, request):
+        req = NoteUtilisateur.objects
+        req = req.prefetch_related("user")
+        req = req.filter(Q(note_facilite__isnull=False) | Q(note_qualite__isnull=False))
+        return req

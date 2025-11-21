@@ -125,6 +125,7 @@ class ADSManagerAdmin(admin.ModelAdmin):
         "ads_manager_administrator_users_link",
         "ads_manager_requests_link",
         "ads_link",
+        "inscription_liste_attente_link",
     )
 
     autocomplete_fields = ("epci_delegate",)
@@ -136,6 +137,7 @@ class ADSManagerAdmin(admin.ModelAdmin):
         "ads_manager_administrator_users_link",
         "ads_manager_requests_link",
         "ads_link",
+        "inscription_liste_attente_link",
     )
 
     search_fields = (
@@ -174,7 +176,12 @@ class ADSManagerAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         req = super().get_queryset(request)
         req = req.annotate(
-            ads_count=Count("ads", filter=Q(ads__deleted_at__isnull=True))
+            ads_count=Count("ads", filter=Q(ads__deleted_at__isnull=True)),
+            inscriptions_count=Count(
+                "inscriptions_liste_attente",
+                filter=Q(inscriptions_liste_attente__deleted_at__isnull=True),
+                distinct=True,
+            ),
         )
         return req
 
@@ -256,3 +263,15 @@ class ADSManagerAdmin(admin.ModelAdmin):
     def ads_link(self, obj):
         url = reverse("admin:app_ads_changelist") + f"?ads_manager={obj.id}"
         return mark_safe(f'<a href="{url}">Voir les {obj.ads_count} ADS</a>')
+
+    @admin.display(
+        description="Liste des inscriptions a la liste d'attente du gestionnaire"
+    )
+    def inscription_liste_attente_link(self, obj):
+        url = (
+            reverse("admin:app_inscriptionlisteattente_changelist")
+            + f"?ads_manager={obj.id}"
+        )
+        return mark_safe(
+            f'<a href="{url}">Voir les {obj.inscriptions_count} inscriptions</a>'
+        )

@@ -1,7 +1,7 @@
 import calendar
 from datetime import date, timedelta
 
-from django.db.models import Q, OuterRef, Subquery, BooleanField, Sum
+from django.db.models import Q, OuterRef, Subquery, BooleanField, Sum, Count
 from django.views.generic import TemplateView
 from django.utils import timezone
 
@@ -91,6 +91,30 @@ class StatistiquesView(TemplateView):
         else:
             return round(total_notes / count, 2), count
 
+    def get_note_qualite_repartition(self):
+        notes = (
+            NoteUtilisateur.objects.filter(note_qualite__isnull=False)
+            .values("note_qualite")
+            .annotate(nb=Count("id"))
+        )
+        counts = {item["note_qualite"]: item["nb"] for item in notes}
+
+        repartition = [{"note": n, "nb": counts.get(n, 0)} for n in range(1, 6)]
+
+        return repartition
+
+    def get_note_facilite_repartition(self):
+        notes = (
+            NoteUtilisateur.objects.filter(note_facilite__isnull=False)
+            .values("note_facilite")
+            .annotate(nb=Count("id"))
+        )
+        counts = {item["note_facilite"]: item["nb"] for item in notes}
+
+        repartition = [{"note": n, "nb": counts.get(n, 0)} for n in range(1, 6)]
+
+        return repartition
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -123,6 +147,9 @@ class StatistiquesView(TemplateView):
                 context["start_date"], context["end_date"]
             )
         )
+
+        context["note_qualite_repartition"] = self.get_note_qualite_repartition()
+        context["note_facilite_repartition"] = self.get_note_facilite_repartition()
 
         avg_note_facilite, count_note_facilite = self.get_note_moyenne_facilite()
         avg_note_qualite, count_note_qualite = self.get_note_moyenne_qualite()

@@ -57,6 +57,24 @@
             <dt>Nombre de notes</dt>
             <dd>{{count_note_facilite}}</dd>
           </dl>
+
+          <table>
+            <caption>Répartiton des notes de facilité</caption>
+            <thead>
+              <tr>
+                {% for nr in note_facilite_repartition %}
+                <th>{{nr.note}}</th>
+                {% endfor %}
+              </tr>
+              
+            </thead>
+            <tbody>
+                {% for nr in note_facilite_repartition %}
+                <th>{{nr.nb}}</th>
+                {% endfor %}
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <div>
@@ -67,6 +85,24 @@
             <dt>Nombre de notes</dt>
             <dd>{{count_note_qualite}}</dd>
           </dl>
+
+          <table>
+            <caption>Répartiton des notes de qualité</caption>
+            <thead>
+              <tr>
+                {% for nr in note_qualite_repartition %}
+                <th>{{nr.note}}</th>
+                {% endfor %}
+              </tr>
+              
+            </thead>
+            <tbody>
+                {% for nr in note_qualite_repartition %}
+                <th>{{nr.nb}}</th>
+                {% endfor %}
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
