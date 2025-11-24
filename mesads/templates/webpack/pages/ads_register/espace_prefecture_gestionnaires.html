@@ -115,19 +115,42 @@
   </div>
   
   {% if ads_manager_administrator %}
-    <h2>{{ ads_manager_administrator.prefecture.display_text|capfirst }}</h2>
+    <h2 id="list-managers">{{ ads_manager_administrator.prefecture.display_text|capfirst }}</h2>
     <p>
-      <a class="fr-link fr-icon-arrow-down-line fr-link--icon-right"
-   href="{% url 'app.exports.prefecture' prefecture_id=ads_manager_administrator.prefecture.id %}">
-      <span class="fr-icon-file-download-line" aria-hidden="true"></span>
-      Télécharger toutes les ADS de la préfecture au format excel
-    </a>
-  </p>
+      <a
+        class="fr-link fr-icon-arrow-down-line fr-link--icon-right"
+        href="{% url 'app.exports.prefecture' prefecture_id=ads_manager_administrator.prefecture.id %}"
+      >
+        <span class="fr-icon-file-download-line" aria-hidden="true"></span>
+        Télécharger toutes les ADS de la préfecture au format excel
+      </a>
+    </p>
+    <p>
+      <a
+        class="fr-link fr-icon-arrow-down-line fr-link--icon-right"
+        href="{% url 'app.ads-manager-admin.updates' prefecture_id=ads_manager_administrator.prefecture.id %}"
+      >
+        <span class="fr-icon-eye-line" aria-hidden="true"></span>
+        Voir les dernières modifications
+      </a>
+    </p>
+
+  <div class="flex">
+    <form method="get" action="">
+      <div class="fr-search-bar" role="search">
+        <label class="fr-label" for="search-input"> Rechercher </label>
+        <input class="fr-input" aria-describedby="search-input-messages" placeholder="Rechercher" {% if search %}value="{{search}}"{% endif %} name="search" id="search-input" type="search">
+        <div class="fr-messages-group" id="search-input-messages" aria-live="polite">
+        </div>
+        <button title="Rechercher" type="submit" class="fr-btn">Rechercher</button>
+      </div>
+    </form>
+  </div>
   <div class="fr-table fr-table--lg fr-table--no-scroll fr-table--no-caption">
     <div class="fr-table__wrapper">
       <div class="fr-table__container">
         <div class="fr-table__content">
-          <table x-data="{ displayExtra: false }">
+          <table>
             <caption>{{ ads_manager_administrator.prefecture.display_text|capfirst }}</caption>
             <thead>
               <tr>
@@ -138,7 +161,7 @@
               </tr>
             </thead>
             <tbody>
-              {% for ads_manager in ads_manager_administrator.ordered_adsmanager_set %}
+              {% for ads_manager in ads_managers %}
                 <tr x-show="displayExtra || {{ forloop.counter0 }} < 5" x-transition>
                   <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
                   <td>
@@ -176,7 +199,7 @@
                   </td>
                 </tr>
               {% endfor %}
-              <tr x-show="{{ ads_manager_administrator.ordered_adsmanager_set.count }} > 5 && !displayExtra">
+              <!-- <tr x-show="{{ ads_manager_administrator.ordered_adsmanager_set.count }} > 5 && !displayExtra">
                 <td colspan="3">
                   <a
                     class="fr-btn fr-btn--secondary fr-btn--sm"
@@ -189,19 +212,55 @@
                     Afficher les {{ ads_manager_administrator.ordered_adsmanager_set.count|add:"-5" }} autres entrées du tableau...
                   </button>
                 </td>
-              </tr>
+              </tr> -->
             </tbody>
           </table>
         </div>
       </div>
     </div>
   </div>
-  {% if ads_manager_administrator.complete_ads_count %}
+  <div class="flex w-full justify-center">
+    <nav role="navigation" class="fr-pagination self-center" aria-label="Pagination">
+      <ul class="fr-pagination__list">
+
+        {% if page_obj.has_previous %}
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--first" href="?page=1{% if search %}&search={{search}}{% endif %}"> Première page </a>
+        </li>
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="?page={{page_obj.previous_page_number}}{% if search %}&search={{search}}{% endif %}" title="Page précédente"> Page précédente </a>
+        </li>
+        {% endif %}
+        <li>
+          <a class="fr-pagination__link" aria-current="page" title="Page {{page_obj.number}}"> {{page_obj.number}} </a>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="?page={{page_obj.next_page_number}}{% if search %}&search={{search}}{% endif %}" title="Page suivante"> Page suivante </a>
+        </li>
+        <li>
+          <a class="fr-pagination__link fr-pagination__link--last" href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{search}}{% endif %}" title="Dernière page"> Dernière page </a>
+        </li>
+
+        {% endif %}
+
+      </ul>
+    </nav>
+
+  </div>
+  {% if complete_ads_for_prefecture %}
     <p class="fr-text--xs">
-      Nombre d'ADS vérifiées, avec toutes les informations : {{ ads_manager_administrator.complete_ads_count }}/{{ ads_manager_administrator.ads_count }}
+      Nombre d'ADS vérifiées, avec toutes les informations : {{ complete_ads_for_prefecture }}/{{ total_ads_for_prefecture }}
     </p>
   {% endif %}
 {% endif %}
   <script src="ads_manager_request.ts"></script>
+
+{% if request.GET %}
+<script>
+  window.location.hash = "list-managers"
+</script>
+{% endif %}
 
 {% endblock body-content %}

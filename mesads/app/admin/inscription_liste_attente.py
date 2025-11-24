@@ -1,9 +1,4 @@
-from datetime import date
-
 from django.contrib import admin
-from django.db.models import Count
-from django.urls import reverse
-from django.utils.safestring import mark_safe
 
 from reversion_compare.admin import CompareVersionAdmin
 

@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import (
     OuterRef,
@@ -9,6 +10,7 @@ from django.db.models import (
     Value,
     CharField,
     F,
+    Q,
 )
 from django.db.models.functions import Cast, Replace
 from django.core.mail import send_mail
@@ -28,14 +30,47 @@ from ..models import (
     ADSUpdateLog,
 )
 from mesads.app.forms import SearchVehiculeForm
+from mesads.fradm.models import Commune, Prefecture, EPCI
 from mesads.vehicules_relais.models import Vehicule
 from mesads.utils_psql import SplitPart
 
 from .export import ADSExporter
 
 
-class ADSManagerAdministratorView(TemplateView):
+class ADSManagerAdministratorView(ListView):
     template_name = "pages/ads_register/espace_prefecture_gestionnaires.html"
+    model = ADSManager
+    paginate_by = 50
+    context_object_name = "ads_managers"
+
+    def get_queryset(self):
+        qs = ADSManager.objects.filter(
+            administrator=self.kwargs["ads_manager_administrator"]
+        )
+        search = self.request.GET.get("search")
+
+        if not search:
+            return qs
+
+        content_type_commune = ContentType.objects.get_for_model(Commune)
+        content_type_prefecture = ContentType.objects.get_for_model(Prefecture)
+        content_type_epci = ContentType.objects.get_for_model(EPCI)
+
+        communes_ids = Commune.objects.filter(libelle__icontains=search).values("pk")
+        prefectures_ids = Prefecture.objects.filter(libelle__icontains=search).values(
+            "pk"
+        )
+        epcis_ids = EPCI.objects.filter(name__icontains=search).values("pk")
+
+        qs = qs.filter(
+            Q(content_type=content_type_commune, object_id__in=Subquery(communes_ids))
+            | Q(
+                content_type=content_type_prefecture,
+                object_id__in=Subquery(prefectures_ids),
+            )
+            | Q(content_type=content_type_epci, object_id__in=Subquery(epcis_ids))
+        )
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -70,19 +105,6 @@ class ADSManagerAdministratorView(TemplateView):
             output_field=IntegerField(),
         )
 
-        complete_ads_per_admin_per_ads_manager_administrator = Subquery(
-            ADS.objects.filter(
-                ads_manager__administrator=OuterRef("pk"),
-                deleted_at__isnull=True,
-            )
-            .annotate(latest_complete=latest_complete)
-            .filter(latest_complete=True)
-            .values("ads_manager__administrator")
-            .annotate(count=Count("pk"))
-            .values("count")[:1],
-            output_field=IntegerField(),
-        )
-
         context["user_ads_manager_requests"] = ADSManagerRequest.objects.filter(
             user=self.request.user
         ).annotate(
@@ -92,26 +114,21 @@ class ADSManagerAdministratorView(TemplateView):
             ),
         )
 
-        total_ads_per_ads_manager_admininistrator = Subquery(
+        context["complete_ads_for_prefecture"] = (
             ADS.objects.filter(
-                ads_manager__administrator=OuterRef("pk"),
+                ads_manager__administrator=self.kwargs["ads_manager_administrator"],
                 deleted_at__isnull=True,
             )
-            .values("ads_manager__administrator")
-            .annotate(count=Count("pk"))
-            .values("count")[:1],
-            output_field=IntegerField(),
+            .annotate(latest_complete=latest_complete)
+            .filter(latest_complete=True)
+            .count()
         )
 
-        context["ads_managers_administrator"] = (
-            ADSManagerAdministrator.objects.select_related("prefecture")
-            .filter(id=self.kwargs["ads_manager_administrator"].id)
-            .annotate(
-                ads_count=total_ads_per_ads_manager_admininistrator,
-                complete_ads_count=complete_ads_per_admin_per_ads_manager_administrator,
-            )
-            .first()
-        )
+        context["total_ads_for_prefecture"] = ADS.objects.filter(
+            ads_manager__administrator=self.kwargs["ads_manager_administrator"]
+        ).count()
+
+        context["search"] = self.request.GET.get("search")
 
         return context
 

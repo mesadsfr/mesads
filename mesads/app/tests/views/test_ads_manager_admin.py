@@ -251,9 +251,13 @@ class TestAdsManagerAdministratorView(ClientTestCase):
             )
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(
-            response.context["ads_managers_administrator"],
-            self.ads_manager_administrator_35,
+        self.assertListEqual(
+            [m.id for m in response.context["ads_managers"]],
+            list(
+                ADSManager.objects.filter(
+                    administrator=self.ads_manager_administrator_35
+                ).values_list("id", flat=True)
+            ),
         )
         self.assertEqual(response.context["user_ads_manager_requests"].count(), 1)
         self.assertEqual(
