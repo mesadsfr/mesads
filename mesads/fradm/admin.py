@@ -1,6 +1,8 @@
 from django.contrib import admin
-
-from .models import Commune, EPCI, Prefecture
+from django.db import transaction
+from mesads.app.models import ADSManager
+from .forms import AeroportAdminForm
+from .models import Commune, EPCI, Prefecture, Aeroport
 
 
 class ReadOnlyModelAdmin(admin.ModelAdmin):
@@ -53,3 +55,39 @@ class EPCIAdmin(ReadOnlyModelAdmin):
         "departement__istartswith",
         "name",
     )
+
+
+@admin.register(Aeroport)
+class AeroportAdmin(admin.ModelAdmin):
+    form = AeroportAdminForm
+
+    list_display = (
+        "name",
+        "departement",
+    )
+
+    search_fields = (
+        "name__icontains",
+        "departement__istartswith",
+    )
+
+    @transaction.atomic
+    def save_model(self, request, obj, form, change):
+        prefecture = form.cleaned_data.get("prefecture")
+
+        if change:
+            if obj.departement != prefecture.numero:
+                ads_manager = obj.ads_managers.first()
+                ads_manager.administrator = prefecture.adsmanageradministrator
+                ads_manager.save()
+                obj.departement = prefecture.numero
+            obj.name = form.cleaned_data.get("name")
+            obj.save()
+            return
+
+        aeroport = Aeroport.objects.create(
+            name=form.cleaned_data.get("name"), departement=prefecture.numero
+        )
+        ADSManager.objects.create(
+            administrator=prefecture.adsmanageradministrator, content_object=aeroport
+        )
