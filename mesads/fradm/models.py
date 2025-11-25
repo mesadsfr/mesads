@@ -192,6 +192,9 @@ class Aeroport(AdministrationModel):
         verbose_name = "Aéroport"
         verbose_name_plural = "Aéroports"
 
+    def __str__(self):
+        return f"Aéroport {self.name}"
+
     def type_name(self):
         return "Aéroport"
 
@@ -203,3 +206,5 @@ class Aeroport(AdministrationModel):
 
     def display_fulltext(self):
         return f"l'{self.display_text()}"
+
+
