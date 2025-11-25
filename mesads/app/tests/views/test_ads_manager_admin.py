@@ -264,6 +264,26 @@ class TestAdsManagerAdministratorView(ClientTestCase):
             response.context["user_ads_manager_requests"].first(), user_request
         )
 
+    def test_post_to_become_gestionnaire(self):
+        response = self.ads_manager_administrator_35_client.post(
+            reverse(
+                "app.ads-manager-admin.administrations",
+                kwargs={
+                    "prefecture_id": self.ads_manager_administrator_35.prefecture.id
+                },
+            ),
+            data={"ads_manager_id": self.ads_manager_city35.id},
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            ADSManagerRequest.objects.filter(
+                user=self.ads_manager_administrator_35_user,
+                ads_manager=self.ads_manager_city35,
+                accepted=True,
+            ).count(),
+            1,
+        )
+
 
 class TestRepertoireVehiculeRelaisView(ClientTestCase):
     def setUp(self):

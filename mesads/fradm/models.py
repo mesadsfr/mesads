@@ -194,6 +194,9 @@ class Aeroport(AdministrationModel):
     def display_fulltext(self):
         return f"l'{self.display_text()}"
 
+    def __str__(self):
+        return f"Aéroport {self.name}"
+
     name = models.CharField(max_length=255, blank=False)
     departement = models.CharField(max_length=16, blank=False)
 
