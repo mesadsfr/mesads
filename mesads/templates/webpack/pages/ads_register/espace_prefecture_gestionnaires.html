@@ -127,7 +127,7 @@
     </p>
     <p>
       <a
-        class="fr-link fr-icon-arrow-down-line fr-link--icon-right"
+        class="fr-link"
         href="{% url 'app.ads-manager-admin.updates' prefecture_id=ads_manager_administrator.prefecture.id %}"
       >
         <span class="fr-icon-eye-line" aria-hidden="true"></span>
@@ -199,20 +199,6 @@
                   </td>
                 </tr>
               {% endfor %}
-              <!-- <tr x-show="{{ ads_manager_administrator.ordered_adsmanager_set.count }} > 5 && !displayExtra">
-                <td colspan="3">
-                  <a
-                    class="fr-btn fr-btn--secondary fr-btn--sm"
-                    href="{% url 'app.ads-manager-admin.updates' prefecture_id=ads_manager_administrator.prefecture.id %}"
-                  >
-                    Voir les dernières modifications
-                  </a>
-                  <button class="fr-btn fr-btn--secondary fr-btn--sm"
-                          x-on:click="displayExtra = true">
-                    Afficher les {{ ads_manager_administrator.ordered_adsmanager_set.count|add:"-5" }} autres entrées du tableau...
-                  </button>
-                </td>
-              </tr> -->
             </tbody>
           </table>
         </div>
