@@ -181,3 +181,25 @@ class EPCI(AdministrationModel):
 
     def display_fulltext(self):
         return f"l'{self.display_text()}"
+
+
+class Aeroport(AdministrationModel):
+    name = models.CharField(max_length=255, blank=False)
+    departement = models.CharField(max_length=16, blank=False)
+    ads_managers = GenericRelation("app.ADSManager", related_query_name="aeroport")
+
+    class Meta:
+        verbose_name = "Aéroport"
+        verbose_name_plural = "Aéroports"
+
+    def type_name(self):
+        return "Aéroport"
+
+    def text(self):
+        return self.name
+
+    def display_text(self):
+        return f"aéroport de {self.name}"
+
+    def display_fulltext(self):
+        return f"l'{self.display_text()}"
