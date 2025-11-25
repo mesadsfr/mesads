@@ -4,15 +4,10 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 from .forms import PasswordResetStrictForm
-from .views import CustomRegistrationView, OTPLoginView
+from .views import OTPLoginView
 
 
 urlpatterns = [
-    path(
-        "register/",
-        CustomRegistrationView.as_view(),
-        name="django_registration_register",
-    ),
     path("", include("django_registration.backends.activation.urls")),
     # Override password_reset to send HTML email
     path(
