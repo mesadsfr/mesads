@@ -196,6 +196,13 @@
                     >
                       Consulter la liste d'attente
                     </a>
+                    {% if ads_manager.content_type.model == "aeroport" and ads_manager.id not in manager_ids %}
+                      <form class="mt-1" method="post" action="">
+                        {% csrf_token %}
+                        <input id="ads_manager_id" name="ads_manager_id" type="hidden" value="{{ads_manager.id}}" />
+                        <button class="fr-btn fr-btn--secondary" type="submit">Devenir gestionnaire</button>
+                      </form>  
+                    {% endif %}
                   </td>
                 </tr>
               {% endfor %}

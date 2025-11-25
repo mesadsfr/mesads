@@ -9,7 +9,7 @@ from django.utils import timezone
 from dal import autocomplete
 
 from mesads.fradm.forms import FrenchAdministrationForm
-from mesads.fradm.models import Commune, EPCI, Prefecture
+from mesads.fradm.models import Commune, EPCI, Prefecture, Aeroport
 
 from .fields import NullBooleanField
 from .models import (
@@ -71,7 +71,7 @@ class ADSManagerEditForm(forms.ModelForm):
 
     def __init__(self, instance=None, *args, **kwargs):
         super().__init__(instance=instance, *args, **kwargs)
-        if instance.content_type.model_class() in (EPCI, Prefecture):
+        if instance.content_type.model_class() in (EPCI, Prefecture, Aeroport):
             self.fields["epci_delegate"].disabled = True
         elif instance.content_type.model_class() == Commune:
             self.fields["epci_delegate"].queryset = EPCI.objects.filter(

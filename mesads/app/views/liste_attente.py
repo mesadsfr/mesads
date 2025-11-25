@@ -645,6 +645,7 @@ class ListesAttentesPubliquesView(ListView):
             qs = qs.annotate(
                 name_search=Case(
                     When(content_type__model="epci", then=F("epci__name")),
+                    When(content_type__model="aeroport", then=F("aeroport__name")),
                     When(
                         content_type__model="prefecture",
                         then=F("prefecture__libelle"),
