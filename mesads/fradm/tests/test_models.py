@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ..models import EPCI, Commune, Prefecture
+from ..models import EPCI, Aeroport, Commune, Prefecture
 
 
 class TestCommune(TestCase):
@@ -81,3 +81,25 @@ class TestEPCI(TestCase):
     def test_str(self):
         epci = EPCI(siren="200060473", departement="976", name="CC du Sud")
         self.assertEqual(str(epci), "CC du Sud")
+
+
+class TestAeroport(TestCase):
+    def test_type_name(self):
+        aeroport = Aeroport(name="Lyon saint exupery", departement="69")
+        self.assertEqual(aeroport.type_name(), "Aéroport")
+
+    def test_text(self):
+        aeroport = Aeroport(name="Lyon saint exupery", departement="69")
+        self.assertEqual(aeroport.text(), aeroport.name)
+
+    def test_display_text(self):
+        aeroport = Aeroport(name="Lyon saint exupery", departement="69")
+        self.assertEqual(aeroport.display_text(), f"aéroport de {aeroport.name}")
+
+    def test_display_fulltext(self):
+        aeroport = Aeroport(name="Lyon saint exupery", departement="69")
+        self.assertEqual(aeroport.display_fulltext(), f"l'aéroport de {aeroport.name}")
+
+    def test_str(self):
+        aeroport = Aeroport(name="Lyon saint exupery", departement="69")
+        self.assertEqual(str(aeroport), f"Aéroport {aeroport.name}")
