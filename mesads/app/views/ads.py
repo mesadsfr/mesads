@@ -59,12 +59,12 @@ class ADSView(RevisionMixin, UpdateView):
             ads_legal_files_fs = ADSLegalFileFormSet(
                 self.request.POST, self.request.FILES, instance=ads
             )
-            if not ads.adsuser_set.count():
-                ads_users_fs.extra = 1
 
         else:
             ads_users_fs = ADSUserFormSet(instance=ads)
             ads_legal_files_fs = ADSLegalFileFormSet(instance=ads)
+            if not ads.adsuser_set.count():
+                ads_users_fs.extra = 1
 
         return ads_users_fs, ads_legal_files_fs
 
