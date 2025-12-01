@@ -19,29 +19,44 @@
       </ol>
     </div>
   </nav>
-  <div>
-    <h1>Consulter la liste d'attente d'une commune</h1>    
-  </div>
-
   
+  
+  <h1>Consulter la liste d'attente d'une commune</h1>    
 
   <div class="mt-3 flex flex-col">
     <div class="flex gap-3 items-center">
-      <form method="GET" class="fr-search-bar" role="search">
-        <label class="fr-label" for="search-input"> Rechercher </label>
-        <input class="fr-input" aria-describedby="search-input-messages" placeholder="Rechercher" name="search" id="search-input" type="search" value="{{search}}">
-        <div class="fr-messages-group" id="search-input-messages" aria-live="polite">
+      <form method="get">
+        <div class="fr-form-group">
+          <fieldset class="fr-fieldset">
+            <div class="fr-fieldset__content">
+              {% include "form_fields/select.html" with empty_option=True field=form.departement field_errors=form.errors.departement required=form.fields.departement.required bold=True %}
+
+              {% include "form_fields/string.html" with field=form.libelle field_errors=form.errors.libelle required=form.fields.libelle.required %}
+            </div>
+          </fieldset>
         </div>
-        <button title="Rechercher" type="submit" class="fr-btn">Rechercher</button>
+        <!-- Non-fields errors -->
+        {% if form.non_field_errors %}
+          <div class="fr-input-group fr-input-group--error">
+            {% for error in form.non_field_errors %}
+              <!-- Non-field error -->
+              <p class="fr-error-text">{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <div class="fr-input-group">
+          <button type="submit" class="fr-btn">Voir les listes d'attente</button>
+        </div>
       </form>
 
     </div>
+    {% if extra_query_params %}
     <div class="fr-table fr-table--no-scroll fr-table--multiline" id="table-0-component">
       <div class="fr-table__wrapper">
         <div class="fr-table__container">
           <div class="fr-table__content">
             <table id="table-0">
-              <caption> Listes d'attentes publiques </caption>
+              <caption> Listes d'attente publiques </caption>
               <thead>
                 <tr>
                   <th> Libellé </th>
@@ -87,10 +102,10 @@
 
         {% if page_obj.has_previous %}
         <li>
-          <a class="fr-pagination__link fr-pagination__link--first" href="?page=1&search={{search}}"> Première page </a>
+          <a class="fr-pagination__link fr-pagination__link--first" href="?page=1{{extra_query_params}}"> Première page </a>
         </li>
         <li>
-          <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="?page={{page_obj.previous_page_number}}&search={{search}}" title="Page précédente"> Page précédente </a>
+          <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="?page={{page_obj.previous_page_number}}{{extra_query_params}}" title="Page précédente"> Page précédente </a>
         </li>
         {% endif %}
         <li>
@@ -99,15 +114,16 @@
 
         {% if page_obj.has_next %}
         <li>
-          <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="?page={{page_obj.next_page_number}}&search={{search}}" title="Page suivante"> Page suivante </a>
+          <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="?page={{page_obj.next_page_number}}{{extra_query_params}}" title="Page suivante"> Page suivante </a>
         </li>
         <li>
-          <a class="fr-pagination__link fr-pagination__link--last" href="?page={{ page_obj.paginator.num_pages }}&search={{search}}" title="Dernière page"> Dernière page </a>
+          <a class="fr-pagination__link fr-pagination__link--last" href="?page={{ page_obj.paginator.num_pages }}{{extra_query_params}}" title="Dernière page"> Dernière page </a>
         </li>
 
         {% endif %}
 
       </ul>
     </nav>
+    {% endif %}
   </div>
 {% endblock body-content %}

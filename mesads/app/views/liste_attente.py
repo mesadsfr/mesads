@@ -37,6 +37,7 @@ from mesads.app.forms import (
     ContactInscriptionListeAttenteForm,
     UpdateDelaiInscriptionListeAttenteForm,
     AttributionADSForm,
+    ListesAttentePubliquesSearchForm,
 )
 
 
@@ -637,6 +638,9 @@ class ListesAttentesPubliquesView(ListView):
     paginate_by = 50
     context_object_name = "ads_managers"
 
+    def get_form(self):
+        return ListesAttentePubliquesSearchForm(self.request.GET)
+
     def get_queryset(self):
         qs = (
             super()
@@ -644,35 +648,58 @@ class ListesAttentesPubliquesView(ListView):
             .filter(liste_attente_publique=True)
             .order_by("administrator")
         )
-        search = self.request.GET.get("search", "").strip()
 
-        if search:
+        form = self.get_form()
+        if form.is_valid():
+            departement = form.cleaned_data["departement"]
+            if departement:
+                qs = qs.filter(administrator__prefecture=departement)
+            libelle = form.cleaned_data["libelle"]
+            if libelle:
+                qs = qs.annotate(
+                    name_search=Case(
+                        When(content_type__model="epci", then=F("epci__name")),
+                        When(
+                            content_type__model="prefecture",
+                            then=F("prefecture__libelle"),
+                        ),
+                        When(content_type__model="commune", then=F("commune__libelle")),
+                        default=Value(""),
+                    )
+                )
+                qs = qs.filter(name_search__icontains=libelle)
+
             qs = qs.annotate(
-                name_search=Case(
-                    When(content_type__model="epci", then=F("epci__name")),
-                    When(
-                        content_type__model="prefecture",
-                        then=F("prefecture__libelle"),
+                nombre_inscriptions_liste=Count(
+                    "inscriptions_liste_attente",
+                    filter=Q(
+                        inscriptions_liste_attente__date_fin_validite__gte=datetime.date.today(),
+                        inscriptions_liste_attente__deleted_at__isnull=True,
                     ),
-                    When(content_type__model="commune", then=F("commune__libelle")),
-                    default=Value(""),
                 )
             )
-            qs = qs.filter(name_search__icontains=search)
-        qs = qs.annotate(
-            nombre_inscriptions_liste=Count(
-                "inscriptions_liste_attente",
-                filter=Q(
-                    inscriptions_liste_attente__date_fin_validite__gte=datetime.date.today(),
-                    inscriptions_liste_attente__deleted_at__isnull=True,
-                ),
-            )
-        )
-        return qs
+
+            if form.is_filled():
+                return qs
+
+        return ADSManager.objects.none()
+
+    def get_extra_query_params(self, form):
+        extra_query_params = ""
+        if form.is_valid():
+            if form.cleaned_data.get("departement"):
+                extra_query_params = f"{extra_query_params}&departement={form.cleaned_data.get('departement').id}"
+            if form.cleaned_data.get("libelle"):
+                extra_query_params = (
+                    f"{extra_query_params}&libelle={form.cleaned_data.get('libelle')}"
+                )
+        return extra_query_params
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["search"] = self.request.GET.get("search", "")
+        form = self.get_form()
+        context["form"] = form
+        context["extra_query_params"] = self.get_extra_query_params(form)
         return context
 
 

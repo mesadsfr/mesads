@@ -1219,12 +1219,6 @@ class TestTraitementDemandeView(ClientTestCase):
 
 
 class TestListesAttentePubliquesView(ClientTestCase):
-    def test_get_listes_attente_publique_privee(self):
-        response = self.client.get(reverse("app.listes_attentes"))
-
-        self.assertEqual(response.status_code, http.HTTPStatus.OK)
-        self.assertTemplateUsed("pages/ads_register/listes_attentes_publiques.html")
-        self.assertNotIn(self.ads_manager, response.context["ads_managers"])
 
     def test_get_listes_attente_publique(self):
         self.ads_manager.liste_attente_publique = True
@@ -1233,19 +1227,41 @@ class TestListesAttentePubliquesView(ClientTestCase):
 
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertTemplateUsed("pages/ads_register/listes_attentes_publiques.html")
-        self.assertIn(self.ads_manager, response.context["ads_managers"])
+        self.assertEqual(0, response.context["ads_managers"].count())
 
-    def test_get_listes_attente_publique_search(self):
+    def test_get_listes_attente_publique_search_by_departement(self):
         self.ads_manager.liste_attente_publique = True
         self.ads_manager.save()
         response = self.client.get(
             reverse("app.listes_attentes")
-            + f"?search={self.ads_manager.content_object.libelle}"
+            + f"?departement={self.ads_manager.administrator.prefecture.id}"
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertTemplateUsed("pages/ads_register/listes_attentes_publiques.html")
         self.assertIn(self.ads_manager, response.context["ads_managers"])
+
+    def test_get_listes_attente_publique_search_by_libelle(self):
+        self.ads_manager.liste_attente_publique = True
+        self.ads_manager.save()
+        response = self.client.get(
+            reverse("app.listes_attentes")
+            + f"?libelle={self.ads_manager.content_object.libelle}"
+        )
+
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertTemplateUsed("pages/ads_register/listes_attentes_publiques.html")
+        self.assertIn(self.ads_manager, response.context["ads_managers"])
+
+    def test_get_listes_attente_publique_search_by_libelle_not_public(self):
+        response = self.client.get(
+            reverse("app.listes_attentes")
+            + f"?libelle={self.ads_manager.content_object.libelle}"
+        )
+
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
+        self.assertTemplateUsed("pages/ads_register/listes_attentes_publiques.html")
+        self.assertNotIn(self.ads_manager, response.context["ads_managers"])
 
 
 class TestListeAttentePubliqueView(ClientTestCase):
