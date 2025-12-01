@@ -438,3 +438,16 @@ class AttributionADSForm(forms.Form):
             raise ValidationError("Ce numéro est déjà utilisé par une autre ADS.")
 
         return numero
+
+
+class ListesAttentePubliquesSearchForm(forms.Form):
+    departement = forms.ModelChoiceField(
+        queryset=Prefecture.objects.all(),
+        label="Département",
+        required=False,
+    )
+
+    libelle = forms.CharField(required=False)
+
+    def is_filled(self):
+        return self.cleaned_data.get("departement") or self.cleaned_data.get("libelle")
