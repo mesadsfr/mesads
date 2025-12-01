@@ -1246,7 +1246,7 @@ class TestListesAttentePubliquesView(ClientTestCase):
         self.ads_manager.save()
         response = self.client.get(
             reverse("app.listes_attentes")
-            + f"?libelle={self.ads_manager.content_object.libelle}"
+            + f"?commune={self.ads_manager.content_object.libelle}"
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
@@ -1256,7 +1256,7 @@ class TestListesAttentePubliquesView(ClientTestCase):
     def test_get_listes_attente_publique_search_by_libelle_not_public(self):
         response = self.client.get(
             reverse("app.listes_attentes")
-            + f"?libelle={self.ads_manager.content_object.libelle}"
+            + f"?commune={self.ads_manager.content_object.libelle}"
         )
 
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
