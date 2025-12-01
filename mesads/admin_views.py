@@ -9,6 +9,9 @@ from mesads.app.models import ADS, ADSUpdateLog, InscriptionListeAttente
 from mesads.users.models import UserAuditEntry, NoteUtilisateur
 
 
+PREFECTURE_TEST = "999"
+
+
 class StatistiquesView(TemplateView):
     template_name = "admin/statistiques.html"
 
@@ -16,7 +19,10 @@ class StatistiquesView(TemplateView):
         date_limite_completion = timezone.now() - timedelta(
             days=ADSUpdateLog.OUTDATED_LOG_DAYS
         )
-        ads_count = ADS.objects.count()
+        ads_qs = ADS.objects.exclude(
+            ads_manager__administrator__prefecture__numero=PREFECTURE_TEST
+        )
+        ads_count = ads_qs.count()
         last_log_valid = (
             ADSUpdateLog.objects.filter(
                 ads=OuterRef("pk"), update_at__gte=date_limite_completion
@@ -26,7 +32,7 @@ class StatistiquesView(TemplateView):
         )
 
         ads_complete_count = (
-            ADS.objects.annotate(
+            ads_qs.annotate(
                 last_log_valid=Subquery(last_log_valid, output_field=BooleanField())
             )
             .filter(last_log_valid=True)
@@ -38,10 +44,14 @@ class StatistiquesView(TemplateView):
     def get_nombre_creation_modification_ads(
         self, start_date: date, end_date: date
     ) -> int:
-        return ADS.objects.filter(
-            Q(creation_date__gte=start_date, creation_date__lte=end_date)
-            | Q(last_update__gte=start_date, last_update__lte=end_date)
-        ).count()
+        return (
+            ADS.objects.filter(
+                Q(creation_date__gte=start_date, creation_date__lte=end_date)
+                | Q(last_update__gte=start_date, last_update__lte=end_date)
+            )
+            .exclude(ads_manager__administrator__prefecture__numero=PREFECTURE_TEST)
+            .count()
+        )
 
     def get_nombre_connexions_unique(self, start_date: date, end_date: date) -> int:
         return (
@@ -57,19 +67,27 @@ class StatistiquesView(TemplateView):
     def get_nombre_creation_liste_attente(
         self, start_date: date, end_date: date
     ) -> int:
-        return InscriptionListeAttente.objects.filter(
-            date_creation__date__gte=start_date, date_creation__date__lt=end_date
-        ).count()
+        return (
+            InscriptionListeAttente.objects.filter(
+                date_creation__date__gte=start_date, date_creation__date__lt=end_date
+            )
+            .exclude(ads_manager__administrator__prefecture__numero=PREFECTURE_TEST)
+            .count()
+        )
 
     def get_nombre_ads_cree_via_liste_attente(
         self, start_date: date, end_date: date
     ) -> int:
-        return InscriptionListeAttente.with_deleted.filter(
-            deleted_at__isnull=False,
-            deleted_at__date__gte=start_date,
-            deleted_at__date__lt=end_date,
-            motif_archivage=InscriptionListeAttente.ADS_ATTRIBUEE,
-        ).count()
+        return (
+            InscriptionListeAttente.with_deleted.filter(
+                deleted_at__isnull=False,
+                deleted_at__date__gte=start_date,
+                deleted_at__date__lt=end_date,
+                motif_archivage=InscriptionListeAttente.ADS_ATTRIBUEE,
+            )
+            .exclude(ads_manager__administrator__prefecture__numero=PREFECTURE_TEST)
+            .count()
+        )
 
     def get_note_moyenne_qualite(self) -> tuple[float, int]:
         notes = NoteUtilisateur.objects.filter(note_qualite__isnull=False)

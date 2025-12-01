@@ -638,7 +638,12 @@ class ListesAttentesPubliquesView(ListView):
     context_object_name = "ads_managers"
 
     def get_queryset(self):
-        qs = super().get_queryset().filter(liste_attente_publique=True)
+        qs = (
+            super()
+            .get_queryset()
+            .filter(liste_attente_publique=True)
+            .order_by("administrator")
+        )
         search = self.request.GET.get("search", "").strip()
 
         if search:
@@ -658,7 +663,8 @@ class ListesAttentesPubliquesView(ListView):
             nombre_inscriptions_liste=Count(
                 "inscriptions_liste_attente",
                 filter=Q(
-                    inscriptions_liste_attente__date_fin_validite__gte=datetime.date.today()
+                    inscriptions_liste_attente__date_fin_validite__gte=datetime.date.today(),
+                    inscriptions_liste_attente__deleted_at__isnull=True,
                 ),
             )
         )

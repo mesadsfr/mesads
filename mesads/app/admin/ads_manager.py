@@ -176,7 +176,9 @@ class ADSManagerAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         req = super().get_queryset(request)
         req = req.annotate(
-            ads_count=Count("ads", filter=Q(ads__deleted_at__isnull=True)),
+            ads_count=Count(
+                "ads", filter=Q(ads__deleted_at__isnull=True), distinct=True
+            ),
             inscriptions_count=Count(
                 "inscriptions_liste_attente",
                 filter=Q(inscriptions_liste_attente__deleted_at__isnull=True),
