@@ -442,12 +442,12 @@ class AttributionADSForm(forms.Form):
 
 class ListesAttentePubliquesSearchForm(forms.Form):
     departement = forms.ModelChoiceField(
-        queryset=Prefecture.objects.all(),
+        queryset=Prefecture.objects.exclude(numero="999"),
         label="Département",
         required=False,
     )
 
-    libelle = forms.CharField(required=False)
+    commune = forms.CharField(label="Commune", required=False)
 
     def is_filled(self):
-        return self.cleaned_data.get("departement") or self.cleaned_data.get("libelle")
+        return self.cleaned_data.get("departement") or self.cleaned_data.get("commune")

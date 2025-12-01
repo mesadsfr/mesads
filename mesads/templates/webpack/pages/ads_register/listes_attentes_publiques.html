@@ -31,7 +31,7 @@
             <div class="fr-fieldset__content">
               {% include "form_fields/select.html" with empty_option=True field=form.departement field_errors=form.errors.departement required=form.fields.departement.required bold=True %}
 
-              {% include "form_fields/string.html" with field=form.libelle field_errors=form.errors.libelle required=form.fields.libelle.required %}
+              {% include "form_fields/string.html" with field=form.commune field_errors=form.errors.commune required=form.fields.commune.required %}
             </div>
           </fieldset>
         </div>
@@ -59,7 +59,7 @@
               <caption> Listes d'attente publiques </caption>
               <thead>
                 <tr>
-                  <th> Libellé </th>
+                  <th> Commune </th>
                   <th> Département </th>
                   <th> Nombre d'inscriptions </th>
                   <th>Consulter</th>

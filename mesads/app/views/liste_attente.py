@@ -654,8 +654,8 @@ class ListesAttentesPubliquesView(ListView):
             departement = form.cleaned_data["departement"]
             if departement:
                 qs = qs.filter(administrator__prefecture=departement)
-            libelle = form.cleaned_data["libelle"]
-            if libelle:
+            commune = form.cleaned_data["commune"]
+            if commune:
                 qs = qs.annotate(
                     name_search=Case(
                         When(content_type__model="epci", then=F("epci__name")),
@@ -667,7 +667,7 @@ class ListesAttentesPubliquesView(ListView):
                         default=Value(""),
                     )
                 )
-                qs = qs.filter(name_search__icontains=libelle)
+                qs = qs.filter(name_search__icontains=commune)
 
             qs = qs.annotate(
                 nombre_inscriptions_liste=Count(
@@ -689,9 +689,9 @@ class ListesAttentesPubliquesView(ListView):
         if form.is_valid():
             if form.cleaned_data.get("departement"):
                 extra_query_params = f"{extra_query_params}&departement={form.cleaned_data.get('departement').id}"
-            if form.cleaned_data.get("libelle"):
+            if form.cleaned_data.get("commune"):
                 extra_query_params = (
-                    f"{extra_query_params}&libelle={form.cleaned_data.get('libelle')}"
+                    f"{extra_query_params}&commune={form.cleaned_data.get('commune')}"
                 )
         return extra_query_params
 
