@@ -46,6 +46,10 @@ class ADSManagerAdministratorView(ListView):
     def get_queryset(self):
         qs = ADSManager.objects.filter(
             administrator=self.kwargs["ads_manager_administrator"]
+        ).annotate(
+            nb_managers=Count(
+                "adsmanagerrequest", filter=Q(adsmanagerrequest__accepted=True)
+            )
         )
         search = self.request.GET.get("search")
 
