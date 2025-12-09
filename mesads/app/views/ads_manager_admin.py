@@ -264,23 +264,23 @@ class PrefectureExportView(View, ADSExporter):
     def add_sheets(self, workbook):
         super().add_sheets(workbook)
         sheet = workbook.add_worksheet("Gestionnaires ADS")
+        headers = (
+            "Nom de l'administration",
+            "Nombre d'ADS",
+            "Statut de la gestion des ADS",
+            "Arrêté délimitant le nombre d'ADS",
+        )
         sheet.write_row(
             0,
             0,
-            (
-                "Nom de l'administration",
-                "Nombre d'ADS",
-                "Statut de la gestion des ADS",
-                "Arrêté délimitant le nombre d'ADS",
-            ),
+            headers,
         )
         # Applying bold format to headers
         bold_format = workbook.add_format({"bold": True})
         sheet.set_row(0, None, bold_format)
 
-        for idx, ads_manager in enumerate(
-            self.ads_manager_administrator.ordered_adsmanager_set()
-        ):
+        nb_rows = 1
+        for ads_manager in self.ads_manager_administrator.ordered_adsmanager_set():
             status = ""
             if ads_manager.no_ads_declared:
                 status = "L'administration a déclaré ne gérer aucune ADS"
@@ -293,19 +293,34 @@ class PrefectureExportView(View, ADSExporter):
             decrees_count = ads_manager.adsmanagerdecree_set.count()
 
             sheet.write_row(
-                idx + 1,
+                nb_rows,
                 0,
                 (
                     ads_manager.content_object.display_text(),
-                    ads_manager.ads_set.count() or "",
+                    ads_manager.ads_set.count(),
                     status,
                     (
-                        f"{decrees_count} document(s) enregistré(s)"
-                        if decrees_count
-                        else ""
+                        f"{decrees_count} documents enregistrés"
+                        if decrees_count != 1
+                        else "1 document enregistré"
                     ),
                 ),
             )
+            nb_rows += 1
+
+        sheet.add_table(
+            0,
+            0,
+            nb_rows - 1,
+            len(headers) - 1,
+            {
+                "header_row": True,
+                "autofilter": True,
+                "name": "TableauGestionnaires",
+                "style": "Table Style Medium 9",
+                "columns": [{"header": h} for h in headers],
+            },
+        )
         sheet.autofit()
 
 

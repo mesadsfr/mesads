@@ -59,7 +59,7 @@ class ADSExporter:
     def ads_list_sheet(self, workbook):
         bold_format = workbook.add_format({"bold": True})
         sheet = workbook.add_worksheet("ADS enregistrées")
-        headers = (
+        base_headers = [
             "Type d'administration",
             "Administration",
             "Numéro de l'ADS",
@@ -77,10 +77,10 @@ class ADSExporter:
             "Téléphone mobile du titulaire de l'ADS",
             "Email du titulaire de l'ADS",
             "Nombre de documents enregistrés (arrêtés municipaux, …)",
-        )
+        ]
         # If one of the ADS in the list has, let's say, 4 drivers, driver_headers
         # will be appended 4 times to headers.
-        driver_headers = (
+        template_driver_headers = (
             "Statut du %s conducteur",
             "Nom du %s conducteur",
             "SIRET du %s conducteur",
@@ -92,17 +92,21 @@ class ADSExporter:
         # Applying bold format to headers
         sheet.set_row(0, None, bold_format)
 
-        for idx, ads in enumerate(self.get_queryset()):
+        driver_headers = []
+
+        data = []
+
+        for ads in self.get_queryset():
             # Append driver headers to headers if the current ADS has more drivers
             # than the previous ones.
             while max_drivers < len(ads.ads_users_status):
-                for h in driver_headers:
-                    headers += (
+                for h in template_driver_headers:
+                    driver_headers += (
                         h % ("1er" if max_drivers == 0 else "%se" % (max_drivers + 1)),
                     )
                 max_drivers += 1
 
-            info = (
+            info = [
                 ads.ads_manager.content_object.type_name(),
                 ads.ads_manager.content_object.text(),
                 ads.number,
@@ -120,20 +124,40 @@ class ADSExporter:
                 ads.owner_mobile,
                 ads.owner_email,
                 ads.adslegalfile_set.count(),
-            )
-            for nth, status in enumerate(ads.ads_users_status):
+            ]
+            for index, _ in enumerate(ads.ads_users_status):
                 # ads_users_status, ads_users_names, ads_users_sirets and
                 # ads_users_licenses have the same length.
                 info += (
                     dict(ADSUser.status.field.choices).get(
-                        ads.ads_users_status[nth], ""
+                        ads.ads_users_status[index], ""
                     ),
-                    ads.ads_users_names[nth],
-                    ads.ads_users_sirets[nth],
-                    ads.ads_users_licenses[nth],
+                    ads.ads_users_names[index],
+                    ads.ads_users_sirets[index],
+                    ads.ads_users_licenses[index],
                 )
-            sheet.write_row(idx + 1, 0, info)
+            data.append(info)
 
         # Write headers, now that we know the maximum number of drivers.
-        sheet.write_row(0, 0, headers)
+        headers = base_headers + driver_headers
+
+        for row_num, row_data in enumerate(data, start=1):
+            sheet.write_row(row_num, 0, row_data)
+
+        rows = len(data) + 1
+        cols = len(headers)
+
+        sheet.add_table(
+            0,
+            0,
+            rows - 1,
+            cols - 1,
+            {
+                "header_row": True,
+                "autofilter": True,
+                "name": "TableauADS",
+                "style": "Table Style Medium 9",
+                "columns": [{"header": h} for h in headers],
+            },
+        )
         sheet.autofit()

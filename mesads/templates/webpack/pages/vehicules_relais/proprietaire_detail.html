@@ -26,7 +26,7 @@
   </nav>
   {% if user.is_staff %}
     <p>
-      🕰️&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+      <span aria-hidden="true">🕰️</span><a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
    href="{% url 'vehicules-relais.proprietaire.history' proprietaire_id=object.id %}">
       Voir l'historique des modifications <small>(lien uniquement dispo pour l'équipe MesADS)</small>
     </a>
@@ -41,7 +41,7 @@
 <h1>Mon espace propriétaire — {{ object.nom }}</h1>
 <h2 class="fr-h4">Mes coordonnées</h2>
 <p>
-  📄 &nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+  <span aria-hidden="true">📄</span> <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
    href="{% url 'vehicules-relais.proprietaire.edit' proprietaire_id=object.id %}">Modifier mes coordonnées</a>
 </p>
 <div class="fr-table fr-table--md fr-table--no-caption">
@@ -73,7 +73,7 @@
 </div>
 <h2 class="fr-h4">Mes véhicules enregistrés</h2>
 <p>
-  🚖 &nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+  <span aria-hidden="true">🚖</span> <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
    href="{% url 'vehicules-relais.proprietaire.vehicule.new' proprietaire_id=object.id %}">
   Enregistrer un nouveau véhicule
 </a>

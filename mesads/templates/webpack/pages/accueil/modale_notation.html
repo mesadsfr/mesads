@@ -6,7 +6,7 @@
   <form action="{% url 'app.note-service' %}" method="post">
     {% csrf_token %}
 
-    <div class="flex gap-2">
+    <div class="flex flex-col gap-2 md:flex-row">
       <fieldset class="rating-fieldset">
         <legend class="rating-legend">Votre avis sur la facilité d'usage du service</legend>
 

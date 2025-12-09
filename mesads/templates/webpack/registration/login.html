@@ -32,7 +32,16 @@
         <span class="fr-connect__brand">ProConnect</span>
       </a>
       <p>
-        <a href="https://www.proconnect.gouv.fr/" id="connect-link-0" target="_blank" rel="noopener" title="Qu'est-ce que ProConnect ? - nouvelle fenêtre">Qu'est-ce que ProConnect ?</a>
+        <a
+          href="https://www.proconnect.gouv.fr/"
+          id="connect-link-0"
+          target="_blank"
+          rel="noopener"
+          title="Qu'est-ce que ProConnect ? - nouvelle fenêtre"
+        >
+          Qu'est-ce que ProConnect ?
+          <span class="fr-sr-only"> Nouvelle fenêtre</span>
+        </a>
       </p>
     </div>
     
@@ -65,10 +74,11 @@
             for="{{ form.username.name }}"
           >
             {{ form.username.label }}
+            <span class="fr-hint-text">exemple@test.com</span>
           </label>
           <input
             class="fr-input"
-            type="text"
+            type="email"
             id="{{ form.username.name }}"
             name="{{ form.username.name }}"
             value="{{ form.username.value|default:"" }}"

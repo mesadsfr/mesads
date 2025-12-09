@@ -537,7 +537,6 @@ class ExportCSVInscriptionListeAttenteView(View):
         "date_depot_inscription",
         "date_dernier_renouvellement",
         "date_fin_validite",
-        "commentaire",
     ]
 
     headers = [
@@ -551,8 +550,6 @@ class ExportCSVInscriptionListeAttenteView(View):
         "Date de dépot d'inscription",
         "Date de dernier renouvellement",
         "Date de fin de validité",
-        "Commentaire",
-        "A exploité une ADS au cours des 5 dernières années",
     ]
 
     def _excell_cell_value(self, field_name, value):
@@ -577,18 +574,16 @@ class ExportCSVInscriptionListeAttenteView(View):
         wb = xlsxwriter.Workbook(output, {"in_memory": True})
         ws = wb.add_worksheet("Inscriptions")
 
-        format_header = wb.add_format({"bold": True, "text_wrap": False})
         format_date = wb.add_format({"num_format": "dd/mm/yyyy"})
-        format_text = wb.add_format({})
 
-        for col, h in enumerate(self.headers):
-            ws.write(0, col, h, format_header)
-
-        ws.freeze_panes(1, 0)
-        ws.autofilter(0, 0, 0, len(self.headers) - 1)
-
-        # Suivi de largeur max par colonne
-        max_width = [len(str(h)) for h in self.headers]
+        ws.write_row(
+            0,
+            0,
+            self.headers,
+        )
+        # Applying bold format to headers
+        bold_format = wb.add_format({"bold": True})
+        ws.set_row(0, None, bold_format)
 
         row_index = 1
 
@@ -599,18 +594,26 @@ class ExportCSVInscriptionListeAttenteView(View):
 
                 if kind == "date":
                     ws.write_datetime(row_index, col, value, format_date)
-                    display_len = 10
                 else:
-                    ws.write_string(row_index, col, str(value), format_text)
-                    display_len = len(str(value))
+                    ws.write_string(row_index, col, str(value))
 
-                if display_len > max_width[col]:
-                    max_width[col] = display_len
             row_index += 1
 
-        for col, w in enumerate(max_width):
-            ws.set_column(col, col, min(w + 2, 60))
+        ws.add_table(
+            0,
+            0,
+            row_index - 1,
+            len(self.headers) - 1,
+            {
+                "header_row": True,
+                "autofilter": True,
+                "name": "TableauADS",
+                "style": "Table Style Medium 9",
+                "columns": [{"header": h} for h in self.headers],
+            },
+        )
 
+        ws.autofit()
         wb.close()
         output.seek(0)
         return output
@@ -622,7 +625,7 @@ class ExportCSVInscriptionListeAttenteView(View):
         ).order_by("-date_depot_inscription")
 
         output = self._write_xlsx(inscriptions)
-        filename = f"liste_attente_{ads_manager.content_object.display_text().replace(' ', '_')}_{timezone.now().strftime('%d_%m%Y')}"
+        filename = f"liste_attente_{ads_manager.content_object.display_text().replace(' ', '_')}_{timezone.now().strftime('%d_%m%Y')}.xlsx"
         response = HttpResponse(
             output.getvalue(),
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

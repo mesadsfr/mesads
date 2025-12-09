@@ -6,7 +6,9 @@
 {% block body-content %}
   <h1>Chiffres clés Mes ADS</h1>
   <p>
-    Mes ADS est un projet en pleine évolution, démarré en 2022. Nous essayons d'améliorer le produit en fonction de vos retours. Si vous avez des questions, des suggestions, ou si vous remarquez un bug, n'hésitez surtout pas à nous contacter en utilisant le chat ou par email à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+    Mes ADS est un projet en pleine évolution, démarré en 2022. Nous essayons d'améliorer le produit en fonction de vos retours. 
+    Si vous avez des questions, des suggestions, ou si vous remarquez un bug, n'hésitez surtout pas à nous contacter par 
+    <span lang="en">email</span> à <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
   </p>
   <p>Vous trouverez sur cette page quelques statistiques à propos du projet.</p>
   <div class="fr-tabs">
@@ -38,26 +40,26 @@
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-md-4">
           <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-            <div class="text-4xl font-bold">{{ ads_count }}</div>
-            <div class="text-xl fr-mt-1w">ADS enregistrées ce jour</div>
+            <p class="stats-card-number font-bold">{{ ads_count }}</p>
+            <p class="stats-card-description fr-mt-1w">ADS enregistrées ce jour</p>
           </div>
         </div>
         <div class="fr-col-12 fr-col-md-4">
           <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-            <div class="text-4xl font-bold">{{ ads_manager_requests_count }}</div>
-            <div class="text-xl fr-mt-1w">instructeurs enregistrés pour gérer les ADS</div>
+            <p class="stats-card-number font-bold">{{ ads_manager_requests_count }}</p>
+            <p class="stats-card-description fr-mt-1w">instructeurs enregistrés pour gérer les ADS</p>
           </div>
         </div>
         <div class="fr-col-12 fr-col-md-4">
           <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-            <div class="text-4xl font-bold">{{ ads_managers_count }}</div>
-            <div class="text-xl fr-mt-1w">différentes administrations gérant des ADS</div>
+            <p class="stats-card-number font-bold">{{ ads_managers_count }}</p>
+            <p class="stats-card-description fr-mt-1w">différentes administrations gérant des ADS</p>
           </div>
         </div>
         <div class="fr-col-12 fr-col-md-4">
           <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-            <div class="text-4xl font-bold">+10 000</div>
-            <div class="text-xl fr-mt-1w">réponses à vos questions concernant les ADS, la plateforme, les démarches, etc.</div>
+            <p class="stats-card-number font-bold">+10 000</p>
+            <p class="stats-card-description fr-mt-1w">réponses à vos questions concernant les ADS, la plateforme, les démarches, etc.</p>
           </div>
         </div>
       </div>
@@ -136,20 +138,20 @@
         <div class="fr-mt-3w fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-12 fr-col-md-4">
             <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-              <div class="text-4xl font-bold">{{ ads_count_filtered }}</div>
-              <div class="text-xl fr-mt-1w">ADS enregistrées ce jour</div>
+              <p class="stats-card-number font-bold">{{ ads_count_filtered }}</p>
+              <p class="stats-card-description fr-mt-1w">ADS enregistrées ce jour</p>
             </div>
           </div>
           <div class="fr-col-12 fr-col-md-4">
             <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-              <div class="text-4xl font-bold">{{ ads_manager_requests_count_filtered }}</div>
-              <div class="text-xl fr-mt-1w">instructeurs enregistrés pour gérer les ADS</div>
+              <p class="stats-card-number font-bold">{{ ads_manager_requests_count_filtered }}</p>
+              <p class="stats-card-description fr-mt-1w">instructeurs enregistrés pour gérer les ADS</p>
             </div>
           </div>
           <div class="fr-col-12 fr-col-md-4">
             <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-              <div class="text-4xl font-bold">{{ ads_managers_count_filtered }}</div>
-              <div class="text-xl fr-mt-1w">différentes administrations gérant des ADS</div>
+              <p class="stats-card-number font-bold">{{ ads_managers_count_filtered }}</p>
+              <p class="stats-card-description fr-mt-1w">différentes administrations gérant des ADS</p>
             </div>
           </div>
         </div>
@@ -180,16 +182,16 @@
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-md-4">
           <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-            <div class="text-4xl font-bold">{{ relais_proprietaires_count }}</div>
-            <div class="text-xl fr-mt-1w">
+            <p class="stats-card-number font-bold">{{ relais_proprietaires_count }}</p>
+            <p class="stats-card-description fr-mt-1w">
               propriétaires de véhicules relais enregistrés <small>ayant enregistré au moins un véhicule relais</small>
-            </div>
+            </p>
           </div>
         </div>
         <div class="fr-col-12 fr-col-md-4">
           <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-            <div class="text-4xl font-bold">{{ relais_vehicules_count }}</div>
-            <div class="text-xl fr-mt-1w">véhicules relais enregistrés</div>
+            <p class="stats-card-number font-bold">{{ relais_vehicules_count }}</p>
+            <p class="stats-card-description fr-mt-1w">véhicules relais enregistrés</p>
           </div>
         </div>
       </div>
