@@ -44,12 +44,33 @@ class ADSManagerAdministratorView(ListView):
     context_object_name = "ads_managers"
 
     def get_queryset(self):
+        latest_complete = Subquery(
+            ADSUpdateLog.objects.filter(ads=OuterRef("pk"))
+            .order_by("-update_at")
+            .values("is_complete")[:1],
+            output_field=BooleanField(),
+        )
+
+        # 2) Count how many ADS under this manager have latest_complete=True
+        complete_updates_subquery_per_ads_manager = Subquery(
+            ADS.objects.filter(ads_manager=OuterRef("id"))
+            .annotate(latest_complete=latest_complete)
+            .filter(latest_complete=True)
+            .values("ads_manager")
+            .annotate(count=Count("pk"))
+            .values("count")[:1],
+            output_field=IntegerField(),
+        )
+
         qs = ADSManager.objects.filter(
             administrator=self.kwargs["ads_manager_administrator"]
         ).annotate(
             nb_managers=Count(
                 "adsmanagerrequest", filter=Q(adsmanagerrequest__accepted=True)
-            )
+            ),
+            complete_updates_count=Subquery(
+                complete_updates_subquery_per_ads_manager, output_field=IntegerField()
+            ),
         )
         search = self.request.GET.get("search")
 

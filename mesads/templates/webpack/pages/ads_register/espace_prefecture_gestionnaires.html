@@ -220,7 +220,7 @@
         </li>
         {% endif %}
         <li>
-          <a class="fr-pagination__link" aria-current="page" title="Page {{page_obj.number}}"> {{page_obj.number}} </a>
+          <a class="fr-pagination__link" aria-current="page" title="Page {{page_obj.number}} sur {{page_obj.paginator.num_pages}}"> {{page_obj.number}} / {{page_obj.paginator.num_pages}} </a>
         </li>
 
         {% if page_obj.has_next %}
