@@ -106,71 +106,82 @@
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
           <h3>Nombre d'ADS enregistrées</h3>
-          <canvas id="ads-count"></canvas>
+          <canvas
+            role="img"
+            aria-label="Évolution du nombre d'ADS enregistrées sur la plateforme depuis son lancement. - Accéder à la version tableau ci dessous"
+            id="ads-count">
+          </canvas>
           <p class="fr-mt-3w fr-text--xs">Évolution du nombre d'ADS enregistrées sur la plateforme depuis son lancement.</p>
+          <details>
+            <summary>Version tableau</summary>
+            <div class="fr-table" id="table-gestionnaire-component">
+              <div class="fr-table__wrapper">
+                <div class="fr-table__container">
+                  <div class="fr-table__content">
+                    <table id="table-gestionnaire">
+                      <caption>Évolution du nombre d'ADS</caption>
+                      <thead>
+                        <tr>
+                          <th>Trimestre</th>
+                          <th>Nombre d'ADS</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for label, value in trimesters_data.ads_by_trimester.items %}
+                          <tr>
+                            <td>{{label}}</td>
+                            <td>{{value}}</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
         <div class="fr-col-12">
           <h3>Nombre de gestionnaires ADS</h3>
-          <canvas id="ads-manager-requests-count"></canvas>
+          <canvas
+            role="img"
+            aria-label="Évolution du nombre de comptes instructeurs créés sur la plateforme depuis son lancement. Un compte instructeur a la possibilité d'enregistrer des ADS pour son administration. - Accéder à la version tableau ci dessous"
+            id="ads-manager-requests-count">
+          </canvas>
           <p class="fr-mt-3w fr-text--xs">
             Évolution du nombre de comptes instructeurs créés sur la plateforme depuis son lancement. Un compte instructeur a la possibilité d'enregistrer des ADS pour son administration.
           </p>
+
+          <details>
+            <summary>Version tableau</summary>
+            <div class="fr-table" id="table-gestionnaire-component">
+              <div class="fr-table__wrapper">
+                <div class="fr-table__container">
+                  <div class="fr-table__content">
+                    <table id="table-gestionnaire">
+                      <caption>Évolution du nombre de comptes instructeurs</caption>
+                      <thead>
+                        <tr>
+                          <th>Trimestre</th>
+                          <th>Nombre de gestionnaires d'ADS</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for label, value in trimesters_data.ads_manager_by_trimester.items %}
+                          <tr>
+                            <td>{{label}}</td>
+                            <td>{{value}}</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
       </div>
-      <hr class="fr-mt-3w" />
-      <h2>Statistiques filtrées</h2>
-      <div class="fr-alert fr-alert--info fr-mb-3w">
-        Renseignez un ou plusieurs gestionnaires ADS pour afficher ses statistiques en détails.
-      </div>
-      <form method="get" id="details" action="#details">
-        {% if form.non_field_errors %}
-          <div class="fr-input-group fr-input-group--error">
-            {% for error in ads_managers_select_form.non_field_errors %}
-              <!-- Non-field error -->
-              <p class="fr-error-text">{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
-        {% include "form_fields/select-autocomplete.html" with field=ads_managers_select_form.q field_errors=ads_managers_select_form.errors.q %}
-        <button type="submit" class="fr-btn">Filtrer les statistiques</button>
-      </form>
-      {% if ads_managers_select_form.q.value %}
-        <div class="fr-mt-3w fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-12 fr-col-md-4">
-            <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-              <p class="stats-card-number font-bold">{{ ads_count_filtered }}</p>
-              <p class="stats-card-description fr-mt-1w">ADS enregistrées ce jour</p>
-            </div>
-          </div>
-          <div class="fr-col-12 fr-col-md-4">
-            <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-              <p class="stats-card-number font-bold">{{ ads_manager_requests_count_filtered }}</p>
-              <p class="stats-card-description fr-mt-1w">instructeurs enregistrés pour gérer les ADS</p>
-            </div>
-          </div>
-          <div class="fr-col-12 fr-col-md-4">
-            <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-              <p class="stats-card-number font-bold">{{ ads_managers_count_filtered }}</p>
-              <p class="stats-card-description fr-mt-1w">différentes administrations gérant des ADS</p>
-            </div>
-          </div>
-        </div>
-        <h2 class="fr-mt-3w">Utilisation du registre ADS pour les administrations spécifiées</h2>
-        <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-12">
-            <h3>Nombre d'ADS enregistrées</h3>
-            <canvas id="ads-count-filtered"></canvas>
-            <p class="fr-mt-3w fr-text--xs">Évolution du nombre d'ADS enregistrées sur la plateforme depuis son lancement.</p>
-          </div>
-          <div class="fr-col-12">
-            <h3>Nombre de gestionnaires ADS</h3>
-            <canvas id="ads-manager-requests-count-filtered"></canvas>
-            <p class="fr-mt-3w fr-text--xs">
-              Évolution du nombre de comptes instructeurs créés sur la plateforme depuis son lancement. Un compte instructeur a la possibilité d'enregistrer des ADS pour son administration.
-            </p>
-          </div>
-        </div>
-      {% endif %}
     </div>
     {% comment %} Second tab {% endcomment %}
     <div id="tabpanel-2-panel"
@@ -205,29 +216,87 @@
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
           <h3>Nombre de propriétaires de véhicules relais enregistrés</h3>
-          <canvas id="relais-proprietaires-count"></canvas>
+          <canvas
+            role="img"
+            aria-label="Évolution du nombre de propriétaires de véhicules relais ayant enregistré au moins un véhicule. - Accéder à la version tableau ci dessous"
+            id="relais-proprietaires-count">
+          </canvas>
           <p class="fr-mt-3w fr-text--xs">
             Évolution du nombre de propriétaires de véhicules relais ayant enregistré au moins un véhicule.
           </p>
+          <details>
+            <summary>Version tableau</summary>
+            <div class="fr-table" id="table-gestionnaire-component">
+              <div class="fr-table__wrapper">
+                <div class="fr-table__container">
+                  <div class="fr-table__content">
+                    <table id="table-gestionnaire">
+                      <caption>Évolution du nombre de propriétaires de véhicules relais ayant enregistré au moins un véhicule</caption>
+                      <thead>
+                        <tr>
+                          <th>Trimestre</th>
+                          <th>Nombre de propriétaire</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for label, value in trimesters_data.proprietaire_by_trimester.items %}
+                          <tr>
+                            <td>{{label}}</td>
+                            <td>{{value}}</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
         <div class="fr-col-12">
           <h3>Nombre de véhicules relais enregistrés</h3>
-          <canvas id="relais-vehicules-count"></canvas>
+          <canvas
+            role="img"
+            aria-label="Évolution du nombre de véhicules relais enregistrés. - Accéder à la version tableau ci dessous""
+            id="relais-vehicules-count">
+          </canvas>
           <p class="fr-mt-3w fr-text--xs">Évolution du nombre de véhicules relais enregistrés.</p>
+          <details>
+            <summary>Version tableau</summary>
+            <div class="fr-table" id="table-gestionnaire-component">
+              <div class="fr-table__wrapper">
+                <div class="fr-table__container">
+                  <div class="fr-table__content">
+                    <table id="table-gestionnaire">
+                      <caption>Évolution du nombre de propriétaires de véhicules relais ayant enregistré au moins un véhicule</caption>
+                      <thead>
+                        <tr>
+                          <th>Trimestre</th>
+                          <th>Nombre de véhicules relais</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for label, value in trimesters_data.vehicule_by_trimester.items %}
+                          <tr>
+                            <td>{{label}}</td>
+                            <td>{{value}}</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
       </div>
     </div>
   </div>
-  <script id="data" type="application/json">
-{
-  "ads_by_month": {{ ads_count_by_month|safe }},
-  "ads_by_month_filtered": {{ ads_count_by_month_filtered|safe }},
-  "ads_manager_requests_by_month": {{ ads_manager_requests_by_month|safe }},
-  "ads_manager_requests_by_month_filtered": {{ ads_manager_requests_by_month_filtered|safe }},
-  "relais_proprietaires_by_month": {{ relais_proprietaires_by_month|safe }},
-  "relais_vehicules_by_month": {{ relais_vehicules_by_month|safe }}
-}
-  </script>
+
+
+  {{ trimesters_data|json_script:"data" }}
+
   <script src="./stats.ts"></script>
 {% endblock body-content %}
 {% block endbody %}
