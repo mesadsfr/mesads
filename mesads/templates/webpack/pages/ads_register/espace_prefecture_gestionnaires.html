@@ -155,6 +155,7 @@
             <thead>
               <tr>
                 <th>Administration</th>
+                <th>Compte actif</th>
                 <th>Nombre d'ADS</th>
                 <th>Nombre de demandes enregistrées sur la liste d'attente</th>
                 <th>Consulter / Modifier</th>
@@ -164,6 +165,7 @@
               {% for ads_manager in ads_managers %}
                 <tr x-show="displayExtra || {{ forloop.counter0 }} < 5" x-transition>
                   <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
+                  <td>{% if ads_manager.nb_managers > 0 %}Oui{% else %}Non{% endif %}</td>
                   <td>
                     {% if ads_manager.ads_set.count > 0 %}
                       {{ ads_manager.ads_set.count }}
@@ -174,7 +176,7 @@
                         <br />
                         <i>{{ ads_manager.epci_delegate }}</i></small>
                     {% else %}
-                      -
+                        <small>Pas d'ADS enregistrée</small>
                     {% endif %}
                     {% if ads_manager.complete_updates_count %}
                       <p class="fr-text--xs">(dont {{ ads_manager.complete_updates_count }} avec toutes les informations)</p>
@@ -218,7 +220,7 @@
         </li>
         {% endif %}
         <li>
-          <a class="fr-pagination__link" aria-current="page" title="Page {{page_obj.number}}"> {{page_obj.number}} </a>
+          <a class="fr-pagination__link" aria-current="page" title="Page {{page_obj.number}} sur {{page_obj.paginator.num_pages}}"> {{page_obj.number}} / {{page_obj.paginator.num_pages}} </a>
         </li>
 
         {% if page_obj.has_next %}
