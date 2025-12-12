@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block body %}
-  <div class="fr-container fr-mt-3v">
+  <div class="fr-container fr-my-3v">
     
     <div class="fr-grid-row fr-grid-row--gutters">
 
@@ -91,17 +91,15 @@
               </button>
             </h4>
             <div class="fr-collapse" id="accordion-id-2">
-              <p>
-                <ol>
-                  <li>
-                    Faites une nouvelle demande d'accès via l'inscription sur MesADS
-                  </li>
-                  <li>
-                    Contactez-nous par email pour désactiver l'ancienne adresse : 
-                    <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
-                  </li>
-                </ol>
-              </p>
+              <ol>
+                <li>
+                  Faites une nouvelle demande d'accès via l'inscription sur MesADS
+                </li>
+                <li>
+                  Contactez-nous par email pour désactiver l'ancienne adresse : 
+                  <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+                </li>
+              </ol>
             </div>
           </section>
           <section class="fr-accordion">
@@ -111,38 +109,36 @@
               </button>
             </h4>
             <div class="fr-collapse" id="accordion-id-3">
-              <p>
-                <ol>
-                  <li>
-                    Créez votre compte et validez votre inscription via le lien envoyé par mail
-                  </li>
-                  <li>
-                    Demandez votre accès au compte de votre commune/EPCI à votre préfecture 
-                  </li>
-                  <img src="../images/faq/faq-1.png" alt="" width="100%" height="100%" />
-                  <li>
-                    Inscrivez-vous à notre prochain webinaire d’initiation aux bonnes pratiques et à l’utilisation de notre 
-                    outil (environ 45 minutes + Questions-réponses) :
-                    <a href="https://tally.so/r/3X4ldg">https://tally.so/r/3X4ldg</a>
-                  </li>
-                  <li>
-                    Gérer vos ADS:
-                    <ul>
-                      <li>
-                        Enregistrez l’arrêté délimitant le nombre d’ADS
-                      </li>
-                      <li>
-                        Enregistrez les ADS (Anciennes et nouvelles : toutes les ADS actuellement exploitées)
-                      </li>
-                      <li>
-                        Consultez et/ou modifiez les ADS de votre commune
-                      </li>
-                    </ul>
-                  </li>
-                  <img src="../images/faq/faq-2.png" alt="" width="100%" height="100%" />
-                  <img src="../images/faq/faq-3.png" alt="" width="100%" height="100%" />
-                </ol>
-              </p>
+              <ol>
+                <li>
+                  Créez votre compte et validez votre inscription via le lien envoyé par mail
+                </li>
+                <li>
+                  Demandez votre accès au compte de votre commune/EPCI à votre préfecture 
+                </li>
+                <img src="../images/faq/faq-1.png" alt="" width="100%" height="100%" />
+                <li>
+                  Inscrivez-vous à notre prochain webinaire d’initiation aux bonnes pratiques et à l’utilisation de notre 
+                  outil (environ 45 minutes + Questions-réponses) :
+                  <a href="https://tally.so/r/3X4ldg">https://tally.so/r/3X4ldg</a>
+                </li>
+                <li>
+                  Gérer vos ADS:
+                  <ul>
+                    <li>
+                      Enregistrez l’arrêté délimitant le nombre d’ADS
+                    </li>
+                    <li>
+                      Enregistrez les ADS (Anciennes et nouvelles : toutes les ADS actuellement exploitées)
+                    </li>
+                    <li>
+                      Consultez et/ou modifiez les ADS de votre commune
+                    </li>
+                  </ul>
+                </li>
+                <img src="../images/faq/faq-2.png" alt="" width="100%" height="100%" />
+                <img src="../images/faq/faq-3.png" alt="" width="100%" height="100%" />
+              </ol>
             </div>
           </section>
         </div>
@@ -158,21 +154,21 @@
             <div class="fr-collapse" id="accordion-id-4">
               <p>
                 Pour modifier une ADS (changement de véhicule, titulaire, création/modification location-gérance) :
-                <ol>
-                  <li>
-                    Dans votre tableau de bord, cliquez sur <strong>"Consulter ou modifier"</strong> pour l'ADS concernée
-                  </li>
-                  <li>
-                    Modifiez directement les champs nécessaires (titulaire, conducteur, véhicule, etc.)
-                  </li>
-                  <li>
-                    Ajoutez ou supprimez les fichiers en fin de formulaire, tel que l’arrêté modificatif signé
-                  </li>
-                  <li>
-                    Cliquez sur <strong>"Enregistrer les modifications"</strong>
-                  </li>
-                </ol>
               </p>
+              <ol>
+                <li>
+                  Dans votre tableau de bord, cliquez sur <strong>"Consulter ou modifier"</strong> pour l'ADS concernée
+                </li>
+                <li>
+                  Modifiez directement les champs nécessaires (titulaire, conducteur, véhicule, etc.)
+                </li>
+                <li>
+                  Ajoutez ou supprimez les fichiers en fin de formulaire, tel que l’arrêté modificatif signé
+                </li>
+                <li>
+                  Cliquez sur <strong>"Enregistrer les modifications"</strong>
+                </li>
+              </ol>
               <p>
                 <strong>Important</strong> : Pour une location-gérance, renseignez les informations du 
                 locataire-gérant dans la section "Conducteur"
@@ -189,22 +185,20 @@
               </button>
             </h4>
             <div class="fr-collapse" id="accordion-id-5">
-              <p>
-                <ul>
-                  <li>
-                    <strong>Date de création</strong>: Date de délivrance de l'ADS au premier titulaire
-                  </li>
-                  <li>
-                    <strong>Date d'attribution :</strong>
-                  </li>
-                  <li>
-                    Pour les "anciennes" ADS (créées avant le 1er octobre 2014) : date de rachat par le titulaire actuel
-                  </li>
-                  <li>
-                    Pour les "nouvelles" ADS (créées après le 1er octobre 2014) : date de renouvellement après expiration du délai de 5 an
-                  </li>
-                </ul>
-              </p>
+              <ul>
+                <li>
+                  <strong>Date de création</strong>: Date de délivrance de l'ADS au premier titulaire
+                </li>
+                <li>
+                  <strong>Date d'attribution :</strong>
+                </li>
+                <li>
+                  Pour les "anciennes" ADS (créées avant le 1er octobre 2014) : date de rachat par le titulaire actuel
+                </li>
+                <li>
+                  Pour les "nouvelles" ADS (créées après le 1er octobre 2014) : date de renouvellement après expiration du délai de 5 an
+                </li>
+              </ul>
               <p>
                 <strong>Plus d'infos : </strong> <a href="{% url 'app.reglementation' %}">Réglementation taxi</a>. 
               </p>
@@ -217,22 +211,20 @@
               </button>
             </h4>
             <div class="fr-collapse" id="accordion-id-6">
-              <p>
-                <ol>
-                  <li>
-                    Cliquez sur <strong>"Consulter ou modifier"</strong> pour l'ADS concernée
-                  </li>
-                  <li>
-                    Dans le formulaire, cliquez sur <strong>"Accéder aux modèles d'arrêtés pour cette ADS"</strong>
-                  </li>
-                  <li>
-                    Personnalisez et éditez le modèle selon vos besoins
-                  </li>
-                  <li>
-                    <strong>N'oubliez</strong> pas d'insérer l'arrêté signé via le bouton d'insertion en fin de formulaire
-                  </li>
-                </ol>
-              </p>
+              <ol>
+                <li>
+                  Cliquez sur <strong>"Consulter ou modifier"</strong> pour l'ADS concernée
+                </li>
+                <li>
+                  Dans le formulaire, cliquez sur <strong>"Accéder aux modèles d'arrêtés pour cette ADS"</strong>
+                </li>
+                <li>
+                  Personnalisez et éditez le modèle selon vos besoins
+                </li>
+                <li>
+                  <strong>N'oubliez</strong> pas d'insérer l'arrêté signé via le bouton d'insertion en fin de formulaire
+                </li>
+              </ol>
             </div>
           </section>
           <section class="fr-accordion">
@@ -257,24 +249,25 @@
               </button>
             </h4>
             <div class="fr-collapse" id="accordion-id-8">
+              <ol>
+                <li>
+                  Cliquez sur <strong>"Consulter ou modifier"</strong> pour l'ADS concernée
+                </li>
+                <li>
+                  Dans le formulaire, <strong>modifiez le titulaire</strong> et autres éléments susceptibles de changer suite à la cession (véhicule, conducteur(s))
+                </li>
+                <li>
+                  Au-dessus du formulaire, cliquez sur "Accéder aux modèles d'arrêtés pour cette ADS"
+                </li>
+                <li>
+                  Personnalisez et éditez <strong>le modèle « Changement de titulaire »</strong> selon vos besoin
+                </li>
+                <li>
+                  N'oubliez pas d'insérer l'arrêté signé via le bouton d'insertion en fin de formulaire
+                </li>
+              </ol>
+
               <p>
-                <ol>
-                  <li>
-                    Cliquez sur <strong>"Consulter ou modifier"</strong> pour l'ADS concernée
-                  </li>
-                  <li>
-                    Dans le formulaire, <strong>modifiez le titulaire</strong> et autres éléments susceptibles de changer suite à la cession (véhicule, conducteur(s))
-                  </li>
-                  <li>
-                    Au-dessus du formulaire, cliquez sur "Accéder aux modèles d'arrêtés pour cette ADS"
-                  </li>
-                  <li>
-                    Personnalisez et éditez <strong>le modèle « Changement de titulaire »</strong> selon vos besoin
-                  </li>
-                  <li>
-                    N'oubliez pas d'insérer l'arrêté signé via le bouton d'insertion en fin de formulaire
-                  </li>
-                </ol>
                 L’historisation vous permet de garder traces des anciens titulaires de ladite ADS.
               </p>
             </div>
@@ -303,21 +296,23 @@
             <div class="fr-collapse" id="accordion-id-10">
               <p>
                 <strong>Obligation de vérifier la fiabilité des données des ADS au minimum un an après la dernière modification.</strong>
-                <ol>
-                  <li>Rendez-vous sur votre espace "Gestionnaire", et consultez le tableau récapitulatif des ADS</li>
-                  <li>Si la dernière <strong>date de mise à jour est rouge</strong> et/ou <strong>"données incomplètes"</strong> s'affiche, cliquez sur <strong>"consulter/modifier"</strong></li>
-                  <img src="../images/faq/faq-4.png" alt="" width="100%" height="100%" />
-                  <li>
-                    <strong>Vérifiez les informations et complétez-le</strong>
-                  </li>
-                  <li>
-                    Cochez la case ci-dessous et validez les modifications
-                  </li>
-                  <img src="../images/faq/faq-5.png" alt="" width="100%" height="100%" />
-                </ol>
-                <strong>Pour connaitre les éléments à compléter, un tableau rouge s’affiche au-dessus du formulaire, par exemple:</strong>
-                <img src="../images/faq/faq-6.png" alt="" width="100%" height="100%" />
               </p>
+              <ol>
+                <li>Rendez-vous sur votre espace "Gestionnaire", et consultez le tableau récapitulatif des ADS</li>
+                <li>Si la dernière <strong>date de mise à jour est rouge</strong> et/ou <strong>"données incomplètes"</strong> s'affiche, cliquez sur <strong>"consulter/modifier"</strong></li>
+                <img src="../images/faq/faq-4.png" alt="" width="100%" height="100%" />
+                <li>
+                  <strong>Vérifiez les informations et complétez-le</strong>
+                </li>
+                <li>
+                  Cochez la case ci-dessous et validez les modifications
+                </li>
+                <img src="../images/faq/faq-5.png" alt="" width="100%" height="100%" />
+              </ol>
+              <p>
+                <strong>Pour connaitre les éléments à compléter, un tableau rouge s’affiche au-dessus du formulaire, par exemple:</strong>
+              </p>
+              <img src="../images/faq/faq-6.png" alt="" width="100%" height="100%" />
             </div>
           </section>
         </div>
@@ -366,14 +361,14 @@
             <div class="fr-collapse" id="accordion-id-13">
               <p>
                 Un nouvel arrêté est obligatoire dans les cas suivants :
-                <ul>
-                  <li>Délivrance de l'ADS (création)</li>
-                  <li>Changement de titulaire (cession)</li>
-                  <li>Changement de véhicule</li>
-                  <li>Passage en location-gérance (anciennes ADS uniquement)</li>
-                  <li>Retrait de l'ADS</li>
-                </ul>
               </p>
+              <ul>
+                <li>Délivrance de l'ADS (création)</li>
+                <li>Changement de titulaire (cession)</li>
+                <li>Changement de véhicule</li>
+                <li>Passage en location-gérance (anciennes ADS uniquement)</li>
+                <li>Retrait de l'ADS</li>
+              </ul>
             </div>
           </section>
           <section class="fr-accordion">
@@ -383,16 +378,14 @@
               </button>
             </h4>
             <div class="fr-collapse" id="accordion-id-14">
-              <p>
-                <ul>
-                  <li><strong>Liste d'attente : </strong>Tout demandeur peut s'inscrire</li>
-                  <li><strong>Création d'ADS supplémentaires : </strong>Non obligatoire - ne créez une nouvelle ADS que s'il existe un réel besoin local</li>
-                  <li>
-                    <strong>Conditions : </strong>Consultez la 
-                    <a href="{% url 'app.reglementation' %}">réglementation</a>
-                  </li>
-                </ul>
-              </p>
+              <ul>
+                <li><strong>Liste d'attente : </strong>Tout demandeur peut s'inscrire</li>
+                <li><strong>Création d'ADS supplémentaires : </strong>Non obligatoire - ne créez une nouvelle ADS que s'il existe un réel besoin local</li>
+                <li>
+                  <strong>Conditions : </strong>Consultez la 
+                  <a href="{% url 'app.reglementation' %}">réglementation</a>
+                </li>
+              </ul>
             </div>
           </section>
           <section class="fr-accordion">
@@ -405,23 +398,21 @@
               <p>
                 <strong>Important : </strong>Seules les ADS délivrées avant le 1er octobre 2014 peuvent être cédées.
               </p>
-              <p>
-                <strong>Conditions d'exploitation :</strong>
-                <ul>
-                  <li><strong>15 ans </strong>à compter de la création</li>
-                  <strong>OU</strong>
-                  <li><strong>5 ans </strong>à compter de la dernière attribution</li>
-                </ul>
-              </p>
+              <strong>Conditions d'exploitation :</strong>
+              <ul>
+                <li><strong>15 ans </strong>à compter de la création</li>
+                <strong>OU</strong>
+                <li><strong>5 ans </strong>à compter de la dernière attribution</li>
+              </ul>
               <p>
                 <strong>Exceptions (cession possible avant délai) :</strong>
-                <ul>
-                  <li>Fusion, scission ou cessation d'activité d'entreprise de taxi</li>
-                  <li>Procédure collective (sauvegarde, redressement, liquidation)</li>
-                  <li>Inaptitude définitive avec annulation du permis (interdiction de solliciter une nouvelle ADS pendant 5 ans)</li>
-                  <li>Décès du titulaire (1 an pour présenter un successeur)</li>
-                </ul>
               </p>
+              <ul>
+                <li>Fusion, scission ou cessation d'activité d'entreprise de taxi</li>
+                <li>Procédure collective (sauvegarde, redressement, liquidation)</li>
+                <li>Inaptitude définitive avec annulation du permis (interdiction de solliciter une nouvelle ADS pendant 5 ans)</li>
+                <li>Décès du titulaire (1 an pour présenter un successeur)</li>
+              </ul>
             </div>
           </section>
           <section class="fr-accordion">
@@ -433,30 +424,34 @@
             <div class="fr-collapse" id="accordion-id-17">
               <p>
                 <strong>Nouveau titulaire :</strong>
-                <ul>
-                  <li>Carte professionnelle de conducteur de taxi valide</li>
-                  <li>Copie du permis de conduire</li>
-                  <li>Extrait Kbis (si société)</li>
-                  <li>Attestation d'aptitude médicale préfectorale</li>
-                  <li>Examen de conducteur de taxi (-5 ans) ou attestation de formation continue</li>
-                </ul>
               </p>
+              <ul>
+                <li>Carte professionnelle de conducteur de taxi valide</li>
+                <li>Copie du permis de conduire</li>
+                <li>Extrait Kbis (si société)</li>
+                <li>Attestation d'aptitude médicale préfectorale</li>
+                <li>Examen de conducteur de taxi (-5 ans) ou attestation de formation continue</li>
+              </ul>
               <p>
                 <strong>Véhicule :</strong>
-                <ul>
-                  <li>Certificat d'immatriculation</li>
-                  <li>Justificatif d'assurance</li>
-                </ul>
               </p>
+              <ul>
+                <li>Certificat d'immatriculation</li>
+                <li>Justificatif d'assurance</li>
+              </ul>
+              <p>
                 <strong>Cession :</strong>
-                <ul>
-                  <li>Acte de cession signé</li>
-                  <li>
-                    Justificatif d'exploitation effective et continue (déclarations de revenus, avis d'imposition, ou autre pièce prévue par arrêté préfectoral - cf. 
-                    <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000030048433" target="_blank">article R3121-6 du Code des transports</a>)
-                  </li>
-                </ul>
               </p>
+              <ul>
+                <li>Acte de cession signé</li>
+                <li>
+                  Justificatif d'exploitation effective et continue (déclarations de revenus, avis d'imposition, ou autre pièce prévue par arrêté préfectoral - cf. 
+                  <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000030048433" target="_blank">
+                    article R3121-6 du Code des transports
+                    <span class="fr-sr-only"> Nouvelle fenêtre</span>
+                  </a>)
+                </li>
+              </ul>
             </div>
           </section>
           <section class="fr-accordion">
@@ -467,7 +462,13 @@
             </h4>
             <div class="fr-collapse" id="accordion-id-18">
               <p>
-                <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000030048433" target="_blank">Article R3121-6 du code des transports</a>
+                <a
+                  href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000030048433"
+                  target="_blank"
+                >
+                  Article R3121-6 du code des transports
+                  <span class="fr-sr-only"> Nouvelle fenêtre</span>
+                </a>
               </p>
             </div>
           </section>
@@ -510,33 +511,31 @@
               </button>
             </h4>
             <div class="fr-collapse" id="accordion-id-21">
-              <p>
-                <ol>
-                  <li>
-                    Envoyez-nous une demande d’accès au compte administrateur de votre préfecture par mail à 
-                    <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
-                  </li>
-                  <li>
-                    Connectez-vous à votre espace préfecture via « Registre des ADS »
-                  </li>
-                  <li>
-                    Trois actions possibles :
-                    <ul>
-                      <li>Demande d'accès des gestionnaires rattachés à votre Préfecture</li>
-                      <li>ADS des administrations rattachées à votre Préfecture</li>
-                      <li>Modifications effectuées par les gestionnaires rattachées à votre prefecture</li>
-                    </ul>
-                  </li>
-                  <li>
-                    En téléchargeant les données de votre département, vous obtiendrez un Excel avec :
-                    <ul>
-                      <li>Un onglet rindiquant les données des ADS enregistrées</li>
-                      <li>Un onglet indiquant les données par commune/ EPCI</li>
-                    </ul>
-                  </li>
-                  <img src="../images/faq/faq-7.png" alt="" width="100%" height="100%" />
-                </ol>
-              </p>
+              <ol>
+                <li>
+                  Envoyez-nous une demande d’accès au compte administrateur de votre préfecture par mail à 
+                  <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+                </li>
+                <li>
+                  Connectez-vous à votre espace préfecture via « Registre des ADS »
+                </li>
+                <li>
+                  Trois actions possibles :
+                  <ul>
+                    <li>Demande d'accès des gestionnaires rattachés à votre Préfecture</li>
+                    <li>ADS des administrations rattachées à votre Préfecture</li>
+                    <li>Modifications effectuées par les gestionnaires rattachées à votre prefecture</li>
+                  </ul>
+                </li>
+                <li>
+                  En téléchargeant les données de votre département, vous obtiendrez un Excel avec :
+                  <ul>
+                    <li>Un onglet rindiquant les données des ADS enregistrées</li>
+                    <li>Un onglet indiquant les données par commune/ EPCI</li>
+                  </ul>
+                </li>
+                <img src="../images/faq/faq-7.png" alt="" width="100%" height="100%" />
+              </ol>
             </div>
           </section>
         </div>
@@ -550,15 +549,13 @@
               </button>
             </h4>
             <div class="fr-collapse" id="accordion-id-22">
-              <p>
-                <ol>
-                  <li>La commune peut utiliser <strong>"Mot de passe oublié"</strong> lors de la connexion</li>
-                  <li>
-                    En cas de problème : 
-                    <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
-                  </li>
-                </ol>
-              </p>
+              <ol>
+                <li>La commune peut utiliser <strong>"Mot de passe oublié"</strong> lors de la connexion</li>
+                <li>
+                  En cas de problème : 
+                  <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+                </li>
+              </ol>
             </div>
           </section>
           <section class="fr-accordion">
@@ -581,16 +578,14 @@
               </button>
             </h4>
             <div class="fr-collapse" id="accordion-id-24">
-              <p>
-                <ul>
-                  <li>
-                    <strong>Si elle gère les ADS</strong> pour la commune/EPCI : accès autorisé
-                  </li>
-                  <li>
-                    <strong>Pour contrôle uniquement</strong> : accès refusé (comme CPAM et autres structures de contrôle)
-                  </li>
-                </ul>
-              </p>
+              <ul>
+                <li>
+                  <strong>Si elle gère les ADS</strong> pour la commune/EPCI : accès autorisé
+                </li>
+                <li>
+                  <strong>Pour contrôle uniquement</strong> : accès refusé (comme CPAM et autres structures de contrôle)
+                </li>
+              </ul>
             </div>
           </section>
         </div>
@@ -624,14 +619,22 @@
             <div class="fr-collapse" id="accordion-id-26">
               <p>
                 <strong>Non,</strong> aucune autorisation n'est requise. Consultez les obligations dans :
-                <ul>
-                  <li>
-                    <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047937443" target="_blank">Arrêté du 28 juillet 2023</a>
-                  </li>
-                  <li>
-                    <a href="{% url 'app.reglementation' %}">Réglementation taxi</a> 
-                  </li>
-                </ul>
+              </p>
+              <ul>
+                <li>
+                  <a
+                    href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047937443"
+                    target="_blank"
+                  >
+                    Arrêté du 28 juillet 2023
+                    <span class="fr-sr-only"> Nouvelle fenêtre</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'app.reglementation' %}">Réglementation taxi</a> 
+                </li>
+              </ul>
+              <p>
                 <strong>Attention :</strong> Certaines préfectures ont des dispositions spécifiques.
               </p>
             </div>
@@ -643,19 +646,17 @@
               </button>
             </h4>
             <div class="fr-collapse" id="accordion-id-27">
-              <p>
-                <ol>
-                  <li>
-                    Accédez à <a href="{% url 'vehicules-relais.proprietaire' %}">l'espace propriétaire</a>
-                  </li>
-                  <li>
-                    Ou via <strong>"Répertoire des taxis relais"</strong>, puis <strong>"Espace propriétaire"</strong> à gauche de votre écran
-                  </li>
-                  <li>
-                    Enregistrez vos véhicules depuis cet espace
-                  </li>
-                </ol>
-              </p>
+              <ol>
+                <li>
+                  Accédez à <a href="{% url 'vehicules-relais.proprietaire' %}">l'espace propriétaire</a>
+                </li>
+                <li>
+                  Ou via <strong>"Répertoire des taxis relais"</strong>, puis <strong>"Espace propriétaire"</strong> à gauche de votre écran
+                </li>
+                <li>
+                  Enregistrez vos véhicules depuis cet espace
+                </li>
+              </ol>
             </div>
           </section>
           <section class="fr-accordion">
@@ -665,18 +666,18 @@
               </button>
             </h4>
             <div class="fr-collapse" id="accordion-id-28">
+              <ol>
+                <li>
+                  Rendez-vous sur votre espace propriétaire
+                </li>
+                <li>
+                  Consultez le véhicule concerné
+                </li>
+                <li>
+                  Utilisez le bouton <strong>"Supprimer"</strong> en bas de page
+                </li>
+              </ol>
               <p>
-                <ol>
-                  <li>
-                    Rendez-vous sur votre espace propriétaire
-                  </li>
-                  <li>
-                    Consultez le véhicule concerné
-                  </li>
-                  <li>
-                    Utilisez le bouton <strong>"Supprimer"</strong> en bas de page
-                  </li>
-                </ol>
                 Pour un remplacement : enregistrez le nouveau véhicule (nouveau numéro unique automatique)
               </p>
             </div>
@@ -688,19 +689,17 @@
               </button>
             </h4>
             <div class="fr-collapse" id="accordion-id-29">
-              <p>
-                <ol>
-                  <li>
-                    Rendez-vous sur votre <strong>espace propriétaire</strong>
-                  </li>
-                  <li>
-                    Consultez le véhicule concerné
-                  </li>
-                  <li>
-                    Cliquez sur le lien <strong>« Télécharger le récépissé d'enregistrement du véhicule relais »</strong> ; situé au-dessus du formulaire
-                  </li>
-                </ol>
-              </p>
+              <ol>
+                <li>
+                  Rendez-vous sur votre <strong>espace propriétaire</strong>
+                </li>
+                <li>
+                  Consultez le véhicule concerné
+                </li>
+                <li>
+                  Cliquez sur le lien <strong>« Télécharger le récépissé d'enregistrement du véhicule relais »</strong> ; situé au-dessus du formulaire
+                </li>
+              </ol>
             </div>
           </section>
         </div>
@@ -750,16 +749,14 @@
               </button>
             </h3>
             <div class="fr-collapse" id="accordion-id-33">
-              <p>
-                <ul>
-                  <li>
-                    <strong>Politique de confidentialité :</strong> Consultable dans le bas de page du site
-                  </li>
-                  <li>
-                    <strong>Conditions générales d'utilisation :</strong> Consultable dans le bas de page du site
-                  </li>
-                </ul>
-              </p>
+              <ul>
+                <li>
+                  <strong>Politique de confidentialité :</strong> Consultable dans le bas de page du site
+                </li>
+                <li>
+                  <strong>Conditions générales d'utilisation :</strong> Consultable dans le bas de page du site
+                </li>
+              </ul>
             </div>
           </section>
           <section class="fr-accordion">
@@ -805,6 +802,7 @@
             <div class="fr-collapse" id="accordion-id-35">
               <p>
                 <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a> pour : 
+              </p>
                 <ul>
                   <li>
                     Problèmes de compte
@@ -813,6 +811,7 @@
                     Questions sur l'utilisation de MesADS
                   </li>
                 </ul>
+              <p>
                 <strong>Disponibilité :</strong> En journée, du lundi au vendredi
               </p>
               <p>
@@ -827,18 +826,22 @@
               </button>
             </h3>
             <div class="fr-collapse" id="accordion-id-36">
-              <p>
-                <ul>
-                  <li>
-                    <a href="{% url 'app.reglementation' %}">Réglementation complète</a>
-                  </li>
-                  <li>
-                    <strong>Formation et webinaires :</strong> 
-                    <a href="https://tally.so/r/3X4ldg" target="_blank">Inscription</a> 
-                    (45 minutes, avec une séance de questions réponses)
-                  </li>
-                </ul>
-              </p>
+              <ul>
+                <li>
+                  <a href="{% url 'app.reglementation' %}">Réglementation complète</a>
+                </li>
+                <li>
+                  <strong>Formation et webinaires :</strong> 
+                  <a
+                    href="https://tally.so/r/3X4ldg"
+                    target="_blank"
+                  >
+                    Inscription
+                    <span class="fr-sr-only"> Nouvelle fenêtre</span>
+                  </a> 
+                  (45 minutes, avec une séance de questions réponses)
+                </li>
+              </ul>
             </div>
           </section>
           <section class="fr-accordion">

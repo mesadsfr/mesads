@@ -19,6 +19,7 @@
     class="fr-select{% if field_errors %} fr-select--error{% endif %}"
     id="{{ field.id_for_label }}"
     name="{{ field.html_name }}"
+    aria-describedby="{{field.id_for_label}}-messages"
     {% if x_model %}x-model="{{ x_model }}"{% endif %}
     {% if readonly %}disabled{% endif %}
   >
@@ -29,8 +30,15 @@
       {{ option }}
     {% endfor %}
   </select>
-  
-  {% for error in field_errors %}
-    <p class="fr-error-text">{{ error }}</p>
-  {% endfor %}
+
+  <div class="fr-messages-group" id="{{field.id_for_label}}-messages" aria-live="polite">
+    {% for error in field_errors %}
+      <p
+        class="fr-message fr-message--error"
+        id="{{field.id_for_label}}-{{forloop.counter0}}-message-error"
+      >
+        {{ error }}
+      </p>
+    {% endfor %}
+  </div>
 </div>

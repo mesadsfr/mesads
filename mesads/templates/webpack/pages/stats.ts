@@ -17,40 +17,6 @@ Chart.register(
   Tooltip
 );
 
-// Given a dict where keys are dates and values are numbers, return a dict where
-// keys are trimesters and values are the sum of the values of the corresponding
-// dates.
-function GroupDataByTrimester(data: Record<string, number>) {
-  const groupedByTrimester: Record<string, number> = {};
-
-  Object.keys(data).forEach((key) => {
-    const [year, month] = key.split("-").map(Number);
-    const trimester = Math.ceil(month / 3);
-
-    const e = trimester === 1 ? "ᵉʳ" : "ᵉ";
-
-    const trimesterKey = `${trimester}${e} trimestre ${year}`;
-
-    if (!groupedByTrimester[trimesterKey]) {
-      groupedByTrimester[trimesterKey] = 0;
-    }
-    groupedByTrimester[trimesterKey] += data[key];
-  });
-  return groupedByTrimester;
-}
-
-// Given an object where keys are strings and values are numbers, update the values to be the sum of the values of the previous keys.
-function AccumulateValues(data: Record<string, number>) {
-  // Accumulate values to have a graph that shows the total number of ads over time
-  let sum = 0;
-  const ret = Object.values(data).reduce((acc: number[], curr: number) => {
-    sum += curr;
-    acc.push(sum);
-    return acc;
-  }, []);
-  return ret;
-}
-
 function DisplayLineChart(
   canvas: HTMLCanvasElement,
   labels: string[],
@@ -130,24 +96,20 @@ function DisplayLineChart(
 
 // The type of data given to this script by the Django template.
 type DataType = {
-  ads_by_month: Record<string, number>;
-  ads_by_month_filtered: Record<string, number>;
-  ads_manager_requests_by_month: Record<string, number>;
-  ads_manager_requests_by_month_filtered: Record<string, number>;
-  relais_proprietaires_by_month: Record<string, number>;
-  relais_vehicules_by_month: Record<string, number>;
+  ads_by_trimester: Record<string, number>;
+  ads_manager_by_trimester: Record<string, number>;
+  proprietaire_by_trimester: Record<string, number>;
+  vehicule_by_trimester: Record<string, number>;
 };
 
 const data = JSON.parse(
   (document.getElementById("data") as HTMLScriptElement).text
 ) as DataType;
 
-const adsByTimester = GroupDataByTrimester(data.ads_by_month);
-
 DisplayLineChart(
   document.getElementById("ads-count") as HTMLCanvasElement,
-  Object.keys(adsByTimester),
-  AccumulateValues(adsByTimester),
+  Object.keys(data.ads_by_trimester),
+  Object.values(data.ads_by_trimester),
   // Hardcode the maximum value to 60000, because there are approximately 60000
   // in total. If we don't hardcode the value, the maximum value of the graph
   // corresponds to +- the number of ADS which we registered in the database,
@@ -155,62 +117,20 @@ DisplayLineChart(
   60000
 );
 
-const adsCountFilteredCanvas = document.getElementById(
-  "ads-count-filtered"
-) as HTMLCanvasElement | null;
-
-if (adsCountFilteredCanvas !== null) {
-  const adsByTimesterFiltered = GroupDataByTrimester(
-    data.ads_by_month_filtered
-  );
-  DisplayLineChart(
-    adsCountFilteredCanvas,
-    Object.keys(adsByTimesterFiltered),
-    AccumulateValues(adsByTimesterFiltered)
-  );
-}
-
-const requestsByTrimester = GroupDataByTrimester(
-  data.ads_manager_requests_by_month
-);
-
 DisplayLineChart(
   document.getElementById("ads-manager-requests-count") as HTMLCanvasElement,
-  Object.keys(requestsByTrimester),
-  AccumulateValues(requestsByTrimester)
-);
-
-const ADSManagerRequestsCountFilteredCanvas = document.getElementById(
-  "ads-manager-requests-count-filtered"
-) as HTMLCanvasElement | null;
-
-if (ADSManagerRequestsCountFilteredCanvas !== null) {
-  const requestsByTrimesterFiltered = GroupDataByTrimester(
-    data.ads_manager_requests_by_month_filtered
-  );
-  DisplayLineChart(
-    ADSManagerRequestsCountFilteredCanvas,
-    Object.keys(requestsByTrimesterFiltered),
-    AccumulateValues(requestsByTrimesterFiltered)
-  );
-}
-
-const relaisProprietairesByTrimester = GroupDataByTrimester(
-  data.relais_proprietaires_by_month
+  Object.keys(data.ads_manager_by_trimester),
+  Object.values(data.ads_manager_by_trimester)
 );
 
 DisplayLineChart(
   document.getElementById("relais-proprietaires-count") as HTMLCanvasElement,
-  Object.keys(relaisProprietairesByTrimester),
-  AccumulateValues(relaisProprietairesByTrimester)
-);
-
-const relaisVehiculesByTrimester = GroupDataByTrimester(
-  data.relais_vehicules_by_month
+  Object.keys(data.proprietaire_by_trimester),
+  Object.values(data.proprietaire_by_trimester)
 );
 
 DisplayLineChart(
   document.getElementById("relais-vehicules-count") as HTMLCanvasElement,
-  Object.keys(relaisVehiculesByTrimester),
-  AccumulateValues(relaisVehiculesByTrimester)
+  Object.keys(data.vehicule_by_trimester),
+  Object.values(data.vehicule_by_trimester)
 );

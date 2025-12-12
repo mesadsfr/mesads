@@ -611,7 +611,8 @@ class ADS(SmartValidationMixin, CharFieldsStripperMixin, SoftDeleteMixin, models
             "carte grise du véhicule concerné par l'ADS. L'ensemble des "
             "abréviations est disponible sur legifrance : <a "
             'href="https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044084721" '
-            'target="_blank">https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044084721</a> '
+            'target="_blank">https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044084721'
+            '<span class="fr-sr-only"> Nouvelle fenêtre</span></a> '
         ),
     )
 
@@ -1176,7 +1177,8 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
 
     email = models.EmailField(
         max_length=128,
-        verbose_name="Email",
+        verbose_name="Adresse électronique",
+        help_text="example@test.com",
     )
 
     adresse = models.CharField(
@@ -1187,6 +1189,7 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
 
     date_depot_inscription = models.DateField(
         verbose_name="Date de dépôt de la demande initiale",
+        help_text="Format: JJ/MM/AAAA",
     )
 
     date_dernier_renouvellement = models.DateField(
@@ -1194,6 +1197,7 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
         blank=True,
         null=True,
         default=None,
+        help_text="Format: JJ/MM/AAAA",
     )
 
     date_fin_validite = models.DateField(

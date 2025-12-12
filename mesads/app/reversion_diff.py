@@ -209,9 +209,11 @@ class ModelHistory:
                         model=cls,
                         render_field=self.render_field,
                         data=json.loads(version.serialized_data)[0]["fields"],
-                        prev_data=json.loads(last_version.serialized_data)[0]["fields"]
-                        if last_version
-                        else None,
+                        prev_data=(
+                            json.loads(last_version.serialized_data)[0]["fields"]
+                            if last_version
+                            else None
+                        ),
                         ignore_fields=self.ignore_fields,
                     )
                     objects_ids[object_id] = diff
@@ -270,6 +272,8 @@ class ModelHistory:
             maxsize = 64
             url = field.storage.url(value)
             name = f"…{value[-maxsize:]}" if len(value) > maxsize + 3 else value
-            return mark_safe(f'<a href="{url}" target="_blank">{name}</a>')
+            return mark_safe(
+                f'<a href="{url}" target="_blank">{name}<span class="fr-sr-only"> Nouvelle fenêtre</span></a>'
+            )
 
         return value

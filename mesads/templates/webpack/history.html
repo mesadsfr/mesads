@@ -18,9 +18,9 @@
                 </caption>
                 <thead>
                   {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
-                    <th class="fr-text--lg !text-center !bg-[#1b1b35] text-white" colspan="2">{{ cls|meta:"verbose_name" }} (supprimé)</th>
+                    <th class="fr-text--lg !text-center !bg-[#1b1b35] text-white" colspan="2" scope="colgroup">{{ cls|meta:"verbose_name" }} (supprimé)</th>
                   {% else %}
-                    <th class="fr-text--lg !text-center !bg-[#1b1b35] text-white" colspan="2">{{ cls|meta:"verbose_name" }}</th>
+                    <th class="fr-text--lg !text-center !bg-[#1b1b35] text-white" colspan="2" scope="colgroup">{{ cls|meta:"verbose_name" }}</th>
                   {% endif %}
                 </thead>
                 <tbody>

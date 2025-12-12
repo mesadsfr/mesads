@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django import forms
 from dateutil.relativedelta import relativedelta
 from django.forms import BaseInlineFormSet, inlineformset_factory
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.utils import timezone
 
 from dal import autocomplete
@@ -77,14 +77,9 @@ class ADSManagerEditForm(forms.ModelForm):
             self.fields["epci_delegate"].queryset = EPCI.objects.filter(
                 departement=instance.content_object.departement
             )
-            self.fields["epci_delegate"].widget.url = reverse(
-                "fradm.autocomplete.epci",
-                kwargs={"departement": instance.content_object.departement},
-            )
 
     epci_delegate = forms.ModelChoiceField(
         queryset=None,
-        widget=autocomplete.ListSelect2(url=reverse_lazy("fradm.autocomplete.epci")),
         label=ADSManager.epci_delegate.field.verbose_name,
         help_text=ADSManager.epci_delegate.field.help_text,
         required=False,

@@ -4,7 +4,7 @@ urls:
   ###
   app.homepage:
     title: "{{title}}"
-    description: "Trouvez comment utiliser MesADS en sélectionnant votre profil: gestionnaire ADS, chauffeur de taxi, propriétaire de véhicules relais, ou autre."
+    description: "Trouvez comment utiliser MesADS en sélectionnant votre profil: gestionnaire ADS, chauffeur de taxi, propriétaire de taxis relais, ou autre."
 
   app.accessibility:
     title: "Déclaration d'accessibilité de MesADS"
@@ -20,7 +20,7 @@ urls:
 
   app.reglementation:
     title: "Réglementation taxi - MesADS"
-    description: Les questions fréquemment posées sur la réglementation des taxis et des véhicules relais.
+    description: Les questions fréquemment posées sur la réglementation des taxis et des taxis relais.
 
   app.suivi:
     title: "Données personnelles et cookies sur MesADS"
@@ -47,14 +47,14 @@ urls:
   ###
   override.login:
     title: "Connexion à MesADS"
-    description: "Connectez-vous pour gérer les ADS de votre administration ou enregistrer vos véhicules relais sur MesADS."
+    description: "Connectez-vous pour gérer les ADS de votre administration ou enregistrer vos taxis relais sur MesADS."
 
   django_registration_disallowed:
     missing: true
 
   django_registration_register:
     title: "Inscription sur MesADS"
-    description: "Créez votre compte MesADS pour gérer les ADS ou enregistrer des véhicules relais."
+    description: "Créez votre compte MesADS pour gérer les ADS ou enregistrer des taxis relais."
 
   django_registration_complete:
     title: "Confirmation d'inscription MesADS"
@@ -152,7 +152,7 @@ urls:
     missing: true
 
   app.ads.history:
-    title: "Historique des modifications de l'ADS {{ ads.number }}"
+    title: "Historique des modifications de l'ADS {{ ads.number }} - MesADS"
     description: "Consultez le journal des modifications apportées à l'ADS {{ ads.number }} de {{ ads_manager.content_object.display_fulltext }}."
 
 
@@ -177,7 +177,7 @@ urls:
    description: "MesADS - Détail d'une ADS"
   
   app.ads-manager-admin.ads-history:
-   title: "Historique des modifications de l'ADS {{ ads.number }}"
+   title: "Historique des modifications de l'ADS {{ ads.number }} - MesADS"
    description: "MesADS - Historique d'une ADS"
 
   app.ads-manager-admin.ads-delete:
@@ -189,12 +189,12 @@ urls:
     description: "MesADS - Demande de gestion d'une administration"
 
   app.ads-manager-admin.vehicules_relais:
-    title: "MesADS - Véhicules relais de {{ads_manager.content_object.display_fulltext }}"
-    description: "Véhicules relais de {{ads_manager.content_object.display_fulltext }}"
+    title: "MesADS - Taxis relais de {{ads_manager_administrator.prefecture.display_fulltext }}"
+    description: "Taxis relais de {{ads_manager_administrator.prefecture.display_fulltext }}"
 
   app.ads-manager-admin.vehicule_relais_detail:
-    title: "MesADS - Détail d'un véhicule relais"
-    description: "MesADS - Détail d'un véhicule relais"
+    title: "MesADS - Détail du taxis relais n°{{vehicule.numero}}"
+    description: "MesADS - Détail du taxis relais n°{{vehicule.numero}}"
 
   ###
   ### Vehicules relais
@@ -205,11 +205,11 @@ urls:
     missing: true
 
   vehicules-relais.search:
-    title: "Recherche dans les répertoires des véhicules relais"
-    description: "Choisissez un département pour explorer la liste des véhicules relais disponibles."
+    title: "Recherche dans les répertoires des taxis relais - MesADS"
+    description: "Choisissez un département pour explorer la liste des taxis relais disponibles."
 
   vehicules-relais.vehicule:
-    title: "Détails du taxi relais n°{{ vehicule.numero }}"
+    title: "Détails du taxi relais n°{{ vehicule.numero }} - MesADS"
     description: "Consultez les détails du taxi relais n°{{ vehicule.numero }}, y compris le propriétaire et les spécificités."
 
   vehicules-relais.proprietaire:

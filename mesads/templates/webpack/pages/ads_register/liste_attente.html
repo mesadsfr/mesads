@@ -208,7 +208,7 @@
                           href="{% url 'app.liste_attente_traitement_demande' manager_id=ads_manager.id inscription_id=inscription.id %}"
                         >
                           <span class="fr-sr-only">
-                            Traiter
+                            Poursuivre le traitement de la demande {{inscription.numero}}
                           </span>
                         </a>
                       {% endif %}
@@ -217,7 +217,7 @@
                         href="{% url 'app.liste_attente_inscription_update' manager_id=ads_manager.id inscription_id=inscription.id %}"
                       >
                         <span class="fr-sr-only">
-                          Modifier
+                          Modifier la demande {{inscription.numero}}
                         </span>
                       </a>
                     </td>

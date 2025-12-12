@@ -39,8 +39,13 @@
     </div>
   {% else %}
     <p>
-      ➕&nbsp;<a class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-   href="{% url 'vehicules-relais.proprietaire.new' %}">Créer un autre espace propriétaire</a>
+      <span aria-hidden="true">➕</span>
+      <a
+        class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+        href="{% url 'vehicules-relais.proprietaire.new' %}"
+      >
+        Créer un autre espace propriétaire
+      </a>
     </p>
     <div class="fr-table fr-table--lg">
       <div class="fr-table__wrapper">

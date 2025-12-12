@@ -52,7 +52,7 @@
   font-size: 2.5rem;
   line-height: 1;
   cursor: pointer;
-  color: #ccc; /* étoile vide */
+  color: #9F8A8A; /* étoile vide */
   padding: 0 0.25rem;
   user-select: none;
 }
@@ -61,12 +61,18 @@
 input[type="radio"]:checked ~ label.star,
 .star:hover,
 .star:hover ~ label.star {
-  color: #f5c518; /* jaune or lisible sur fond clair */
+  color: #B98609;
 }
 
-/* Focus clavier : contour visible et contrasté */
 input[type="radio"]:focus + label.star {
   outline: 2px solid #000;
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+.stats-card-number {
+  font-size: 2.25rem !important;
+}
+.stats-card-description {
+  font-size: 1.25rem !important;
 }

@@ -22,7 +22,7 @@
   </p>
   {% if not is_proprietaire %}
     <div class="fr-alert fr-alert--info fr-mt-5w">
-      <p class="fr-alert__title">Si vous êtes propriétaire d'un taxi relais, nous vous rappelons que</p>
+      <h2 class="fr-alert__title">Si vous êtes propriétaire d'un taxi relais, nous vous rappelons que</h2>
       <p>
         Si vous possédez un taxi relais, nous vous rappelons qu'il est obligatoire de déclarer tous les véhicules relais dans le répertoire départemental dédié avant de les exploiter. Si vous n'avez pas encore effectué cette déclaration, rendez-vous dans votre espace propriétaire
       </p>
@@ -47,11 +47,8 @@
     <div class="fr-form-group">
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__content">
-          <div class="fr-input-group radio-inline{% if form.errors.departement %} fr-input-group--error{% endif %}">
-            <label class="fr-label" for="{{ form.departement.id_for_label }}">Sélectionnez le département :</label>
-            {{ form.departement }}
-            {% for error in form.errors.departement %}<p class="fr-error-text">{{ error }}</p>{% endfor %}
-          </div>
+          {% include "form_fields/select.html" with empty_option=True field=form.departement field_errors=form.errors.departement required=form.fields.departement.required bold=True %}
+          
           {% include "form_fields/string.html" with field=form.immatriculation field_errors=form.errors.immatriculation required=form.fields.immatriculation.required %}
         </div>
       </fieldset>

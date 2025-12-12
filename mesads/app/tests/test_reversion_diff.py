@@ -189,7 +189,7 @@ class TestReversionDiff(TestCase):
 
         self.assertEqual(
             ModelHistory(ADSLegalFile()).render_field(ADSLegalFile, "file", "xxx"),
-            '<a href="/uploads/xxx" target="_blank">xxx</a>',
+            '<a href="/uploads/xxx" target="_blank">xxx<span class="fr-sr-only"> Nouvelle fenêtre</span></a>',
         )
 
     def test_diff_removed_field(self):
