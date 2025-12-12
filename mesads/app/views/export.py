@@ -15,6 +15,9 @@ class ADSExporter:
     def get_filename(self):
         raise NotImplementedError
 
+    def get_file_title(self):
+        raise NotImplementedError
+
     def get_queryset(self):
         return (
             ADS.objects.select_related(
@@ -48,6 +51,7 @@ class ADSExporter:
             },
         )
         workbook = xlsxwriter.Workbook(response)
+        workbook.set_properties({"title": self.get_file_title()})
         self.add_sheets(workbook)
         workbook.close()
         return response
@@ -57,7 +61,8 @@ class ADSExporter:
         self.ads_list_sheet(workbook)
 
     def ads_list_sheet(self, workbook):
-        bold_format = workbook.add_format({"bold": True})
+        header_format = workbook.add_format({"bold": True, "font_size": 12})
+        default_format = workbook.add_format({"font_size": 12})
         sheet = workbook.add_worksheet("ADS enregistrées")
         base_headers = [
             "Type d'administration",
@@ -90,7 +95,7 @@ class ADSExporter:
         max_drivers = 0
 
         # Applying bold format to headers
-        sheet.set_row(0, None, bold_format)
+        sheet.set_row(0, None, header_format)
 
         driver_headers = []
 
@@ -142,7 +147,7 @@ class ADSExporter:
         headers = base_headers + driver_headers
 
         for row_num, row_data in enumerate(data, start=1):
-            sheet.write_row(row_num, 0, row_data)
+            sheet.write_row(row_num, 0, row_data, default_format)
 
         rows = len(data) + 1
         cols = len(headers)
@@ -156,7 +161,9 @@ class ADSExporter:
                 "header_row": True,
                 "autofilter": True,
                 "name": "TableauADS",
-                "style": "Table Style Medium 9",
+                "banded_rows": False,
+                "banded_columns": False,
+                "style": None,
                 "columns": [{"header": h} for h in headers],
             },
         )

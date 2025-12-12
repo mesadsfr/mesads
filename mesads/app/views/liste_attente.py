@@ -569,21 +569,25 @@ class ExportCSVInscriptionListeAttenteView(View):
         # Autres types -> string standard
         return value, "auto"
 
-    def _write_xlsx(self, inscriptions):
+    def get_file_title(self, ads_manager):
+        return f"Liste d'attente - {ads_manager.content_object.display_text().capitalize()}"
+
+    def _write_xlsx(self, inscriptions, ads_manager):
         output = io.BytesIO()
         wb = xlsxwriter.Workbook(output, {"in_memory": True})
+        wb.set_properties({"title": self.get_file_title(ads_manager)})
         ws = wb.add_worksheet("Inscriptions")
 
-        format_date = wb.add_format({"num_format": "dd/mm/yyyy"})
+        format_date = wb.add_format({"num_format": "dd/mm/yyyy", "font_size": 12})
+        header_format = wb.add_format({"bold": True, "font_size": 12})
+        default_format = wb.add_format({"font_size": 12})
 
         ws.write_row(
             0,
             0,
             self.headers,
         )
-        # Applying bold format to headers
-        bold_format = wb.add_format({"bold": True})
-        ws.set_row(0, None, bold_format)
+        ws.set_row(0, None, header_format)
 
         row_index = 1
 
@@ -595,7 +599,7 @@ class ExportCSVInscriptionListeAttenteView(View):
                 if kind == "date":
                     ws.write_datetime(row_index, col, value, format_date)
                 else:
-                    ws.write_string(row_index, col, str(value))
+                    ws.write_string(row_index, col, str(value), default_format)
 
             row_index += 1
 
@@ -608,7 +612,9 @@ class ExportCSVInscriptionListeAttenteView(View):
                 "header_row": True,
                 "autofilter": True,
                 "name": "TableauADS",
-                "style": "Table Style Medium 9",
+                "banded_rows": False,
+                "banded_columns": False,
+                "style": None,
                 "columns": [{"header": h} for h in self.headers],
             },
         )
@@ -624,7 +630,7 @@ class ExportCSVInscriptionListeAttenteView(View):
             ads_manager=ads_manager
         ).order_by("-date_depot_inscription")
 
-        output = self._write_xlsx(inscriptions)
+        output = self._write_xlsx(inscriptions, ads_manager)
         filename = f"liste_attente_{ads_manager.content_object.display_text().replace(' ', '_')}_{timezone.now().strftime('%d_%m%Y')}.xlsx"
         response = HttpResponse(
             output.getvalue(),

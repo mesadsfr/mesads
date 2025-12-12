@@ -244,6 +244,9 @@ class ADSManagerExportView(View, ADSExporter):
         administration = self.ads_manager.content_object.display_text()
         return slugify(f"ADS {administration}") + ".xlsx"
 
+    def get_file_title(self):
+        return f"ADS - {self.ads_manager.content_object.display_text().capitalize()}"
+
     def get_queryset(self):
         qs = super().get_queryset()
         return qs.filter(ads_manager=self.ads_manager)
@@ -256,6 +259,9 @@ class PrefectureExportView(View, ADSExporter):
 
     def get_filename(self):
         return f"ADS_prefecture_{self.ads_manager_administrator.prefecture.numero}.xlsx"
+
+    def get_file_title(self):
+        return f"Informations des ADS et gestionnaires - {self.ads_manager_administrator.prefecture.display_text().capitalize()}"
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -276,8 +282,9 @@ class PrefectureExportView(View, ADSExporter):
             headers,
         )
         # Applying bold format to headers
-        bold_format = workbook.add_format({"bold": True})
-        sheet.set_row(0, None, bold_format)
+        header_format = workbook.add_format({"bold": True, "font_size": 12})
+        default_format = workbook.add_format({"font_size": 12})
+        sheet.set_row(0, None, header_format)
 
         nb_rows = 1
         for ads_manager in self.ads_manager_administrator.ordered_adsmanager_set():
@@ -305,6 +312,7 @@ class PrefectureExportView(View, ADSExporter):
                         else "1 document enregistré"
                     ),
                 ),
+                default_format,
             )
             nb_rows += 1
 
@@ -317,7 +325,9 @@ class PrefectureExportView(View, ADSExporter):
                 "header_row": True,
                 "autofilter": True,
                 "name": "TableauGestionnaires",
-                "style": "Table Style Medium 9",
+                "banded_rows": False,
+                "banded_columns": False,
+                "style": None,
                 "columns": [{"header": h} for h in headers],
             },
         )
