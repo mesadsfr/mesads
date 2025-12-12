@@ -55,6 +55,8 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
 
     actions = ["download_as_csv"]
 
+    change_form_template = "admin/app/ads_manager_administrator/change_form.html"
+
     def download_as_csv(self, request, queryset):
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = (
