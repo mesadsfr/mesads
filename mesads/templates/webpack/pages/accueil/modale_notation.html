@@ -1,149 +1,196 @@
-<div class="fr-consent-banner">
-  <h2 class="fr-h6">Votre avis nous intéresse!</h2>
-  <div class="fr-consent-banner__content">
-    <p class="fr-text--sm">Bienvenue! Afin de nous permettre de nous améliorer, nous aimerions vous permettre de noter MesADS.</p>
-  </div>
-  <form action="{% url 'app.note-service' %}" method="post">
-    {% csrf_token %}
 
-    <div class="flex flex-col gap-2 md:flex-row">
-      <fieldset class="rating-fieldset">
-        <legend class="rating-legend">Votre avis sur la facilité d'usage du service</legend>
+<button aria-controls="modal-notation" data-fr-opened="true" type="button" class="fr-btn fr-hidden">Ouvrir la modale</button>
+<dialog id="modal-notation" class="fr-modal" aria-labelledby="modal-notation-title" data-fr-concealing-backdrop="true">
 
-        <p id="rating-instructions" class="fr-sr-only">
-          Donnez une note de 1 à 5. 1 = très insatisfait, 5 = très satisfait.
-          Utilisez Tab pour vous déplacer dans le groupe puis Flèche gauche/droite pour choisir la note.
-        </p>
+  <div class="fr-container fr-container--fluid fr-container-md">
+    <div class="fr-grid-row fr-grid-row--center">
+      <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+        <div class="fr-modal__body">
+          <div class="fr-modal__header">
+            <button aria-controls="modal-notation" title="Fermer" type="button" class="fr-btn--close fr-btn">Fermer</button>
+          </div>
+          <div class="fr-modal__content">
+            <h2 id="modal-notation-title" class="fr-modal__title">
+              Votre avis nous intéresse!
+            </h2>
+            <form id="form-notation" action="{% url 'app.note-service' %}" method="post">
+              {% csrf_token %}
 
-        <div class="rating-stars" role="radiogroup" aria-labelledby="rating-legend-text" aria-describedby="rating-instructions">
-          <!-- 5 -->
-          <input
-            type="radio"
-            name="note_facilite"
-            id="note_facilite-5"
-            value="5"
-            class="sr-only"
-            aria-label="5 sur 5 - Excellent"
-          />
-          <label for="note_facilite-5" data-value="5" class="star" aria-hidden="true">★</label>
+              <div class="flex flex-col gap-2 md:flex-row">
+                <fieldset class="rating-fieldset">
+                  <legend id="rating-legend-facilite" class="rating-legend">Votre avis sur la facilité d'usage du service</legend>
 
-          <!-- 4 -->
-          <input
-            type="radio"
-            name="note_facilite"
-            id="note_facilite-4"
-            value="4"
-            class="sr-only"
-            aria-label="4 sur 5 - Satisfait"
-          />
-          <label for="note_facilite-4" data-value="4" class="star" aria-hidden="true">★</label>
+                  <p id="rating-instructions-facilite" class="fr-sr-only">
+                    Donnez une note de 1 à 5. 1 = très insatisfait, 5 = très satisfait.
+                    Utilisez Tab pour vous déplacer dans le groupe puis Flèche gauche/droite pour choisir la note.
+                  </p>
 
-          <!-- 3 -->
-          <input
-            type="radio"
-            name="note_facilite"
-            id="note_facilite-3"
-            value="3"
-            class="sr-only"
-            aria-label="3 sur 5 - Moyen"
-          />
-          <label for="note_facilite-3" data-value="3" class="star" aria-hidden="true">★</label>
+                  <div class="rating-stars" aria-labelledby="rating-legend-facilite" aria-describedby="rating-instructions-facilite">
+                    <label class="star">
+                      <input type="radio" name="note_facilite" value="1" required>
+                      <span aria-hidden="true">★</span>
+                      <span class="fr-sr-only">1 sur 5 – Très insatisfait</span>
+                    </label>
 
-          <!-- 2 -->
-          <input
-            type="radio"
-            name="note_facilite"
-            id="note_facilite-2"
-            value="2"
-            class="sr-only"
-            aria-label="2 sur 5 - Insatisfait"
-          />
-          <label for="note_facilite-2" data-value="2" class="star" aria-hidden="true">★</label>
+                    <label class="star">
+                      <input type="radio" name="note_facilite" value="2">
+                      <span aria-hidden="true">★</span>
+                      <span class="fr-sr-only">2 sur 5 – Insatisfait</span>
+                    </label>
 
-          <!-- 1 -->
-          <input
-            type="radio"
-            name="note_facilite"
-            id="note_facilite-1"
-            value="1"
-            class="sr-only"
-            aria-label="1 sur 5 - Très insatisfait"
-          />
-          <label for="note_facilite-1" data-value="1" class="star" aria-hidden="true">★</label>
+                    <label class="star">
+                      <input type="radio" name="note_facilite" value="3">
+                      <span aria-hidden="true">★</span>
+                      <span class="fr-sr-only">3 sur 5 – Moyen</span>
+                    </label>
+
+                    <label class="star">
+                      <input type="radio" name="note_facilite" value="4">
+                      <span aria-hidden="true">★</span>
+                      <span class="fr-sr-only">4 sur 5 – Satisfait</span>
+                    </label>
+
+                    <label class="star">
+                      <input type="radio" name="note_facilite" value="5">
+                      <span aria-hidden="true">★</span>
+                      <span class="fr-sr-only">5 sur 5 – Excellent</span>
+                    </label>
+
+                  </div>
+
+                  
+                </fieldset>
+
+                <fieldset class="rating-fieldset">
+                  <legend id="rating-legend-qualite" class="rating-legend">Votre avis sur la qualité du service</legend>
+
+                  <p id="rating-instructions-qualite" class="fr-sr-only">
+                    Donnez une note de 1 à 5. 1 = très insatisfait, 5 = très satisfait.
+                    Utilisez Tab pour vous déplacer dans le groupe puis Flèche gauche/droite pour choisir la note.
+                  </p>
+
+                  <div class="rating-stars" aria-labelledby="rating-legend-qualite" aria-describedby="rating-instructions-qualite">
+
+                    <label class="star">
+                      <input type="radio" name="note_qualite" value="1" required>
+                      <span aria-hidden="true">★</span>
+                      <span class="fr-sr-only">1 sur 5 – Très insatisfait</span>
+                    </label>
+
+                    <label class="star">
+                      <input type="radio" name="note_qualite" value="2">
+                      <span aria-hidden="true">★</span>
+                      <span class="fr-sr-only">2 sur 5 – Insatisfait</span>
+                    </label>
+
+                    <label class="star">
+                      <input type="radio" name="note_qualite" value="3">
+                      <span aria-hidden="true">★</span>
+                      <span class="fr-sr-only">3 sur 5 – Moyen</span>
+                    </label>
+
+                    <label class="star">
+                      <input type="radio" name="note_qualite" value="4">
+                      <span aria-hidden="true">★</span>
+                      <span class="fr-sr-only">4 sur 5 – Satisfait</span>
+                    </label>
+
+                    <label class="star">
+                      <input type="radio" name="note_qualite" value="5">
+                      <span aria-hidden="true">★</span>
+                      <span class="fr-sr-only">5 sur 5 – Excellent</span>
+                    </label>
+                  </div>
+                </fieldset>
+
+              </div>
+              <button type="submit" name="action" value="note" class="fr-btn">Envoyer</button>
+            </form>
+          </div>
         </div>
-
-        
-      </fieldset>
-
-      <fieldset class="rating-fieldset">
-        <legend class="rating-legend">Votre avis sur la qualité du service</legend>
-
-        <p id="rating-instructions" class="fr-sr-only">
-          Donnez une note de 1 à 5. 1 = très insatisfait, 5 = très satisfait.
-          Utilisez Tab pour vous déplacer dans le groupe puis Flèche gauche/droite pour choisir la note.
-        </p>
-
-        <div class="rating-stars" role="radiogroup" aria-labelledby="rating-legend-text" aria-describedby="rating-instructions">
-          <!-- 5 -->
-          <input
-            type="radio"
-            name="note_qualite"
-            id="note_qualite-5"
-            value="5"
-            class="sr-only"
-            aria-label="5 sur 5 - Excellent"
-          />
-          <label for="note_qualite-5" data-value="5" class="star" aria-hidden="true">★</label>
-
-          <!-- 4 -->
-          <input
-            type="radio"
-            name="note_qualite"
-            id="note_qualite-4"
-            value="4"
-            class="sr-only"
-            aria-label="4 sur 5 - Satisfait"
-          />
-          <label for="note_qualite-4" data-value="4" class="star" aria-hidden="true">★</label>
-
-          <!-- 3 -->
-          <input
-            type="radio"
-            name="note_qualite"
-            id="note_qualite-3"
-            value="3"
-            class="sr-only"
-            aria-label="3 sur 5 - Moyen"
-          />
-          <label for="note_qualite-3" data-value="3" class="star" aria-hidden="true">★</label>
-
-          <!-- 2 -->
-          <input
-            type="radio"
-            name="note_qualite"
-            id="note_qualite-2"
-            value="2"
-            class="sr-only"
-            aria-label="2 sur 5 - Insatisfait"
-          />
-          <label for="note_qualite-2" data-value="2" class="star" aria-hidden="true">★</label>
-
-          <!-- 1 -->
-          <input
-            type="radio"
-            name="note_qualite"
-            id="note_qualite-1"
-            value="1"
-            class="sr-only"
-            aria-label="1 sur 5 - Très insatisfait"
-          />
-          <label for="note_qualite-1" data-value="1" class="star" aria-hidden="true">★</label>
-        </div>
-      </fieldset>
-
+      </div>
     </div>
+  </div>
+</dialog>
 
-    <button type="submit" name="action" value="close" class="fr-btn fr-btn--secondary">Fermer</button>
-    <button type="submit" name="action" value="note" class="fr-btn">Envoyer</button>
-  </form>
-</div>
+<script>
+  (() => {
+    const modal = document.getElementById("modal-notation")
+    const form = document.getElementById("form-notation")
+
+    console.log(modal)
+    console.log(form.getAttribute('action'))
+
+    if (!modal || !form) return ;
+
+    let hasSubmitNote = false;
+    let isSending = false;
+
+    function getCSRFToken() {
+      const tokenInput = form.querySelector('input[name="csrfmiddlewaretoken"]');
+      return tokenInput ? tokenInput.value : '';
+    }
+
+    function restoreFocusToHeader() {
+      const target = document.getElementById('mesads-header-home-link');
+      if (target) {
+        target.focus();
+      }
+    }
+
+    async function postForm(action) {
+      if (isSending) return;
+      isSending = true;
+
+      const data = new FormData(form)
+      data.set('action', action);
+      console.log(data)
+      try {
+        const response = await fetch(
+          form.getAttribute('action'),
+          {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': getCSRFToken(),
+              'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: data,
+            credentials: 'same-origin'
+          }
+        )
+
+        if (!response.ok) throw new Error('HTTP' + response.status);
+      } finally {
+        isSending = false;
+      }
+    }
+
+    function closeModal() {
+      window.dsfr(modal).modal.conceal();
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (hasSubmitNote) return ;
+
+      try {
+        await postForm('note');
+        hasSubmitNote = true;
+        closeModal()
+      } catch (err) {
+        console.error(err);
+      }
+    })
+
+    modal.addEventListener('dsfr.conceal', async () => {
+      if (hasSubmitNote || isSending) return ;
+
+      try {
+        await postForm('close');
+      } catch (err) {
+        console.error(err)
+      }
+      restoreFocusToHeader();
+    })
+  })();
+</script>
