@@ -1,15 +1,15 @@
+from datetime import date, datetime
+
 import xlsxwriter
-from django.contrib.postgres.aggregates import ArrayAgg
 from django.http import HttpResponse
 
-from ..models import (
-    ADS,
-    ADSUser,
-)
 
+class ExcelExporter:
+    """Generic class to export an xlsx file"""
 
-class ADSExporter:
-    """Generic class to export a list of ADS in an Excel file."""
+    date_format = None
+    header_format = None
+    default_format = None
 
     def get_filename(self):
         raise NotImplementedError
@@ -17,32 +17,73 @@ class ADSExporter:
     def get_file_title(self):
         raise NotImplementedError
 
-    def get_queryset(self):
-        return (
-            ADS.objects.select_related(
-                "ads_manager__administrator__prefecture",
-            )
-            .prefetch_related("ads_manager__content_object", "adslegalfile_set")
-            .annotate(
-                ads_users_status=ArrayAgg("adsuser__status"),
-                ads_users_names=ArrayAgg("adsuser__name"),
-                ads_users_sirets=ArrayAgg("adsuser__siret"),
-                ads_users_licenses=ArrayAgg("adsuser__license_number"),
-            )
-            .order_by("ads_manager")
-        )
+    def generate(self, workbook):
+        """
+        Fonction a implementer pour appeler add_sheet avec vos données
 
-    def display_bool(self, value):
+        :param workbook: Instance de workbook de xlsxwritter
+        """
+        raise NotImplementedError
+
+    def _safe_sheet_name(self, name: str) -> str:
+        for ch in ["\\", "/", "*", "?", ":", "[", "]"]:
+            name = name.replace(ch, "-")
+        name = (name or "Feuille").strip()
+        return name[:31]
+
+    def _excell_cell_type(self, value):
+        # Booléen
+        if isinstance(value, bool):
+            return "Oui" if value else "Non", self.default_format
+
+        # Date/Datetime
+        if isinstance(value, (date, datetime)):
+            return value, self.date_format
+
+        # None
         if value is None:
-            return ""
-        return "oui" if value else "non"
+            return "", self.default_format
 
-    def display_date(self, value):
-        if not value:
-            return ""
-        return value.strftime("%d/%m/%Y")
+        # Autres types -> string standard
+        return value, self.default_format
 
-    def generate(self):
+    def add_sheet(self, workbook, sheet_name, table_name, headers, rows):
+        if not headers:
+            raise ValueError("Headers cannot be empty")
+
+        ws = workbook.add_worksheet(self._safe_sheet_name(sheet_name))
+
+        ws.write_row(
+            0,
+            0,
+            headers,
+        )
+        ws.set_row(0, None, self.header_format)
+
+        row_index = 1
+
+        for row in rows:
+            for col, v in enumerate(row):
+                value, format = self._excell_cell_type(v)
+                ws.write(row_index, col, value, format)
+            row_index += 1
+
+        ws.add_table(
+            0,
+            0,
+            row_index - 1,
+            len(headers) - 1,
+            {
+                "header_row": True,
+                "autofilter": True,
+                "name": table_name,
+                "style": None,
+                "columns": [{"header": h} for h in headers],
+            },
+        )
+        ws.autofit()
+
+    def get(self, request, *args, **kwargs):
         response = HttpResponse(
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             headers={
@@ -50,120 +91,12 @@ class ADSExporter:
             },
         )
         workbook = xlsxwriter.Workbook(response)
+        self.date_format = workbook.add_format(
+            {"num_format": "dd/mm/yyyy", "font_size": 12}
+        )
+        self.header_format = workbook.add_format({"bold": True, "font_size": 12})
+        self.default_format = workbook.add_format({"font_size": 12})
         workbook.set_properties({"title": self.get_file_title()})
-        self.add_sheets(workbook)
+        self.generate(workbook)
         workbook.close()
         return response
-
-    def add_sheets(self, workbook):
-        """Override this method to add more sheets to the workbook."""
-        self.ads_list_sheet(workbook)
-
-    def ads_list_sheet(self, workbook):
-        header_format = workbook.add_format({"bold": True, "font_size": 12})
-        default_format = workbook.add_format({"font_size": 12})
-        sheet = workbook.add_worksheet("ADS enregistrées")
-        base_headers = [
-            "Type d'administration",
-            "Administration",
-            "Numéro de l'ADS",
-            "ADS actuellement exploitée ?",
-            "Date de création de l'ADS",
-            "Date du dernier renouvellement de l'ADS",
-            "Date d'attribution de l'ADS au titulaire actuel",
-            "Véhicule conventionné CPAM ?",
-            "Plaque d'immatriculation du véhicule",
-            "Le véhicule est-il un véhicule électrique/hybride ?",
-            "Véhicule compatible PMR ?",
-            "Titulaire de l'ADS",
-            "SIRET du titulaire de l'ADS",
-            "Téléphone fixe du titulaire de l'ADS",
-            "Téléphone mobile du titulaire de l'ADS",
-            "Email du titulaire de l'ADS",
-            "Nombre de documents enregistrés (arrêtés municipaux, …)",
-        ]
-        # If one of the ADS in the list has, let's say, 4 drivers, driver_headers
-        # will be appended 4 times to headers.
-        template_driver_headers = (
-            "Statut du %s conducteur",
-            "Nom du %s conducteur",
-            "SIRET du %s conducteur",
-            "Numéro de la carte professionnelle du %s conducteur",
-        )
-        # Counts the maximum number of drivers in the list of ADS..
-        max_drivers = 0
-
-        # Applying bold format to headers
-        sheet.set_row(0, None, header_format)
-
-        driver_headers = []
-
-        data = []
-
-        for ads in self.get_queryset():
-            # Append driver headers to headers if the current ADS has more drivers
-            # than the previous ones.
-            while max_drivers < len(ads.ads_users_status):
-                for h in template_driver_headers:
-                    driver_headers += (
-                        h % ("1er" if max_drivers == 0 else "%se" % (max_drivers + 1)),
-                    )
-                max_drivers += 1
-
-            info = [
-                ads.ads_manager.content_object.type_name(),
-                ads.ads_manager.content_object.text(),
-                ads.number,
-                self.display_bool(ads.ads_in_use),
-                self.display_date(ads.ads_creation_date),
-                self.display_date(ads.ads_renew_date),
-                self.display_date(ads.attribution_date),
-                self.display_bool(ads.accepted_cpam),
-                ads.immatriculation_plate,
-                self.display_bool(ads.eco_vehicle),
-                self.display_bool(ads.vehicle_compatible_pmr),
-                ads.owner_name,
-                ads.owner_siret,
-                ads.owner_phone,
-                ads.owner_mobile,
-                ads.owner_email,
-                ads.adslegalfile_set.count(),
-            ]
-            for index, _ in enumerate(ads.ads_users_status):
-                # ads_users_status, ads_users_names, ads_users_sirets and
-                # ads_users_licenses have the same length.
-                info += (
-                    dict(ADSUser.status.field.choices).get(
-                        ads.ads_users_status[index], ""
-                    ),
-                    ads.ads_users_names[index],
-                    ads.ads_users_sirets[index],
-                    ads.ads_users_licenses[index],
-                )
-            data.append(info)
-
-        # Write headers, now that we know the maximum number of drivers.
-        headers = base_headers + driver_headers
-
-        for row_num, row_data in enumerate(data, start=1):
-            sheet.write_row(row_num, 0, row_data, default_format)
-
-        rows = len(data) + 1
-        cols = len(headers)
-
-        sheet.add_table(
-            0,
-            0,
-            rows - 1,
-            cols - 1,
-            {
-                "header_row": True,
-                "autofilter": True,
-                "name": "TableauADS",
-                "banded_rows": False,
-                "banded_columns": False,
-                "style": None,
-                "columns": [{"header": h} for h in headers],
-            },
-        )
-        sheet.autofit()
