@@ -33,7 +33,11 @@ from ..models import (
     ADSManagerRequest,
     ADSUpdateLog,
 )
-from .export import ADSExporter
+from ..services import (
+    get_ads_data_for_excel_export,
+    get_gestionnaires_data_for_excel_export,
+)
+from .export import ExcelExporter
 
 
 class ADSManagerAdministratorView(ListView):
@@ -260,10 +264,12 @@ class ADSManagerAdminRequestsView(RevisionMixin, TemplateView):
         )
 
 
-class ADSManagerExportView(View, ADSExporter):
-    def get(self, request, manager_id):
-        self.ads_manager = get_object_or_404(ADSManager, id=manager_id)
-        return self.generate()
+class ADSManagerExportView(ExcelExporter, View):
+    ads_manager = None
+
+    def setup(self, request, *args, **kwargs):
+        self.ads_manager = get_object_or_404(ADSManager, id=kwargs.get("manager_id"))
+        return super().setup(request, *args, **kwargs)
 
     def get_filename(self):
         administration = self.ads_manager.content_object.display_text()
@@ -272,15 +278,24 @@ class ADSManagerExportView(View, ADSExporter):
     def get_file_title(self):
         return f"ADS - {self.ads_manager.content_object.display_text().capitalize()}"
 
-    def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.filter(ads_manager=self.ads_manager)
+    def generate(self, workbook):
+        headers, ads = get_ads_data_for_excel_export(ads_manager=self.ads_manager)
+
+        self.add_sheet(
+            workbook,
+            "ADS enregistrées",
+            "TableauADS",
+            headers,
+            ads,
+        )
 
 
-class PrefectureExportView(View, ADSExporter):
-    def get(self, request, ads_manager_administrator):
-        self.ads_manager_administrator = ads_manager_administrator
-        return self.generate()
+class PrefectureExportView(ExcelExporter, View):
+    ads_manager_administrator = None
+
+    def setup(self, request, *args, **kwargs):
+        self.ads_manager_administrator = kwargs.get("ads_manager_administrator")
+        return super().setup(request, *args, **kwargs)
 
     def get_filename(self):
         return f"ADS_prefecture_{self.ads_manager_administrator.prefecture.numero}.xlsx"
@@ -291,75 +306,30 @@ class PrefectureExportView(View, ADSExporter):
             f"{self.ads_manager_administrator.prefecture.display_text().capitalize()}"
         )
 
-    def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.filter(ads_manager__administrator=self.ads_manager_administrator)
-
-    def add_sheets(self, workbook):
-        super().add_sheets(workbook)
-        sheet = workbook.add_worksheet("Gestionnaires ADS")
-        headers = (
-            "Nom de l'administration",
-            "Nombre d'ADS",
-            "Statut de la gestion des ADS",
-            "Arrêté délimitant le nombre d'ADS",
+    def generate(self, workbook):
+        headers_ads, ads = get_ads_data_for_excel_export(
+            ads_manager_administrator=self.ads_manager_administrator
         )
-        sheet.write_row(
-            0,
-            0,
-            headers,
+
+        self.add_sheet(
+            workbook,
+            "ADS enregistrées",
+            "TableauADS",
+            headers_ads,
+            ads,
         )
-        # Applying bold format to headers
-        header_format = workbook.add_format({"bold": True, "font_size": 12})
-        default_format = workbook.add_format({"font_size": 12})
-        sheet.set_row(0, None, header_format)
 
-        nb_rows = 1
-        for ads_manager in self.ads_manager_administrator.ordered_adsmanager_set():
-            status = ""
-            if ads_manager.no_ads_declared:
-                status = "L'administration a déclaré ne gérer aucune ADS"
-            elif ads_manager.epci_delegate:
-                status = (
-                    "La gestion des ADS est déléguée à %s"
-                    % ads_manager.epci_delegate.display_fulltext()
-                )
-
-            decrees_count = ads_manager.adsmanagerdecree_set.count()
-
-            sheet.write_row(
-                nb_rows,
-                0,
-                (
-                    ads_manager.content_object.display_text(),
-                    ads_manager.ads_set.count(),
-                    status,
-                    (
-                        f"{decrees_count} documents enregistrés"
-                        if decrees_count != 1
-                        else "1 document enregistré"
-                    ),
-                ),
-                default_format,
-            )
-            nb_rows += 1
-
-        sheet.add_table(
-            0,
-            0,
-            nb_rows - 1,
-            len(headers) - 1,
-            {
-                "header_row": True,
-                "autofilter": True,
-                "name": "TableauGestionnaires",
-                "banded_rows": False,
-                "banded_columns": False,
-                "style": None,
-                "columns": [{"header": h} for h in headers],
-            },
+        headers_managers, ads_managers = get_gestionnaires_data_for_excel_export(
+            self.ads_manager_administrator
         )
-        sheet.autofit()
+
+        self.add_sheet(
+            workbook,
+            "Gestionnaires ADS",
+            "TableauGestionnaires",
+            headers_managers,
+            ads_managers,
+        )
 
 
 class ADSManagerAdminUpdatesView(TemplateView):
