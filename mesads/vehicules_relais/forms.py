@@ -85,7 +85,6 @@ class ProprietaireDeleteForm(forms.ModelForm):
 class SearchVehiculeForm(forms.Form):
     departement = forms.ModelChoiceField(
         queryset=Prefecture.objects,
-        widget=autocomplete.ListSelect2(url="fradm.autocomplete.prefecture"),
         label=Vehicule.departement.field.verbose_name,
         help_text=Vehicule.departement.field.help_text,
         required=False,

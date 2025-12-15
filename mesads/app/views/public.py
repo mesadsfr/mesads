@@ -1,12 +1,10 @@
-import json
 import math
 
 from django.db.models import OuterRef, Subquery, Count, IntegerField, BooleanField, Q
-from django.db.models.functions import TruncMonth
+from django.db.models.functions import ExtractQuarter, ExtractYear
 from django.views.generic import TemplateView
 from django.urls import reverse
 
-from ..forms import ADSManagerAutocompleteForm
 from ..models import (
     ADS,
     ADSManager,
@@ -149,6 +147,81 @@ class FAQView(TemplateView):
 class StatsView(TemplateView):
     template_name = "pages/stats.html"
 
+    def build_trimester_dict(self, queryset):
+        count_by_trimester = {}
+        total_count = 0
+
+        for trimester in queryset:
+            year = trimester["year"]
+            quarter = trimester["quarter"]
+
+            suffix = "er" if quarter == 1 else "e"
+            key = f"{quarter}{suffix} trimestre {year}"
+            total_count += trimester["count"]
+            count_by_trimester[key] = total_count
+
+        return count_by_trimester
+
+    def get_ads_by_trimester(self) -> dict[str, int]:
+        """
+        Fonction permettant de retrouver le nombre d'ADS créées pour chaque trimestre.
+        Renvoie un dictionnaire de la forme { <trimestre>: <count> }
+        Ou trimestre est une string décrivant le trimestre
+        Par exemple: "2e Trimestre 2022"
+        """
+        qs_ads_by_trimester = (
+            ADS.objects.annotate(
+                year=ExtractYear("creation_date"),
+                quarter=ExtractQuarter("creation_date"),
+            )
+            .values("year", "quarter")
+            .annotate(count=Count("id"))
+            .order_by("year", "quarter")
+        )
+        return self.build_trimester_dict(qs_ads_by_trimester)
+
+    def get_ads_manager_by_trimester(self) -> dict[str, int]:
+        """
+        Fonction permettant de retrouver le nombre de comptes gestionnaire créés pour chaque trimestre.
+        Renvoie un dictionnaire de la forme { <trimestre>: <count> }
+        Ou trimestre est une string décrivant le trimestre
+        Par exemple: "2e Trimestre 2022"
+        """
+
+        qs_ads_manager_by_trimester = (
+            ADSManagerRequest.objects.filter(accepted=True)
+            .annotate(
+                year=ExtractYear("created_at"), quarter=ExtractQuarter("created_at")
+            )
+            .values("year", "quarter")
+            .annotate(count=Count("id"))
+            .order_by("year", "quarter")
+        )
+        return self.build_trimester_dict(qs_ads_manager_by_trimester)
+
+    def get_proprietaire_by_trimester(self) -> dict[str, int]:
+        qs_proprietaires_by_trimester = (
+            Proprietaire.objects.filter(vehicule__isnull=False)
+            .annotate(
+                year=ExtractYear("created_at"), quarter=ExtractQuarter("created_at")
+            )
+            .values("year", "quarter")
+            .annotate(count=Count("id", distinct=True))
+            .order_by("year", "quarter")
+        )
+        return self.build_trimester_dict(qs_proprietaires_by_trimester)
+
+    def get_vehicule_by_trimester(self) -> dict[str, int]:
+        qs_vehicule_by_trimester = (
+            Vehicule.objects.annotate(
+                year=ExtractYear("created_at"), quarter=ExtractQuarter("created_at")
+            )
+            .values("year", "quarter")
+            .annotate(count=Count("id", distinct=True))
+            .order_by("year", "quarter")
+        )
+        return self.build_trimester_dict(qs_vehicule_by_trimester)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -160,100 +233,14 @@ class StatsView(TemplateView):
             )
         ]
 
-        if len(self.request.GET.getlist("q")) == 0:
-            ads_managers_select_form = ADSManagerAutocompleteForm()
-        else:
-            ads_managers_select_form = ADSManagerAutocompleteForm(self.request.GET)
-
-        context["ads_managers_select_form"] = ads_managers_select_form
-
-        ads_managers_filter = []
-        if ads_managers_select_form.is_valid():
-            ads_managers_filter = ads_managers_select_form.cleaned_data["q"].all()
-
         context["ads_count"] = ADS.objects.count()
-        context["ads_count_filtered"] = ADS.objects.filter(
-            ads_manager__in=ads_managers_filter
-        ).count()
-
-        ads_count_by_month = (
-            ADS.objects.annotate(month=TruncMonth("creation_date"))
-            .values("month")
-            .annotate(count=Count("id"))
-            .order_by("month")
-        )
-        context["ads_count_by_month"] = json.dumps(
-            dict(
-                ((row["month"].isoformat(), row["count"]) for row in ads_count_by_month)
-            )
-        )
-
-        ads_count_by_month_filtered = (
-            ADS.objects.filter(ads_manager__in=ads_managers_filter)
-            .annotate(month=TruncMonth("creation_date"))
-            .values("month")
-            .annotate(count=Count("id"))
-            .order_by("month")
-        )
-        context["ads_count_by_month_filtered"] = json.dumps(
-            dict(
-                (
-                    (row["month"].isoformat(), row["count"])
-                    for row in ads_count_by_month_filtered
-                )
-            )
-        )
 
         context["ads_manager_requests_count"] = ADSManagerRequest.objects.filter(
             accepted=True
         ).count()
-        context["ads_manager_requests_count_filtered"] = (
-            ADSManagerRequest.objects.filter(
-                accepted=True, ads_manager__in=ads_managers_filter
-            ).count()
-        )
-
-        ads_manager_requests_by_month = (
-            ADSManagerRequest.objects.filter(accepted=True)
-            .annotate(month=TruncMonth("created_at"))
-            .values("month")
-            .annotate(count=Count("id"))
-            .order_by("month")
-        )
-        context["ads_manager_requests_by_month"] = json.dumps(
-            dict(
-                (
-                    (row["month"].isoformat(), row["count"])
-                    for row in ads_manager_requests_by_month
-                )
-            )
-        )
-
-        ads_manager_requests_by_month_filtered = (
-            ADSManagerRequest.objects.filter(ads_manager__in=ads_managers_filter)
-            .filter(accepted=True)
-            .annotate(month=TruncMonth("created_at"))
-            .values("month")
-            .annotate(count=Count("id"))
-            .order_by("month")
-        )
-        context["ads_manager_requests_by_month_filtered"] = json.dumps(
-            dict(
-                (
-                    (row["month"].isoformat(), row["count"])
-                    for row in ads_manager_requests_by_month_filtered
-                )
-            )
-        )
 
         context["ads_managers_count"] = (
             ADSManager.objects.annotate(ads_count=Count("ads"))
-            .filter(ads_count__gt=0)
-            .count()
-        )
-        context["ads_managers_count_filtered"] = (
-            ADSManager.objects.filter(id__in=ads_managers_filter)
-            .annotate(ads_count=Count("ads"))
             .filter(ads_count__gt=0)
             .count()
         )
@@ -265,36 +252,12 @@ class StatsView(TemplateView):
         )
         context["relais_vehicules_count"] = Vehicule.objects.count()
 
-        relais_proprietaires_by_month = (
-            Proprietaire.objects.filter(vehicule__isnull=False)
-            .annotate(month=TruncMonth("created_at"))
-            .values("month")
-            .annotate(count=Count("id", distinct=True))
-            .order_by("month")
-        )
-        context["relais_proprietaires_by_month"] = json.dumps(
-            dict(
-                (
-                    (row["month"].isoformat(), row["count"])
-                    for row in relais_proprietaires_by_month
-                )
-            )
-        )
-
-        relais_vehicules_by_month = (
-            Vehicule.objects.annotate(month=TruncMonth("created_at"))
-            .values("month")
-            .annotate(count=Count("id"))
-            .order_by("month")
-        )
-        context["relais_vehicules_by_month"] = json.dumps(
-            dict(
-                (
-                    (row["month"].isoformat(), row["count"])
-                    for row in relais_vehicules_by_month
-                )
-            )
-        )
+        context["trimesters_data"] = {
+            "ads_by_trimester": self.get_ads_by_trimester(),
+            "ads_manager_by_trimester": self.get_ads_manager_by_trimester(),
+            "proprietaire_by_trimester": self.get_proprietaire_by_trimester(),
+            "vehicule_by_trimester": self.get_vehicule_by_trimester(),
+        }
         return context
 
 

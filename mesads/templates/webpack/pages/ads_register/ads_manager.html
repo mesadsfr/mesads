@@ -96,42 +96,35 @@
     Display the list of ADS if the list is not empty, or if the user has searched for something.
   {% endcomment %}
 
+  <div class="fr-notice fr-notice--info fr-mb-3w">
+    <div class="fr-container">
+      <div class="fr-notice__body">
+        <p>
+          <span class="fr-notice__title">Pour toute modification sur l'ADS</span>
+          <span class="fr-notice__desc">
+            (changement de véhicule, de titulaire, etc.), il convient de cliquer sur “consulter ou modifier” 
+            au niveau de l’ADS concernée pour la mettre à jour et ajouter l'arrêté modificatif. Une modification, y compris dans le cadre d'une cession, 
+            ne provoque pas la suppression de l'ADS actuelle.
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+
   {% if ads_list.count or search_defined %}
     <div x-data="{ displayFilters: new URLSearchParams(window.location.search).get('q') || new URLSearchParams(window.location.search).get('accepted_cpam')}">
       <p id="ADSFiltersButton">
         <button
-          x-show="! displayFilters"
-          x-on:click="displayFilters = true"
-          class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+          x-on:click="displayFilters = !displayFilters"
+          class="fr-link fr-link--icon-right"
+          :class="displayFilters ? 'fr-icon-arrow-down-line' : 'fr-icon-arrow-right-line'"
         >
-          🔎&nbsp;Rechercher une ADS
-        </button>
-        <button
-          x-show="displayFilters"
-          x-on:click="displayFilters = false"
-          class="fr-link fr-icon-arrow-down-line fr-link--icon-right"
-        >
-          🔎&nbsp;Rechercher une ADS
+          <span aria-hidden="true">🔎</span>Rechercher une ADS
         </button>
       </p>
 
-      <div class="fr-notice fr-notice--info">
-        <div class="fr-container">
-          <div class="fr-notice__body">
-            <p>
-              <span class="fr-notice__title">Pour toute modification sur l'ADS</span>
-              <span class="fr-notice__desc">
-                (changement de véhicule, de titulaire, etc.), il convient de cliquer sur “consulter ou modifier” 
-                au niveau de l’ADS concernée pour la mettre à jour et ajouter l'arrêté modificatif. Une modification, y compris dans le cadre d'une cession, 
-                ne provoque pas la suppression de l'ADS actuelle.
-              </span>
-            </p>
-          </div>
-        </div>
-      </div>
-
       <div x-show="displayFilters" id="ADSFilters" x-transition>
-        <h6>Filtrer les ADS</h6>
+        <h2>Filtrer les ADS</h2>
         <form method="get" class="fr-mb-3w">
 
           <!-- form.q -->
@@ -240,7 +233,9 @@
                           {% else %}
                           {% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}
                           {% endif %}"
-                      ></a>
+                      >
+                        <span class="fr-sr-only">Modifier l'ADS {{ads.number}}</span>
+                      </a>
                     </td>
                   </tr>
                 {% empty %}
@@ -261,7 +256,7 @@
 
     {% if ads_manager.is_locked %}
       <div class="fr-alert fr-alert--info fr-mt-2w">
-        <h3 class="fr-alert__title">Aucune ADS enregistrée</h3>
+        <h2 class="fr-alert__title">Aucune ADS enregistrée</h2>
         <p>
           Les ADS de votre administration sont importées automatiquement par notre équipe, mais aucune n'est actuellement enregistrée.
         </p>
@@ -270,7 +265,7 @@
 
       {% if ads_manager.no_ads_declared %}
         <div class="fr-alert fr-alert--info fr-mt-2w">
-          <h3 class="fr-alert__title">Aucune ADS enregistrée</h3>
+          <h2 class="fr-alert__title">Aucune ADS enregistrée</h2>
           <p>
             Vous avez déclaré que votre administration ne gère aucune ADS. Si il s'agit d'une erreur, ou si votre administration est dorénavant gestionnaire d'ADS, décochez la case du menu ci-dessous.
           </p>
@@ -278,7 +273,7 @@
 
       {% elif ads_manager.epci_delegate %}
         <div class="fr-alert fr-alert--info fr-mt-2w">
-          <h3 class="fr-alert__title">Aucune ADS enregistrée</h3>
+          <h2 class="fr-alert__title">Aucune ADS enregistrée</h2>
           <p>
             La gestion des ADS de votre administration est déléguée à l'EPCI <strong>{{ ads_manager.epci_delegate }}</strong>
           </p>
@@ -286,7 +281,7 @@
 
       {% else %}
         <div class="fr-alert fr-alert--warning fr-mt-2w">
-          <h3 class="fr-alert__title">Aucune ADS enregistrée</h3>
+          <h2 class="fr-alert__title">Aucune ADS enregistrée</h2>
           <p>Aucune ADS n'est actuellement enregistrée pour votre administration. Vous pouvez :</p>
           <ul>
             <li>Enregistrer une nouvelle ADS en utilisant le lien ci-dessus</li>
@@ -310,7 +305,7 @@
 
       <div class="fr-accordions-group fr-mt-2w">
         <section class="fr-accordion">
-          <h3 class="fr-accordion__title">
+          <h2 class="fr-accordion__title">
             <button
               class="fr-accordion__btn"
               aria-expanded="false"
@@ -318,7 +313,7 @@
             >
               Votre administration ne gère aucune ADS
             </button>
-          </h3>
+          </h2>
           <div class="{% if not ads_manager.no_ads_declared %}fr-collapse {% endif %}"
               id="accordion-115">
             <form method="post">
@@ -337,7 +332,7 @@
 
         {% if not edit_form.fields.epci_delegate.disabled %}
           <section class="fr-accordion">
-            <h3 class="fr-accordion__title">
+            <h2 class="fr-accordion__title">
               <button
                 class="fr-accordion__btn"
                 aria-expanded="false"
@@ -345,25 +340,13 @@
               >
                 La gestion des ADS de votre administration est déléguée à un EPCI
               </button>
-            </h3>
+            </h2>
             <div class="{% if not ads_manager.epci_delegate %}fr-collapse {% endif %}"
                 id="accordion-116">
               <form method="post">
                 {% csrf_token %}
-                <div class="fr-select-group{% if edit_form.errors.epci_delegate %} fr-select-group--error{% endif %}">
 
-                  <label class="fr-label" for="{{ edit_form.epci_delegate.id_for_label }}">
-                    {{ edit_form.epci_delegate.label }}
-                    {% if edit_form.epci_delegate.help_text %}
-                      <span class="fr-hint-text">{{ edit_form.epci_delegate.help_text }}</span>
-                    {% endif %}
-                  </label>
-                  {{ edit_form.epci_delegate }}
-
-                  {% for error in edit_form.epci_delegate.errors %}
-                    <p class="fr-error-text">{{ error }}</p>
-                  {% endfor %}
-                </div>
+                {% include "form_fields/select.html" with field=edit_form.epci_delegate field_errors=edit_form.errors.epci_delegate required=edit_form.fields.epci_delegate.required %}
 
                 <div class="fr-col-3 fr-input-group fr-mt-2w">
                   <ul class="fr-btns-group">

@@ -1,5 +1,5 @@
 {% load is_subpath %}
-<header role="banner" class="fr-header">
+<header role="banner" class="fr-header" id="header">
   <div class="fr-header__body">
     <div class="fr-container">
       <div class="fr-header__body-row">
@@ -13,16 +13,20 @@
               </p>
             </div>
             <div class="fr-header__navbar">
-              <button class="fr-btn--menu fr-btn"
-                      data-fr-opened="false"
-                      aria-controls="menu"
-                      aria-haspopup="menu"
-                      title="Menu"
-                      id="fr-btn-menu-mobile">Menu</button>
+              <button
+                class="fr-btn--menu fr-btn"
+                data-fr-opened="false"
+                aria-controls="header-menu"
+                aria-haspopup="header-menu"
+                title="Menu mobile"
+                id="fr-btn-menu-mobile"
+              >
+                Menu
+              </button>
             </div>
           </div>
           <div class="fr-header__service">
-            <a href="/">
+            <a href="/" title="MesADS - Retour à l'accueil" aria-label="MesADS - Retour à l'accueil">
               <p class="fr-header__service-title">Mes ADS</p>
             </a>
             <p class="fr-header__service-tagline">
@@ -65,16 +69,17 @@
       </div>
     </div>
   </div>
-  <div class="fr-header__menu fr-modal"
-        id="menu"
-        aria-labelledby="fr-btn-menu-mobile">
+  <div class="fr-header__menu fr-modal" id="header-menu" aria-labelledby="fr-btn-menu-mobile">
     <div class="fr-container">
-      <button class="fr-link--close fr-link" aria-controls="menu">Fermer</button>
+      <button class="fr-btn--close fr-btn" aria-controls="header-menu" title="Fermer" type="button" >Fermer</button>
+
       <div class="fr-header__menu-links"></div>
-      <nav class="fr-nav"
-            id="navigation-832"
-            role="navigation"
-            aria-label="Menu principal">
+      <nav
+        class="fr-nav"
+        id="navigation-832"
+        role="navigation"
+        aria-label="Menu principal"
+      >
 
         {% if administrateur_ads %}
         {% include "header_prefecture.html" %}
@@ -134,6 +139,7 @@
                     class="fr-nav__link"
                   >
                     À propos de MesADS
+                    <span class="fr-sr-only"> Nouvelle fenêtre</span>
                   </a>
                 </li>
               </ul>
