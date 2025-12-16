@@ -37,10 +37,10 @@ class InfoBox extends L.Control {
   update = (props: APIProps | null) => {
     const title = props
       ? `${props.nom} (${props.code_insee})`
-      : `Nombre de véhicules relais`;
+      : `Nombre de taxis relais`;
     const content = props
       ? this.getInfoboxContent(props.vehicules_relais_count)
-      : `Survolez un département pour <br/>afficher le nombre de véhicules relais enregistrés`;
+      : `Survolez un département pour <br/>afficher le nombre de taxis relais enregistrés`;
     this._div.innerHTML = `
           <div class="fr-tile fr-enlarge-link fr-tile--horizontal" style="opacity: 0.8">
             <div class="fr-tile__body">
@@ -52,7 +52,7 @@ class InfoBox extends L.Control {
   };
 
   getInfoboxContent = (vehicules_relais_count: number) => {
-    return `${vehicules_relais_count} véhicules relais ${
+    return `${vehicules_relais_count} taxis relais ${
       vehicules_relais_count > 1 ? "enregistrés" : "enregistré"
     }`;
   };

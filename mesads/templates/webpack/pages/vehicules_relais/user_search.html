@@ -11,20 +11,22 @@
           <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
         </li>
         <li>
-          <a class="fr-breadcrumb__link" aria-current="page">Répertoires des véhicules relais</a>
+          <a class="fr-breadcrumb__link" aria-current="page">Répertoires des taxis relais</a>
         </li>
       </ol>
     </div>
   </nav>
   <h1>Consulter les répertoires des taxis relais</h1>
   <p class="fr-text--lead">
-    Un « taxi relais » est un véhicule utilisé temporairement en cas d'immobilisation d'origine mécanique, à la suite d'une panne ou d'un accident, ou de vol d'un véhicule taxi ou de ses équipements spéciaux. Vous trouverez sur cette page la liste des véhicules relais enregistrés dans les répertoires départementaux.
+    Un « taxi relais » est un véhicule utilisé temporairement en cas d'immobilisation d'origine mécanique, à la suite d'une panne ou 
+    d'un accident, ou de vol d'un véhicule taxi ou de ses équipements spéciaux. 
+    Vous trouverez sur cette page la liste des taxis relais enregistrés dans les répertoires départementaux.
   </p>
   {% if not is_proprietaire %}
     <div class="fr-alert fr-alert--info fr-mt-5w">
       <h2 class="fr-alert__title">Si vous êtes propriétaire d'un taxi relais, nous vous rappelons que</h2>
       <p>
-        Si vous possédez un taxi relais, nous vous rappelons qu'il est obligatoire de déclarer tous les véhicules relais dans le répertoire départemental dédié avant de les exploiter. Si vous n'avez pas encore effectué cette déclaration, rendez-vous dans votre espace propriétaire
+        Il est obligatoire de déclarer tous les taxis relais dans le répertoire départemental dédié avant de les exploiter. Si vous n'avez pas encore effectué cette déclaration, rendez-vous dans votre espace propriétaire
       </p>
       <div class="fr-grid-row fr-grid-row--center fr-m-2w">
         <a class="fr-btn fr-btn--secondary"
@@ -32,7 +34,7 @@
           {% if request.user.is_authenticated %}
             Mon espace propriétaire
           {% else %}
-            Connectez-vous ou créez un compte pour enregistrer vos véhicules relais
+            Connectez-vous ou créez un compte pour enregistrer vos taxis relais
           {% endif %}
         </a>
       </div>
@@ -76,8 +78,8 @@
               <caption>Véhicules relais du département {{ prefecture.numero }} - {{ prefecture.libelle }}</caption>
               <thead>
                 <tr>
-                  <th scope="col">Dép.</th>
-                  <th scope="col">№</th>
+                  <th scope="col">Département</th>
+                  <th scope="col">Numéro</th>
                   <th scope="col">Type de véhicule</th>
                   <th scope="col">
                     Caractéristiques
