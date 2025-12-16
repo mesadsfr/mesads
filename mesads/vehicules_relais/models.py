@@ -160,14 +160,14 @@ class Vehicule(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
         Prefecture,
         on_delete=models.RESTRICT,
         null=False,
-        verbose_name="Département du véhicule relais",
+        verbose_name="Département du taxis relais",
     )
 
     numero = models.CharField(
         null=False,
         blank=True,
         max_length=16,
-        verbose_name="Numéro unique identifiant le véhicule relais",
+        verbose_name="Numéro unique identifiant le taxis relais",
         unique=True,
     )
 

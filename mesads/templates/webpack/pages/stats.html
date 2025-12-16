@@ -27,7 +27,7 @@
                 tabindex="-1"
                 role="tab"
                 aria-selected="false"
-                aria-controls="tabpanel-2-panel">Les statistiques des répertoires des véhicules relais</button>
+                aria-controls="tabpanel-2-panel">Les statistiques des répertoires des taxis relais</button>
       </li>
     </ul>
     {% comment %} First tab {% endcomment %}
@@ -82,7 +82,7 @@
                     <th scope="col">Nombre d'ADS</th>
                     <th scope="col">Nombre total estimé d'ADS</th>
                     <th scope="col">Pourcentage d'ADS vérifiées</th>
-                    <th scope="col">Nombre de véhicules relais</th>
+                    <th scope="col">Nombre de taxis relais</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -195,14 +195,14 @@
           <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
             <p class="stats-card-number font-bold">{{ relais_proprietaires_count }}</p>
             <p class="stats-card-description fr-mt-1w">
-              propriétaires de véhicules relais enregistrés <small>ayant enregistré au moins un véhicule relais</small>
+              propriétaires de taxis relais enregistrés <small>ayant enregistré au moins un taxi relais</small>
             </p>
           </div>
         </div>
         <div class="fr-col-12 fr-col-md-4">
           <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
             <p class="stats-card-number font-bold">{{ relais_vehicules_count }}</p>
-            <p class="stats-card-description fr-mt-1w">véhicules relais enregistrés</p>
+            <p class="stats-card-description fr-mt-1w">taxis relais enregistrés</p>
           </div>
         </div>
       </div>
@@ -210,19 +210,19 @@
       <h2>Carte de déploiement</h2>
       <div id="map_vehicules_relais" class="w-fulll h-[764px]"></div>
       <script src="./stats_map_vehicules_relais.ts"></script>
-      <p class="fr-mt-3w">Cette carte présente le nombre de véhicules relais enregistrés dans chaque département.</p>
+      <p class="fr-mt-3w">Cette carte présente le nombre de taxis relais enregistrés dans chaque département.</p>
       <hr class="fr-mt-3w" />
-      <h2>Utilisation des répertoires des véhicules relais</h2>
+      <h2>Utilisation des répertoires des taxis relais</h2>
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
-          <h3>Nombre de propriétaires de véhicules relais enregistrés</h3>
+          <h3>Nombre de propriétaires de taxis relais enregistrés</h3>
           <canvas
             role="img"
-            aria-label="Évolution du nombre de propriétaires de véhicules relais ayant enregistré au moins un véhicule. - Accéder à la version tableau ci dessous"
+            aria-label="Évolution du nombre de propriétaires de taxis relais ayant enregistré au moins un taxi. - Accéder à la version tableau ci dessous"
             id="relais-proprietaires-count">
           </canvas>
           <p class="fr-mt-3w fr-text--xs">
-            Évolution du nombre de propriétaires de véhicules relais ayant enregistré au moins un véhicule.
+            Évolution du nombre de propriétaires de taxis relais ayant enregistré au moins un taxi.
           </p>
           <details>
             <summary>Version tableau</summary>
@@ -231,7 +231,7 @@
                 <div class="fr-table__container">
                   <div class="fr-table__content">
                     <table id="table-gestionnaire">
-                      <caption>Évolution du nombre de propriétaires de véhicules relais ayant enregistré au moins un véhicule</caption>
+                      <caption>Évolution du nombre de propriétaires de taxis relais ayant enregistré au moins un taxi</caption>
                       <thead>
                         <tr>
                           <th>Trimestre</th>
@@ -254,13 +254,13 @@
           </details>
         </div>
         <div class="fr-col-12">
-          <h3>Nombre de véhicules relais enregistrés</h3>
+          <h3>Nombre de taxis relais enregistrés</h3>
           <canvas
             role="img"
-            aria-label="Évolution du nombre de véhicules relais enregistrés. - Accéder à la version tableau ci dessous""
+            aria-label="Évolution du nombre de taxis relais enregistrés. - Accéder à la version tableau ci dessous""
             id="relais-vehicules-count">
           </canvas>
-          <p class="fr-mt-3w fr-text--xs">Évolution du nombre de véhicules relais enregistrés.</p>
+          <p class="fr-mt-3w fr-text--xs">Évolution du nombre de taxis relais enregistrés.</p>
           <details>
             <summary>Version tableau</summary>
             <div class="fr-table" id="table-gestionnaire-component">
@@ -268,11 +268,11 @@
                 <div class="fr-table__container">
                   <div class="fr-table__content">
                     <table id="table-gestionnaire">
-                      <caption>Évolution du nombre de propriétaires de véhicules relais ayant enregistré au moins un véhicule</caption>
+                      <caption>Évolution du nombre de taxis relais enregistrés</caption>
                       <thead>
                         <tr>
                           <th>Trimestre</th>
-                          <th>Nombre de véhicules relais</th>
+                          <th>Nombre de taxis relais</th>
                         </tr>
                       </thead>
                       <tbody>
