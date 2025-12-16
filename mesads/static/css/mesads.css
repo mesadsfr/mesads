@@ -14,6 +14,8 @@
     background-color: var(--text-title-blue-france);
 }
 
+/* BOUTON PROCONNECT */
+
 .fr-connect {
   padding-left: 4.375em !important;
 }
@@ -30,6 +32,8 @@
   height: auto;
 }
 
+/* COMPOSANT NOTATION ETOILES */
+
 .rating-fieldset {
   border: none;
   padding: 0;
@@ -44,31 +48,44 @@
 
 .rating-stars {
   display: inline-flex;
-  flex-direction: row-reverse; /* 5 -> 1 visuellement */
+  gap: 0.25rem
 }
 
-/* Les étoiles */
-.star {
-  font-size: 2.5rem;
-  line-height: 1;
+.rating-stars .star input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.rating-stars .star {
   cursor: pointer;
-  color: #9F8A8A; /* étoile vide */
-  padding: 0 0.25rem;
-  user-select: none;
+  font-size: 3rem;
+  line-height: 1;
 }
 
-/* Étoiles remplies (quand radio cochée ou survol) */
-input[type="radio"]:checked ~ label.star,
-.star:hover,
-.star:hover ~ label.star {
+.rating-stars .star:focus-within {
+  outline: 2px solid black;   
+  outline-offset: 2px;
+}
+
+.rating-stars:has(.star:nth-child(1):hover) .star:nth-child(-n+1),
+.rating-stars:has(.star:nth-child(2):hover) .star:nth-child(-n+2),
+.rating-stars:has(.star:nth-child(3):hover) .star:nth-child(-n+3),
+.rating-stars:has(.star:nth-child(4):hover) .star:nth-child(-n+4),
+.rating-stars:has(.star:nth-child(5):hover) .star:nth-child(-n+5) {
   color: #B98609;
 }
 
-input[type="radio"]:focus + label.star {
-  outline: 2px solid #000;
-  outline-offset: 2px;
-  border-radius: 4px;
+.rating-stars:has(input[value="1"]:checked) .star:nth-child(-n+1),
+.rating-stars:has(input[value="2"]:checked) .star:nth-child(-n+2),
+.rating-stars:has(input[value="3"]:checked) .star:nth-child(-n+3),
+.rating-stars:has(input[value="4"]:checked) .star:nth-child(-n+4),
+.rating-stars:has(input[value="5"]:checked) .star:nth-child(-n+5) {
+  color: #B98609;
 }
+
+/* STATS CARDS */
 
 .stats-card-number {
   font-size: 2.25rem !important;

@@ -1,9 +1,9 @@
 from django.views import View
+from django.http.response import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from mesads.users.models import NoteUtilisateur
 from django.utils import timezone
-from django.contrib import messages
 
 
 class NotationView(View):
@@ -28,14 +28,20 @@ class NotationView(View):
         if action == "close":
             note_utilisateur.dernier_affichage = timezone.now().date()
             note_utilisateur.save()
+            return JsonResponse(
+                data={
+                    "status": "ok",
+                },
+            )
         else:
             note_utilisateur.dernier_affichage = timezone.now().date()
             note_utilisateur.derniere_note = timezone.now().date()
             note_utilisateur.note_qualite = request.POST.get("note_qualite")
             note_utilisateur.note_facilite = request.POST.get("note_facilite")
             note_utilisateur.save()
-            messages.success(
-                self.request,
-                "Merci pour votre note, celle ci a été prise en compte.",
+            return JsonResponse(
+                data={
+                    "status": "ok",
+                },
             )
         return redirect(redirect_url)

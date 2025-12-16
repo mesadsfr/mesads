@@ -15,13 +15,7 @@ class TestNotationView(ClientTestCase):
             reverse("app.note-service"), {"action": "close"}
         )
 
-        self.assertRedirects(
-            response,
-            expected_url=reverse("app.homepage"),
-            status_code=http.HTTPStatus.FOUND,
-            target_status_code=http.HTTPStatus.OK,
-            fetch_redirect_response=True,
-        )
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertEqual(NoteUtilisateur.objects.filter(user=user).count(), 1)
         note = NoteUtilisateur.objects.filter(user=user).first()
         self.assertEqual(note.dernier_affichage, timezone.now().date())
@@ -41,13 +35,7 @@ class TestNotationView(ClientTestCase):
             },
         )
 
-        self.assertRedirects(
-            response,
-            expected_url=reverse("app.homepage"),
-            status_code=http.HTTPStatus.FOUND,
-            target_status_code=http.HTTPStatus.OK,
-            fetch_redirect_response=True,
-        )
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
         self.assertEqual(NoteUtilisateur.objects.filter(user=user).count(), 1)
         note = NoteUtilisateur.objects.filter(user=user).first()
         self.assertEqual(note.dernier_affichage, timezone.now().date())
@@ -70,13 +58,7 @@ class TestNotationView(ClientTestCase):
             reverse("app.note-service"), {"action": "close"}
         )
 
-        self.assertRedirects(
-            response,
-            expected_url=reverse("app.homepage"),
-            status_code=http.HTTPStatus.FOUND,
-            target_status_code=http.HTTPStatus.OK,
-            fetch_redirect_response=True,
-        )
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
 
         self.assertEqual(NoteUtilisateur.objects.filter(user=user).count(), 1)
         note.refresh_from_db()
@@ -105,13 +87,7 @@ class TestNotationView(ClientTestCase):
             },
         )
 
-        self.assertRedirects(
-            response,
-            expected_url=reverse("app.homepage"),
-            status_code=http.HTTPStatus.FOUND,
-            target_status_code=http.HTTPStatus.OK,
-            fetch_redirect_response=True,
-        )
+        self.assertEqual(response.status_code, http.HTTPStatus.OK)
 
         self.assertEqual(NoteUtilisateur.objects.filter(user=user).count(), 1)
         note.refresh_from_db()
