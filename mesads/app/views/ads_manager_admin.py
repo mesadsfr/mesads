@@ -1,39 +1,38 @@
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
+from django.core.mail import send_mail
 from django.db.models import (
-    OuterRef,
-    Subquery,
-    Count,
-    IntegerField,
     BooleanField,
-    Value,
     CharField,
+    Count,
     F,
+    IntegerField,
+    OuterRef,
     Q,
+    Subquery,
+    Value,
 )
 from django.db.models.functions import Cast, Replace
-from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.text import slugify
-from django.views.generic import View, TemplateView, ListView
-
+from django.views.generic import ListView, TemplateView, View
 from reversion.views import RevisionMixin
+
+from mesads.app.forms import SearchVehiculeForm
+from mesads.fradm.models import EPCI, Commune, Prefecture
+from mesads.utils_psql import SplitPart
+from mesads.vehicules_relais.models import Vehicule
 
 from ..models import (
     ADS,
+    ADSManager,
     ADSManagerAdministrator,
     ADSManagerRequest,
-    ADSManager,
     ADSUpdateLog,
 )
-from mesads.app.forms import SearchVehiculeForm
-from mesads.fradm.models import Commune, Prefecture, EPCI
-from mesads.vehicules_relais.models import Vehicule
-from mesads.utils_psql import SplitPart
-
 from .export import ADSExporter
 
 
@@ -165,7 +164,9 @@ class ADSManagerAdminRequestsView(RevisionMixin, TemplateView):
     template_name = "pages/ads_register/ads_manager_admin_requests.html"
 
     def get_context_data(self, **kwargs):
-        """Populate context with the list of ADSManagerRequest current user can accept."""
+        """
+        Populate context with the list of ADSManagerRequest current user can accept.
+        """
         ctx = super().get_context_data(**kwargs)
 
         query = (
@@ -250,12 +251,11 @@ class ADSManagerAdminRequestsView(RevisionMixin, TemplateView):
             fail_silently=True,
             html_message=email_content_html,
         )
+        request_administrator = ads_manager_request.ads_manager.administrator
         return redirect(
             reverse(
                 "app.ads-manager-admin.requests",
-                kwargs={
-                    "prefecture_id": ads_manager_request.ads_manager.administrator.prefecture.id
-                },
+                kwargs={"prefecture_id": request_administrator.prefecture.id},
             )
         )
 
@@ -286,7 +286,10 @@ class PrefectureExportView(View, ADSExporter):
         return f"ADS_prefecture_{self.ads_manager_administrator.prefecture.numero}.xlsx"
 
     def get_file_title(self):
-        return f"Informations des ADS et gestionnaires - {self.ads_manager_administrator.prefecture.display_text().capitalize()}"
+        return (
+            f"Informations des ADS et gestionnaires - "
+            f"{self.ads_manager_administrator.prefecture.display_text().capitalize()}"
+        )
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -441,7 +444,8 @@ class RepertoireVehiculeRelaisView(ListView):
         return SearchVehiculeForm(self.request.GET)
 
     def get_queryset(self):
-        # .order_by("numero") doesn't work because with a string ordering, 75-2 is higher than 75-100.
+        # .order_by("numero") doesn't work because with a string ordering,
+        # 75-2 is higher than 75-100.
         # Instead we split the numero field and order by the first and second part.
         # Note the first part has to be cast to a string and not to an integer
         # because Corsica's departement number is 2A or 2B.

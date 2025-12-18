@@ -1,11 +1,10 @@
 from datetime import date
-from faker import Faker
-
-from django.db import transaction
 
 from django.core.management.base import BaseCommand
+from django.db import transaction
+from faker import Faker
 
-from mesads.app.models import ADSManager, ADS, ADSUser
+from mesads.app.models import ADS, ADSManager, ADSUser
 
 
 class Command(BaseCommand):
@@ -69,7 +68,8 @@ class Command(BaseCommand):
                     owner_siret="",
                     owner_phone=f.phone_number(),
                     owner_mobile=f.phone_number(),
-                    # Évite f.unique.email() (mémoire) ; génère un email unique déterministe :
+                    # Évite f.unique.email() (mémoire) ;
+                    # génère un email unique déterministe :
                     owner_email=f"owner-{mid}-old@example.com",
                 )
                 ads1.attribution_date = f.date_between_dates(
@@ -110,7 +110,8 @@ class Command(BaseCommand):
                 ADS.objects.bulk_create(ads_batch, batch_size=2000)
             total_ads += len(ads_batch)
 
-            # 3) Récupérer les IDs des ADS créés pour ce lot (clé naturelle: (manager_id, number))
+            # 3) Récupérer les IDs des ADS créés pour ce
+            # lot (clé naturelle: (manager_id, number))
             created_ads = ADS.objects.filter(
                 ads_manager_id__in=ids, number__in=["1", "2"]
             ).values("id", "ads_manager_id", "number")
@@ -154,8 +155,10 @@ class Command(BaseCommand):
             processed_mgrs += len(ids)
             self.stdout.write(
                 self.style.SUCCESS(
-                    f"✔ Lot traité : {len(ids)} managers → {len(ads_batch)} ADS, {len(users_batch)} users "
-                    f"(cumul: {processed_mgrs} managers, {total_ads} ADS, {total_users} users)"
+                    f"✔ Lot traité : {len(ids)} managers → "
+                    f"{len(ads_batch)} ADS, {len(users_batch)} users "
+                    f"(cumul: {processed_mgrs} managers, "
+                    f"{total_ads} ADS, {total_users} users)"
                 )
             )
 
@@ -163,7 +166,8 @@ class Command(BaseCommand):
         for mid in managers_iter:
             batch_ids.append(mid)
             if len(batch_ids) >= BATCH_MANAGERS:
-                # Chaque lot dans sa propre transaction pour limiter la mémoire et la durée des verrous
+                # Chaque lot dans sa propre transaction pour limiter
+                # la mémoire et la durée des verrous
                 with transaction.atomic():
                     process_batch(batch_ids)
                 batch_ids.clear()

@@ -1,8 +1,7 @@
-from django.utils import timezone
 from datetime import timedelta
 
-
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
 from mesads.app.models import ADSManagerAdministrator, ADSManagerRequest
 from mesads.users.models import User
@@ -20,7 +19,8 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Trouvé {users.count()} utilisateurs inactifs depuis plus de 6 mois qui n'ont pas de date de connexion enregistrée"
+                f"Trouvé {users.count()} utilisateurs inactifs depuis plus de 6 mois "
+                f"qui n'ont pas de date de connexion enregistrée"
             )
         )
 
@@ -31,7 +31,8 @@ class Command(BaseCommand):
             if is_ads_manager_administrator:
                 self.stdout.write(
                     self.style.SUCCESS(
-                        f"{user.email} a un compte administrateur de gestionnaire ADS, pas de suppression"
+                        f"{user.email} a un compte administrateur de gestionnaire ADS, "
+                        "pas de suppression"
                     )
                 )
                 continue
@@ -40,7 +41,8 @@ class Command(BaseCommand):
             if is_ads_manager:
                 self.stdout.write(
                     self.style.SUCCESS(
-                        f"{user.email} a une demande pour devenir gestionnaire ADS, pas de suppression"
+                        f"{user.email} a une demande pour devenir gestionnaire ADS, "
+                        "pas de suppression"
                     )
                 )
                 continue
@@ -49,7 +51,8 @@ class Command(BaseCommand):
             if is_proprietaire:
                 self.stdout.write(
                     self.style.SUCCESS(
-                        f"{user.email} a un compte propriétaire de véhicules relais, pas de suppression"
+                        f"{user.email} a un compte propriétaire de véhicules relais, "
+                        "pas de suppression"
                     )
                 )
                 continue

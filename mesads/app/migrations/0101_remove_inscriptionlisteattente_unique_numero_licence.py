@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("app", "0100_inscriptionlisteattente_unique_numero_licence"),
     ]

@@ -1,6 +1,6 @@
 from mesads.users.unittest import ClientTestCase as BaseClientTestCase
 
-from .models import Commune, EPCI, Prefecture
+from .models import EPCI, Commune, Prefecture
 
 
 class ClientTestCase(BaseClientTestCase):

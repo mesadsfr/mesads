@@ -1,20 +1,18 @@
+from django.core import mail
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core import mail
 from django.db.models import Q
-
-
-from mesads.fradm.models import Commune, EPCI
 
 from mesads.app.models import (
     ADS,
     ADSLegalFile,
     ADSManager,
-    ADSUpdateLog,
     ADSManagerAdministrator,
+    ADSUpdateLog,
     ADSUser,
     Notification,
 )
+from mesads.fradm.models import EPCI, Commune
 from mesads.unittest import ClientTestCase
 
 
@@ -140,7 +138,10 @@ class TestADSView(ClientTestCase):
         self.assertFalse(resp.context["ads_legal_files_formset"].is_valid())
 
     def test_update_ads_not_in_use(self):
-        """ADS legal files and ads users should be removed when the formsets are not provided."""
+        """
+        ADS legal files and ads users should be removed
+        when the formsets are not provided.
+        """
         ADSUser.objects.create(
             ads=self.ads, status="autre", name="Paul", siret="12312312312312"
         )
@@ -242,7 +243,10 @@ class TestADSView(ClientTestCase):
         )
         self.assertEqual(resp.status_code, 200)
         self.assertIn(
-            "La date de création de l'ADS doit être antérieure à la date d'attribution.",
+            (
+                "La date de création de l'ADS doit être "
+                "antérieure à la date d'attribution."
+            ),
             resp.context["form"].errors["__all__"][0],
         )
 
@@ -741,7 +745,6 @@ class TestADSCreateView(ClientTestCase):
                 "number": "123",
                 "certify": "true",
                 "ads_in_use": "true",
-                "certify": "true",
                 "adsuser_set-TOTAL_FORMS": 10,
                 "adsuser_set-INITIAL_FORMS": 0,
                 "adsuser_set-MIN_NUM_FORMS": 0,
@@ -841,7 +844,11 @@ class TestADSCreateView(ClientTestCase):
         except ValidationError as exc:
             self.assertEqual(
                 exc.message,
-                "Le conducteur doit nécessairement être le titulaire de l'ADS (personne physique) pour une ADS créée après le 1er octobre 2014.",
+                (
+                    "Le conducteur doit nécessairement être le titulaire de "
+                    "l'ADS (personne physique) pour une ADS créée "
+                    "après le 1er octobre 2014."
+                ),
             )
         else:
             self.fail("ValidationError not raised")

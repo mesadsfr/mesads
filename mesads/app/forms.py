@@ -1,15 +1,14 @@
+from dal import autocomplete
+from dateutil.relativedelta import relativedelta
+from django import forms
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
-from django import forms
-from dateutil.relativedelta import relativedelta
 from django.forms import BaseInlineFormSet, inlineformset_factory
 from django.urls import reverse
 from django.utils import timezone
 
-from dal import autocomplete
-
 from mesads.fradm.forms import FrenchAdministrationForm
-from mesads.fradm.models import Commune, EPCI, Prefecture
+from mesads.fradm.models import EPCI, Commune, Prefecture
 
 from .fields import NullBooleanField
 from .models import (
@@ -56,8 +55,14 @@ class ADSManagerForm(FrenchAdministrationForm):
 
     is_ads_manager = forms.BooleanField(
         required=True,
-        label="J'atteste être gestionnaire d'ADS au sein d'une administration (mairie, EPCI ou préfecture)",
-        help_text="Ne remplissez pas ce formulaire si vous êtes chauffeur de taxi, ou si vous n'êtes pas employé par une administration.",
+        label=(
+            "J'atteste être gestionnaire d'ADS au sein "
+            "d'une administration (mairie, EPCI ou préfecture)"
+        ),
+        help_text=(
+            "Ne remplissez pas ce formulaire si vous êtes chauffeur de taxi, "
+            "ou si vous n'êtes pas employé par une administration."
+        ),
     )
 
 
@@ -156,7 +161,10 @@ class ADSForm(forms.ModelForm):
     )
 
     certify = forms.BooleanField(
-        label="Je certifie que les informations enregistrées sont à jour et ne comportent pas d'erreur de saisie.",
+        label=(
+            "Je certifie que les informations enregistrées sont à jour "
+            "et ne comportent pas d'erreur de saisie."
+        ),
         required=True,
         error_messages={
             "required": "Vous devez cocher cette case pour valider le formulaire."
@@ -264,8 +272,16 @@ class SearchVehiculeForm(forms.Form):
 
 
 class InscriptionListeAttenteForm(forms.ModelForm):
-    ERROR_DATE_RENOUVELLEMENT_EMPTY = "L'inscription semble dater de plus d’un an. Vérifiez si un dépôt de demande de renouvellement a eu lieu au cours des 12 derniers mois."
-    ERROR_DATE_RENOUVELLEMENT = "Le renouvellement semble dater de plus d’un an. Vérifiez si un dépôt de demande de renouvellement a eu lieu au cours des 12 derniers mois."
+    ERROR_DATE_RENOUVELLEMENT_EMPTY = (
+        "L'inscription semble dater de plus d’un an. "
+        "Vérifiez si un dépôt de demande de renouvellement a eu lieu "
+        "au cours des 12 derniers mois."
+    )
+    ERROR_DATE_RENOUVELLEMENT = (
+        "Le renouvellement semble dater de plus d’un an. "
+        "Vérifiez si un dépôt de demande de renouvellement a eu lieu "
+        "au cours des 12 derniers mois."
+    )
 
     class Meta:
         model = InscriptionListeAttente
@@ -337,7 +353,10 @@ class InscriptionListeAttenteForm(forms.ModelForm):
                 date_depot_inscription=obj.date_depot_inscription,
                 ads_manager=self.ads_manager,
             ).count()
-            obj.numero = f"{base_numero}{obj.date_depot_inscription.strftime('%d%m%Y')}{count + 1:04d}"
+            obj.numero = (
+                f"{base_numero}{obj.date_depot_inscription.strftime('%d%m%Y')}"
+                f"{count + 1:04d}"
+            )
         if commit:
             obj.save()
         return obj

@@ -1,7 +1,7 @@
 import re
 
-from django.core import mail
 from django.conf import settings
+from django.core import mail
 
 from ..unittest import ClientTestCase
 
@@ -34,10 +34,10 @@ class TestPasswordResetView(ClientTestCase):
     def test_reset_password_inactive_account(self):
         user = self.create_user()
 
-        user.obj.is_active = False
-        user.obj.save()
+        user.is_active = False
+        user.save()
 
-        resp = self.auth_client.post("/auth/password_reset/", {"email": user.obj.email})
+        resp = self.auth_client.post("/auth/password_reset/", {"email": user.email})
 
         self.assertEqual(resp.status_code, 200)
         self.assertIn("Votre compte est inactif", resp.content.decode("utf8"))
@@ -48,12 +48,16 @@ class Test2FALoginView(ClientTestCase):
     def test_2fa_login(self):
         user = self.create_user(double_auth=True)
 
+        password = "P@S5W0rd"
+        user.set_password(password)
+        user.save()
+
         # Send login/password without OTP and verify that the OTP is sent by email
         resp = self.anonymous_client.post(
             "/auth/login/",
             {
-                "username": user.obj.email,
-                "password": user.clear_password,
+                "username": user.email,
+                "password": password,
             },
         )
         self.assertEqual(resp.status_code, 200)
@@ -71,8 +75,8 @@ class Test2FALoginView(ClientTestCase):
         resp = self.anonymous_client.post(
             "/auth/login/",
             {
-                "username": user.obj.email,
-                "password": user.clear_password,
+                "username": user.email,
+                "password": password,
                 "otp": "xxx",
             },
         )
@@ -83,8 +87,8 @@ class Test2FALoginView(ClientTestCase):
         resp = self.anonymous_client.post(
             "/auth/login/",
             {
-                "username": user.obj.email,
-                "password": user.clear_password,
+                "username": user.email,
+                "password": password,
                 "otp": otp_code,
             },
         )

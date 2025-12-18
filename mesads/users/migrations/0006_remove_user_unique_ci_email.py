@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0005_alter_user_email'),
+        ("users", "0005_alter_user_email"),
     ]
 
     operations = [
         migrations.RemoveConstraint(
-            model_name='user',
-            name='unique_ci_email',
+            model_name="user",
+            name="unique_ci_email",
         ),
     ]

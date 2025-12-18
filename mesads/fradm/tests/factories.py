@@ -1,6 +1,6 @@
 import factory
 
-from mesads.fradm.models import Prefecture, EPCI, Commune
+from mesads.fradm.models import EPCI, Commune, Prefecture
 
 
 class PrefectureFactory(factory.django.DjangoModelFactory):

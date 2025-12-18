@@ -9,7 +9,9 @@ class AdministrationModel(models.Model):
         abstract = True
 
     def type_name(self):
-        """Human readable name of the administration type (commune, prefecture, epci)."""
+        """
+        Human readable name of the administration type (commune, prefecture, epci).
+        """
         raise NotImplementedError
 
     def text(self):
@@ -21,7 +23,10 @@ class AdministrationModel(models.Model):
         raise NotImplementedError
 
     def display_fulltext(self):
-        """Like display_text(), buf prefixed with the correct french article "la" or "l'"."""
+        """
+        Like display_text(), buf prefixed with the correct
+        french article "la" or "l'".
+        """
         raise NotImplementedError
 
 
@@ -44,38 +49,6 @@ class Commune(AdministrationModel):
         CSV file provided by insee.
     """
 
-    objects = CommuneManager()
-    all_objects = models.Manager()
-
-    class Meta:
-        # Necessary to set the constraint as deferrable, because during import
-        # in update_communes.py, we need to defer checks to avoid constraint
-        # violations.
-        constraints = [
-            models.UniqueConstraint(
-                fields=["type_commune", "insee"],
-                name="fradm_commune_type_commune_insee",
-                deferrable=models.Deferrable.IMMEDIATE,
-            ),
-        ]
-
-    def type_name(self):
-        return "commune"
-
-    def text(self):
-        return self.libelle
-
-    def display_text(self):
-        if self.libelle.lower()[0:1] in "aeiouy":
-            return f"commune d'{self.libelle}"
-        return f"commune de {self.libelle}"
-
-    def display_fulltext(self):
-        return f"la {self.display_text()}"
-
-    def __str__(self):
-        return f"{self.departement} - {self.libelle} (INSEE: {self.insee})"
-
     TYPE_COMMUNE = (
         ("COM", "Commune"),
         ("COMA", "Commune associée"),
@@ -97,6 +70,39 @@ class Commune(AdministrationModel):
 
     ads_managers = GenericRelation("app.ADSManager", related_query_name="commune")
 
+    all_objects = models.Manager()
+    objects = CommuneManager()
+
+    class Meta:
+        # Necessary to set the constraint as deferrable, because during import
+        # in update_communes.py, we need to defer checks to avoid constraint
+        # violations.
+        default_manager_name = "objects"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["type_commune", "insee"],
+                name="fradm_commune_type_commune_insee",
+                deferrable=models.Deferrable.IMMEDIATE,
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.departement} - {self.libelle} (INSEE: {self.insee})"
+
+    def type_name(self):
+        return "commune"
+
+    def text(self):
+        return self.libelle
+
+    def display_text(self):
+        if self.libelle.lower()[0:1] in "aeiouy":
+            return f"commune d'{self.libelle}"
+        return f"commune de {self.libelle}"
+
+    def display_fulltext(self):
+        return f"la {self.display_text()}"
+
 
 class Prefecture(AdministrationModel):
     """Departement of France, Inserted by the django admin command
@@ -113,6 +119,9 @@ class Prefecture(AdministrationModel):
     libelle = models.CharField(max_length=255, null=False, blank=False, unique=True)
 
     ads_managers = GenericRelation("app.ADSManager", related_query_name="prefecture")
+
+    def __str__(self):
+        return f"{self.numero} - {self.libelle}"
 
     def type_name(self):
         return "préfecture"
@@ -132,9 +141,6 @@ class Prefecture(AdministrationModel):
     def display_fulltext(self):
         return f"la {self.display_text()}"
 
-    def __str__(self):
-        return f"{self.numero} - {self.libelle}"
-
 
 class EPCI(AdministrationModel):
     """EPCI stands for Établissement Public de Coopération Intercommunale.
@@ -150,10 +156,19 @@ class EPCI(AdministrationModel):
         by INSEE.
     """
 
+    siren = models.CharField(max_length=64, blank=False, null=False, unique=True)
+    departement = models.CharField(max_length=16, blank=False, null=False)
+    name = models.CharField(max_length=255, blank=False, null=False)
+
+    ads_managers = GenericRelation("app.ADSManager", related_query_name="epci")
+
     class Meta:
         verbose_name = "EPCI"
         verbose_name_plural = "EPCI"
         unique_together = (("departement", "name"),)
+
+    def __str__(self):
+        return self.name
 
     def type_name(self):
         return "EPCI"
@@ -166,12 +181,3 @@ class EPCI(AdministrationModel):
 
     def display_fulltext(self):
         return f"l'{self.display_text()}"
-
-    def __str__(self):
-        return self.name
-
-    siren = models.CharField(max_length=64, blank=False, null=False, unique=True)
-    departement = models.CharField(max_length=16, blank=False, null=False)
-    name = models.CharField(max_length=255, blank=False, null=False)
-
-    ads_managers = GenericRelation("app.ADSManager", related_query_name="epci")

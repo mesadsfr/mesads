@@ -1,9 +1,7 @@
 from django.urls import include, path
-
 from rest_framework import routers
 
 from . import views
-
 
 router = routers.DefaultRouter()
 router.register(r"ads-updates", views.ADSUpdatesViewSet, basename="ads-updates")

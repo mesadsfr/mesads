@@ -2,7 +2,6 @@ import io
 import unittest
 
 import pytest
-
 from django.conf import settings
 from django.core.management import call_command
 
@@ -31,5 +30,8 @@ class TestMigrationsApplied(unittest.TestCase):
             except SystemExit:
                 out.seek(0)
                 self.fail(
-                    f"Missing migrations. Run `python manage.py makemigrations` and commit the new migration files. Output was:\n{out.read()}"
+                    (
+                        "Missing migrations. Run `python manage.py makemigrations` and "
+                        f"commit the new migration files. Output was:\n{out.read()}"
+                    )
                 )

@@ -1,11 +1,12 @@
 from django.contrib.contenttypes.models import ContentType
 from django.views.generic.list import ListView
 
+from mesads.fradm.models import Prefecture
+
 from ..models import (
     ADS,
     ADSManager,
 )
-from mesads.fradm.models import Prefecture
 
 
 class DashboardsView(ListView):

@@ -1,34 +1,31 @@
 import base64
 from io import BytesIO
 
+import qrcode
 from django.contrib import messages
 from django.contrib.staticfiles.finders import find
-from django.db.models.functions import Cast, Replace
 from django.db.models import CharField, F, IntegerField, Value
+from django.db.models.functions import Cast, Replace
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     CreateView,
-    DetailView,
     DeleteView,
+    DetailView,
     ListView,
     RedirectView,
     TemplateView,
     UpdateView,
     View,
 )
-
+from reversion.views import RevisionMixin
 from weasyprint import HTML
 
-from reversion.views import RevisionMixin
-
-import qrcode
-
 from mesads.app.reversion_diff import ModelHistory
+from mesads.utils_psql import SplitPart
 
-from .models import Proprietaire, Vehicule, DispositionSpecifique
 from .forms import (
     ProprietaireDeleteForm,
     ProprietaireForm,
@@ -36,7 +33,7 @@ from .forms import (
     VehiculeCreateForm,
     VehiculeForm,
 )
-from mesads.utils_psql import SplitPart
+from .models import DispositionSpecifique, Proprietaire, Vehicule
 
 
 class IndexView(RedirectView):
@@ -51,7 +48,8 @@ class SearchView(ListView):
         return SearchVehiculeForm(self.request.GET)
 
     def get_queryset(self):
-        # .order_by("numero") doesn't work because with a string ordering, 75-2 is higher than 75-100.
+        # .order_by("numero") doesn't work because with a string ordering,
+        # 75-2 is higher than 75-100.
         # Instead we split the numero field and order by the first and second part.
         # Note the first part has to be cast to a string and not to an integer
         # because Corsica's departement number is 2A or 2B.
@@ -156,7 +154,8 @@ class ProprietaireDetailView(ListView):
     paginate_by = 50
 
     def get_queryset(self):
-        # .order_by("numero") doesn't work because with a string ordering, 75-2 is higher than 75-100.
+        # .order_by("numero") doesn't work because with a string ordering,
+        #  75-2 is higher than 75-100.
         # Instead we split the numero field and order by the first and second part.
         # Note the first part has to be cast to a string and not to an integer
         # because Corsica's departement number is 2A or 2B.
@@ -293,7 +292,10 @@ class ProprietaireVehiculeCreateView(ProprietaireVehiculeUpdateView, CreateView)
         return super().form_valid(form)
 
     def get_success_message(self):
-        return f"Le véhicule a été enregistré. Le numéro <strong>{self.object.numero}</strong> lui a été attribué."
+        return (
+            "Le véhicule a été enregistré. "
+            f"Le numéro <strong>{self.object.numero}</strong> lui a été attribué."
+        )
 
 
 class ProprietaireVehiculeHistoryView(DetailView):
@@ -351,11 +353,10 @@ class ProprietaireVehiculeRecepisseView(View):
             numero=self.kwargs["vehicule_numero"],
             proprietaire=proprietaire,
         )
+        disposition = f'attachment; filename="récépissé-vehicule-{vehicule_numero}.pdf"'
         response = HttpResponse(
             content_type="application/pdf",
-            headers={
-                "Content-Disposition": f'attachment; filename="récépissé-vehicule-{vehicule_numero}.pdf"'
-            },
+            headers={"Content-Disposition": disposition},
         )
 
         vehicule_public_url = request.build_absolute_uri(

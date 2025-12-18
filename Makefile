@@ -28,19 +28,10 @@ run-local-as-prod:
 ### To run from container ###
 
 test:
-	flake8 mesads
-	coverage run --source=. manage.py test --settings=mesads.settings_test
-	coverage report -m
+	pytest -n 4 
 
-# Tests without coverage
-fasttest:
-	python manage.py test --parallel 8 --settings=mesads.settings_test
-
-test-no-cov:
-	python manage.py test --failfast --settings=mesads.settings_test
-
-test-relais:
-	python manage.py test mesads.vehicules_relais --failfast --settings=mesads.settings_test
+test-cov:
+	pytest -n 4 --cov=. --cov-report=term-missing
 
 
 update-requirements:

@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from django import template
 
-
 register = template.Library()
 
 

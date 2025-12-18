@@ -10,7 +10,10 @@ from mesads.fradm.models import Commune
 
 
 class Command(BaseCommand):
-    help = "Returns the mails of all users with a valid request for an ADSManager without ADS registered."
+    help = (
+        "Returns the mails of all users with a valid request "
+        "for an ADSManager without ADS registered."
+    )
 
     def handle(self, *args, **options):
         writer = csv.writer(sys.stdout)

@@ -1,9 +1,11 @@
+from datetime import date, timedelta
+
+from dateutil.relativedelta import relativedelta
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
-from dateutil.relativedelta import relativedelta
-from datetime import date, timedelta
-from mesads.app.models import InscriptionListeAttente, ADSManager
 from faker import Faker
+
+from mesads.app.models import ADSManager, InscriptionListeAttente
 
 
 class Command(BaseCommand):

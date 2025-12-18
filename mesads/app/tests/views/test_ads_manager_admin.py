@@ -1,20 +1,20 @@
-from datetime import datetime, date
+from datetime import date, datetime
+from http import HTTPStatus
 
 from django.core import mail
+from django.urls import reverse
 
 from mesads.app.models import ADS, ADSManager, ADSManagerRequest
-from mesads.unittest import ClientTestCase
 from mesads.fradm.models import Prefecture
-from mesads.vehicules_relais.models import Vehicule, Proprietaire
-from django.urls import reverse
-from http import HTTPStatus
+from mesads.unittest import ClientTestCase
+from mesads.vehicules_relais.models import Proprietaire, Vehicule
 
 
 class TestADSManagerAdminRequestsView(ClientTestCase):
     def setUp(self):
         super().setUp()
         self.ads_manager_request = ADSManagerRequest.objects.create(
-            user=self.create_user().obj,
+            user=self.create_user(),
             ads_manager=self.ads_manager_city35,
             accepted=None,
         )
@@ -82,19 +82,19 @@ class TestADSManagerAdminRequestsView(ClientTestCase):
     def test_sort(self):
         for ads_manager in ADSManager.objects.all():
             ADSManagerRequest.objects.create(
-                user=self.create_user().obj,
+                user=self.create_user(),
                 ads_manager=ads_manager,
                 accepted=None,
             )
-            resp = self.ads_manager_administrator_35_client.get(
-                f"/espace-prefecture/{self.ads_manager_administrator_35.prefecture_id}/demandes-gestion/",
-            )
-            self.assertEqual(resp.status_code, 200)
+        resp = self.ads_manager_administrator_35_client.get(
+            f"/espace-prefecture/{self.ads_manager_administrator_35.prefecture_id}/demandes-gestion/",
+        )
+        self.assertEqual(resp.status_code, 200)
 
-            resp = self.ads_manager_administrator_35_client.get(
-                f"/espace-prefecture/{self.ads_manager_administrator_35.prefecture_id}/demandes-gestion/?sort=name",
-            )
-            self.assertEqual(resp.status_code, 200)
+        resp = self.ads_manager_administrator_35_client.get(
+            f"/espace-prefecture/{self.ads_manager_administrator_35.prefecture_id}/demandes-gestion/?sort=name",
+        )
+        self.assertEqual(resp.status_code, 200)
 
 
 class TestExportPrefecture(ClientTestCase):
@@ -251,9 +251,9 @@ class TestAdsManagerAdministratorView(ClientTestCase):
             )
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertListEqual(
-            [m.id for m in response.context["ads_managers"]],
-            list(
+        self.assertEqual(
+            set([m.id for m in response.context["ads_managers"]]),
+            set(
                 ADSManager.objects.filter(
                     administrator=self.ads_manager_administrator_35
                 ).values_list("id", flat=True)

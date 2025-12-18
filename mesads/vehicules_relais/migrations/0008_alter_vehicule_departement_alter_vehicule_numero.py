@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("fradm", "0005_alter_commune_unique_together_and_more"),
         ("vehicules_relais", "0007_alter_vehicule_departement"),

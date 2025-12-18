@@ -1,18 +1,17 @@
 import datetime
 
+import reversion
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.utils.translation import gettext as _
-
-import reversion
 from reversion.models import Revision
 
 from mesads.fradm.models import Commune
 from mesads.users.models import User
 
-from ..models import ADS, ADSUser, ADSManager, ADSLegalFile, ADSManagerAdministrator
 from ...fradm.models import Prefecture
-from ..reversion_diff import ModelHistory, Diff
+from ..models import ADS, ADSLegalFile, ADSManager, ADSManagerAdministrator, ADSUser
+from ..reversion_diff import Diff, ModelHistory
 
 
 class TestReversionDiff(TestCase):
@@ -47,7 +46,8 @@ class TestReversionDiff(TestCase):
             ads_user = ADSUser.objects.create(ads=self.ads, name="Luke")
             ads_user.save()
 
-            # Create another object, unrelated, to check that it is not included in the diff
+            # Create another object, unrelated,
+            # to check that it is not included in the diff
             self.ads2.owner_email = "whatever@domain.com"
             self.ads2.save()
 
@@ -189,7 +189,10 @@ class TestReversionDiff(TestCase):
 
         self.assertEqual(
             ModelHistory(ADSLegalFile()).render_field(ADSLegalFile, "file", "xxx"),
-            '<a href="/uploads/xxx" target="_blank">xxx<span class="fr-sr-only"> Nouvelle fenêtre</span></a>',
+            (
+                '<a href="/uploads/xxx" target="_blank">'
+                'xxx<span class="fr-sr-only"> Nouvelle fenêtre</span></a>'
+            ),
         )
 
     def test_diff_removed_field(self):

@@ -98,9 +98,14 @@ class DemandeGestionADSView(FormView):
 
     def get_message_for_existing_request(self, ads_manager):
         return """
-            Vous avez déjà effectué une demande pour gérer les ADS de %(administration)s. Cette demande a été envoyée à %(prefecture)s qui devrait y répondre rapidement.<br /><br />
+            Vous avez déjà effectué une demande pour 
+            gérer les ADS de %(administration)s. 
+            Cette demande a été envoyée à %(prefecture)s qui devrait y 
+            répondre rapidement.<br /><br />
 
-            Si vous n'avez eu aucun retour depuis plusieurs jours, n'hésitez pas à nous signaler le problème par email à <a href="mailto:%(email)s">%(email)s</a> ou via notre module de tchat.
+            Si vous n'avez eu aucun retour depuis plusieurs jours, n'hésitez pas à 
+            nous signaler le problème par email à 
+            <a href="mailto:%(email)s">%(email)s</a>.
             <br /><br />
             Nous pourrons alors valider votre demande manuellement.
         """ % {
@@ -111,13 +116,16 @@ class DemandeGestionADSView(FormView):
 
     def get_message_for_new_request(self, ads_manager):
         return """
-            Votre demande vient d'être envoyée à %(prefecture)s. Vous recevrez une confirmation de validation de votre
+            Votre demande vient d'être envoyée à %(prefecture)s. 
+            Vous recevrez une confirmation de validation de votre
             accès par mail.<br /><br />
 
-            En cas de difficulté ou si vous n'obtenez pas de validation de votre demande vous pouvez
-            contacter par email à <a href="mailto:%(email)s">%(email)s</a> ou via notre module de tchat.<br /><br />
+            En cas de difficulté ou si vous n'obtenez pas de validation 
+            de votre demande vous pouvez nous
+            contacter par email à <a href="mailto:%(email)s">%(email)s</a>.<br /><br />
 
-            Vous pouvez également demander un accès pour la gestion des ADS d'une autre collectivité.
+            Vous pouvez également demander un accès pour 
+            la gestion des ADS d'une autre collectivité.
         """ % {
             "prefecture": ads_manager.administrator.prefecture.display_fulltext(),
             "email": settings.MESADS_CONTACT_EMAIL,

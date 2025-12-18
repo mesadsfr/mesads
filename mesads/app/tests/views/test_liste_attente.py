@@ -1,31 +1,32 @@
-import logging
 import datetime
 import http
-from dateutil.relativedelta import relativedelta
-from django.urls import reverse
-from django.core.files.uploadedfile import SimpleUploadedFile
+import logging
 
-from mesads.app.models import (
-    InscriptionListeAttente,
-    WAITING_LIST_UNIQUE_ERROR_MESSAGE,
-    ADS,
-    ADSUser,
-    ADSUpdateLog,
-    ADSLegalFile,
-)
-from mesads.users.unittest import ClientTestCase as BaseClientTestCase
+from dateutil.relativedelta import relativedelta
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.urls import reverse
+
 from mesads.app.forms import (
-    InscriptionListeAttenteForm,
     ArchivageInscriptionListeAttenteForm,
     ContactInscriptionListeAttenteForm,
+    InscriptionListeAttenteForm,
     UpdateDelaiInscriptionListeAttenteForm,
 )
+from mesads.app.models import (
+    ADS,
+    WAITING_LIST_UNIQUE_ERROR_MESSAGE,
+    ADSLegalFile,
+    ADSUpdateLog,
+    ADSUser,
+    InscriptionListeAttente,
+)
+from mesads.users.unittest import ClientTestCase as BaseClientTestCase
 
 from ..factories import (
-    ADSManagerRequestFactory,
-    ADSManagerFactory,
-    InscriptionListeAttenteFactory,
     ADSFactory,
+    ADSManagerFactory,
+    ADSManagerRequestFactory,
+    InscriptionListeAttenteFactory,
 )
 
 
@@ -71,9 +72,13 @@ class TestListeAttenteView(ClientTestCase):
         inscription_2 = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
         inscription_3 = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
 
-        response = self.client.get(
-            f"{reverse('app.liste_attente', kwargs={'manager_id': self.ads_manager.id})}?search={inscription_1.nom}+{inscription_1.prenom}"
+        q_params = f"?search={inscription_1.nom}+{inscription_1.prenom}"
+
+        base_url = reverse(
+            "app.liste_attente", kwargs={"manager_id": self.ads_manager.id}
         )
+
+        response = self.client.get(f"{base_url}{q_params}")
         self.assertIn(inscription_1, response.context["inscriptions"])
         self.assertNotIn(inscription_2, response.context["inscriptions"])
         self.assertNotIn(inscription_3, response.context["inscriptions"])
@@ -124,9 +129,12 @@ class TestListeAttenteArchivesView(ClientTestCase):
         other_inscription_archived.delete()
         other_inscription_archived.refresh_from_db()
 
-        response = self.client.get(
-            f"{reverse('app.liste_attente_archives', kwargs={'manager_id': self.ads_manager.id})}?search={inscription_archived.nom}+{inscription_archived.prenom}"
+        q_params = f"?search={inscription_archived.nom}+{inscription_archived.prenom}"
+        base_url = reverse(
+            "app.liste_attente_archives", kwargs={"manager_id": self.ads_manager.id}
         )
+
+        response = self.client.get(f"{base_url}{q_params}")
         self.assertIn(inscription_archived, response.context["inscriptions"])
         self.assertNotIn(other_inscription_archived, response.context["inscriptions"])
         self.assertEqual(response.status_code, http.HTTPStatus.OK)
@@ -355,7 +363,6 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
         )
 
     def test_post_formulaire_creation_inscription_numero_epci(self):
-
         client, user = self.create_client()
         ads_manager = ADSManagerFactory(for_epci=True)
         ADSManagerRequestFactory(user=user, ads_manager=ads_manager)
@@ -389,7 +396,6 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
         )
 
     def test_post_formulaire_creation_inscription_numero_prefecture(self):
-
         client, user = self.create_client()
         ads_manager = ADSManagerFactory(for_prefecture=True)
         ADSManagerRequestFactory(user=user, ads_manager=ads_manager)
@@ -660,7 +666,6 @@ class TestArchivageConfirmationView(ClientTestCase):
 
 
 class TestExportListeAttenteView(ClientTestCase):
-
     def test_get_export_liste_attente(self):
         InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
         InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
@@ -1219,7 +1224,6 @@ class TestTraitementDemandeView(ClientTestCase):
 
 
 class TestListesAttentePubliquesView(ClientTestCase):
-
     def test_get_listes_attente_publique(self):
         self.ads_manager.liste_attente_publique = True
         self.ads_manager.save()
