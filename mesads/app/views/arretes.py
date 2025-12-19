@@ -1,12 +1,12 @@
+from pathlib import Path
+
 from django.conf import settings
-from django.http import Http404, FileResponse
+from django.http import FileResponse, Http404
+from django.shortcuts import get_object_or_404
 from django.views import View
 from django.views.generic import TemplateView
-from django.shortcuts import get_object_or_404
 
-from mesads.app.models import ADSManager, ADS
-
-from pathlib import Path
+from mesads.app.models import ADS, ADSManager
 
 
 class ListeArretesFilesView(TemplateView):
@@ -46,11 +46,16 @@ class TelechargementArreteView(View):
         },
         NOMBRE_ADS: {
             "file_path": "arrete_nombre_ads.docx",
-            "file_name": "Modèle arrêté délimitant le nombre d'ADS autorisées sur le territoire d'une collectivité.docx",
+            "file_name": (
+                "Modèle arrêté délimitant le nombre d'ADS "
+                "autorisées sur le territoire d'une collectivité.docx"
+            ),
         },
         LOCATION_GERANCE: {
             "file_path": "arrete_location_gerance.docx",
-            "file_name": "Modèle arrêté passage en location gérance (ancienne ADS).docx",
+            "file_name": (
+                "Modèle arrêté passage en location gérance (ancienne ADS).docx"
+            ),
         },
         CREATION_NOUVELLE_ADS: {
             "file_path": "arrete_creation_ads.docx",

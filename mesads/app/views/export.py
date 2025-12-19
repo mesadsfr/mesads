@@ -1,7 +1,6 @@
+import xlsxwriter
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.http import HttpResponse
-
-import xlsxwriter
 
 from ..models import (
     ADS,

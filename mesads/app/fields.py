@@ -33,6 +33,9 @@ class NullBooleanField(BooleanField):
         return super().to_python(value)
 
     def validate(self, value):
-        """Override the behavior of the base class which triggers an error when value is False."""
+        """
+        Override the behavior of the base class
+        which triggers an error when value is False.
+        """
         if value is None and self.required:
             raise ValidationError(self.error_messages["required"], code="required")

@@ -12,19 +12,17 @@ contains all the changes for a given revision, for the object and all the models
 that have a foreign key to this object.
 """
 
-from collections import defaultdict
 import functools
 import json
+from collections import defaultdict
 
 import dateparser
-
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import FieldDoesNotExist
 from django.db import models
 from django.db.models.functions import Cast
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext
-
 from reversion.models import Version
 
 
@@ -135,7 +133,8 @@ class ModelHistory:
         this model, and all the versions for models that have a foreign key to this
         model.
 
-        This function returns a list of tuples, where each tuple has the following format:
+        This function returns a list of tuples, where each tuple
+        has the following format:
 
         >>> (revision, {Model: {object_id: version, object_id: version}})
 
@@ -143,7 +142,8 @@ class ModelHistory:
 
         The second element is a dict:
             * the top-level keys are the models that have a change in this revision.
-            * the second-level keys are the object ids of the objects that have a change in this revision.
+            * the second-level keys are the object ids of the objects that have a
+              change in this revision.
             * the values are the version objects for this object id.
 
         The list is sorted to have the most recent revision first.
@@ -158,10 +158,13 @@ class ModelHistory:
 
         # List all the versions the models that have a foreign key to this object
         for model, pk_name in self._foreign_key_referring_model(obj._meta.model):
-            # This query filters all the versions for models that have a foreign key to `obj`.
-            # django-reversion stores the serialized data in a text field. We need to cast it to JSON to filter it.
+            # This query filters all the versions for models
+            # that have a foreign key to `obj`.
+            # django-reversion stores the serialized data in a text field.
+            # We need to cast it to JSON to filter it.
             # Also, the serialized data is a list of dictionaries. It seems there is
-            # always only one dictionary in the list, so we don't need to iterate over it and can just use the first.
+            # always only one dictionary in the list, so we don't need to iterate over
+            # it and can just use the first.
             qs = (
                 Version.objects.get_for_model(model)
                 .select_related("revision")
@@ -273,7 +276,8 @@ class ModelHistory:
             url = field.storage.url(value)
             name = f"…{value[-maxsize:]}" if len(value) > maxsize + 3 else value
             return mark_safe(
-                f'<a href="{url}" target="_blank">{name}<span class="fr-sr-only"> Nouvelle fenêtre</span></a>'
+                f'<a href="{url}" target="_blank">{name}<span class="fr-sr-only"> '
+                "Nouvelle fenêtre</span></a>"
             )
 
         return value

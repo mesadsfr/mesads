@@ -1,11 +1,10 @@
-from django.contrib.auth.views import PasswordResetView
 from django.conf import settings
+from django.contrib.auth.views import PasswordResetView
 from django.urls import include, path
 from django.views.generic import TemplateView
 
 from .forms import PasswordResetStrictForm
 from .views import OTPLoginView
-
 
 urlpatterns = [
     path("", include("django_registration.backends.activation.urls")),

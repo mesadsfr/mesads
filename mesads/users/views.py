@@ -1,11 +1,10 @@
+import pyotp
 from django.conf import settings
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.views import LoginView
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.template.loader import render_to_string
-
-import pyotp
 
 from .forms import OTPAuthenticationForm
 

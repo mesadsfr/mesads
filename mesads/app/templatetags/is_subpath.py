@@ -5,7 +5,9 @@ register = template.Library()
 
 @register.simple_tag
 def is_subpath(first, second, num=1):
-    """Given two URLs, returns true if the first and the second are similar up to the given number of subpaths.
+    """
+    Given two URLs, returns true if the first and the second
+    are similar up to the given number of subpaths.
 
     Examples:
 

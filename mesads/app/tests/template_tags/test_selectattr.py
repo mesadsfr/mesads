@@ -1,6 +1,5 @@
 from unittest.case import TestCase
 
-
 from mesads.app.templatetags.selectattr import selectattr
 
 

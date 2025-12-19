@@ -1,4 +1,6 @@
-[![Tests unitaires](https://github.com/mesadsfr/mesads/actions/workflows/unittest.yml/badge.svg)](https://github.com/mesadsfr/mesads/actions/) [![codecov](https://codecov.io/gh/mesadsfr/mesads/branch/master/graph/badge.svg?token=2RT9SXITWB)](https://codecov.io/gh/mesadsfr/mesads) [![Vulnérabilités](https://snyk.io/test/github/mesadsfr/mesads/badge.svg)](https://snyk.io/test/github/mesadsfr/mesads/)
+[![Tests unitaires](https://github.com/mesadsfr/mesads/actions/workflows/unittest.yml/badge.svg)](https://github.com/mesadsfr/mesads/actions/) [![Vulnérabilités](https://snyk.io/test/github/mesadsfr/mesads/badge.svg)](https://snyk.io/test/github/mesadsfr/mesads/)
+
+Couverture minimale garantie (≥ 95%)
 
 # MesADS
 

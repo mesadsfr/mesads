@@ -1,43 +1,43 @@
-import io
-import xlsxwriter
 import datetime
+import io
+from pathlib import Path
 
+import xlsxwriter
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.staticfiles import finders
-from django.db import IntegrityError, transaction, models
-from django.db.models import Case, When, IntegerField, Q, Value, Count, F
-from django.http import HttpResponse, HttpResponseRedirect, FileResponse, Http404
+from django.db import IntegrityError, models, transaction
+from django.db.models import Case, Count, F, IntegerField, Q, Value, When
+from django.http import FileResponse, Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
-from django.views.generic import (
-    ListView,
-    CreateView,
-    UpdateView,
-    View,
-    TemplateView,
-)
 from django.urls import reverse
 from django.utils import timezone
-from pathlib import Path
-from weasyprint import HTML, CSS
-
-from mesads.app.models import (
-    InscriptionListeAttente,
-    ADSManager,
-    ADS,
-    ADSUser,
-    ADSLegalFile,
-    ADSUpdateLog,
-    WAITING_LIST_UNIQUE_ERROR_MESSAGE,
+from django.views.generic import (
+    CreateView,
+    ListView,
+    TemplateView,
+    UpdateView,
+    View,
 )
+from weasyprint import CSS, HTML
+
 from mesads.app.forms import (
-    InscriptionListeAttenteForm,
     ArchivageInscriptionListeAttenteForm,
-    ContactInscriptionListeAttenteForm,
-    UpdateDelaiInscriptionListeAttenteForm,
     AttributionADSForm,
+    ContactInscriptionListeAttenteForm,
+    InscriptionListeAttenteForm,
     ListesAttentePubliquesSearchForm,
+    UpdateDelaiInscriptionListeAttenteForm,
+)
+from mesads.app.models import (
+    ADS,
+    WAITING_LIST_UNIQUE_ERROR_MESSAGE,
+    ADSLegalFile,
+    ADSManager,
+    ADSUpdateLog,
+    ADSUser,
+    InscriptionListeAttente,
 )
 
 
@@ -141,7 +141,6 @@ class DemandeArchiveesView(ListView):
 
 
 class AttributionRedirectMixin:
-
     def dispatch(self, request, *args, **kwargs):
         if (
             InscriptionListeAttente.objects.filter(
@@ -292,7 +291,10 @@ class InscriptionTraitementListeAttenteView(TemplateView):
 
             messages.success(
                 self.request,
-                "L'ADS a bien été attribué. L'inscription a la liste d'attente a été archivée.",
+                (
+                    "L'ADS a bien été attribué. "
+                    "L'inscription a la liste d'attente a été archivée."
+                ),
             )
 
             return HttpResponseRedirect(
@@ -375,7 +377,10 @@ class InscriptionListeAttenteMixin:
     def form_invalid(self, form):
         messages.error(
             self.request,
-            "Le formulaire contient des erreurs. Veuillez les corriger avant de soumettre à nouveau.",
+            (
+                "Le formulaire contient des erreurs. "
+                "Veuillez les corriger avant de soumettre à nouveau."
+            ),
         )
         return super().form_invalid(form)
 
@@ -471,7 +476,8 @@ class ArchivageInscriptionListeAttenteView(UpdateView):
     def form_invalid(self, form):
         messages.error(
             self.request,
-            "Le formulaire contient des erreurs. Veuillez les corriger avant de soumettre à nouveau.",
+            "Le formulaire contient des erreurs. "
+            "Veuillez les corriger avant de soumettre à nouveau.",
         )
         return super().form_invalid(form)
 
@@ -504,12 +510,16 @@ class ModeleCourrierContactView(View):
         file_path = (
             Path(settings.BASE_DIR) / "mesads" / "docs" / "courrier_contact.docx"
         )
+        filename = (
+            "Courrier d'acceptation d'une demande et délivrance d'une ADS - "
+            "liste d'attente.docx"
+        )
         if not file_path.exists():
             raise Http404("Fichier introuvable")
         return FileResponse(
             open(file_path, "rb"),
             as_attachment=True,
-            filename="Courrier d'acceptation d'une demande et délivrance d'une ADS - liste d'attente.docx",
+            filename=filename,
             content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         )
 
@@ -570,7 +580,10 @@ class ExportCSVInscriptionListeAttenteView(View):
         return value, "auto"
 
     def get_file_title(self, ads_manager):
-        return f"Liste d'attente - {ads_manager.content_object.display_text().capitalize()}"
+        return (
+            "Liste d'attente - "
+            f"{ads_manager.content_object.display_text().capitalize()}"
+        )
 
     def _write_xlsx(self, inscriptions, ads_manager):
         output = io.BytesIO()
@@ -631,7 +644,12 @@ class ExportCSVInscriptionListeAttenteView(View):
         ).order_by("-date_depot_inscription")
 
         output = self._write_xlsx(inscriptions, ads_manager)
-        filename = f"liste_attente_{ads_manager.content_object.display_text().replace(' ', '_')}_{timezone.now().strftime('%d_%m%Y')}.xlsx"
+
+        filename = (
+            "liste_attente_"
+            f"{ads_manager.content_object.display_text().replace(' ', '_')}"
+            f"_{timezone.now().strftime('%d_%m%Y')}.xlsx"
+        )
         response = HttpResponse(
             output.getvalue(),
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -697,7 +715,10 @@ class ListesAttentesPubliquesView(ListView):
         extra_query_params = ""
         if form.is_valid():
             if form.cleaned_data.get("departement"):
-                extra_query_params = f"{extra_query_params}&departement={form.cleaned_data.get('departement').id}"
+                extra_query_params = (
+                    f"{extra_query_params}&"
+                    f"departement={form.cleaned_data.get('departement').id}"
+                )
             if form.cleaned_data.get("commune"):
                 extra_query_params = (
                     f"{extra_query_params}&commune={form.cleaned_data.get('commune')}"
@@ -775,11 +796,10 @@ class ExportPDFListePubliqueView(View):
         html_string = render_to_string(
             "pages/ads_register/liste_attente_publique_pdf.html", context
         )
+        filename = "liste-attente-publique.pdf"
         response = HttpResponse(
             content_type="application/pdf",
-            headers={
-                "Content-Disposition": 'attachment; filename="liste-attente-publique.pdf"'
-            },
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
         )
 
         dsfr_css_path = finders.find("@gouvfr/dsfr/dsfr.min.css")

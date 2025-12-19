@@ -7,7 +7,10 @@ from .models import Proprietaire
 
 
 def proprietaire_required(func):
-    """Returns 404 if the user is not administrator and not proprietaire of the ressource."""
+    """
+    Returns 404 if the user is not administrator
+    and not proprietaire of the ressource.
+    """
 
     @functools.wraps(func)
     def wrapped(request, proprietaire_id=None, *args, **kwargs):
@@ -22,7 +25,7 @@ def proprietaire_required(func):
             proprietaire_id=proprietaire_id,
             proprietaire=proprietaire,
             *args,
-            **kwargs
+            **kwargs,
         )
 
     return login_required(wrapped)

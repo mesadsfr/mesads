@@ -1,11 +1,9 @@
 import pkg_resources
-
 import yaml
-
 from django import template
+from django.template import Template
 from django.urls import resolve
 from django.urls.exceptions import Resolver404
-from django.template import Template
 from django.utils.safestring import mark_safe
 
 register = template.Library()

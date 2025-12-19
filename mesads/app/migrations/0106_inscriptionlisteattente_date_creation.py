@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("app", "0105_alter_inscriptionlisteattente_numero_licence"),
     ]

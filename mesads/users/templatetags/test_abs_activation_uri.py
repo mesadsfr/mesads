@@ -1,5 +1,5 @@
-from django.test import TestCase, RequestFactory
 from django.template import Context
+from django.test import RequestFactory, TestCase
 
 from .abs_activation_uri import abs_activation_uri
 

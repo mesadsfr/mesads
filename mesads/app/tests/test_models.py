@@ -1,36 +1,36 @@
-from datetime import date, timedelta
 import json
-
-from django.core.exceptions import ValidationError
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import override_settings, TestCase
-from django.utils import timezone
-
-from django.contrib.contenttypes.models import ContentType
+from datetime import date, timedelta
 
 import requests
 import requests_mock
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase, override_settings
+from django.utils import timezone
 
 from mesads.fradm.models import (
-    Commune,
     EPCI,
+    Commune,
     Prefecture,
 )
+from mesads.unittest import ClientTestCase
+
 from ..models import (
     ADS,
-    validate_siret,
     ADSLegalFile,
     ADSManager,
-    ADSUser,
-    ADSUpdateLog,
-    ADSUpdateFile,
     ADSManagerDecree,
+    ADSUpdateFile,
+    ADSUpdateLog,
+    ADSUser,
     Notification,
+    get_decree_filename,
     get_legal_filename,
+    get_update_filename,
     validate_no_ads_declared,
+    validate_siret,
 )
-
-from mesads.unittest import ClientTestCase
 
 
 class TestADSManager(ClientTestCase):
@@ -90,7 +90,7 @@ class TestADSManagerDecree(ClientTestCase):
 
     def test_get_filename(self):
         ads_manager_decree = ADSManagerDecree(ads_manager=self.ads_manager_city35)
-        filename = ads_manager_decree.get_filename("superfile.txt")
+        filename = get_decree_filename(ads_manager_decree, "superfile.txt")
         self.assertIn(
             f"ads_managers_decrees/{self.ads_manager_city35.id} - commune de Melesse/",
             filename,
@@ -108,7 +108,9 @@ class TestADSManagerDecree(ClientTestCase):
             ads_manager=self.ads_manager_city35,
             file=SimpleUploadedFile("temp", b"File content"),
         )
-        ads_manager_decree.file.name = ads_manager_decree.get_filename("whatever.pdf")
+        ads_manager_decree.file.name = get_decree_filename(
+            ads_manager_decree, "whatever.pdf"
+        )
         self.assertEqual(ads_manager_decree.human_filename(), "whatever.pdf")
 
 
@@ -223,7 +225,10 @@ class TestADS(ClientTestCase):
         except ValidationError as exc:
             self.assertEqual(
                 exc.message,
-                "Un seul exploitant peut être déclaré pour une ADS créée après le 1er octobre 2014.",
+                (
+                    "Un seul exploitant peut être déclaré pour "
+                    "une ADS créée après le 1er octobre 2014."
+                ),
             )
         else:
             self.fail("Should have raised a ValidationError")
@@ -237,7 +242,10 @@ class TestADS(ClientTestCase):
         except ValidationError as exc:
             self.assertEqual(
                 exc.message,
-                "Le conducteur doit nécessairement être le titulaire de l'ADS (personne physique) pour une ADS créée après le 1er octobre 2014.",
+                (
+                    "Le conducteur doit nécessairement être le titulaire de l'ADS "
+                    "(personne physique) pour une ADS créée après le 1er octobre 2014."
+                ),
             )
         else:
             self.fail("Should have raised a ValidationError")
@@ -301,7 +309,10 @@ class TestADSUser(ClientTestCase):
         except ValidationError as exc:
             self.assertEqual(
                 exc.message,
-                "Un seul exploitant peut être déclaré pour une ADS créée après le 1er octobre 2014.",
+                (
+                    "Un seul exploitant peut être déclaré pour "
+                    "une ADS créée après le 1er octobre 2014."
+                ),
             )
         else:
             self.fail("Should have raised a ValidationError")
@@ -314,7 +325,7 @@ class TestADSUpdateFile(ClientTestCase):
 
     def test_get_update_filename(self):
         ads_update_file = ADSUpdateFile(user=self.admin_user)
-        filename = ads_update_file.get_update_filename("superfile.txt")
+        filename = get_update_filename(ads_update_file, "superfile.txt")
         self.assertIn("ADS_UPDATES", filename)
         self.assertIn(self.admin_user.email, filename)
         self.assertIn("superfile.txt", filename)
@@ -332,7 +343,6 @@ class TestADSUpdateLog(TestCase):
         self.assertEqual(model.get_missing_fields(), ["field1", "field2"])
 
     def test_is_outdated(self):
-
         model = ADSUpdateLog(update_at=timezone.now())
         self.assertFalse(model.is_outdated())
 

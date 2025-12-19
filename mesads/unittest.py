@@ -12,9 +12,10 @@ class ClientTestCase(BaseClientTestCase):
     def setUp(self):
         """Create the following attributes:
 
-        * ads_manager_city35_client: ADSManager of the city of Melesse (which belongs to the
-                                     prefecture 35 - Ille-et-Vilaine)
-        * ads_manager_administrator_35_client = ADSManagerAdministrator of the Prefecture of 35 - Ille-et-Vilaine
+        * ads_manager_city35_client: ADSManager of the city of Melesse
+        (which belongs to the prefecture 35 - Ille-et-Vilaine)
+        * ads_manager_administrator_35_client =
+        ADSManagerAdministrator of the Prefecture of 35 - Ille-et-Vilaine
         """
         super().setUp()
 
@@ -66,7 +67,8 @@ class ClientTestCase(BaseClientTestCase):
         """
         super().create_fixtures()
 
-        # For each prefecture, create a ADSManager entry and a ADSManagerAdministrator entry.
+        # For each prefecture, create a ADSManager entry and
+        # a ADSManagerAdministrator entry.
         # Also, for each commune of the prefecture, configures
         for prefecture in self.fixtures_prefectures:
             ads_manager_administrator = ADSManagerAdministrator.objects.create(

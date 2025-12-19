@@ -1,16 +1,19 @@
-from django.views import View
 from django.http.response import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
-from mesads.users.models import NoteUtilisateur
 from django.utils import timezone
+from django.views import View
+
+from mesads.users.models import NoteUtilisateur
 
 
 class NotationView(View):
     """
     Vue dédié à gérer la notation, puis a rediriger vers la page d'accueil.
-    Si l'utilisateur a cliquer pour close la modale: on enregistre la dernière date d'affichage
-    Si l'utilisateur note, on enregistre la dernière date d'affichage, de notation, et les notes
+    Si l'utilisateur a cliquer pour close la modale:
+    on enregistre la dernière date d'affichage
+    Si l'utilisateur note,
+    on enregistre la dernière date d'affichage, de notation, et les notes
     """
 
     http_method_names = ["post"]

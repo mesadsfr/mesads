@@ -3,8 +3,8 @@ from django.urls import reverse
 
 from mesads.app.models import ADSManagerRequest
 from mesads.app.views import HTTP500View
-from mesads.vehicules_relais.models import Proprietaire
 from mesads.unittest import ClientTestCase
+from mesads.vehicules_relais.models import Proprietaire
 
 
 class TestHTTP500View(ClientTestCase):

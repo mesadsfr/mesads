@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from mesads.app.models import ADSManager, ADSManagerAdministrator
-from mesads.fradm.models import Commune, EPCI, Prefecture
+from mesads.fradm.models import EPCI, Commune, Prefecture
 
 
 class Command(BaseCommand):

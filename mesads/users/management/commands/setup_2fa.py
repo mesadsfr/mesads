@@ -1,6 +1,6 @@
 import pyotp
-from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
@@ -8,7 +8,8 @@ class Command(BaseCommand):
         "Manage 2FA for users.\n\n"
         "Usage:\n"
         "  manage.py manage_2fa -l             List all users with 2FA enabled\n"
-        "  manage.py manage_2fa -s EMAIL       Enable 2FA for the user with given email\n"
+        "  manage.py manage_2fa -s EMAIL       "
+        "Enable 2FA for the user with given email\n"
         "  manage.py manage_2fa -r EMAIL       Remove 2FA for the user with given email"
     )
 

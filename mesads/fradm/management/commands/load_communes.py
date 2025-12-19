@@ -9,7 +9,10 @@ from mesads.fradm.models import Commune
 
 
 class Command(BaseCommand):
-    help = "Création des communes via le csv fourni par l'INSEE (https://www.insee.fr/fr/information/5057840)"
+    help = (
+        "Création des communes via le csv fourni par l'INSEE "
+        "(https://www.insee.fr/fr/information/5057840)"
+    )
 
     def add_arguments(self, parser):
         parser.add_argument("communes_file", type=argparse.FileType("r"))

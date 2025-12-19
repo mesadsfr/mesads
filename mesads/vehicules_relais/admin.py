@@ -3,10 +3,9 @@ from django.db.models import Count, F, Q
 from django.db.models.functions import Collate
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-
 from markdownx.admin import MarkdownxModelAdmin
 
-from .models import Vehicule, Proprietaire, DispositionSpecifique
+from .models import DispositionSpecifique, Proprietaire, Vehicule
 
 
 class UsersInline(admin.TabularInline):

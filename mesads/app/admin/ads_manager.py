@@ -3,7 +3,7 @@ from django.db.models import Count, Q
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from mesads.fradm.models import Commune, Prefecture, EPCI
+from mesads.fradm.models import EPCI, Commune, Prefecture
 
 from ..models import (
     ADSManager,

@@ -10,8 +10,10 @@ from mesads.fradm.models import EPCI
 
 class Command(BaseCommand):
     help = """
-        Création des EPCI depuis le fichier fourni par l'insee (https://www.insee.fr/fr/information/2510634)
-        L'insee fournit un fichier excel, qu'il est nécessaire de modifier et convertir en csv, avec ";" comme delimiteur
+        Création des EPCI depuis le fichier fourni par l'insee 
+        (https://www.insee.fr/fr/information/2510634)
+        L'insee fournit un fichier excel, qu'il est nécessaire de modifier 
+        et convertir en csv, avec ";" comme delimiteur
     """
 
     def add_arguments(self, parser):

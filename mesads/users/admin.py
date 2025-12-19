@@ -1,5 +1,4 @@
 import csv
-
 from datetime import date, timedelta
 
 from django import forms
@@ -9,16 +8,15 @@ from django.contrib.auth.forms import UserChangeForm
 from django.db.models import Count, F, Q
 from django.db.models.functions import Collate
 from django.http import HttpResponse
-from django.urls import reverse, path
+from django.urls import path, reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-
 from reversion.models import Revision
 
 from mesads.app.models import Notification
 from mesads.vehicules_relais.models import Proprietaire
 
-from .models import User, UserAuditEntry, NoteUtilisateur
+from .models import NoteUtilisateur, User, UserAuditEntry
 
 
 class ADSManagerRequestFilter(admin.SimpleListFilter):
@@ -243,7 +241,9 @@ class UserAdmin(BaseUserAdmin):
             + str(obj.id)
         )
         return mark_safe(
-            f'<a href="{ads_manager_request_link}">Voir les {obj.adsmanageradministrator_set.count()} administrateurs des gestionnaires</a>'
+            f'<a href="{ads_manager_request_link}">'
+            f"Voir les {obj.adsmanageradministrator_set.count()} "
+            "administrateurs des gestionnaires</a>"
         )
 
     def has_add_permission(self, request, obj=None):
@@ -255,7 +255,9 @@ class UserAdmin(BaseUserAdmin):
             reverse("admin:app_adsmanagerrequest_changelist") + "?user=" + str(obj.id)
         )
         return mark_safe(
-            f'<a href="{ads_manager_request_link}">Voir les {obj.adsmanagerrequest_set.count()} requêtes</a>'
+            f'<a href="{ads_manager_request_link}">'
+            f"Voir les {obj.adsmanagerrequest_set.count()} "
+            "requêtes</a>"
         )
 
     @admin.display(
@@ -322,7 +324,9 @@ class UserAdmin(BaseUserAdmin):
                 ret += f"""
                     <tr>
                         <td><a href="{proprietaire_url}">{proprietaire.nom}</a></td>
-                        <td><a href="{vehicules_url}">Voir le(s) {proprietaire.vehicules_count} véhicule(s)</a></td>
+                        <td><a href="{vehicules_url}">
+                            Voir le(s) {proprietaire.vehicules_count} véhicule(s)
+                        </a></td>
                     </tr>
                 """
 

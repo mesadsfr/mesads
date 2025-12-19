@@ -1,12 +1,11 @@
 from django.contrib import messages
 from django.core import mail
 
-from mesads.fradm.models import EPCI, Prefecture
-
 from mesads.app.models import (
     ADSManagerRequest,
     Notification,
 )
+from mesads.fradm.models import EPCI, Prefecture
 from mesads.unittest import ClientTestCase
 
 
@@ -48,13 +47,16 @@ class TestADSManagerRequestView(ClientTestCase):
         self.assertEqual(len(resp.context["messages"]), 1)
         self.assertEqual(list(resp.context["messages"])[0].level, messages.SUCCESS)
 
-        # If there is a ADSManagerAdministrator related to the commune, an email is sent for each member.
-        # The base class ClientTestCase configures Melesse to be managed by the ADSManagerAdministrator entry of
+        # If there is a ADSManagerAdministrator related to the commune,
+        # an email is sent for each member.
+        # The base class ClientTestCase configures Melesse to be managed
+        # by the ADSManagerAdministrator entry of
         # l'Ille-et-Vilaine.
         self.assertEqual(len(mail.outbox), 1)
 
         #
-        # If we send the same request, a warning message is displayed and no email is sent.
+        # If we send the same request,
+        # a warning message is displayed and no email is sent.
         #
         resp = self.auth_client.post(
             "/registre_ads/demande_gestion_ads/",
@@ -102,8 +104,11 @@ class TestADSManagerRequestView(ClientTestCase):
         self.assertEqual(len(mail.outbox), 1)
 
     def test_create_commune_notification_empty(self):
-        """The ADSManagerAdministrator of self.commune_melesse is linked to the
-        user ads_manager_administrator_35_user, but no Notification is linked to the user. By default, we should send an email.
+        """
+        The ADSManagerAdministrator of self.commune_melesse is linked to the
+        user ads_manager_administrator_35_user,
+        but no Notification is linked to the user.
+        By default, we should send an email.
         """
         self.auth_client.post(
             "/registre_ads/demande_gestion_ads/",
@@ -129,7 +134,8 @@ class TestADSManagerRequestView(ClientTestCase):
         self.assertEqual(list(resp.context["messages"])[0].level, messages.SUCCESS)
 
         #
-        # If we send the same request, no object is created and a warning message is displayed.
+        # If we send the same request,
+        # no object is created and a warning message is displayed.
         #
         resp = self.auth_client.post(
             "/registre_ads/demande_gestion_ads/",
@@ -163,7 +169,8 @@ class TestADSManagerRequestView(ClientTestCase):
         self.assertEqual(list(resp.context["messages"])[0].level, messages.SUCCESS)
 
         #
-        # If we send the same request, no object is created and a warning message is displayed.
+        # If we send the same request,
+        # no object is created and a warning message is displayed.
         #
         resp = self.auth_client.post(
             "/registre_ads/demande_gestion_ads/",

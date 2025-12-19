@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("app", "0090_remove_ads_unique_ads_number_ads_deleted_at_and_more"),
         ("fradm", "0005_alter_commune_unique_together_and_more"),
