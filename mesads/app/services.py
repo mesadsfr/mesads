@@ -1,6 +1,7 @@
-from mesads.app.models import InscriptionListeAttente, ADS, ADSUser, ADSManager
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Count, Q
+
+from mesads.app.models import ADS, ADSManager, ADSUser, InscriptionListeAttente
 
 
 def get_inscriptions_data_for_excel_export(ads_manager):
@@ -168,7 +169,10 @@ def get_gestionnaires_data_for_excel_export(ads_manager_administrator):
         if ads_manager.no_ads_declared:
             return "L'administration a déclaré ne gérer aucune ADS"
         if ads_manager.epci_delegate_id:
-            return f"La gestion des ADS est déléguée à {ads_manager.epci_delegate.display_fulltext()}"
+            return (
+                "La gestion des ADS est déléguée à "
+                f"{ads_manager.epci_delegate.display_fulltext()}"
+            )
         return ""
 
     def decrees_label(decrees_count):
