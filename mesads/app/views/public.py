@@ -1,20 +1,21 @@
 import math
 
-from django.db.models import OuterRef, Subquery, Count, IntegerField, BooleanField, Q
+from django.db.models import BooleanField, Count, IntegerField, OuterRef, Q, Subquery
 from django.db.models.functions import ExtractQuarter, ExtractYear
-from django.views.generic import TemplateView
 from django.urls import reverse
+from django.views.generic import TemplateView
+
+from mesads.api.views import get_stats_by_prefecture
+from mesads.fradm.models import Prefecture
+from mesads.vehicules_relais.models import Proprietaire, Vehicule
 
 from ..models import (
     ADS,
     ADSManager,
+    ADSManagerAdministrator,
     ADSManagerRequest,
     ADSUpdateLog,
-    ADSManagerAdministrator,
 )
-from mesads.api.views import get_stats_by_prefecture
-from mesads.fradm.models import Prefecture
-from mesads.vehicules_relais.models import Proprietaire, Vehicule
 
 
 class HTTP500View(TemplateView):
@@ -82,12 +83,11 @@ class HomepageView(TemplateView):
             proprietaire_vehicule_relais = self.request.user.proprietaire_set.all()
             if len(ads_manager_administrators):
                 context["administrateur_ads"] = True
-                context["ads_manager_administrator"] = (
-                    ads_manager_administrators.first()
-                )
+                administrator = ads_manager_administrators.first()
+                context["ads_manager_administrator"] = administrator
 
                 context["title"] = (
-                    f"MesADS - Accueil {context['ads_manager_administrator'].prefecture.display_text()}"
+                    f"MesADS - Accueil {administrator.prefecture.display_text()}"
                 )
             elif len(ads_manager_requests):
                 context["manager_ads"] = True
@@ -182,7 +182,8 @@ class StatsView(TemplateView):
 
     def get_ads_manager_by_trimester(self) -> dict[str, int]:
         """
-        Fonction permettant de retrouver le nombre de comptes gestionnaire créés pour chaque trimestre.
+        Fonction permettant de retrouver le nombre de comptes
+        gestionnaire créés pour chaque trimestre.
         Renvoie un dictionnaire de la forme { <trimestre>: <count> }
         Ou trimestre est une string décrivant le trimestre
         Par exemple: "2e Trimestre 2022"
@@ -269,15 +270,23 @@ class ReglementationView(TemplateView):
             "articles": [
                 {
                     "title": "Le rôle des collectivités",
-                    "template": "pages/reglementation/principes_generaux/role_collectivites.html",
+                    "template": (
+                        "pages/reglementation/"
+                        "principes_generaux/role_collectivites.html"
+                    ),
                 },
                 {
                     "title": "Qu'est-ce qu'une ADS ?",
-                    "template": "pages/reglementation/principes_generaux/qu_est_ce_qu_une_ads.html",
+                    "template": (
+                        "pages/reglementation/"
+                        "principes_generaux/qu_est_ce_qu_une_ads.html"
+                    ),
                 },
                 {
                     "title": "Qui délivre les ADS ?",
-                    "template": "pages/reglementation/principes_generaux/qui_delivre_ads.html",
+                    "template": (
+                        "pages/reglementation/principes_generaux/qui_delivre_ads.html"
+                    ),
                 },
             ],
         },
@@ -287,17 +296,23 @@ class ReglementationView(TemplateView):
                 {
                     "menu_title": "Arrêté délimitant le nombre d'ADS",
                     "title": "Étape 1 : l'arrêté délimitant le nombre d'ADS",
-                    "template": "pages/reglementation/delivrance_ads/arrete_delimitant_ads.html",
+                    "template": (
+                        "pages/reglementation/delivrance_ads/arrete_delimitant_ads.html"
+                    ),
                 },
                 {
                     "menu_title": "Attribution de l'ADS",
                     "title": "Étape 2 : l'attribution de l'ADS",
-                    "template": "pages/reglementation/delivrance_ads/attribution_ads.html",
+                    "template": (
+                        "pages/reglementation/delivrance_ads/attribution_ads.html"
+                    ),
                 },
                 {
                     "menu_title": "L'arrêté municipal",
                     "title": "Étape 3 : la notification de l'arrêté",
-                    "template": "pages/reglementation/delivrance_ads/notification_arrete.html",
+                    "template": (
+                        "pages/reglementation/delivrance_ads/notification_arrete.html"
+                    ),
                 },
                 {
                     "menu_title": "Retrait d'une ADS",
@@ -382,7 +397,10 @@ class PlanSiteView(TemplateView):
                         "url": reverse("app.homepage"),
                         "sub_urls": [
                             {
-                                "nom_url": "Demande d'accès des gestionnaires rattachés à votre Préfecture",
+                                "nom_url": (
+                                    "Demande d'accès des gestionnaires "
+                                    "rattachés à votre Préfecture"
+                                ),
                                 "url": reverse(
                                     "app.ads-manager-admin.requests",
                                     kwargs={
@@ -400,7 +418,10 @@ class PlanSiteView(TemplateView):
                                 ),
                             },
                             {
-                                "nom_url": "Données liées aux répertoires des taxis relais de votre préfecture",
+                                "nom_url": (
+                                    "Données liées aux répertoires "
+                                    "des taxis relais de votre préfecture"
+                                ),
                                 "url": reverse(
                                     "app.ads-manager-admin.vehicules_relais",
                                     kwargs={
@@ -409,7 +430,10 @@ class PlanSiteView(TemplateView):
                                 ),
                             },
                             {
-                                "nom_url": "Modifications effectuées par les gestionnaires rattachés à votre Préfecture",
+                                "nom_url": (
+                                    "Modifications effectuées par les "
+                                    "gestionnaires rattachés à votre Préfecture"
+                                ),
                                 "url": reverse(
                                     "app.ads-manager-admin.updates",
                                     kwargs={

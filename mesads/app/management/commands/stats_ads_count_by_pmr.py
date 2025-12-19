@@ -1,11 +1,10 @@
 import collections
 
-from django.core.management.base import BaseCommand
 from django.contrib.contenttypes.models import ContentType
-
+from django.core.management.base import BaseCommand
 
 from mesads.app.models import ADS
-from mesads.fradm.models import Commune, EPCI, Prefecture
+from mesads.fradm.models import EPCI, Commune, Prefecture
 
 
 class Command(BaseCommand):

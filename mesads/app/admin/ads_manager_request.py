@@ -4,7 +4,6 @@ from django.contrib import admin
 from django.db.models import F, Q
 from django.db.models.functions import Collate
 from django.http import HttpResponse
-
 from reversion.admin import VersionAdmin
 
 from ..models import (

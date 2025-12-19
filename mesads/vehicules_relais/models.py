@@ -1,34 +1,25 @@
 import unicodedata
 
+import reversion
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-
-import reversion
-
 from markdownx.models import MarkdownxField
 
-from mesads.fradm.models import Commune, Prefecture
 from mesads.app.models import (
-    SmartValidationMixin,
-    validate_siret,
     CharFieldsStripperMixin,
-    SoftDeleteMixin,
+    SmartValidationMixin,
     SoftDeleteManager,
+    SoftDeleteMixin,
+    validate_siret,
 )
+from mesads.fradm.models import Commune, Prefecture
 
 
 @reversion.register
 class Proprietaire(
     SmartValidationMixin, CharFieldsStripperMixin, SoftDeleteMixin, models.Model
 ):
-    class Meta:
-        verbose_name = "Propriétaire de véhicules relais"
-        verbose_name_plural = "Propriétaires de véhicules relais"
-
-    def __str__(self):
-        return self.nom
-
     SMART_VALIDATION_WATCHED_FIELDS = {
         "siret": lambda _, siret: validate_siret(siret),
     }
@@ -60,6 +51,13 @@ class Proprietaire(
 
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
 
+    class Meta:
+        verbose_name = "Propriétaire de véhicules relais"
+        verbose_name_plural = "Propriétaires de véhicules relais"
+
+    def __str__(self):
+        return self.nom
+
 
 class VehiculeManager(SoftDeleteManager):
     def get_next_number(self, departement):
@@ -72,7 +70,7 @@ class VehiculeManager(SoftDeleteManager):
             return f"{departement.numero:02s}-01"
 
         last_numero = int(last_vehicule.numero.split("-")[1])
-        return f"{departement.numero:02s}-{last_numero+1:02d}"
+        return f"{departement.numero:02s}-{last_numero + 1:02d}"
 
 
 def clean_immatriculation(s):
@@ -83,69 +81,6 @@ def clean_immatriculation(s):
 
 @reversion.register
 class Vehicule(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
-    class Meta:
-        verbose_name = "Véhicule relais"
-        verbose_name_plural = "Véhicules relais"
-
-    objects = VehiculeManager()
-
-    def __str__(self):
-        return f"Véhicule {self.numero} du département {self.departement.numero} - {self.proprietaire}"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.__initial_departement = getattr(self, "departement", None)
-        self.__initial_immatriculation = self.immatriculation
-
-    def clean(self, *args, **kwargs):
-        super().clean(*args, **kwargs)
-
-        if (
-            self.__initial_immatriculation
-            and self.__initial_immatriculation != self.immatriculation
-        ):
-            raise ValidationError(
-                {
-                    "immatriculation": "Une fois le véhicule créé, la plaque d'immatriculation ne peut pas être modifiée. "
-                    "Si vous souhaitez réellement changer la plaque, veuillez supprimer "
-                    "le véhicule et en enregistrer un nouveau, ce qui entrainera la création d'un nouveau numéro de véhicule."
-                }
-            )
-
-        if (
-            self.__initial_departement
-            and self.__initial_departement != self.departement
-        ):
-            raise ValidationError(
-                {
-                    "departement": "Une fois le véhicule créé, le département ne peut pas être modifié. "
-                    "Si vous souhaitez réellement changer le département, veuillez supprimer "
-                    "le véhicule et en enregistrer un nouveau."
-                }
-            )
-
-    def save(self, *args, **kwargs):
-        # Automatically set the number when creating a new instance.
-        if not self.pk:
-            self.numero = Vehicule.objects.get_next_number(self.departement)
-
-        self.immatriculation = clean_immatriculation(self.immatriculation)
-
-        return super().save(*args, **kwargs)
-
-    def main_features(self):
-        ret = []
-        if self.motorisation == "electrique":
-            ret.append("Véhicule électrique")
-        elif self.motorisation == "hybride":
-            ret.append("Véhicule hybride")
-        elif self.motorisation == "hybride_rechargeable":
-            ret.append("Véhicule hybride rechargeable")
-
-        if self.pmr:
-            ret.append("Accès PMR")
-        return ret
-
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     last_update_at = models.DateTimeField(auto_now=True, null=True)
 
@@ -176,7 +111,10 @@ class Vehicule(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
         blank=True,
         max_length=32,
         verbose_name="Plaque d'immatriculation du véhicule",
-        help_text="La plaque d'immatriculation du véhicule ne peut pas être modifiée une fois le véhicule enregistré.",
+        help_text=(
+            "La plaque d'immatriculation du véhicule ne peut "
+            "pas être modifiée une fois le véhicule enregistré."
+        ),
     )
 
     modele = models.CharField(
@@ -223,8 +161,8 @@ class Vehicule(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
         blank=True,
         verbose_name="Le véhicule est accessible aux personnes à mobilité réduite ?",
         help_text=(
-            "Vous pouvez retrouver cette information sur la mention « J.3 : handicap » de la "
-            "carte grise du véhicule concerné par l'ADS."
+            "Vous pouvez retrouver cette information sur la mention « J.3 : handicap » "
+            "de la carte grise du véhicule concerné par l'ADS."
         ),
     )
 
@@ -236,15 +174,77 @@ class Vehicule(CharFieldsStripperMixin, SoftDeleteMixin, models.Model):
         verbose_name="Commune où est situé le véhicule",
     )
 
+    objects = VehiculeManager()
+
+    class Meta:
+        verbose_name = "Véhicule relais"
+        verbose_name_plural = "Véhicules relais"
+
+    def __str__(self):
+        return (
+            f"Véhicule {self.numero} du département "
+            f"{self.departement.numero} - {self.proprietaire}"
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__initial_departement = getattr(self, "departement", None)
+        self.__initial_immatriculation = self.immatriculation
+
+    def save(self, *args, **kwargs):
+        # Automatically set the number when creating a new instance.
+        if not self.pk:
+            self.numero = Vehicule.objects.get_next_number(self.departement)
+
+        self.immatriculation = clean_immatriculation(self.immatriculation)
+
+        return super().save(*args, **kwargs)
+
+    def clean(self, *args, **kwargs):
+        super().clean(*args, **kwargs)
+
+        if (
+            self.__initial_immatriculation
+            and self.__initial_immatriculation != self.immatriculation
+        ):
+            error_immatriculation = (
+                "Une fois le véhicule créé, la plaque d'immatriculation "
+                "ne peut pas être modifiée. "
+                "Si vous souhaitez réellement changer la plaque, veuillez supprimer "
+                "le véhicule et en enregistrer un nouveau, ce qui entrainera "
+                "la création d'un nouveau numéro de véhicule."
+            )
+            raise ValidationError({"immatriculation": error_immatriculation})
+
+        if (
+            self.__initial_departement
+            and self.__initial_departement != self.departement
+        ):
+            error_departement = (
+                "Une fois le véhicule créé, le département ne peut pas être modifié. "
+                "Si vous souhaitez réellement changer le département, veuillez "
+                "supprimer le véhicule et en enregistrer un nouveau."
+            )
+            raise ValidationError({"departement": error_departement})
+
+    def main_features(self):
+        ret = []
+        if self.motorisation == "electrique":
+            ret.append("Véhicule électrique")
+        elif self.motorisation == "hybride":
+            ret.append("Véhicule hybride")
+        elif self.motorisation == "hybride_rechargeable":
+            ret.append("Véhicule hybride rechargeable")
+
+        if self.pmr:
+            ret.append("Accès PMR")
+        return ret
+
 
 @reversion.register
 class DispositionSpecifique(CharFieldsStripperMixin, models.Model):
     """DispositionSpecifique stores a message that can be displayed on the
     Vehicule form registered to a specific departement."""
-
-    class Meta:
-        verbose_name = "Disposition spécifique"
-        verbose_name_plural = "Dispositions spécifiques"
 
     departement = models.OneToOneField(
         Prefecture,
@@ -259,3 +259,7 @@ class DispositionSpecifique(CharFieldsStripperMixin, models.Model):
         verbose_name="Message à afficher sur le formulaire de création de véhicule",
         help_text="Format Markdown autorisé",
     )
+
+    class Meta:
+        verbose_name = "Disposition spécifique"
+        verbose_name_plural = "Dispositions spécifiques"

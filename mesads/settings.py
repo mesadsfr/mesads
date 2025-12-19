@@ -13,13 +13,13 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import logging
 import os
 import socket
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import sentry_sdk
+from dotenv import load_dotenv
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
-from dotenv import load_dotenv
 
 load_dotenv()
 

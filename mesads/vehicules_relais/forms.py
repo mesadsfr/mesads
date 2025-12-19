@@ -1,7 +1,6 @@
+from dal import autocomplete
 from django import forms
 from django.core.exceptions import ValidationError
-
-from dal import autocomplete
 
 from mesads.fradm.models import Commune, Prefecture
 
@@ -77,7 +76,8 @@ class ProprietaireDeleteForm(forms.ModelForm):
     def clean(self):
         if self.proprietaire.vehicule_set.count():
             raise ValidationError(
-                "Il est impossible de supprimer cet espace propriétaire, car des véhicules y sont rattachés."
+                "Il est impossible de supprimer cet espace propriétaire, "
+                "car des véhicules y sont rattachés."
             )
         return super().clean()
 

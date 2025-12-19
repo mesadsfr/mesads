@@ -1,8 +1,8 @@
 import csv
 
-from django.forms import Textarea
 from django.contrib import admin
 from django.db.models import Count
+from django.forms import Textarea
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -115,5 +115,6 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
             reverse("admin:app_adsmanager_changelist") + "?administrator=" + str(obj.id)
         )
         return mark_safe(
-            f'<a href="{ads_managers_url}">Voir les {obj.ordered_adsmanager_set().count()} gestionnaires ADS</a>'
+            f'<a href="{ads_managers_url}">'
+            f"Voir les {obj.ordered_adsmanager_set().count()} gestionnaires ADS</a>"
         )

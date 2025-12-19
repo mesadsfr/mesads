@@ -1,9 +1,8 @@
+from dal import autocomplete
 from django.contrib.postgres.lookups import Unaccent
 from django.db.models.functions import Lower
 
-from dal import autocomplete
-
-from .models import Commune, EPCI, Prefecture
+from .models import EPCI, Commune, Prefecture
 
 
 class CommuneAutocompleteView(autocomplete.Select2QuerySetView):
@@ -26,18 +25,15 @@ class CommuneAutocompleteView(autocomplete.Select2QuerySetView):
             if departement:
                 departement_filter = f"AND LOWER(departement) = '{departement}'"
 
+            sql = (
+                f"SELECT * FROM {Commune.objects.model._meta.db_table} "
+                "WHERE "
+                "REGEXP_REPLACE(UNACCENT(departement || libelle), '[^\\w]', '', 'g') "
+                "ILIKE '%%' || REGEXP_REPLACE(UNACCENT(%s), '[^\\w]', '', 'g') || '%%'"
+                f"{departement_filter} ORDER BY id"
+            )
             qs = Commune.objects.raw(
-                """
-                SELECT * FROM """
-                + Commune.objects.model._meta.db_table
-                + """
-                WHERE REGEXP_REPLACE(UNACCENT(departement || libelle), '[^\\w]', '', 'g')
-                ILIKE '%%' || REGEXP_REPLACE(UNACCENT(%s), '[^\\w]', '', 'g') || '%%'
-                """
-                + departement_filter
-                + """
-                ORDER BY id
-            """,
+                sql,
                 [self.q],
             )
             return qs

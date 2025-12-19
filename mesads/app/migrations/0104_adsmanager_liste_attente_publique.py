@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("app", "0103_remove_inscriptionlisteattente_exploitation_ads_and_more"),
     ]

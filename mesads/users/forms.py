@@ -1,9 +1,7 @@
 from django import forms
 from django.conf import settings
-from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.core.exceptions import ValidationError
-
-from django.contrib.auth.forms import AuthenticationForm
 
 from .models import User
 
@@ -40,5 +38,8 @@ class OTPAuthenticationForm(AuthenticationForm):
     otp = forms.CharField(
         required=False,
         label="Vérification",
-        help_text="Veuillez entrer le mot de passe à usage unique envoyé sur votre adresse e-mail.",
+        help_text=(
+            "Veuillez entrer le mot de passe à usage unique "
+            "envoyé sur votre adresse e-mail."
+        ),
     )

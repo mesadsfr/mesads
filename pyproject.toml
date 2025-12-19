@@ -6,14 +6,10 @@ authors = ["Julien Castets"]
 packages = [{include = "mesads"}]
 
 [tool.poetry.group.dev.dependencies]
-autopep8 = "^1.7.0"
-flake8 = "^5.0.4"
 pytest-django = "^4.5.2"
 pytest-cov = "^4.0.0"
-black = "^24.3.0"
-pytest-testmon = "^2.1.0"
-freezegun = "^1.4.0"
 pypdf2 = "^3.0.1"
+pytest-xdist = "^3.8.0"
 django-debug-toolbar = "^3.2.2"
 coverage = {version = "^6.4.1", extras = ["toml"]}
 requests-mock = "^1.9.3"
@@ -21,6 +17,7 @@ djlint = "^1.36.4"
 django-query-counter = "^0.4.1"
 Faker = "^37.6.0"
 factory_boy = "^3.3.3"
+pytest-ruff = "^0.5"
 
 
 [tool.coverage.run]
@@ -94,4 +91,18 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "mesads.settings"
+DJANGO_SETTINGS_MODULE = "mesads.settings_test"
+addopts = "--ruff --ruff-format --reuse-db"
+
+[tool.ruff]
+exclude = [
+    "migrations",
+]
+
+[tool.ruff.lint]
+select = ["I", "F", "E", "DJ", "C90"]
+ignore = ["DJ008", "C901"]
+# TODO: refactor complex functions and remove C901
+
+[tool.ruff.lint.per-file-ignores]
+"*/settings.py" = ["E501"]

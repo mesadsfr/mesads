@@ -8,7 +8,7 @@ from django.contrib.auth.signals import (
     user_login_failed,
 )
 from django.core.mail import send_mail
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.dispatch import receiver
 from django.utils import timezone
@@ -25,7 +25,9 @@ class EmailUserManager(UserManager):
 
         I don't know why
 
-            GlobalUserModel = apps.get_model(self.model._meta.app_label, self.model._meta.object_name)
+            GlobalUserModel = apps.get_model(
+                self.model._meta.app_label, self.model._meta.object_name
+            )
 
         has to be called, but I do not want to override more than what is just
         necessary.
@@ -160,10 +162,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class UserAuditEntry(models.Model):
-    class Meta:
-        verbose_name = "Historique des connexions"
-        verbose_name_plural = "Historiques des connexions"
-
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     action = models.CharField(max_length=64, null=False, blank=False)
     user = models.ForeignKey(
@@ -172,14 +170,14 @@ class UserAuditEntry(models.Model):
     ip = models.GenericIPAddressField(null=True)
     body = models.TextField(null=False, blank=True)
 
+    class Meta:
+        verbose_name = "Historique des connexions"
+        verbose_name_plural = "Historiques des connexions"
+
 
 class NoteUtilisateur(models.Model):
     MINIMUM_NOTE = 1
     MAXIMUM_NOTE = 5
-
-    class Meta:
-        verbose_name = "Note de l'utilisateur"
-        verbose_name_plural = "Notes des utilisateurs"
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="note")
     dernier_affichage = models.DateField(
@@ -200,6 +198,10 @@ class NoteUtilisateur(models.Model):
         null=True,
         validators=[MaxValueValidator(MINIMUM_NOTE), MinValueValidator(MAXIMUM_NOTE)],
     )
+
+    class Meta:
+        verbose_name = "Note de l'utilisateur"
+        verbose_name_plural = "Notes des utilisateurs"
 
 
 def get_client_ip(request):

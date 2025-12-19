@@ -1,44 +1,45 @@
-import io
-import xlsxwriter
 import datetime
+from pathlib import Path
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.staticfiles import finders
-from django.db import IntegrityError, transaction, models
-from django.db.models import Case, When, IntegerField, Q, Value, Count, F
-from django.http import HttpResponse, HttpResponseRedirect, FileResponse, Http404
+from django.db import IntegrityError, transaction
+from django.db.models import Case, Count, F, IntegerField, Q, Value, When
+from django.http import FileResponse, Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
-from django.views.generic import (
-    ListView,
-    CreateView,
-    UpdateView,
-    View,
-    TemplateView,
-)
 from django.urls import reverse
 from django.utils import timezone
-from pathlib import Path
-from weasyprint import HTML, CSS
+from django.views.generic import (
+    CreateView,
+    ListView,
+    TemplateView,
+    UpdateView,
+    View,
+)
+from weasyprint import CSS, HTML
 
-from mesads.app.models import (
-    InscriptionListeAttente,
-    ADSManager,
-    ADS,
-    ADSUser,
-    ADSLegalFile,
-    ADSUpdateLog,
-    WAITING_LIST_UNIQUE_ERROR_MESSAGE,
-)
 from mesads.app.forms import (
-    InscriptionListeAttenteForm,
     ArchivageInscriptionListeAttenteForm,
-    ContactInscriptionListeAttenteForm,
-    UpdateDelaiInscriptionListeAttenteForm,
     AttributionADSForm,
+    ContactInscriptionListeAttenteForm,
+    InscriptionListeAttenteForm,
     ListesAttentePubliquesSearchForm,
+    UpdateDelaiInscriptionListeAttenteForm,
 )
+from mesads.app.models import (
+    ADS,
+    WAITING_LIST_UNIQUE_ERROR_MESSAGE,
+    ADSLegalFile,
+    ADSManager,
+    ADSUpdateLog,
+    ADSUser,
+    InscriptionListeAttente,
+)
+
+from ..services import get_inscriptions_data_for_excel_export
+from .export import ExcelExporter
 
 
 class ListeAttenteView(ListView):
@@ -141,7 +142,6 @@ class DemandeArchiveesView(ListView):
 
 
 class AttributionRedirectMixin:
-
     def dispatch(self, request, *args, **kwargs):
         if (
             InscriptionListeAttente.objects.filter(
@@ -292,7 +292,10 @@ class InscriptionTraitementListeAttenteView(TemplateView):
 
             messages.success(
                 self.request,
-                "L'ADS a bien été attribué. L'inscription a la liste d'attente a été archivée.",
+                (
+                    "L'ADS a bien été attribué. "
+                    "L'inscription a la liste d'attente a été archivée."
+                ),
             )
 
             return HttpResponseRedirect(
@@ -375,7 +378,10 @@ class InscriptionListeAttenteMixin:
     def form_invalid(self, form):
         messages.error(
             self.request,
-            "Le formulaire contient des erreurs. Veuillez les corriger avant de soumettre à nouveau.",
+            (
+                "Le formulaire contient des erreurs. "
+                "Veuillez les corriger avant de soumettre à nouveau."
+            ),
         )
         return super().form_invalid(form)
 
@@ -471,7 +477,8 @@ class ArchivageInscriptionListeAttenteView(UpdateView):
     def form_invalid(self, form):
         messages.error(
             self.request,
-            "Le formulaire contient des erreurs. Veuillez les corriger avant de soumettre à nouveau.",
+            "Le formulaire contient des erreurs. "
+            "Veuillez les corriger avant de soumettre à nouveau.",
         )
         return super().form_invalid(form)
 
@@ -504,12 +511,16 @@ class ModeleCourrierContactView(View):
         file_path = (
             Path(settings.BASE_DIR) / "mesads" / "docs" / "courrier_contact.docx"
         )
+        filename = (
+            "Courrier d'acceptation d'une demande et délivrance d'une ADS - "
+            "liste d'attente.docx"
+        )
         if not file_path.exists():
             raise Http404("Fichier introuvable")
         return FileResponse(
             open(file_path, "rb"),
             as_attachment=True,
-            filename="Courrier d'acceptation d'une demande et délivrance d'une ADS - liste d'attente.docx",
+            filename=filename,
             content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         )
 
@@ -525,120 +536,35 @@ class ArchivageConfirmationView(TemplateView):
         return context
 
 
-class ExportCSVInscriptionListeAttenteView(View):
-    fields = [
-        "numero",
-        "nom",
-        "prenom",
-        "numero_licence",
-        "numero_telephone",
-        "email",
-        "adresse",
-        "date_depot_inscription",
-        "date_dernier_renouvellement",
-        "date_fin_validite",
-    ]
+class ExportCSVInscriptionListeAttenteView(ExcelExporter, View):
+    ads_manager = None
 
-    headers = [
-        "Numero",
-        "Nom",
-        "Prénom",
-        "Numéro de carte professionnelle",
-        "Numéro de téléphone",
-        "Email",
-        "Adresse",
-        "Date de dépot d'inscription",
-        "Date de dernier renouvellement",
-        "Date de fin de validité",
-    ]
+    def setup(self, request, *args, **kwargs):
+        self.ads_manager = get_object_or_404(ADSManager, id=kwargs.get("manager_id"))
+        return super().setup(request, *args, **kwargs)
 
-    def _excell_cell_value(self, field_name, value):
-        if value is None:
-            return "", "text"
-
-        field = InscriptionListeAttente._meta.get_field(field_name)
-
-        # Booléen
-        if isinstance(field, models.BooleanField):
-            return "Oui" if value else "Non", "text"
-
-        # Dates
-        if isinstance(field, models.DateField):
-            return value, "date"
-
-        # Autres types -> string standard
-        return value, "auto"
-
-    def get_file_title(self, ads_manager):
-        return f"Liste d'attente - {ads_manager.content_object.display_text().capitalize()}"
-
-    def _write_xlsx(self, inscriptions, ads_manager):
-        output = io.BytesIO()
-        wb = xlsxwriter.Workbook(output, {"in_memory": True})
-        wb.set_properties({"title": self.get_file_title(ads_manager)})
-        ws = wb.add_worksheet("Inscriptions")
-
-        format_date = wb.add_format({"num_format": "dd/mm/yyyy", "font_size": 12})
-        header_format = wb.add_format({"bold": True, "font_size": 12})
-        default_format = wb.add_format({"font_size": 12})
-
-        ws.write_row(
-            0,
-            0,
-            self.headers,
-        )
-        ws.set_row(0, None, header_format)
-
-        row_index = 1
-
-        for inscription in inscriptions:
-            for col, field_name in enumerate(self.fields):
-                raw_value = getattr(inscription, field_name)
-                value, kind = self._excell_cell_value(field_name, raw_value)
-
-                if kind == "date":
-                    ws.write_datetime(row_index, col, value, format_date)
-                else:
-                    ws.write_string(row_index, col, str(value), default_format)
-
-            row_index += 1
-
-        ws.add_table(
-            0,
-            0,
-            row_index - 1,
-            len(self.headers) - 1,
-            {
-                "header_row": True,
-                "autofilter": True,
-                "name": "TableauADS",
-                "banded_rows": False,
-                "banded_columns": False,
-                "style": None,
-                "columns": [{"header": h} for h in self.headers],
-            },
+    def get_filename(self):
+        return (
+            "liste_attente_"
+            f"{self.ads_manager.content_object.display_text().replace(' ', '_')}"
+            f"_{timezone.now().strftime('%d_%m%Y')}.xlsx"
         )
 
-        ws.autofit()
-        wb.close()
-        output.seek(0)
-        return output
-
-    def get(self, request, *args, **kwargs):
-        ads_manager = get_object_or_404(ADSManager, id=self.kwargs.get("manager_id"))
-        inscriptions = InscriptionListeAttente.objects.filter(
-            ads_manager=ads_manager
-        ).order_by("-date_depot_inscription")
-
-        output = self._write_xlsx(inscriptions, ads_manager)
-        filename = f"liste_attente_{ads_manager.content_object.display_text().replace(' ', '_')}_{timezone.now().strftime('%d_%m%Y')}.xlsx"
-        response = HttpResponse(
-            output.getvalue(),
-            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    def get_file_title(self):
+        return (
+            "Liste d'attente - "
+            f"{self.ads_manager.content_object.display_text().capitalize()}"
         )
-        response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
-        return response
+    def generate(self, workbook):
+        headers, inscriptions = get_inscriptions_data_for_excel_export(self.ads_manager)
+        self.add_sheet(
+            workbook,
+            "Inscriptions",
+            "TableauInscriptions",
+            headers,
+            inscriptions,
+        )
 
 
 class ListesAttentesPubliquesView(ListView):
@@ -697,7 +623,10 @@ class ListesAttentesPubliquesView(ListView):
         extra_query_params = ""
         if form.is_valid():
             if form.cleaned_data.get("departement"):
-                extra_query_params = f"{extra_query_params}&departement={form.cleaned_data.get('departement').id}"
+                extra_query_params = (
+                    f"{extra_query_params}&"
+                    f"departement={form.cleaned_data.get('departement').id}"
+                )
             if form.cleaned_data.get("commune"):
                 extra_query_params = (
                     f"{extra_query_params}&commune={form.cleaned_data.get('commune')}"
@@ -775,11 +704,10 @@ class ExportPDFListePubliqueView(View):
         html_string = render_to_string(
             "pages/ads_register/liste_attente_publique_pdf.html", context
         )
+        filename = "liste-attente-publique.pdf"
         response = HttpResponse(
             content_type="application/pdf",
-            headers={
-                "Content-Disposition": 'attachment; filename="liste-attente-publique.pdf"'
-            },
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
         )
 
         dsfr_css_path = finders.find("@gouvfr/dsfr/dsfr.min.css")

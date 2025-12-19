@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("users", "0012_user_proconnect_chorusdt_user_proconnect_idp_id_and_more"),
     ]

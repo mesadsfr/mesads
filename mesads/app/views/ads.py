@@ -9,7 +9,6 @@ from django.urls import reverse
 from django.views.generic import UpdateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView
-
 from reversion.views import RevisionMixin
 
 from mesads.fradm.models import EPCI
@@ -21,11 +20,11 @@ from ..forms import (
 )
 from ..models import (
     ADS,
+    ADS_UNIQUE_ERROR_MESSAGE,
     ADSLegalFile,
     ADSManager,
-    ADSUser,
     ADSUpdateLog,
-    ADS_UNIQUE_ERROR_MESSAGE,
+    ADSUser,
 )
 from ..reversion_diff import ModelHistory
 
@@ -122,9 +121,10 @@ class ADSView(RevisionMixin, UpdateView):
         )
 
         if self.object:
-            context["arrete_url"] = (
-                f"{reverse('app.arretes-list', kwargs={'manager_id': ads_manager.id})}?ads_id={self.object.id}"
+            arrete_base_url = reverse(
+                "app.arretes-list", kwargs={"manager_id": ads_manager.id}
             )
+            context["arrete_url"] = f"{arrete_base_url}?ads_id={self.object.id}"
             context["history_url"] = (
                 reverse(
                     "app.ads-manager-admin.ads-history",
@@ -167,13 +167,15 @@ class ADSView(RevisionMixin, UpdateView):
     def form_invalid(self, form):
         messages.error(
             self.request,
-            "Le formulaire contient des erreurs. Veuillez les corriger avant de soumettre à nouveau.",
+            (
+                "Le formulaire contient des erreurs. "
+                "Veuillez les corriger avant de soumettre à nouveau."
+            ),
         )
         return super().form_invalid(form)
 
     @transaction.atomic
     def form_valid(self, form):
-
         html_name_ads_users_formset = self.ads_users_formset.management_form[
             "TOTAL_FORMS"
         ].html_name
@@ -210,7 +212,8 @@ class ADSView(RevisionMixin, UpdateView):
                 ][0].violation_error_message
                 self.ads_users_formset.non_form_errors().append(errmsg)
                 resp = self.form_invalid(form)
-                # Revert the transaction: we don't want to save the ADS if we can't save the users.
+                # Revert the transaction: we don't want to save
+                # the ADS if we can't save the users.
                 transaction.set_rollback(True)
                 return resp
 

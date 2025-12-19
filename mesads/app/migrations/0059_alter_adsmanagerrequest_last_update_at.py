@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0058_adsmanagerrequest_last_update_at'),
+        ("app", "0058_adsmanagerrequest_last_update_at"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='adsmanagerrequest',
-            name='last_update_at',
+            model_name="adsmanagerrequest",
+            name="last_update_at",
             field=models.DateTimeField(auto_now=True, null=True),
         ),
     ]

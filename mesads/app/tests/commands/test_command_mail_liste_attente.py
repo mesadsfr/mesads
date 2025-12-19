@@ -1,18 +1,19 @@
-import logging
 import datetime
+import logging
+
+from django.conf import settings
+from django.core import mail
+from django.core.management import call_command
 from django.urls import reverse
 
 from mesads.app.models import InscriptionListeAttente
 from mesads.users.unittest import ClientTestCase as BaseClientTestCase
 
-from django.conf import settings
-from django.core import mail
 from ..factories import (
-    ADSManagerRequestFactory,
     ADSManagerFactory,
+    ADSManagerRequestFactory,
     InscriptionListeAttenteFactory,
 )
-from django.core.management import call_command
 
 
 class ClientTestCase(BaseClientTestCase):
