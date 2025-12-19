@@ -550,10 +550,10 @@ class ExportCSVInscriptionListeAttenteView(ExcelExporter, View):
             f"_{timezone.now().strftime('%d_%m%Y')}.xlsx"
         )
 
-    def get_file_title(self, ads_manager):
+    def get_file_title(self):
         return (
             "Liste d'attente - "
-            f"{ads_manager.content_object.display_text().capitalize()}"
+            f"{self.ads_manager.content_object.display_text().capitalize()}"
         )
 
     def generate(self, workbook):
