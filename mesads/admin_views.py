@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.views.generic import TemplateView
 
 from mesads.app.models import ADS, ADSUpdateLog, InscriptionListeAttente
-from mesads.users.models import NoteUtilisateur, UserAuditEntry
+from mesads.users.models import NoteUtilisateur, User, UserAuditEntry
 
 PREFECTURE_TEST = "999"
 
@@ -132,6 +132,12 @@ class StatistiquesView(TemplateView):
 
         return repartition
 
+    def get_users_count(self):
+        return User.objects.filter(is_active=True).count()
+
+    def get_users_proconnect_count(self):
+        return User.objects.filter(is_active=True, proconnect_sub__isnull=False).count()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -174,4 +180,8 @@ class StatistiquesView(TemplateView):
         context["count_note_facilite"] = count_note_facilite
         context["avg_note_qualite"] = avg_note_qualite
         context["count_note_qualite"] = count_note_qualite
+
+        context["users_count"] = self.get_users_count()
+        context["users_proconnect_count"] = self.get_users_proconnect_count()
+
         return context

@@ -106,6 +106,7 @@ class UserAdmin(BaseUserAdmin):
         "email",
         "admin_roles",
         "last_login",
+        "pro_connect",
         "is_active",
     )
 
@@ -157,6 +158,12 @@ class UserAdmin(BaseUserAdmin):
         "email",
         "adsmanageradministrator__prefecture__libelle",
     )
+
+    def pro_connect(self, obj):
+        return bool(obj.proconnect_sub)
+
+    pro_connect.boolean = True
+    pro_connect.short_description = "Pro Connect"
 
     def get_urls(self):
         urls = super().get_urls()
