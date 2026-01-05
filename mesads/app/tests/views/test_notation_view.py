@@ -1,10 +1,11 @@
 import http
+
 from dateutil.relativedelta import relativedelta
 from django.urls import reverse
 from django.utils import timezone
 
-from mesads.users.models import NoteUtilisateur
 from mesads.unittest import ClientTestCase
+from mesads.users.models import NoteUtilisateur
 
 
 class TestNotationView(ClientTestCase):

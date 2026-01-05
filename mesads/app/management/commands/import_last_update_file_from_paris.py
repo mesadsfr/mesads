@@ -1,7 +1,7 @@
 import csv
-from datetime import date, datetime
 import re
 import sys
+from datetime import date, datetime
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
@@ -41,7 +41,11 @@ class Command(BaseCommand):
         if ads_update_file.imported:
             logger.log(
                 self.style.SUCCESS,
-                f"ADSUpdateFile {ads_update_file.id} ({ads_update_file.update_file.name}) has already been imported, skip",
+                (
+                    f"ADSUpdateFile {ads_update_file.id} "
+                    f"({ads_update_file.update_file.name}) "
+                    "has already been imported, skip",
+                ),
             )
             return
 
@@ -103,13 +107,16 @@ class Command(BaseCommand):
         ads_update_file.save()
 
     def import_ads(self, ads_manager, all_paris_ads, row):
-        # The last line of the CSV file only contains one column with the number of rows. We skip it.
+        # The last line of the CSV file only contains
+        # one column with the number of rows.
+        #  We skip it.
         if re.match(r"\(\d+ rows\)", row["numero_ads"]):
             return None
 
         ads = all_paris_ads.get(row["numero_ads"], None)
         is_new_object = False
-        # Mark the object as updated, so that we can delete the ones that are not in the file
+        # Mark the object as updated,
+        # so that we can delete the ones that are not in the file
         if ads:
             ads._HAS_BEEN_UPDATED = True
         else:
@@ -152,7 +159,7 @@ class Command(BaseCommand):
             if not ads.ads_creation_date or ads.ads_creation_date >= date(2014, 10, 1):
                 ads.notes = ""
             else:
-                ads.notes = f'Type d\'ADS : {row["type_ads"]}'
+                ads.notes = f"Type d'ADS : {row['type_ads']}"
 
         ads.immatriculation_plate = row["immatriculation"]
 
@@ -172,7 +179,7 @@ class Command(BaseCommand):
             ads.eco_vehicle = False
 
         if row["nom_artisan"]:
-            ads.owner_name = f'{row["prenom_artisan"]} {row["nom_artisan"]}'
+            ads.owner_name = f"{row['prenom_artisan']} {row['nom_artisan']}"
         else:
             ads.owner_name = row["nom_societe"]
 

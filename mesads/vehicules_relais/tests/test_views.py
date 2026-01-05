@@ -3,11 +3,10 @@ import io
 
 import PyPDF2
 
-from .unittest import ClientTestCase
-
 from mesads.fradm.models import Commune, Prefecture
-
 from mesads.vehicules_relais.models import Proprietaire, Vehicule
+
+from .unittest import ClientTestCase
 
 
 class TestIndexView(ClientTestCase):
@@ -217,7 +216,8 @@ class TestProprietaireCreateView(ClientTestCase):
 
 class TestProprietaireDetailView(ClientTestCase):
     def test_view(self):
-        # Proprietaire with vehicules. Cannot be deleted because vehicules are attached to it.
+        # Proprietaire with vehicules.
+        # Cannot be deleted because vehicules are attached to it.
         resp = self.proprietaire_client.get(
             f"/relais/proprietaire/{self.proprietaire.id}"
         )

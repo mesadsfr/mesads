@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_list_or_404, get_object_or_404, redirect
 from django.urls import resolve, reverse
 
-from .models import ADS, ADSManagerRequest, ADSManagerAdministrator
+from .models import ADS, ADSManagerAdministrator, ADSManagerRequest
 
 
 def ads_manager_required(func):
@@ -57,7 +57,7 @@ def ads_manager_administrator_required(func):
                 request,
                 ads_manager_administrator=ads_manager_administrator,
                 *args,
-                **kwargs
+                **kwargs,
             )
 
         # Make sure user has access to the ADSManagerAdministrator
@@ -71,10 +71,11 @@ def ads_manager_administrator_required(func):
                 request,
                 ads_manager_administrator=ads_manager_administrator,
                 *args,
-                **kwargs
+                **kwargs,
             )
 
-        # If prefecture_id is not provided, user must have access to at least one instance of ADSManagerAdministrator
+        # If prefecture_id is not provided, user must have access
+        # to at least one instance of ADSManagerAdministrator
         elif not request.user.is_staff:
             get_list_or_404(ADSManagerAdministrator, users__in=[request.user])
         return func(request, *args, **kwargs)

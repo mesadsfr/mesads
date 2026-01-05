@@ -7,15 +7,10 @@
     "--cov-report=xml",
     "--pdb"
   ],
-  "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter",
-    "editor.formatOnSave": true
-  },
   "[typescript]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "python.formatting.provider": "none",
   // idk why, but this is needed otherwise vscode believes .js files in the templates/ directory as django-html files
   "files.associations": {
     "*.js": "javascript",

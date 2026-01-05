@@ -1,9 +1,8 @@
 import datetime
 
-from mesads.fradm.unittest import ClientTestCase as BaseClientTestCase
-
-from mesads.vehicules_relais.models import Proprietaire, Vehicule
 from mesads.fradm.models import Prefecture
+from mesads.fradm.unittest import ClientTestCase as BaseClientTestCase
+from mesads.vehicules_relais.models import Proprietaire, Vehicule
 
 
 class ClientTestCase(BaseClientTestCase):

@@ -2,7 +2,6 @@ from datetime import datetime
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-
 from mesads.app.models import (
     ADS,
     ADSUser,
@@ -137,7 +136,8 @@ class TestADSManagerView(ClientTestCase):
         self.assertFalse(self.ads_manager_city35.no_ads_declared)
 
     def test_post_error(self):
-        # Set the flag "no_ads_declared" for an administration which has ADS registered is impossible
+        # Set the flag "no_ads_declared" for an administration
+        # which has ADS registered is impossible
         self.assertFalse(self.ads_manager_city35.no_ads_declared)
         ADS.objects.create(
             number="12346", ads_manager=self.ads_manager_city35, ads_in_use=True

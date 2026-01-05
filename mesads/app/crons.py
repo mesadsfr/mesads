@@ -1,13 +1,10 @@
 import functools
 import io
-from contextlib import redirect_stdout, redirect_stderr
-
-
-from sentry_sdk import capture_exception
+from contextlib import redirect_stderr, redirect_stdout
 
 from django.core.management import call_command
-
 from django_cron import CronJobBase, Schedule
+from sentry_sdk import capture_exception
 
 
 def sentry_exceptions(func):

@@ -1,28 +1,26 @@
 from datetime import timedelta
 
+from dal import autocomplete
 from django.contrib import messages
 from django.contrib.postgres.lookups import Unaccent
 from django.db.models import (
-    Count,
-    Q,
-    Value,
+    BooleanField,
     Case,
     CharField,
-    Subquery,
-    OuterRef,
-    ExpressionWrapper,
+    Count,
     DateTimeField,
+    ExpressionWrapper,
+    OuterRef,
+    Q,
+    Subquery,
+    Value,
     When,
-    BooleanField,
 )
-from django.db.models.functions import Replace, Now
+from django.db.models.functions import Now, Replace
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.generic.edit import ProcessFormView
 from django.views.generic.list import ListView
-from django.urls import reverse
-
-
-from dal import autocomplete
 
 from ..forms import (
     ADSManagerDecreeFormSet,
@@ -114,7 +112,8 @@ class ADSManagerView(ListView, ProcessFormView):
             ),
         )
 
-        # Add ordering on the number. CAST is necessary in the case the ADS number is not an integer.
+        # Add ordering on the number. CAST is necessary
+        # in the case the ADS number is not an integer.
         qs_ordered = qs.extra(
             select={
                 "ads_number_as_int": "CAST(substring(number FROM '^[0-9]+') AS NUMERIC)"
@@ -230,13 +229,15 @@ class ADSManagerAutocompleteView(autocomplete.Select2QuerySetView):
         )
         return (
             query.filter(Q(value__icontains=self.q) | Q(location__startswith=self.q))
-            # For communes, only display if the type is "COM". For other types, display all.
+            # For communes, only display if the type is "COM".
+            # For other types, display all.
             .filter(
                 Q(
                     commune__type_commune="COM",
                 )
                 | Q(commune__isnull=True)
-            ).order_by("value")
+            )
+            .order_by("value")
         )
 
     def get_result_label(self, ads_manager):

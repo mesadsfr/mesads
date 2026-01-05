@@ -42,19 +42,24 @@ class TestArreteDownloadView(ClientTestCase):
         self.assertEqual(response.status_code, http.HTTPStatus.NOT_FOUND)
 
     def test_get_arrete_with_wrong_query_param(self):
-        response = self.ads_manager_city35_client.get(
-            f"{reverse('app.arrete-download', kwargs={'manager_id': self.ads_manager_city35.id})}?modele_arrete=tralalala"
+        q_params = "?modele_arrete=tralalala"
+        base_url = reverse(
+            "app.arrete-download", kwargs={"manager_id": self.ads_manager_city35.id}
         )
+
+        response = self.ads_manager_city35_client.get(f"{base_url}{q_params}")
         self.assertEqual(response.status_code, http.HTTPStatus.NOT_FOUND)
 
     def test_get_arrete_ok(self):
+        base_url = reverse(
+            "app.arrete-download", kwargs={"manager_id": self.ads_manager_city35.id}
+        )
         for modele_arrete, expected_file in (
             (key, value["file_name"])
             for key, value in TelechargementArreteView.modele_arretes.items()
         ):
             with self.subTest(modele_arrete=modele_arrete, expected_file=expected_file):
-                response = self.ads_manager_city35_client.get(
-                    f"{reverse('app.arrete-download', kwargs={'manager_id': self.ads_manager_city35.id})}?modele_arrete={modele_arrete}"
-                )
+                q_params = f"?modele_arrete={modele_arrete}"
+                response = self.ads_manager_city35_client.get(f"{base_url}{q_params}")
                 self.assertEqual(response.status_code, http.HTTPStatus.OK)
                 self.assertEqual(response.filename, expected_file)

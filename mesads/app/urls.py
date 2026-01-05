@@ -5,8 +5,8 @@ from django.views.generic import TemplateView
 
 from . import views
 from .decorators import (
-    ads_manager_required,
     ads_manager_administrator_required,
+    ads_manager_required,
 )
 
 url_prefectures = [

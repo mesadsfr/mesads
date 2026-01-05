@@ -1,8 +1,8 @@
-from django.core.files.uploadedfile import SimpleUploadedFile
 from datetime import timedelta
-from rest_framework.test import APIClient
-from django.utils import timezone
 
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils import timezone
+from rest_framework.test import APIClient
 
 from mesads.app.models import ADS, ADSUpdateFile, ADSUpdateLog
 from mesads.unittest import ClientTestCase
@@ -54,7 +54,8 @@ class TestADSUpdatesViewSet(ClientTestCase):
 
 
 class TestStatsGeoJSONPerPrefecture(ClientTestCase):
-    # ClientTestCase initializes PREFECTURES with a limited subset of prefectures. The endpoint requires all prefectures.
+    # ClientTestCase initializes PREFECTURES with a limited subset of prefectures.
+    # The endpoint requires all prefectures.
     PREFECTURES = (
         ("01", "Ain"),
         ("02", "Aisne"),

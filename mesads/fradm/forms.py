@@ -1,9 +1,8 @@
+from dal import autocomplete
 from django import forms
 from django.core.exceptions import ValidationError
 
-from dal import autocomplete
-
-from .models import Commune, EPCI, Prefecture
+from .models import EPCI, Commune, Prefecture
 
 
 class FrenchAdministrationForm(forms.Form):

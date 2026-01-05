@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("app", "0092_alter_adsupdatefile_user"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),

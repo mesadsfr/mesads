@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Commune, EPCI, Prefecture
+from .models import EPCI, Commune, Prefecture
 
 
 class ReadOnlyModelAdmin(admin.ModelAdmin):

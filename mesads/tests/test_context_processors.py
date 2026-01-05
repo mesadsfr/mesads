@@ -1,11 +1,9 @@
-import pkg_resources
 import re
 import unittest
 
+import pkg_resources
 import yaml
-
 from django.urls import URLPattern, URLResolver, get_resolver
-
 
 EXCLUDE_MODULES = [
     r".*autocomplete.*",
@@ -70,7 +68,10 @@ class TestHTMLMetadata(unittest.TestCase):
             self.assertIn(
                 name,
                 metadata_views,
-                msg=f"The url {name} is in the code but the HTML title or description is missing in the YAML file html_metadata.yml",
+                msg=(
+                    f"The url {name} is in the code but the HTML title or description"
+                    " is missing in the YAML file html_metadata.yml"
+                ),
             )
             if metadata["urls"][name].get("missing") is not True:
                 self.assertIn("title", metadata["urls"][name])
@@ -82,5 +83,8 @@ class TestHTMLMetadata(unittest.TestCase):
             self.assertIn(
                 name,
                 all_urls,
-                msg=f"The url {name} is in html_metadata.yml but is related to a non-existing URL",
+                msg=(
+                    f"The url {name} is in html_metadata.yml but is related "
+                    "to a non-existing URL"
+                ),
             )

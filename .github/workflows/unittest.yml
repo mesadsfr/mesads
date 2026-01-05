@@ -32,15 +32,9 @@ jobs:
           npm run build
       - name: Run tests and coverage
         run: |
-          /github/home/.local/bin/poetry run coverage run --source=. manage.py test
+          /github/home/.local/bin/poetry run pytest -n 4 --cov=. --cov-report=term-missing --cov-fail-under=95
         env:
           DB_HOST: postgres
           DB_PORT: 5432
           DB_USER: postgres
           DB_PASSWORD: postgres
-      - name: Coverage report
-        run: |
-          /github/home/.local/bin/poetry run coverage report
-          /github/home/.local/bin/poetry run coverage xml
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3

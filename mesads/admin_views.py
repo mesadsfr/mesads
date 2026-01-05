@@ -1,13 +1,12 @@
 import calendar
 from datetime import date, timedelta
 
-from django.db.models import Q, OuterRef, Subquery, BooleanField, Sum, Count
-from django.views.generic import TemplateView
+from django.db.models import BooleanField, Count, OuterRef, Q, Subquery, Sum
 from django.utils import timezone
+from django.views.generic import TemplateView
 
 from mesads.app.models import ADS, ADSUpdateLog, InscriptionListeAttente
-from mesads.users.models import UserAuditEntry, NoteUtilisateur
-
+from mesads.users.models import NoteUtilisateur, UserAuditEntry
 
 PREFECTURE_TEST = "999"
 

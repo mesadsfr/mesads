@@ -1,10 +1,12 @@
-from django.conf import settings
-from django.core.management.base import BaseCommand
-from django.db.models import F, Value, DateField, ExpressionWrapper
 from datetime import date, timedelta
-from mesads.app.models import InscriptionListeAttente, ADSManager, ADSManagerRequest
-from django.template.loader import render_to_string
+
+from django.conf import settings
 from django.core.mail import send_mail
+from django.core.management.base import BaseCommand
+from django.db.models import DateField, ExpressionWrapper, F, Value
+from django.template.loader import render_to_string
+
+from mesads.app.models import ADSManager, ADSManagerRequest, InscriptionListeAttente
 
 
 class Command(BaseCommand):

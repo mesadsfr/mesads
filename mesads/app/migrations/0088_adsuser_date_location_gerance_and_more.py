@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("app", "0087_alter_ads_creation_date_alter_ads_last_update"),
     ]

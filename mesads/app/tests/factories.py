@@ -1,18 +1,18 @@
-import factory
 import random
-
 from datetime import timedelta
+
+import factory
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 
 from mesads.app.models import (
-    ADSManagerAdministrator,
+    ADS,
     ADSManager,
+    ADSManagerAdministrator,
     ADSManagerRequest,
     InscriptionListeAttente,
-    ADS,
 )
-from mesads.fradm.tests.factories import PrefectureFactory, EPCIFactory, CommuneFactory
+from mesads.fradm.tests.factories import CommuneFactory, EPCIFactory, PrefectureFactory
 
 
 class ADSManagerAdministratorFactory(factory.django.DjangoModelFactory):
@@ -59,7 +59,7 @@ class ADSFactory(factory.django.DjangoModelFactory):
         model = ADS
 
     ads_manager = factory.SubFactory(ADSManagerFactory)
-    number = factory.Sequence(lambda n: f"{n + 1 }")
+    number = factory.Sequence(lambda n: f"{n + 1}")
     ads_in_use = True
 
 

@@ -3,8 +3,8 @@ import csv
 import os
 import re
 import traceback
-import yaml
 
+import yaml
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connection, transaction
@@ -27,11 +27,16 @@ class Command(BaseCommand):
             r"v_commune_\d+.csv", os.path.basename(options["communes_file"].name)
         ):
             raise CommandError(
-                f'L\'INSEE appelle le fichier de communes "v_commune_<year>.csv". Le fichier fourni ({options["communes_file"].name}) est a priori incorrect.'
+                (
+                    'L\'INSEE appelle le fichier de communes "v_commune_<year>.csv".'
+                    f" Le fichier fourni ({options['communes_file'].name}) "
+                    "est a priori incorrect."
+                )
             )
         if not re.match(r".*.ya?ml$", os.path.basename(options["datafix_file"].name)):
             raise CommandError(
-                f'Fichier datafix "{options["datafix_file"].name}" incorrect. Doit être un fichier YAML.'
+                f'Fichier datafix "{options["datafix_file"].name}" '
+                "incorrect. Doit être un fichier YAML."
             )
 
         datafix = yaml.safe_load(options["datafix_file"])
@@ -90,8 +95,7 @@ class Command(BaseCommand):
                     # Don't ask me why, but some entries in the file have a DEP
                     # column empty. In this case, the departement number is
                     # retrieved from the first 2 chars of the INSEE code.
-                    prefecture__numero=row["DEP"]
-                    or row["COM"][:2]
+                    prefecture__numero=row["DEP"] or row["COM"][:2]
                 )
 
                 ADSManager.objects.create(
@@ -100,7 +104,8 @@ class Command(BaseCommand):
                     object_id=new_commune.id,
                 )
 
-        # existing_communes now contains all the communes that are in the database, but are not in the new file.
+        # existing_communes now contains all the communes that are in the database,
+        # but are not in the new file.
         # For each of these communes, we check if there is an entry in the
         # datafix file to move the resources linked to another commune.
         #
@@ -122,7 +127,11 @@ class Command(BaseCommand):
             if fix:
                 if fix["insee"] != commune.insee or fix["libelle"] != commune.libelle:
                     raise ValueError(
-                        f'Problème dans le fichier datafix: insee or libelle différents de la commune dans la db. Fix INSEE: {fix["insee"]}, Fix libelle: {fix["libelle"]}, Commune INSEE: {commune.insee}, Commune libelle: {commune.libelle}'
+                        "Problème dans le fichier datafix: insee or libelle différents "
+                        f"de la commune dans la db. Fix INSEE: {fix['insee']}, "
+                        f"Fix libelle: {fix['libelle']}, "
+                        f"Commune INSEE: {commune.insee}, "
+                        f"Commune libelle: {commune.libelle}"
                     )
                 try:
                     q = Commune.all_objects.filter(
@@ -134,11 +143,19 @@ class Command(BaseCommand):
                     new_commune = q.get()
                 except Commune.MultipleObjectsReturned as exc:
                     raise ValueError(
-                        f'Dans le fichier datafix, trop de communes trouvées pour new_owner.insee={fix["new_owner"]["insee"]} new_owner.libelle={fix["new_owner"]["libelle"]}. Ajouter le type de la commune (par exemple type: COM) pour réstreindre la recherche.'
+                        "Dans le fichier datafix, trop de communes trouvées pour "
+                        f"new_owner.insee={fix['new_owner']['insee']} "
+                        f"new_owner.libelle={fix['new_owner']['libelle']}. "
+                        "Ajouter le type de la commune (par exemple type: COM) "
+                        "pour restreindre la recherche."
                     ) from exc
                 except Commune.DoesNotExist as exc:
                     raise ValueError(
-                        f'Dans le fichier datafix, new_owner.insee ({fix["new_owner"]["insee"]}) et new_owner.libelle ({fix["new_owner"]["libelle"]}) ne correspondent à aucune commune dans la base de données. Vérifiez que les données sont correctes.'
+                        "Dans le fichier datafix, new_owner.insee "
+                        f"({fix['new_owner']['insee']}) et "
+                        f"new_owner.libelle ({fix['new_owner']['libelle']}) "
+                        "ne correspondent à aucune commune dans la base de données. "
+                        "Vérifiez que les données sont correctes."
                     ) from exc
 
                 self.move_related_resources(commune, new_commune)
@@ -153,21 +170,29 @@ class Command(BaseCommand):
             ads_manager_decrees_count = ads_manager.adsmanagerdecree_set.count()
             if ads_manager_decrees_count != 0:
                 print(
-                    f"Impossible de supprimer la commune id={commune.id} ads_manager={ads_manager.id} insee={commune.insee} libelle={commune.libelle} — {ads_manager_decrees_count} décret(s) lié(s)"
+                    f"Impossible de supprimer la commune id={commune.id} "
+                    f"ads_manager={ads_manager.id} insee={commune.insee} "
+                    f"libelle={commune.libelle} — {ads_manager_decrees_count} "
+                    "décret(s) lié(s)"
                 )
                 err = True
 
             ads_count = ads_manager.ads_set.count()
             if ads_count != 0:
                 print(
-                    f"Impossible de supprimer la commune id={commune.id} ads_manager={ads_manager.id} insee={commune.insee} libelle={commune.libelle} — {ads_count} ADS liée(s)"
+                    f"Impossible de supprimer la commune id={commune.id} "
+                    f"ads_manager={ads_manager.id} insee={commune.insee} "
+                    f"libelle={commune.libelle} — {ads_count} ADS liée(s)"
                 )
                 err = True
 
             ads_manager_requests_count = ads_manager.adsmanagerrequest_set.count()
             if ads_manager_requests_count != 0:
                 print(
-                    f"Impossible de supprimer la commune id={commune.id} ads_manager={ads_manager.id} insee={commune.insee} libelle={commune.libelle} — {ads_manager_requests_count} demande(s) liée(s) pour devenir gestionnaire liées"
+                    f"Impossible de supprimer la commune id={commune.id} "
+                    f"ads_manager={ads_manager.id} insee={commune.insee} "
+                    f"libelle={commune.libelle} — {ads_manager_requests_count} "
+                    "demande(s) liée(s) pour devenir gestionnaire liées"
                 )
                 err = True
 
@@ -176,7 +201,10 @@ class Command(BaseCommand):
             ).count()
             if vehicules_relais_count != 0:
                 print(
-                    f"Impossible de supprimer la commune id={commune.id} ads_manager={ads_manager.id} insee={commune.insee} libelle={commune.libelle} — {vehicules_relais_count} véhicule(s) relais lié(s)"
+                    f"Impossible de supprimer la commune id={commune.id} "
+                    f"ads_manager={ads_manager.id} insee={commune.insee} "
+                    f"libelle={commune.libelle} — {vehicules_relais_count} "
+                    "véhicule(s) relais lié(s)"
                 )
                 err = True
 
@@ -188,7 +216,9 @@ class Command(BaseCommand):
                     commune.delete()
                 except Exception as e:
                     print(
-                        f"Impossible de supprimer la commune id={commune.id} ads_manager={ads_manager.id} insee={commune.insee} libelle={commune.libelle} — {e}"
+                        f"Impossible de supprimer la commune id={commune.id} "
+                        f"ads_manager={ads_manager.id} insee={commune.insee} "
+                        f"libelle={commune.libelle} — {e}"
                     )
                     print("--")
                     ok = False
