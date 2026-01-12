@@ -206,5 +206,3 @@ class Aeroport(AdministrationModel):
 
     def display_fulltext(self):
         return f"l'{self.display_text()}"
-
-
