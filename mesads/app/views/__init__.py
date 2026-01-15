@@ -2,6 +2,8 @@ from .ads import (  # noqa: F401
     ADSCreateView,
     ADSDeleteView,
     ADSHistoryView,
+    ADSVerificationConfirmationView,
+    ADSVerificationView,
     ADSView,
 )
 from .ads_manager import (  # noqa: F401
