@@ -3,9 +3,10 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.views import View
 from django.views.generic import UpdateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView
@@ -401,3 +402,30 @@ class ADSHistoryView(DetailView):
             ],
         )
         return context
+
+
+class ADSVerificationView(DetailView):
+    template_name = "pages/ads_register/ads_verification.html"
+    model = ADS
+    pk_url_kwarg = "ads_id"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["ads_manager"] = ADSManager.objects.get(id=self.kwargs["manager_id"])
+        return context
+
+
+class ADSVerificationConfirmationView(View):
+    def post(self, request, *args, **kwargs):
+        ads = get_object_or_404(ADS, id=kwargs.get("ads_id"))
+        ADSUpdateLog.create_for_ads(ads, self.request.user)
+        messages.success(
+            self.request,
+            f"La vérification de l'ADS {ads.number} a bien été prise en compte ",
+        )
+        return redirect(
+            reverse(
+                "app.ads-manager.detail",
+                kwargs={"manager_id": kwargs.get("manager_id")},
+            )
+        )

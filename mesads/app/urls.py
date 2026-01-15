@@ -106,6 +106,16 @@ url_gestionnaire = [
         name="app.ads.detail",
     ),
     path(
+        "registre_ads/gestion/<int:manager_id>/ads/<int:ads_id>/verification/",
+        ads_manager_required(views.ADSVerificationView.as_view()),
+        name="app.ads.verification",
+    ),
+    path(
+        "registre_ads/gestion/<int:manager_id>/ads/<int:ads_id>/verification-confirmation/",
+        ads_manager_required(views.ADSVerificationConfirmationView.as_view()),
+        name="app.ads.verification-confirmation",
+    ),
+    path(
         "registre_ads/gestion/<int:manager_id>/ads/<int:ads_id>/delete",
         ads_manager_required(views.ADSDeleteView.as_view()),
         name="app.ads.delete",
