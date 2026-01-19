@@ -1,3 +1,5 @@
+from datetime import date
+
 from dal import autocomplete
 from dateutil.relativedelta import relativedelta
 from django import forms
@@ -271,6 +273,19 @@ class SearchVehiculeForm(forms.Form):
     immatriculation = forms.CharField(required=False)
 
 
+def compute_next_date_fin_validite(
+    date_debut: date, date_renew: date | None = None
+) -> date:
+    if date_renew is None or date_renew <= date_debut:
+        return date_debut + relativedelta(years=1)
+
+    candidate = date_debut + relativedelta(years=date_renew.year - date_debut.year)
+
+    if candidate < date_renew:
+        return candidate + relativedelta(years=2)
+    return candidate + relativedelta(years=1)
+
+
 class InscriptionListeAttenteForm(forms.ModelForm):
     ERROR_DATE_RENOUVELLEMENT_EMPTY = (
         "L'inscription semble dater de plus d’un an. "
@@ -317,24 +332,25 @@ class InscriptionListeAttenteForm(forms.ModelForm):
                     "date_dernier_renouvellement", self.ERROR_DATE_RENOUVELLEMENT_EMPTY
                 )
 
-        if (
-            date_dernier_renouvellement
-            and date_dernier_renouvellement < today - relativedelta(years=1)
-        ):
-            self.add_error(
-                "date_dernier_renouvellement",
-                self.ERROR_DATE_RENOUVELLEMENT,
-            )
+        if date_dernier_renouvellement:
+            if date_dernier_renouvellement <= date_depot_inscription:
+                self.add_error(
+                    "date_dernier_renouvellement",
+                    self.ERROR_DATE_RENOUVELLEMENT,
+                )
 
         return cleaned_data
 
     def save(self, commit=True):
-        obj = super().save(commit=False)
+        obj: InscriptionListeAttente = super().save(commit=False)
         obj.ads_manager = self.ads_manager
 
-        if obj.date_dernier_renouvellement:
-            obj.date_fin_validite = obj.date_dernier_renouvellement + relativedelta(
-                years=1
+        if (
+            obj.date_dernier_renouvellement
+            and obj.date_dernier_renouvellement > obj.date_depot_inscription
+        ):
+            obj.date_fin_validite = compute_next_date_fin_validite(
+                obj.date_depot_inscription, obj.date_dernier_renouvellement
             )
         else:
             obj.date_fin_validite = obj.date_depot_inscription + relativedelta(years=1)

@@ -243,37 +243,9 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
             [InscriptionListeAttenteForm.ERROR_DATE_RENOUVELLEMENT_EMPTY],
         )
 
-    def test_post_formulaire_creation_inscription_with_expired_date_renouvellement(
-        self,
-    ):
-        today = datetime.date.today()
-        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
-        response = self.client.post(
-            reverse(
-                "app.liste_attente_inscription",
-                kwargs={"manager_id": self.ads_manager.id},
-            ),
-            data={
-                "numero": "1",
-                "nom": "John",
-                "prenom": "Doe",
-                "numero_licence": "1234ABCD",
-                "numero_telephone": "0606060606",
-                "email": "john.doe@test.com",
-                "adresse": "10 Rue du test",
-                "date_depot_inscription": today - relativedelta(years=3),
-                "date_dernier_renouvellement": today - relativedelta(years=2),
-            },
-        )
-        self.assertEqual(InscriptionListeAttente.objects.count(), 0)
-        self.assertEqual(response.status_code, http.HTTPStatus.OK)
-        self.assertEqual(
-            response.context["form"].errors["date_dernier_renouvellement"],
-            [InscriptionListeAttenteForm.ERROR_DATE_RENOUVELLEMENT],
-        )
-
     def test_post_formulaire_creation_inscription_numero_invalide(self):
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
+        today = datetime.date.today()
         self.assertEqual(InscriptionListeAttente.objects.count(), 1)
         response = self.client.post(
             reverse(
@@ -288,10 +260,8 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
                 "numero_telephone": "0606060606",
                 "email": "john.doe@test.com",
                 "adresse": "10 Rue du test",
-                "date_depot_inscription": datetime.date.today(),
-                "date_dernier_renouvellement": datetime.date.today(),
-                "date_fin_validite": datetime.date.today()
-                + datetime.timedelta(days=365),
+                "date_depot_inscription": today - relativedelta(years=2),
+                "date_dernier_renouvellement": today - relativedelta(months=3),
             },
         )
         self.assertEqual(InscriptionListeAttente.objects.count(), 1)
@@ -305,8 +275,11 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
     def test_post_formulaire_creation_inscription_numero_valide(self):
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
         inscription.delete()
+        today = datetime.date.today()
+
         self.assertEqual(InscriptionListeAttente.objects.count(), 0)
         self.assertEqual(InscriptionListeAttente.with_deleted.count(), 1)
+
         response = self.client.post(
             reverse(
                 "app.liste_attente_inscription",
@@ -320,10 +293,8 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
                 "numero_telephone": "0606060606",
                 "email": "john.doe@test.com",
                 "adresse": "10 Rue du test",
-                "date_depot_inscription": datetime.date.today(),
-                "date_dernier_renouvellement": datetime.date.today(),
-                "date_fin_validite": datetime.date.today()
-                + datetime.timedelta(days=365),
+                "date_depot_inscription": today - relativedelta(years=2),
+                "date_dernier_renouvellement": today - relativedelta(months=3),
             },
         )
         self.assertEqual(InscriptionListeAttente.objects.count(), 1)
@@ -335,6 +306,7 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
 
     def test_post_formulaire_creation_inscription_numero_commune(self):
         self.assertEqual(InscriptionListeAttente.objects.count(), 0)
+        today = datetime.date.today()
         response = self.client.post(
             reverse(
                 "app.liste_attente_inscription",
@@ -347,10 +319,8 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
                 "numero_telephone": "0606060606",
                 "email": "john.doe@test.com",
                 "adresse": "10 Rue du test",
-                "date_depot_inscription": datetime.date.today(),
-                "date_dernier_renouvellement": datetime.date.today(),
-                "date_fin_validite": datetime.date.today()
-                + datetime.timedelta(days=365),
+                "date_depot_inscription": today - relativedelta(years=2),
+                "date_dernier_renouvellement": today - relativedelta(months=3),
             },
         )
         self.assertEqual(InscriptionListeAttente.objects.count(), 1)
@@ -366,6 +336,7 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
         client, user = self.create_client()
         ads_manager = ADSManagerFactory(for_epci=True)
         ADSManagerRequestFactory(user=user, ads_manager=ads_manager)
+        today = datetime.date.today()
 
         self.assertEqual(InscriptionListeAttente.objects.count(), 0)
         response = client.post(
@@ -380,10 +351,8 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
                 "numero_telephone": "0606060606",
                 "email": "john.doe@test.com",
                 "adresse": "10 Rue du test",
-                "date_depot_inscription": datetime.date.today(),
-                "date_dernier_renouvellement": datetime.date.today(),
-                "date_fin_validite": datetime.date.today()
-                + datetime.timedelta(days=365),
+                "date_depot_inscription": today - relativedelta(years=2),
+                "date_dernier_renouvellement": today - relativedelta(months=3),
             },
         )
         self.assertEqual(InscriptionListeAttente.objects.count(), 1)
@@ -399,6 +368,7 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
         client, user = self.create_client()
         ads_manager = ADSManagerFactory(for_prefecture=True)
         ADSManagerRequestFactory(user=user, ads_manager=ads_manager)
+        today = datetime.date.today()
 
         self.assertEqual(InscriptionListeAttente.objects.count(), 0)
         response = client.post(
@@ -413,10 +383,8 @@ class TestCreationInscriptionListeAttenteView(ClientTestCase):
                 "numero_telephone": "0606060606",
                 "email": "john.doe@test.com",
                 "adresse": "10 Rue du test",
-                "date_depot_inscription": datetime.date.today(),
-                "date_dernier_renouvellement": datetime.date.today(),
-                "date_fin_validite": datetime.date.today()
-                + datetime.timedelta(days=365),
+                "date_depot_inscription": today - relativedelta(years=2),
+                "date_dernier_renouvellement": today - relativedelta(months=3),
             },
         )
         self.assertEqual(InscriptionListeAttente.objects.count(), 1)
@@ -480,6 +448,7 @@ class TestModificationInscriptionListeAttenteView(ClientTestCase):
     def test_post_formulaire_modification_inscription_ok(self):
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
         self.assertEqual(InscriptionListeAttente.objects.count(), 1)
+        today = datetime.date.today()
         data = {
             "numero": inscription.numero,
             "nom": "John",
@@ -488,9 +457,8 @@ class TestModificationInscriptionListeAttenteView(ClientTestCase):
             "numero_telephone": "0606060606",
             "email": "john.doe@test.com",
             "adresse": "10 Rue du test",
-            "date_depot_inscription": datetime.date.today(),
-            "date_dernier_renouvellement": datetime.date.today(),
-            "date_fin_validite": datetime.date.today() + datetime.timedelta(days=365),
+            "date_depot_inscription": today - relativedelta(years=2),
+            "date_dernier_renouvellement": today - relativedelta(months=3),
         }
         response = self.client.post(
             reverse(
@@ -516,7 +484,6 @@ class TestModificationInscriptionListeAttenteView(ClientTestCase):
         self.assertEqual(
             inscription.date_dernier_renouvellement, data["date_dernier_renouvellement"]
         )
-        self.assertEqual(inscription.date_fin_validite, data["date_fin_validite"])
         self.assertRedirects(
             response,
             expected_url=reverse(
@@ -530,6 +497,8 @@ class TestModificationInscriptionListeAttenteView(ClientTestCase):
     def test_post_formulaire_modification_inscription_numero_invalide(self):
         inscription = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
         inscription_2 = InscriptionListeAttenteFactory(ads_manager=self.ads_manager)
+        today = datetime.date.today()
+
         self.assertEqual(InscriptionListeAttente.objects.count(), 2)
         data = {
             "numero": inscription_2.numero,
@@ -539,10 +508,10 @@ class TestModificationInscriptionListeAttenteView(ClientTestCase):
             "numero_telephone": "0606060606",
             "email": "john.doe@test.com",
             "adresse": "10 Rue du test",
-            "date_depot_inscription": datetime.date.today(),
-            "date_dernier_renouvellement": datetime.date.today(),
-            "date_fin_validite": datetime.date.today() + datetime.timedelta(days=365),
+            "date_depot_inscription": today - relativedelta(years=2),
+            "date_dernier_renouvellement": today - relativedelta(months=3),
         }
+
         response = self.client.post(
             reverse(
                 "app.liste_attente_inscription_update",
