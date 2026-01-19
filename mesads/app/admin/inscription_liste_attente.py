@@ -50,7 +50,9 @@ class InscriptionListeAttenteAdmin(CompareVersionAdmin):
 
     list_display = (
         "number_with_deleted_info",
-        "date_creation",
+        "date_depot_inscription",
+        "deleted_at",
+        "motif_archivage",
         "administration",
         "prefecture",
         "nom",
