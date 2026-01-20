@@ -62,6 +62,24 @@ class ADSManagerAdministratorFilter(admin.SimpleListFilter):
             return queryset.filter(adsmanageradministrator_count=0)
 
 
+class ProprietaireFilter(admin.SimpleListFilter):
+    title = "Compte propriétaire de taxis relais"
+
+    parameter_name = "with_proprietaire"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("yes", "Oui"),
+            ("no", "Non"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "yes":
+            return queryset.filter(proprietaire__isnull=False)
+        elif self.value() == "no":
+            return queryset.filter(proprietaire__isnull=True)
+
+
 class LastLoginFilter(admin.SimpleListFilter):
     title = "Date de la dernière connexion"
 
@@ -114,6 +132,7 @@ class UserAdmin(BaseUserAdmin):
         "is_active",
         ADSManagerRequestFilter,
         ADSManagerAdministratorFilter,
+        ProprietaireFilter,
         ("last_login", admin.EmptyFieldListFilter),
         LastLoginFilter,
     )
