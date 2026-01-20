@@ -224,25 +224,28 @@
                       {{ ads.latest_update_log|date:"d/m/Y" }}
                     </td>
                     <td class="!text-right">
-                      {% if ads.latest_update_log_is_outdated or ads.latest_update_log is None %}
+                      <div class="flex flex-col gap-1">
+                        {% if ads.latest_update_log_is_outdated or ads.latest_update_log is None %}
+                          <a
+                            class="fr-btn fr-icon-success-line fr-btn--icon-left"
+                            href="{% url 'app.ads.verification' manager_id=ads_manager.id ads_id=ads.id %}"
+                          >
+                            Vérifier
+                          </a>
+                        {% endif %}
                         <a
-                          class="fr-btn fr-icon-success-line fr-btn--icon-left mb-1"
-                          href="{% url 'app.ads.verification' manager_id=ads_manager.id ads_id=ads.id %}"
+                          class="fr-btn fr-btn--secondary fr-icon-pencil-line"
+                          href="
+                            {% if ads_manager_administrator %}
+                            {% url 'app.ads-manager-admin.ads-detail' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads_manager.id ads_id=ads.id %}
+                            {% else %}
+                            {% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}
+                            {% endif %}"
                         >
-                          Vérifier
+                          <span class="fr-sr-only">Modifier l'ADS {{ads.number}}</span>
                         </a>
-                      {% endif %}
-                      <a
-                        class="fr-btn fr-btn--secondary fr-icon-pencil-line"
-                        href="
-                          {% if ads_manager_administrator %}
-                          {% url 'app.ads-manager-admin.ads-detail' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads_manager.id ads_id=ads.id %}
-                          {% else %}
-                          {% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}
-                          {% endif %}"
-                      >
-                        <span class="fr-sr-only">Modifier l'ADS {{ads.number}}</span>
-                      </a>
+
+                      </div>
                     </td>
                   </tr>
                 {% empty %}
