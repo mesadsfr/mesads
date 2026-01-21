@@ -23,7 +23,7 @@
     aria-describedby="{{field.id_for_label}}-messages"
     {% if readonly %}readonly{% endif %}
   >
-  {{field.value}}
+  {% if field.value %}{{field.value}}{% endif %}
   </textarea>
 
   <div class="fr-messages-group" id="{{field.id_for_label}}-messages" aria-live="polite">
