@@ -91,12 +91,18 @@
               </button>
             </h4>
             <div class="fr-collapse" id="accordion-id-2">
+              <p>
+                Si vous souhaitez changer l'adresse mail du compte actuel de votre commune il convient:
+              </p>
               <ol>
                 <li>
-                  Faites une nouvelle demande d'accès via l'inscription sur MesADS
+                  De créer un nouveau compte via ProConnect depuis la page de <a href="{% url 'login' %}">connexion</a> 
+                  (en vous assurant de vous être déconnecté(e) de l'ancien compte préalablement). 
+                  Une fois le compte créé vous pourrez le configurer en demandant l'accès à la gestion des ADS de votre commune. 
+                  La préfecture validera alors cet accès et vous retrouverez toutes les informations liées aux ADS déjà enregistrées pour cette commune. 
                 </li>
                 <li>
-                  Contactez-nous par email pour désactiver l'ancienne adresse : 
+                  <strong>Contactez-nous par email pour désactiver l'ancienne adresse :</strong> 
                   <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
                 </li>
               </ol>
@@ -111,12 +117,11 @@
             <div class="fr-collapse" id="accordion-id-3">
               <ol>
                 <li>
-                  Créez votre compte et validez votre inscription via le lien envoyé par mail
+                  Créez votre compte via ProConnect
                 </li>
                 <li>
-                  Demandez votre accès au compte de votre commune/EPCI à votre préfecture 
+                  Configurez votre compte en sélectionnant votre administration dans le menu déroulant sur la page de <a href="{% url 'app.ads-manager.demande_gestion_ads' %}">demande d'accès</a> 
                 </li>
-                <img src="../images/faq/faq-1.png" alt="" width="100%" height="100%" />
                 <li>
                   Inscrivez-vous à notre prochain webinaire d’initiation aux bonnes pratiques et à l’utilisation de notre 
                   outil (environ 45 minutes + Questions-réponses) :
@@ -136,8 +141,6 @@
                     </li>
                   </ul>
                 </li>
-                <img src="../images/faq/faq-2.png" alt="" width="100%" height="100%" />
-                <img src="../images/faq/faq-3.png" alt="" width="100%" height="100%" />
               </ol>
             </div>
           </section>
@@ -173,9 +176,6 @@
                 <strong>Important</strong> : Pour une location-gérance, renseignez les informations du 
                 locataire-gérant dans la section "Conducteur"
               </p>
-              <p>
-                <strong>Obligation réglementaire</strong> : Tout changement doit faire l'objet d'un nouvel arrêté municipal et être transmis au président de la CLT3P.
-              </p>
             </div>
           </section>
           <section class="fr-accordion">
@@ -190,13 +190,7 @@
                   <strong>Date de création</strong>: Date de délivrance de l'ADS au premier titulaire
                 </li>
                 <li>
-                  <strong>Date d'attribution :</strong>
-                </li>
-                <li>
-                  Pour les "anciennes" ADS (créées avant le 1er octobre 2014) : date de rachat par le titulaire actuel
-                </li>
-                <li>
-                  Pour les "nouvelles" ADS (créées après le 1er octobre 2014) : date de renouvellement après expiration du délai de 5 an
+                  <strong>Date d'attribution :</strong> Pour les "anciennes" ADS (créées avant le 1er octobre 2014) : date de rachat par le titulaire actuel
                 </li>
               </ul>
               <p>
@@ -213,16 +207,16 @@
             <div class="fr-collapse" id="accordion-id-6">
               <ol>
                 <li>
-                  Cliquez sur <strong>"Consulter ou modifier"</strong> pour l'ADS concernée
+                  Une fois connecté(e) à votre compte gestionnaire d'ADS, cliquez sur "gérer les ADS"
                 </li>
                 <li>
-                  Dans le formulaire, cliquez sur <strong>"Accéder aux modèles d'arrêtés pour cette ADS"</strong>
+                  Cliquez sur le lien "Accéder aux modèles d'arrêtés"
                 </li>
                 <li>
                   Personnalisez et éditez le modèle selon vos besoins
                 </li>
                 <li>
-                  <strong>N'oubliez</strong> pas d'insérer l'arrêté signé via le bouton d'insertion en fin de formulaire
+                  <strong>N'oubliez</strong> pas d'enregistrer le nouvel arrêté dans le formulaire d'enregistrement de l'ADS concernée.
                 </li>
               </ol>
             </div>
@@ -234,11 +228,22 @@
               </button>
             </h4>
             <div class="fr-collapse" id="accordion-id-7">
+              <ol>
+                <li>
+                  Une fois connecté(e) à votre compte gestionnaire d'ADS, cliquez sur "gérer les ADS"
+                </li>
+                <li>
+                  Cliquez sur le lien "Accéder aux modèles d'arrêtés"
+                </li>
+                <li>
+                  Personnalisez et éditez le modèle selon vos besoins
+                </li>
+                <li>
+                  <strong>N'oubliez pas</strong> d’informer le Président de la CLT3P conformément aux dispositions du Code des transports
+                </li>
+              </ol>
               <p>
-                Ce modèle n'est pas encore disponible sur MesADS.
-              </p>
-              <p>
-                <strong>Solution :</strong> Contactez la préfecture de votre département pour obtenir ce modèle. 
+                <strong>Plus d'infos : </strong> <a href="{% url 'app.reglementation' %}">Réglementation taxi</a>. 
               </p>
             </div>
           </section>
@@ -285,34 +290,6 @@
                 <u>« 📗️ Télécharger toutes les ADS au format excel »</u> 
                 au-dessus du tableau récapitulatif des ADS
               </p>
-            </div>
-          </section>
-          <section class="fr-accordion">
-            <h4 class="fr-accordion__title">
-              <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-id-10">
-                Vérification des données des ADS
-              </button>
-            </h4>
-            <div class="fr-collapse" id="accordion-id-10">
-              <p>
-                <strong>Obligation de vérifier la fiabilité des données des ADS au minimum un an après la dernière modification.</strong>
-              </p>
-              <ol>
-                <li>Rendez-vous sur votre espace "Gestionnaire", et consultez le tableau récapitulatif des ADS</li>
-                <li>Si la dernière <strong>date de mise à jour est rouge</strong> et/ou <strong>"données incomplètes"</strong> s'affiche, cliquez sur <strong>"consulter/modifier"</strong></li>
-                <img src="../images/faq/faq-4.png" alt="" width="100%" height="100%" />
-                <li>
-                  <strong>Vérifiez les informations et complétez-le</strong>
-                </li>
-                <li>
-                  Cochez la case ci-dessous et validez les modifications
-                </li>
-                <img src="../images/faq/faq-5.png" alt="" width="100%" height="100%" />
-              </ol>
-              <p>
-                <strong>Pour connaitre les éléments à compléter, un tableau rouge s’affiche au-dessus du formulaire, par exemple:</strong>
-              </p>
-              <img src="../images/faq/faq-6.png" alt="" width="100%" height="100%" />
             </div>
           </section>
         </div>
@@ -534,7 +511,6 @@
                     <li>Un onglet indiquant les données par commune/ EPCI</li>
                   </ul>
                 </li>
-                <img src="../images/faq/faq-7.png" alt="" width="100%" height="100%" />
               </ol>
             </div>
           </section>
