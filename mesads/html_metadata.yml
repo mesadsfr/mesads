@@ -138,6 +138,13 @@ urls:
     title: "Confirmez la suppression de l'ADS {{ ads.number }} de {{ ads_manager.content_object.display_fulltext }}"
     description: "Effectuez la suppression de l'ADS {{ ads.number }} de {{ ads_manager.content_object.display_fulltext }}. En cas d'erreur, contactez notre équipe pour assistance."
 
+  app.ads.verification:
+    title: "MesADS - Vérification de l'ADS {{ads.number}}"
+    description: "Vérifier et confirmer les données de l'ADS {{ads.number}}"
+  
+  app.ads.verification-confirmation:
+    missing: true
+
   app.exports.prefecture:
     missing: true # Not HTML view
 

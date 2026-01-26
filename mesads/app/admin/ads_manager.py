@@ -3,7 +3,7 @@ from django.db.models import Count, Q
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from mesads.fradm.models import EPCI, Commune, Prefecture
+from mesads.fradm.models import EPCI, Aeroport, Commune, Prefecture
 
 from ..models import (
     ADSManager,
@@ -86,6 +86,10 @@ class AdministrationTypeFilter(admin.SimpleListFilter):
             (
                 EPCI.ads_managers.field.related_query_name(),
                 EPCI().type_name().upper(),
+            ),
+            (
+                Aeroport.ads_managers.field.related_query_name(),
+                Aeroport().type_name().capitalize(),
             ),
         )
 
@@ -188,12 +192,6 @@ class ADSManagerAdmin(admin.ModelAdmin):
         return req
 
     def has_add_permission(self, request, obj=None):
-        """ADSManager entries are created with the django command
-        load_ads_managers. It should not be possible to create or delete them
-        from the admin."""
-        return False
-
-    def has_delete_permission(self, request, obj=None):
         """ADSManager entries are created with the django command
         load_ads_managers. It should not be possible to create or delete them
         from the admin."""

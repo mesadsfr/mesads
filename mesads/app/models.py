@@ -19,7 +19,7 @@ from django.utils import timezone
 from django.utils.html import mark_safe
 from django_cleanup import cleanup
 
-from mesads.fradm.models import EPCI, Commune, Prefecture
+from mesads.fradm.models import EPCI, Aeroport, Commune, Prefecture
 
 
 class SoftDeleteManager(models.Manager):
@@ -153,7 +153,8 @@ class ADSManager(SmartValidationMixin, models.Model):
         | models.Q(
             app_label="fradm",
             model="prefecture",
-        ),
+        )
+        | models.Q(app_label="fradm", model="aeroport"),
     )
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
@@ -218,6 +219,11 @@ class ADSManager(SmartValidationMixin, models.Model):
         elif issubclass(self.content_type.model_class(), Commune):
             return (
                 f"Commune — {self.content_object.libelle} ({self.content_object.insee})"
+            )
+        elif issubclass(self.content_type.model_class(), Aeroport):
+            return (
+                f"Aéroport — {self.content_object.name} "
+                f"else({self.content_object.departement})"
             )
         # Never reached
         return str(self)  # pragma: nocover

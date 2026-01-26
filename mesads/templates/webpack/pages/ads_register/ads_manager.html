@@ -186,6 +186,7 @@
                   <th>Type d'ADS</th>
                   <th>Titulaire</th>
                   <th>Plaque d'immatriculation</th>
+                  <th>Status de l'ADS</th>
                   <th>Dernière mise à jour</th>
                   <th class="!text-right">Consulter / Modifier</th>
                 </tr>
@@ -211,31 +212,40 @@
                     <td class="max-w-[300px] overflow-ellipsis overflow-hidden">{{ ads.owner_name }}</td>
                     <td>{{ ads.immatriculation_plate }}</td>
                     <td>
-                      <div class="fr-text--xs !text-[var(--text-default-error)]">
-                        {% if ads.latest_update_log %}
-                          {% if ads.latest_update_log_is_outdated %}
-                            Vérification des informations nécessaire
-                          {% elif not ads.latest_update_log_is_complete %}
-                            Données incomplètes
-                          {% endif %}
-                        {% else %}
-                          Vérification des informations nécessaire
-                        {% endif %}
-                      </div>
+                      {% if not ads.latest_update_log_is_complete %}
+                        <p class="fr-badge fr-badge--pink-macaron whitespace-nowrap">A compléter</p>
+                      {% elif ads.latest_update_log_is_outdated or ads.latest_update_log is None %}
+                        <p class="fr-badge fr-badge--pink-macaron whitespace-nowrap">A vérifier</p>
+                      {% else %}
+                        <p class="fr-badge fr-badge--blue-cumulus whitespace-nowrap">Complète</p>
+                      {% endif %}
+                    </td>
+                    <td>
                       {{ ads.latest_update_log|date:"d/m/Y" }}
                     </td>
                     <td class="!text-right">
-                      <a
-                        class="fr-btn fr-btn--secondary fr-icon-pencil-line"
-                        href="
-                          {% if ads_manager_administrator %}
-                          {% url 'app.ads-manager-admin.ads-detail' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads_manager.id ads_id=ads.id %}
-                          {% else %}
-                          {% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}
-                          {% endif %}"
-                      >
-                        <span class="fr-sr-only">Modifier l'ADS {{ads.number}}</span>
-                      </a>
+                      <div class="flex flex-col gap-1">
+                        {% if ads.latest_update_log_is_outdated or ads.latest_update_log is None %}
+                          <a
+                            class="fr-btn fr-icon-success-line fr-btn--icon-left"
+                            href="{% url 'app.ads.verification' manager_id=ads_manager.id ads_id=ads.id %}"
+                          >
+                            Vérifier
+                          </a>
+                        {% endif %}
+                        <a
+                          class="fr-btn fr-btn--secondary fr-icon-pencil-line"
+                          href="
+                            {% if ads_manager_administrator %}
+                            {% url 'app.ads-manager-admin.ads-detail' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads_manager.id ads_id=ads.id %}
+                            {% else %}
+                            {% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}
+                            {% endif %}"
+                        >
+                          <span class="fr-sr-only">Modifier l'ADS {{ads.number}}</span>
+                        </a>
+
+                      </div>
                     </td>
                   </tr>
                 {% empty %}

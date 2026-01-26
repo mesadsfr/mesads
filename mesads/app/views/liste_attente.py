@@ -598,6 +598,7 @@ class ListesAttentesPubliquesView(ListView):
                             content_type__model="prefecture",
                             then=F("prefecture__libelle"),
                         ),
+                        When(content_type__model="aeroport", then=F("aeroport__name")),
                         When(content_type__model="commune", then=F("commune__libelle")),
                         default=Value(""),
                     )

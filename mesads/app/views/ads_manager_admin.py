@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
@@ -22,7 +23,7 @@ from django.views.generic import ListView, TemplateView, View
 from reversion.views import RevisionMixin
 
 from mesads.app.forms import SearchVehiculeForm
-from mesads.fradm.models import EPCI, Commune, Prefecture
+from mesads.fradm.models import EPCI, Aeroport, Commune, Prefecture
 from mesads.utils_psql import SplitPart
 from mesads.vehicules_relais.models import Vehicule
 
@@ -83,12 +84,14 @@ class ADSManagerAdministratorView(ListView):
         content_type_commune = ContentType.objects.get_for_model(Commune)
         content_type_prefecture = ContentType.objects.get_for_model(Prefecture)
         content_type_epci = ContentType.objects.get_for_model(EPCI)
+        content_type_aeroport = ContentType.objects.get_for_model(Aeroport)
 
         communes_ids = Commune.objects.filter(libelle__icontains=search).values("pk")
         prefectures_ids = Prefecture.objects.filter(libelle__icontains=search).values(
             "pk"
         )
         epcis_ids = EPCI.objects.filter(name__icontains=search).values("pk")
+        aeroport_ids = Aeroport.objects.filter(name__icontains=search).values("pk")
 
         qs = qs.filter(
             Q(content_type=content_type_commune, object_id__in=Subquery(communes_ids))
@@ -97,6 +100,9 @@ class ADSManagerAdministratorView(ListView):
                 object_id__in=Subquery(prefectures_ids),
             )
             | Q(content_type=content_type_epci, object_id__in=Subquery(epcis_ids))
+            | Q(
+                content_type=content_type_aeroport, object_id__in=Subquery(aeroport_ids)
+            )
         )
         return qs
 
@@ -141,6 +147,9 @@ class ADSManagerAdministratorView(ListView):
                 complete_updates_subquery_per_ads_manager, output_field=IntegerField()
             ),
         )
+        context["manager_ids"] = [
+            request.ads_manager.id for request in context["user_ads_manager_requests"]
+        ]
 
         context["complete_ads_for_prefecture"] = (
             ADS.objects.filter(
@@ -159,6 +168,19 @@ class ADSManagerAdministratorView(ListView):
         context["search"] = self.request.GET.get("search")
 
         return context
+
+    def post(self, request, *args, **kwargs):
+        ads_manager = get_object_or_404(
+            ADSManager, id=request.POST.get("ads_manager_id")
+        )
+        ADSManagerRequest.objects.create(
+            user=self.request.user, ads_manager=ads_manager, accepted=True
+        )
+        messages.success(
+            request,
+            "Vous êtes bien devenu gestionnaire de cette administration",
+        )
+        return self.get(request, *args, **kwargs)
 
 
 class ADSManagerAdminRequestsView(RevisionMixin, TemplateView):

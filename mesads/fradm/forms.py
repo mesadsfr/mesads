@@ -2,7 +2,7 @@ from dal import autocomplete
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import EPCI, Commune, Prefecture
+from .models import EPCI, Aeroport, Commune, Prefecture
 
 
 class FrenchAdministrationForm(forms.Form):
@@ -73,3 +73,24 @@ class PrefectureForm(forms.Form):
         label="Préfecture",
         required=True,
     )
+
+
+class AeroportAdminForm(forms.ModelForm):
+    prefecture = forms.ModelChoiceField(
+        queryset=Prefecture.objects.all(),
+        required=True,
+        label="Préfecture",
+    )
+
+    class Meta:
+        model = Aeroport
+        fields = ("name",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.instance.id:
+            self.fields["prefecture"].initial = Prefecture.objects.get(
+                numero=self.instance.departement
+            )
+        return
