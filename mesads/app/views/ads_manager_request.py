@@ -17,13 +17,6 @@ class DemandeGestionADSView(FormView):
     template_name = "pages/ads_register/demande_gestion_ads.html"
     form_class = ADSManagerForm
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["ads_manager_administrator"] = self.kwargs.get(
-            "ads_manager_administrator"
-        )
-        return context
-
     def get_success_url(self):
         administrator = self.kwargs.get("ads_manager_administrator")
         return (

@@ -297,6 +297,9 @@ class InscriptionListeAttenteForm(forms.ModelForm):
         "Vérifiez si un dépôt de demande de renouvellement a eu lieu "
         "au cours des 12 derniers mois."
     )
+    ERROR_DATE_RENOUVELLEMENT_FUTURE = (
+        "La date de renouvellement ne peut pas être dans le futur."
+    )
 
     class Meta:
         model = InscriptionListeAttente
@@ -337,6 +340,10 @@ class InscriptionListeAttenteForm(forms.ModelForm):
                 self.add_error(
                     "date_dernier_renouvellement",
                     self.ERROR_DATE_RENOUVELLEMENT,
+                )
+            if date_dernier_renouvellement > today:
+                self.add_error(
+                    "date_dernier_renouvellement", self.ERROR_DATE_RENOUVELLEMENT_FUTURE
                 )
 
         return cleaned_data
