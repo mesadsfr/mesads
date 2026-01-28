@@ -6,12 +6,12 @@ authors = ["Julien Castets"]
 packages = [{include = "mesads"}]
 
 [tool.poetry.group.dev.dependencies]
-pytest-django = "^4.5.2"
-pytest-cov = "^4.0.0"
+pytest-django = "~4.11"
+pytest-cov = "~7.0"
 pypdf2 = "^3.0.1"
 pytest-xdist = "^3.8.0"
-django-debug-toolbar = "^3.2.2"
-coverage = {version = "^6.4.1", extras = ["toml"]}
+django-debug-toolbar = "~6.2"
+coverage = {version = "~7.13", extras = ["toml"]}
 requests-mock = "^1.9.3"
 djlint = "^1.36.4"
 django-query-counter = "^0.4.1"
@@ -53,7 +53,7 @@ exclude_lines = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-Django = "5.0.6"
+Django = "~5.2"
 django-registration = "^3.2"
 django-autocomplete-light = "^3.8.2"
 psycopg2 = "^2.9.3"
@@ -67,7 +67,7 @@ djangorestframework = "^3.14.0"
 django-cleanup = "^8.1.0"
 dateparser = "^1.1.4"
 pyshp = "^2.3.1"
-django-cron = "^0.6.0"
+django-cron = { git = "https://github.com/jorenham/django-cron.git"}
 django-mjml = "^1.0"
 docxtpl = "^0.17.0"
 django-formtools = "^2.4"

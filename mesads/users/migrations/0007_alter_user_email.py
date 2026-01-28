@@ -14,6 +14,9 @@ class Migration(migrations.Migration):
             locale="und-u-ks-level2",
             deterministic=False,
         ),
+        migrations.RunSQL(
+            "DROP INDEX IF EXISTS \"users_user_email_243f6e77_like\";"
+        ),
         migrations.AlterField(
             model_name="user",
             name="email",
