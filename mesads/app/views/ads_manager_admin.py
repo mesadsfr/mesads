@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
@@ -5,16 +7,20 @@ from django.core.exceptions import SuspiciousOperation
 from django.core.mail import send_mail
 from django.db.models import (
     BooleanField,
+    Case,
     CharField,
     Count,
+    DateTimeField,
+    ExpressionWrapper,
     F,
     IntegerField,
     OuterRef,
     Q,
     Subquery,
     Value,
+    When,
 )
-from django.db.models.functions import Cast, Replace
+from django.db.models.functions import Cast, Coalesce, Now, Replace
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -41,40 +47,91 @@ from ..services import (
 from .export import ExcelExporter
 
 
-class ADSManagerAdministratorView(ListView):
-    template_name = "pages/ads_register/espace_prefecture_gestionnaires.html"
+class ADSManagerAdministratorListeGestionnaires(ListView):
+    template_name = "pages/ads_register/prefecture_liste_gestionnaires.html"
     model = ADSManager
     paginate_by = 50
     context_object_name = "ads_managers"
+    ordering = ("content_type",)
 
     def get_queryset(self):
-        latest_complete = Subquery(
-            ADSUpdateLog.objects.filter(ads=OuterRef("pk"))
-            .order_by("-update_at")
-            .values("is_complete")[:1],
-            output_field=BooleanField(),
+        latest_log_qs = ADSUpdateLog.objects.filter(ads=OuterRef("pk")).order_by(
+            "-update_at"
         )
 
         # 2) Count how many ADS under this manager have latest_complete=True
         complete_updates_subquery_per_ads_manager = Subquery(
             ADS.objects.filter(ads_manager=OuterRef("id"))
-            .annotate(latest_complete=latest_complete)
-            .filter(latest_complete=True)
+            .annotate(
+                latest_update_log=Subquery(latest_log_qs.values("update_at")[:1]),
+                latest_update_log_is_complete=Subquery(
+                    latest_log_qs.values("is_complete")[:1]
+                ),
+                latest_update_log_is_outdated=Case(
+                    When(
+                        latest_update_log__lt=ExpressionWrapper(
+                            Now() - timedelta(days=ADSUpdateLog.OUTDATED_LOG_DAYS),
+                            output_field=DateTimeField(),
+                        ),
+                        then=Value(True),
+                    ),
+                    default=Value(False),
+                    output_field=BooleanField(),
+                ),
+            )
+            .filter(
+                latest_update_log_is_complete=True, latest_update_log_is_outdated=False
+            )
             .values("ads_manager")
             .annotate(count=Count("pk"))
             .values("count")[:1],
             output_field=IntegerField(),
         )
 
-        qs = ADSManager.objects.filter(
-            administrator=self.kwargs["ads_manager_administrator"]
-        ).annotate(
-            nb_managers=Count(
-                "adsmanagerrequest", filter=Q(adsmanagerrequest__accepted=True)
-            ),
-            complete_updates_count=Subquery(
-                complete_updates_subquery_per_ads_manager, output_field=IntegerField()
-            ),
+        nb_ads_subq = Subquery(
+            ADS.objects.filter(ads_manager=OuterRef("pk"))
+            .values("ads_manager")
+            .annotate(c=Count("pk"))
+            .values("c")[:1],
+            output_field=IntegerField(),
+        )
+
+        nb_requests_subq = Subquery(
+            ADSManagerRequest.objects.filter(
+                ads_manager=OuterRef("pk"),
+                accepted=True,
+            )
+            .values("ads_manager")
+            .annotate(c=Count("pk"))
+            .values("c")[:1],
+            output_field=IntegerField(),
+        )
+
+        qs = (
+            ADSManager.objects.filter(
+                administrator=self.kwargs["ads_manager_administrator"]
+            )
+            .annotate(
+                nb_managers=Coalesce(
+                    nb_requests_subq, Value(0), output_field=IntegerField()
+                ),
+                nb_ads=Coalesce(nb_ads_subq, Value(0), output_field=IntegerField()),
+                complete_updates_count=Coalesce(
+                    complete_updates_subquery_per_ads_manager,
+                    Value(0),
+                    output_field=IntegerField(),
+                ),
+                pourcentage_completion=Case(
+                    When(
+                        nb_ads__gt=0,
+                        then=ExpressionWrapper(
+                            F("complete_updates_count") / F("nb_ads") * 100,
+                            output_field=IntegerField(),
+                        ),
+                    )
+                ),
+            )
+            .order_by("content_type")
         )
         search = self.request.GET.get("search")
 
@@ -109,61 +166,54 @@ class ADSManagerAdministratorView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # All ADS for the manager
-        ads_count_subquery = (
-            ADS.objects.filter(
-                ads_manager=OuterRef("ads_manager_id"),
-                deleted_at__isnull=True,
-            )
-            .values("ads_manager")
-            .annotate(count=Count("*"))
-            .values("count")[:1]
-        )
-
         # For each ADS, get its latest is_complete flag
-        latest_complete = Subquery(
-            ADSUpdateLog.objects.filter(ads=OuterRef("pk"))
-            .order_by("-update_at")
-            .values("is_complete")[:1],
-            output_field=BooleanField(),
+        latest_log_qs = ADSUpdateLog.objects.filter(ads=OuterRef("pk")).order_by(
+            "-update_at"
         )
 
-        # 2) Count how many ADS under this manager have latest_complete=True
-        complete_updates_subquery_per_ads_manager = Subquery(
-            ADS.objects.filter(ads_manager=OuterRef("ads_manager_id"))
-            .annotate(latest_complete=latest_complete)
-            .filter(latest_complete=True)
-            .values("ads_manager")
-            .annotate(count=Count("pk"))
-            .values("count")[:1],
-            output_field=IntegerField(),
-        )
-
-        context["user_ads_manager_requests"] = ADSManagerRequest.objects.filter(
-            user=self.request.user
-        ).annotate(
-            ads_count=Subquery(ads_count_subquery, output_field=IntegerField()),
-            complete_updates_count=Subquery(
-                complete_updates_subquery_per_ads_manager, output_field=IntegerField()
-            ),
-        )
         context["manager_ids"] = [
-            request.ads_manager.id for request in context["user_ads_manager_requests"]
+            request.ads_manager.id
+            for request in ADSManagerRequest.objects.filter(user=self.request.user)
         ]
 
-        context["complete_ads_for_prefecture"] = (
+        nb_ads_completes_prefecture = (
             ADS.objects.filter(
                 ads_manager__administrator=self.kwargs["ads_manager_administrator"],
-                deleted_at__isnull=True,
             )
-            .annotate(latest_complete=latest_complete)
-            .filter(latest_complete=True)
+            .annotate(
+                latest_update_log=Subquery(latest_log_qs.values("update_at")[:1]),
+                latest_update_log_is_complete=Subquery(
+                    latest_log_qs.values("is_complete")[:1]
+                ),
+                latest_update_log_is_outdated=Case(
+                    When(
+                        latest_update_log__lt=ExpressionWrapper(
+                            Now() - timedelta(days=ADSUpdateLog.OUTDATED_LOG_DAYS),
+                            output_field=DateTimeField(),
+                        ),
+                        then=Value(True),
+                    ),
+                    default=Value(False),
+                    output_field=BooleanField(),
+                ),
+            )
+            .filter(
+                latest_update_log_is_complete=True, latest_update_log_is_outdated=False
+            )
             .count()
         )
 
-        context["total_ads_for_prefecture"] = ADS.objects.filter(
+        nb_total_ads_prefecture = ADS.objects.filter(
             ads_manager__administrator=self.kwargs["ads_manager_administrator"]
         ).count()
+
+        context["total_ads_for_prefecture"] = nb_total_ads_prefecture
+
+        context["pourcentage_completion_prefecture"] = (
+            round(nb_ads_completes_prefecture / nb_total_ads_prefecture * 100, 1)
+            if nb_total_ads_prefecture
+            else 0
+        )
 
         context["search"] = self.request.GET.get("search")
 

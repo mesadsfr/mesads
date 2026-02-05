@@ -69,25 +69,12 @@ class ADSView(RevisionMixin, UpdateView):
         return ads_users_fs, ads_legal_files_fs
 
     def get_success_url(self):
-        administrator = self.kwargs.get("ads_manager_administrator")
-
-        return (
-            reverse(
-                "app.ads-manager-admin.ads-detail",
-                kwargs={
-                    "prefecture_id": administrator.prefecture.id,
-                    "manager_id": self.kwargs["manager_id"],
-                    "ads_id": self.kwargs["ads_id"],
-                },
-            )
-            if administrator
-            else reverse(
-                "app.ads.detail",
-                kwargs={
-                    "manager_id": self.kwargs["manager_id"],
-                    "ads_id": self.kwargs["ads_id"],
-                },
-            )
+        return reverse(
+            "app.ads.detail",
+            kwargs={
+                "manager_id": self.kwargs["manager_id"],
+                "ads_id": self.kwargs["ads_id"],
+            },
         )
 
     def get_context_data(self, **kwargs):
@@ -103,60 +90,6 @@ class ADSView(RevisionMixin, UpdateView):
             .order_by("-update_at")
             .first()
         )
-        administrator = self.kwargs.get("ads_manager_administrator")
-        ads_manager = context["ads_manager"]
-        if administrator:
-            context["ads_manager_administrator"] = administrator
-        context["return_url"] = (
-            reverse(
-                "app.ads-manager-admin.detail-administration",
-                kwargs={
-                    "prefecture_id": administrator.prefecture.id,
-                    "manager_id": ads_manager.id,
-                },
-            )
-            if administrator
-            else reverse(
-                "app.ads-manager.detail", kwargs={"manager_id": ads_manager.id}
-            )
-        )
-
-        if self.object:
-            arrete_base_url = reverse(
-                "app.arretes-list", kwargs={"manager_id": ads_manager.id}
-            )
-            context["arrete_url"] = f"{arrete_base_url}?ads_id={self.object.id}"
-            context["history_url"] = (
-                reverse(
-                    "app.ads-manager-admin.ads-history",
-                    kwargs={
-                        "prefecture_id": administrator.prefecture.id,
-                        "manager_id": ads_manager.id,
-                        "ads_id": self.object.id,
-                    },
-                )
-                if administrator
-                else reverse(
-                    "app.ads.history",
-                    kwargs={"manager_id": ads_manager.id, "ads_id": self.object.id},
-                )
-            )
-
-            context["delete_url"] = (
-                reverse(
-                    "app.ads-manager-admin.ads-delete",
-                    kwargs={
-                        "prefecture_id": administrator.prefecture.id,
-                        "manager_id": ads_manager.id,
-                        "ads_id": self.object.id,
-                    },
-                )
-                if administrator
-                else reverse(
-                    "app.ads.delete",
-                    kwargs={"manager_id": ads_manager.id, "ads_id": self.object.id},
-                )
-            )
 
         return context
 
@@ -293,22 +226,11 @@ class ADSDeleteView(DeleteView):
         return context
 
     def get_success_url(self):
-        administrator = self.kwargs.get("ads_manager_administrator")
-        return (
-            reverse(
-                "app.ads-manager-admin.detail-administration",
-                kwargs={
-                    "prefecture_id": administrator.prefecture.id,
-                    "manager_id": self.kwargs["manager_id"],
-                },
-            )
-            if administrator
-            else reverse(
-                "app.ads-manager.detail",
-                kwargs={
-                    "manager_id": self.kwargs["manager_id"],
-                },
-            )
+        return reverse(
+            "app.ads-manager.detail",
+            kwargs={
+                "manager_id": self.kwargs["manager_id"],
+            },
         )
 
 
@@ -340,25 +262,12 @@ class ADSCreateView(ADSView, CreateView):
         return None
 
     def get_success_url(self):
-        administrator = self.kwargs.get("ads_manager_administrator")
-
-        return (
-            reverse(
-                "app.ads-manager-admin.ads-detail",
-                kwargs={
-                    "prefecture_id": administrator.prefecture.id,
-                    "manager_id": self.kwargs["manager_id"],
-                    "ads_id": self.object.id,
-                },
-            )
-            if administrator
-            else reverse(
-                "app.ads.detail",
-                kwargs={
-                    "manager_id": self.kwargs["manager_id"],
-                    "ads_id": self.object.id,
-                },
-            )
+        return reverse(
+            "app.ads.detail",
+            kwargs={
+                "manager_id": self.kwargs["manager_id"],
+                "ads_id": self.object.id,
+            },
         )
 
     def form_valid(self, form):
@@ -371,8 +280,6 @@ class ADSCreateView(ADSView, CreateView):
         try:
             with transaction.atomic():
                 response = super().form_valid(form)
-                if self.inscription:
-                    self.inscription.ads_attribuee()
                 return response
         except IntegrityError:
             form.add_error("number", ADS_UNIQUE_ERROR_MESSAGE)

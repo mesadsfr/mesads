@@ -10,44 +10,23 @@
     </button>
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
-        {% if ads_manager_administrator %}
-          <li>
-            <a class="fr-breadcrumb__link"
-              href="{% url 'app.homepage' %}">
-              Accueil - {{ ads_manager_administrator.prefecture.display_text|capfirst }}
-            </a>
-          </li>
-          <li>
-            <a class="fr-breadcrumb__link"
-              href="{% url 'app.ads-manager-admin.administrations' prefecture_id=ads_manager_administrator.prefecture.id %}">
-              Vos administrations en gestion et accès Préfecture
-            </a>
-          </li>
-          <li>
-            <a
-              class="fr-breadcrumb__link"
-              href="{% url 'app.ads-manager-admin.detail-administration' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads.ads_manager.id %}"
-            >
-              {{ ads.ads_manager.content_object.display_text|capfirst }}
-            </a>
-          </li>
-          <li>
-            <a class="fr-breadcrumb__link"
-              href="{% url 'app.ads-manager-admin.ads-detail' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads.ads_manager.id ads_id=ads.id %}">ADS #{{ ads.number }}</a>
-          </li>
-        {% else %}
-          <li>
-            <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
-          </li>
-          <li>
-            <a class="fr-breadcrumb__link"
-              href="{% url 'app.ads-manager.detail' manager_id=ads.ads_manager.id %}">{{ ads.ads_manager.content_object.display_text|capfirst }}</a>
-          </li>
-          <li>
-            <a class="fr-breadcrumb__link"
-              href="{% url 'app.ads.detail' manager_id=ads.ads_manager.id ads_id=ads.id %}">ADS #{{ ads.number }}</a>
-          </li>
-        {% endif %}
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link"
+            href="{% url 'app.ads-manager.administrations' %}">
+            Vos administrations en gestion
+          </a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link"
+            href="{% url 'app.ads-manager.detail' manager_id=ads.ads_manager.id %}">{{ ads.ads_manager.content_object.display_text|capfirst }}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link"
+            href="{% url 'app.ads.detail' manager_id=ads.ads_manager.id ads_id=ads.id %}">ADS #{{ ads.number }}</a>
+        </li>
         <li>
           <a class="fr-breadcrumb__link" aria-current="page">Historique des modifications</a>
         </li>

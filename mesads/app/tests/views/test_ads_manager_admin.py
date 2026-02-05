@@ -200,7 +200,7 @@ class TestADSManagerAdminUpdatesView(ClientTestCase):
             number="12346", ads_manager=self.ads_manager_city35, ads_in_use=True
         )
         resp = self.ads_manager_administrator_35_client.post(
-            f"/espace-prefecture/{self.ads_manager_administrator_35.prefecture.id}/administrations/{self.ads_manager_city35.id}/ads/{ads.id}",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{ads.id}",
             {
                 "number": ads.id,
                 "certify": "true",
@@ -218,7 +218,7 @@ class TestADSManagerAdminUpdatesView(ClientTestCase):
 
         # # Update the same ADS again
         resp = self.ads_manager_administrator_35_client.post(
-            f"/espace-prefecture/{self.ads_manager_administrator_35.prefecture.id}/administrations/{self.ads_manager_city35.id}/ads/{ads.id}",
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{ads.id}",
             {
                 "number": ads.id,
                 "certify": "true",
@@ -237,14 +237,9 @@ class TestADSManagerAdminUpdatesView(ClientTestCase):
 
 class TestAdsManagerAdministratorView(ClientTestCase):
     def test_get_context(self):
-        user_request = ADSManagerRequest.objects.create(
-            user=self.ads_manager_administrator_35_user,
-            ads_manager=self.ads_manager_city35,
-            accepted=True,
-        )
         response = self.ads_manager_administrator_35_client.get(
             reverse(
-                "app.ads-manager-admin.administrations",
+                "app.ads-manager-admin.gestionnaires",
                 kwargs={
                     "prefecture_id": self.ads_manager_administrator_35.prefecture.id
                 },
@@ -259,15 +254,11 @@ class TestAdsManagerAdministratorView(ClientTestCase):
                 ).values_list("id", flat=True)
             ),
         )
-        self.assertEqual(response.context["user_ads_manager_requests"].count(), 1)
-        self.assertEqual(
-            response.context["user_ads_manager_requests"].first(), user_request
-        )
 
     def test_post_to_become_gestionnaire(self):
         response = self.ads_manager_administrator_35_client.post(
             reverse(
-                "app.ads-manager-admin.administrations",
+                "app.ads-manager-admin.gestionnaires",
                 kwargs={
                     "prefecture_id": self.ads_manager_administrator_35.prefecture.id
                 },

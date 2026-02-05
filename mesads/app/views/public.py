@@ -1,6 +1,6 @@
 import math
 
-from django.db.models import BooleanField, Count, IntegerField, OuterRef, Q, Subquery
+from django.db.models import Count, Q
 from django.db.models.functions import ExtractQuarter, ExtractYear
 from django.urls import reverse
 from django.views.generic import TemplateView
@@ -14,7 +14,6 @@ from ..models import (
     ADSManager,
     ADSManagerAdministrator,
     ADSManagerRequest,
-    ADSUpdateLog,
 )
 
 
@@ -92,45 +91,6 @@ class HomepageView(TemplateView):
             elif len(ads_manager_requests):
                 context["manager_ads"] = True
                 context["title"] = "MesADS - Accueil gestionnaire"
-                # All ADS for the manager
-                ads_count_subquery = (
-                    ADS.objects.filter(
-                        ads_manager=OuterRef("ads_manager_id"),
-                        deleted_at__isnull=True,
-                    )
-                    .values("ads_manager")
-                    .annotate(count=Count("*"))
-                    .values("count")[:1]
-                )
-
-                # For each ADS, get its latest is_complete flag
-                latest_complete = Subquery(
-                    ADSUpdateLog.objects.filter(ads=OuterRef("pk"))
-                    .order_by("-update_at")
-                    .values("is_complete")[:1],
-                    output_field=BooleanField(),
-                )
-
-                # 2) Count how many ADS under this manager have latest_complete=True
-                complete_updates_subquery_per_ads_manager = Subquery(
-                    ADS.objects.filter(ads_manager=OuterRef("ads_manager_id"))
-                    .annotate(latest_complete=latest_complete)
-                    .filter(latest_complete=True)
-                    .values("ads_manager")
-                    .annotate(count=Count("pk"))
-                    .values("count")[:1],
-                    output_field=IntegerField(),
-                )
-
-                context["requetes_gestionnaires"] = ADSManagerRequest.objects.filter(
-                    user=self.request.user
-                ).annotate(
-                    ads_count=Subquery(ads_count_subquery, output_field=IntegerField()),
-                    complete_updates_count=Subquery(
-                        complete_updates_subquery_per_ads_manager,
-                        output_field=IntegerField(),
-                    ),
-                )
             elif len(proprietaire_vehicule_relais):
                 context["title"] = "MesADS - Accueil propriétaire de taxis relais"
                 context["proprietaire_vehicule_relais"] = True
@@ -409,13 +369,17 @@ class PlanSiteView(TemplateView):
                                 ),
                             },
                             {
-                                "nom_url": "Données liées aux ADS de votre Préfecture",
+                                "nom_url": "Administrations de votre Préfecture",
                                 "url": reverse(
-                                    "app.ads-manager-admin.administrations",
+                                    "app.ads-manager-admin.gestionnaires",
                                     kwargs={
                                         "prefecture_id": administrator.prefecture.id
                                     },
                                 ),
+                            },
+                            {
+                                "nom_url": "Vos administrations en gestio",
+                                "url": reverse("app.ads-manager.administrations"),
                             },
                             {
                                 "nom_url": (
@@ -453,7 +417,7 @@ class PlanSiteView(TemplateView):
                     },
                     {
                         "nom_url": "Administrations en gestions",
-                        "url": reverse("app.homepage"),
+                        "url": reverse("app.ads-manager.administrations"),
                     },
                 ]
             elif len(proprietaire_vehicule_relais):
