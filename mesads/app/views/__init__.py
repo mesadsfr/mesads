@@ -7,12 +7,13 @@ from .ads import (  # noqa: F401
     ADSView,
 )
 from .ads_manager import (  # noqa: F401
+    AdministrationsEnGestionView,
     ADSManagerAutocompleteView,
     ADSManagerView,
     ads_manager_decree_view,
 )
 from .ads_manager_admin import (  # noqa: F401
-    ADSManagerAdministratorView,
+    ADSManagerAdministratorListeGestionnaires,
     ADSManagerAdminRequestsView,
     ADSManagerAdminUpdatesView,
     ADSManagerExportView,
