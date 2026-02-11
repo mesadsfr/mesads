@@ -1,4 +1,3 @@
-from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Count, Q
 
 from mesads.app.models import ADS, ADSManager, ADSUser, InscriptionListeAttente
@@ -46,12 +45,11 @@ def get_ads_data_for_excel_export(ads_manager=None, ads_manager_administrator=No
         ADS.objects.select_related(
             "ads_manager__administrator__prefecture",
         )
-        .prefetch_related("ads_manager__content_object", "adslegalfile_set")
+        .prefetch_related(
+            "ads_manager__content_object", "adslegalfile_set", "adsuser_set"
+        )
         .annotate(
-            ads_users_status=ArrayAgg("adsuser__status"),
-            ads_users_names=ArrayAgg("adsuser__name"),
-            ads_users_sirets=ArrayAgg("adsuser__siret"),
-            ads_users_licenses=ArrayAgg("adsuser__license_number"),
+            ads_users_count=Count("adsuser", distinct=True),
             legalfiles_count=Count("adslegalfile", distinct=True),
         )
         .order_by("ads_manager")
@@ -90,13 +88,10 @@ def get_ads_data_for_excel_export(ads_manager=None, ads_manager_administrator=No
         "Numéro de la carte professionnelle du %s conducteur",
     )
 
-    # Counts the maximum number of drivers in the list of ADS..
-    def drivers_count(a):
-        # ArrayAgg peut renvoyer None si pas de lignes
-        return len(a.ads_users_status or [])
+    # Counts the maximum number of drivers in the list of ADS
 
     ads_list = list(qs_ads)
-    max_drivers = max((drivers_count(a) for a in ads_list), default=0)
+    max_drivers = max((a.ads_users_count for a in ads_list), default=0)
 
     def ORDINAL_FR(i):
         return "1er" if i == 1 else f"{i}e"
@@ -131,13 +126,13 @@ def get_ads_data_for_excel_export(ads_manager=None, ads_manager_administrator=No
             ads.owner_email,
             ads.legalfiles_count,
         ]
-        for status, name, siret, licence in zip(
-            ads.ads_users_status or [],
-            ads.ads_users_names or [],
-            ads.ads_users_sirets or [],
-            ads.ads_users_licenses or [],
-        ):
-            row += [status_label(status, ""), name, siret, licence]
+        for ads_user in ads.adsuser_set.all():
+            row += [
+                status_label(ads_user.status, ""),
+                ads_user.name,
+                ads_user.siret,
+                ads_user.license_number,
+            ]
         data.append(row)
 
     # Write headers, now that we know the maximum number of drivers.
