@@ -474,7 +474,7 @@ class NoteUtilisateurAdmin(admin.ModelAdmin):
         """
         qs = queryset
         if search_term:
-            qs = qs.annotate(
-                user_email_det=Collate("user__email", "C")
-            ).filter(user_email_det__icontains=search_term)
+            qs = qs.annotate(user_email_det=Collate("user__email", "C")).filter(
+                user_email_det__icontains=search_term
+            )
         return qs, False
