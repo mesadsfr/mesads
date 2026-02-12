@@ -1,0 +1,26 @@
+<table>
+  <thead>
+      <tr>
+          <th>Propriétaire</th>
+          <th>Nombre de véhicules</th>
+      </tr>
+  </thead>
+  <tbody>
+    {% for proprietaire in proprietaires %}
+    <tr>
+      <td>
+        <a href="{% url 'admin:vehicules_relais_proprietaire_change' object_id=proprietaire.id %}">{{proprietaire.nom}}</a>
+      </td>
+      <td>
+        <a href="{% url 'admin:vehicules_relais_vehicule_changelist' %}?proprietaire={{proprietaire.id}}">
+          Voir le(s) {{proprietaire.vehicules_count}} véhicule(s)
+        </a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="2">Aucun compte propriétaire associé</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
