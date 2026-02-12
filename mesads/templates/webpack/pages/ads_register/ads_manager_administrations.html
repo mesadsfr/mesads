@@ -56,7 +56,7 @@
                 <div class="fr-card__end">
                   <span class="mb-2">
                     <a
-                      href="{% url 'app.ads-manager-admin.gestionnaires' prefecture_id=ads_manager_administrator.prefecture.id %}"
+                      href="{% url 'app.ads-manager.detail' manager_id=ads_manager_request.ads_manager.id %}"
                       class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
                     >
                       Consulter les ADS 
@@ -64,7 +64,7 @@
                   </span>
                   <span>
                     <a
-                      href="{% url 'app.ads-manager-admin.updates' prefecture_id=ads_manager_administrator.prefecture.id %}"
+                      href="{% url 'app.liste_attente' manager_id=ads_manager_request.ads_manager.id %}"
                       class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
                     >
                       Voir la liste d'attente
