@@ -447,16 +447,13 @@ class NoteUtilisateurAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
-    def has_delete_permission(self, request, obj=None):
-        return False
-
     list_display = (
         "utilisateur",
         "note_qualite",
         "note_facilite",
     )
 
-    search_fields = ("user__email__icontains",)
+    search_fields = ("user__email",)
 
     list_filter = [
         NoteQualiteFilter,
@@ -464,7 +461,20 @@ class NoteUtilisateurAdmin(admin.ModelAdmin):
     ]
 
     def get_queryset(self, request):
-        req = NoteUtilisateur.objects
-        req = req.prefetch_related("user")
-        req = req.filter(Q(note_facilite__isnull=False) | Q(note_qualite__isnull=False))
-        return req
+        qs = NoteUtilisateur.objects
+        qs = qs.prefetch_related("user")
+        qs = qs.filter(Q(note_facilite__isnull=False) | Q(note_qualite__isnull=False))
+        return qs
+
+    def get_search_results(self, request, queryset, search_term):
+        """The field User.email uses a non-deterministic collation, which makes
+        it impossible to perform a LIKE query on it.
+
+        By overriding this method, we can specify the collation to use for the search.
+        """
+        qs = queryset
+        if search_term:
+            qs = qs.annotate(
+                user_email_det=Collate("user__email", "C")
+            ).filter(user_email_det__icontains=search_term)
+        return qs, False
