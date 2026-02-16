@@ -38,9 +38,9 @@
           <div class="fr-card">
             <div class="fr-card__body">
               <div class="fr-card__content">
-                <h3 class="fr-card__title">
+                <h2 class="fr-card__title">
                   Liste d'attente
-                </h3>
+                </h2>
                 <p class="fr-card__desc">La liste d'attente vous permets de gérer les demandes d'ADS en cours.</p>
                 <div class="fr-card__end">
                   <span>
@@ -61,9 +61,9 @@
           <div class="fr-card">
             <div class="fr-card__body">
               <div class="fr-card__content">
-                <h3 class="fr-card__title">
+                <h2 class="fr-card__title">
                   Modèles d'arrếtés
-                </h3>
+                </h2>
                 <p class="fr-card__desc">Un arrêté est un document juridique final qui accorde ou refuse l'autorisation.</p>
                 <div class="fr-card__end">
                   <span>
@@ -84,9 +84,9 @@
           <div class="fr-card">
             <div class="fr-card__body">
               <div class="fr-card__content">
-                <h3 class="fr-card__title">
+                <h2 class="fr-card__title">
                   Arrêté
-                </h3>
+                </h2>
                 <p class="fr-card__desc">Un arrêté spécifique est nécéssaire pour définir le nombre d'ADS de votre administration.</p>
                 <div class="fr-card__end">
                   <span>
@@ -107,9 +107,9 @@
           <div class="fr-card">
             <div class="fr-card__body">
               <div class="fr-card__content">
-                <h3 class="fr-card__title">
+                <h2 class="fr-card__title">
                   Télécharger toutes les ADS de l'administration
-                </h3>
+                </h2>
                 <div class="fr-card__end">
                   <span>
                     <a
@@ -164,16 +164,18 @@
       
   {% if ads_count %}
 
-    <h3>
-      <span class="fr-icon-car-fill" aria-hidden="true"></span>
-      {{ads_count}} ADS enregistrées
+    <div class="flex flex-col md:flex-row gap-1.5 items-baseline">
+      <h3>
+        <span class="fr-icon-car-fill" aria-hidden="true"></span>
+        {{ads_count}} ADS enregistrées
+      </h3>
 
       <p
         class="fr-badge {% if pourcentage_verification == 100 %}fr-badge fr-badge--green-bourgeon{% else %}fr-badge--orange-terre-battue{% endif%}"
       >
         {{pourcentage_verification}}% d'ADS vérifiées et complètes
       </p>
-    </h3>
+    </div>
 
     <div class="fr-table fr-table--md">
       <div class="fr-table__header">
