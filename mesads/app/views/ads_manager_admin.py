@@ -215,6 +215,12 @@ class ADSManagerAdministratorListeGestionnaires(ListView):
             else 0
         )
 
+        context["nb_administrations"] = (
+            ADSManager.objects
+            .filter(administrator=self.kwargs["ads_manager_administrator"])
+            .count()
+        )
+
         context["search"] = self.request.GET.get("search")
 
         return context
