@@ -68,49 +68,43 @@ class TestADSManagerView(ClientTestCase):
 
         # Immatriculatin plate, returns first ADS
         resp = self.ads_manager_city35_client.get(
-            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=imm4tricul4tion"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?search=imm4tricul4tion"
         )
         self.assertEqual(list(resp.context["ads_list"].all()), [ads1])
 
         # Owner firstname/lastname, returns second ADS
         resp = self.ads_manager_city35_client.get(
-            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=bob dyla"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?search=bob dyla"
         )
         self.assertEqual(list(resp.context["ads_list"].all()), [ads2])
 
         # Owner SIRET, return third ADS
         resp = self.ads_manager_city35_client.get(
-            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=123123123"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?search=123123123"
         )
         self.assertEqual(list(resp.context["ads_list"].all()), [ads3])
 
         # User SIRET, return ADS 4
         resp = self.ads_manager_city35_client.get(
-            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=22222222222222"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?search=22222222222222"
         )
         self.assertEqual(list(resp.context["ads_list"].all()), [ads4])
 
         # User name, return ADS 3
         resp = self.ads_manager_city35_client.get(
-            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=Henri SUPER"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?search=Henri SUPER"
         )
         self.assertEqual(list(resp.context["ads_list"].all()), [ads3])
 
         # CPAM accepted true, return ads 1
         resp = self.ads_manager_city35_client.get(
-            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?accepted_cpam=True"
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?accepted_cpam=on"
         )
         self.assertEqual(list(resp.context["ads_list"].all()), [ads1])
 
-        # CPAM accepted false, return ads 2
-        resp = self.ads_manager_city35_client.get(
-            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?accepted_cpam=False"
-        )
-        self.assertEqual(list(resp.context["ads_list"].all()), [ads2])
-
         # CPAM accepted any, and no filters, return all
         resp = self.ads_manager_city35_client.get(
-            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?q=&accepted_cpam="
+            f"/registre_ads/gestion/{self.ads_manager_city35.id}/?search=&accepted_cpam="
         )
         self.assertEqual(list(resp.context["ads_list"].all()), [ads1, ads2, ads3, ads4])
 

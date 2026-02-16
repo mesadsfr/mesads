@@ -18,15 +18,7 @@ class DemandeGestionADSView(FormView):
     form_class = ADSManagerForm
 
     def get_success_url(self):
-        administrator = self.kwargs.get("ads_manager_administrator")
-        return (
-            reverse(
-                "app.ads-manager-admin.administrations",
-                kwargs={"prefecture_id": administrator.prefecture.id},
-            )
-            if administrator
-            else reverse("app.homepage")
-        )
+        return reverse("app.ads-manager.administrations")
 
     def form_valid(self, form):
         _, created = ADSManagerRequest.objects.get_or_create(

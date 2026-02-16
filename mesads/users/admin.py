@@ -1,13 +1,12 @@
 import csv
 from datetime import date, timedelta
 
-from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.forms import UserChangeForm
 from django.db.models import Count, F, Q
 from django.db.models.functions import Collate
 from django.http import HttpResponse
+from django.template.loader import render_to_string
 from django.urls import path, reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -53,13 +52,10 @@ class ADSManagerAdministratorFilter(admin.SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        queryset = queryset.annotate(
-            adsmanageradministrator_count=Count("adsmanageradministrator")
-        )
         if self.value() == "yes":
-            return queryset.filter(adsmanageradministrator_count__gt=0)
+            return queryset.filter(adsmanageradministrator__isnull=False)
         elif self.value() == "no":
-            return queryset.filter(adsmanageradministrator_count=0)
+            return queryset.filter(adsmanageradministrator__isnull=True)
 
 
 class ProprietaireFilter(admin.SimpleListFilter):
@@ -75,7 +71,9 @@ class ProprietaireFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == "yes":
-            return queryset.filter(proprietaire__isnull=False)
+            return queryset.filter(
+                proprietaire__isnull=False, proprietaire__deleted_at__isnull=True
+            )
         elif self.value() == "no":
             return queryset.filter(proprietaire__isnull=True)
 
@@ -105,19 +103,9 @@ class LastLoginFilter(admin.SimpleListFilter):
         )
 
 
-class UserForm(UserChangeForm):
-    """Override the default form to add a custom widget to the email field."""
-
-    class Meta:
-        model = User
-        fields = "__all__"
-        widgets = {"email": forms.TextInput(attrs={"size": 100})}
-
-
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     change_list_template = "admin/auth/user/change_list_with_export.html"
-    form = UserForm
 
     list_display = (
         "date_joined",
@@ -321,46 +309,10 @@ class UserAdmin(BaseUserAdmin):
             vehicules_count=Count("vehicule")
         )
 
-        ret = """
-        <table>
-            <thead>
-                <tr>
-                    <th>Propriétaire</th>
-                    <th>Nombre de véhicules</th>
-                </tr>
-            </thead>
-            <tbody>
-        """
-        if len(proprietaires) == 0:
-            ret += """
-                <tr>
-                    <td colspan="2">Aucun compte propriétaire associé</td>
-                </tr>
-            """
-        else:
-            for proprietaire in proprietaires:
-                proprietaire_url = reverse(
-                    "admin:vehicules_relais_proprietaire_change",
-                    kwargs={"object_id": proprietaire.id},
-                )
-                vehicules_url = (
-                    reverse("admin:vehicules_relais_vehicule_changelist")
-                    + f"?proprietaire={proprietaire.id}"
-                )
-                ret += f"""
-                    <tr>
-                        <td><a href="{proprietaire_url}">{proprietaire.nom}</a></td>
-                        <td><a href="{vehicules_url}">
-                            Voir le(s) {proprietaire.vehicules_count} véhicule(s)
-                        </a></td>
-                    </tr>
-                """
-
-        ret += """
-            </tbody>
-        </table>
-        """
-        return mark_safe(ret)
+        return render_to_string(
+            template_name="admin/auth/user/table_proprietaire.html",
+            context={"proprietaires": proprietaires},
+        )
 
     @admin.display(description="Historique des connexions")
     def audit_entries_link(self, obj):

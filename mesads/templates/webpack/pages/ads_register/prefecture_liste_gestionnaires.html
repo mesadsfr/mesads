@@ -1,0 +1,180 @@
+{% extends "base_container.html" %}
+{% load static %}
+{% load show_pagination_links %}
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil {{ ads_manager_administrator.prefecture.display_text|capfirst }}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Administrations de votre préfecture</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+
+  <h1>Administrations de votre préfecture</h1>
+  
+  <p>Suivez la gestion des autorisations de stationnement (ADS) de votre préfecture.</p>
+
+
+  <div class="fr-container mb-2">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12 fr-col-md-4">
+          <div class="fr-card">
+            <div class="fr-card__body">
+              <div class="fr-card__content">
+                <h2 class="fr-card__title">
+                  Télécharger toutes les ADS de la préfécture
+                </h2>
+                <div class="fr-card__end">
+                  <span>
+                    <a
+                      href="{% url 'app.exports.prefecture' prefecture_id=ads_manager_administrator.prefecture.id %}"
+                      class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                    >
+                      Télécharger les ADS (excel)
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fr-col-12 fr-col-md-4">
+          <div class="fr-card">
+            <div class="fr-card__body">
+              <div class="fr-card__content">
+                <h2 class="fr-card__title">
+                  Consulter les dernières modifications
+                </h2>
+                <div class="fr-card__end">
+                  <span>
+                    <a
+                      href="{% url 'app.ads-manager-admin.updates' prefecture_id=ads_manager_administrator.prefecture.id %}"
+                      class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                    >
+                      Ouvrir les dernières modifications
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  <div class="flex flex-col md:flex-row items-baseline gap-1.5">
+    <h2>
+      <span class="fr-icon-building-4-fill" aria-hidden="true"></span>
+      {{ads_managers.count}} Administrations
+    </h2>
+
+    <p
+      class="fr-badge {% if pourcentage_verification == 100 %}fr-badge fr-badge--green-bourgeon{% else %}fr-badge--orange-terre-battue{% endif %}"
+    >
+      {{pourcentage_completion_prefecture}}% d'ADS vérifiées et complètes
+    </p>
+  </div>
+    
+  <div class="fr-table fr-table--multiline fr-table--no-caption">
+    <div class="fr-table__header">
+      <form method="get" class="fr-search-bar">
+        <label class="fr-label" for="search-gestionnaires"> Rechercher </label>
+        <input
+          class="fr-input"
+          value="{{request.GET.search}}"
+          name="search"
+          placeholder="Rechercher"
+          id="search-gestionnaires"
+          type="search"
+        >
+        <button title="Rechercher dans les ADS" type="submit" class="fr-btn">Rechercher</button>
+      </form>
+    </div>
+    <div class="fr-table__wrapper">
+      <div class="fr-table__container">
+        <div class="fr-table__content">
+          <table>
+            <thead>
+              <tr>
+                <th>Administration</th>
+                <th>Compte actif</th>
+                <th>Nombre d'ADS</th>
+                <th>Nombre d'inscriptions sur la liste d'attente</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ads_manager in ads_managers %}
+                <tr>
+                  <td>{{ ads_manager.content_object.display_text|capfirst }}</td>
+                  <td>{% if ads_manager.nb_managers > 0 %}Oui{% else %}Non{% endif %}</td>
+                  <td>
+                    {% if ads_manager.nb_ads > 0 %}
+                      {{ ads_manager.nb_ads }}
+                    {% elif ads_manager.no_ads_declared %}
+                      <small>Ne gère aucune ADS</small>
+                    {% elif ads_manager.epci_delegate %}
+                      <small>ADS gérées par l'EPCI <i>{{ ads_manager.epci_delegate }}</i></small>
+                    {% else %}
+                        <small>Pas d'ADS enregistrée</small>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {{ads_manager.inscriptions_liste_attente.count}}
+                  </td>
+                  <td>
+                    {% if ads_manager.nb_ads %}
+                      <p
+                        class="fr-badge {% if ads_manager.pourcentage_completion == 100 %}fr-badge fr-badge--green-bourgeon{% else %}fr-badge--orange-terre-battue{% endif %}"
+                      >
+                        {{ads_manager.pourcentage_completion}}% d'ADS vérifiées et complètes
+                      </p>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <a class="fr-btn fr-icon-arrow-right-line fr-btn--icon-right"
+                       href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}"
+                    >
+                      Voir plus
+                    </a>
+                    {% if ads_manager.id not in manager_ids %}
+                      <form class="mt-1" method="post" action="">
+                        {% csrf_token %}
+                        <input
+                          id="ads_manager_id"
+                          name="ads_manager_id"
+                          type="hidden"
+                          value="{{ads_manager.id}}"
+                        />
+                        <button
+                          class="fr-btn fr-btn--secondary fr-icon-user-add-fill fr-btn--icon-right"
+                          type="submit">Me désigner gestionnaire</button>
+                      </form>  
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% show_pagination_links page_obj %}
+  </div>
+  {% if complete_ads_for_prefecture %}
+    <p class="fr-text--xs">
+      Nombre d'ADS vérifiées, avec toutes les informations : {{ complete_ads_for_prefecture }}/{{ total_ads_for_prefecture }}
+    </p>
+  {% endif %}
+
+{% endblock body-content %}

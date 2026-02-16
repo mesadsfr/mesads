@@ -11,6 +11,14 @@ def user():
 
 
 @pytest.fixture
+def user_factory():
+    def _user_factory(**kwargs):
+        return UserFactory(**kwargs)
+
+    return _user_factory
+
+
+@pytest.fixture
 def client():
     return Client()
 
@@ -20,6 +28,16 @@ def client_logged(user):
     client = Client()
     client.force_login(user=user)
     return client
+
+
+@pytest.fixture
+def client_factory(user):
+    def _client_factory(user_=None):
+        client = Client()
+        client.force_login(user=user_ or user)
+        return client
+
+    return _client_factory
 
 
 @pytest.fixture

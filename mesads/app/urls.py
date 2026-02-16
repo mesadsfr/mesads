@@ -11,54 +11,24 @@ from .decorators import (
 
 url_prefectures = [
     path(
-        "espace-prefecture/<int:prefecture_id>/administrations/",
-        ads_manager_administrator_required(views.ADSManagerAdministratorView.as_view()),
-        name="app.ads-manager-admin.administrations",
+        "espace-prefecture/<int:prefecture_id>/gestionnaires/",
+        ads_manager_administrator_required(
+            views.ADSManagerAdministratorListeGestionnaires.as_view()
+        ),
+        name="app.ads-manager-admin.gestionnaires",
+        # A GARDER
     ),
     path(
         "espace-prefecture/<int:prefecture_id>/demandes-gestion/",
         ads_manager_administrator_required(views.ADSManagerAdminRequestsView.as_view()),
         name="app.ads-manager-admin.requests",
-    ),
-    path(
-        "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/",
-        ads_manager_administrator_required(views.ADSManagerView.as_view()),
-        name="app.ads-manager-admin.detail-administration",
-    ),
-    path(
-        "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/arretes",
-        ads_manager_administrator_required(views.ads_manager_decree_view),
-        name="app.ads-manager-admin.administration-arretes",
-    ),
-    path(
-        "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/ads/",
-        ads_manager_administrator_required(views.ADSCreateView.as_view()),
-        name="app.ads-manager-admin.ads-create",
-    ),
-    path(
-        "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/ads/<int:ads_id>",
-        ads_manager_administrator_required(views.ADSView.as_view()),
-        name="app.ads-manager-admin.ads-detail",
-    ),
-    path(
-        "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/ads/<int:ads_id>/history",
-        ads_manager_administrator_required(views.ADSHistoryView.as_view()),
-        name="app.ads-manager-admin.ads-history",
-    ),
-    path(
-        "espace-prefecture/<int:prefecture_id>/administrations/<int:manager_id>/ads/<int:ads_id>/delete",
-        ads_manager_administrator_required(views.ADSDeleteView.as_view()),
-        name="app.ads-manager-admin.ads-delete",
+        # A GARDER
     ),
     path(
         "espace-prefecture/<int:prefecture_id>/changements",
         ads_manager_administrator_required(views.ADSManagerAdminUpdatesView.as_view()),
         name="app.ads-manager-admin.updates",
-    ),
-    path(
-        "espace-prefecture/<int:prefecture_id>/demande_gestion_ads/",
-        ads_manager_administrator_required(views.DemandeGestionADSView.as_view()),
-        name="app.ads-manager-admin.demande_gestion_ads",
+        # A GARDER
     ),
     path(
         "espace-prefecture/<int:prefecture_id>/vehicules-relais/",
@@ -66,20 +36,28 @@ url_prefectures = [
             views.RepertoireVehiculeRelaisView.as_view()
         ),
         name="app.ads-manager-admin.vehicules_relais",
+        # A GARDER
     ),
     path(
         "espace-prefecture/<int:prefecture_id>/vehicules-relais/<str:numero>/",
         ads_manager_administrator_required(views.VehiculeView.as_view()),
         name="app.ads-manager-admin.vehicule_relais_detail",
+        # A GARDER
     ),
     path(
         "registre_ads/prefectures/<int:prefecture_id>/export",
         ads_manager_administrator_required(views.PrefectureExportView.as_view()),
         name="app.exports.prefecture",
+        # A GARDER
     ),
 ]
 
 url_gestionnaire = [
+    path(
+        "registre_ads/",
+        login_required(views.AdministrationsEnGestionView.as_view()),
+        name="app.ads-manager.administrations",
+    ),
     path(
         "registre_ads/demande_gestion_ads/",
         login_required(views.DemandeGestionADSView.as_view()),

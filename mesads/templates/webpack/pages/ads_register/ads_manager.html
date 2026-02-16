@@ -12,84 +12,121 @@
     </button>
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
-        {% if ads_manager_administrator %}
-          <li>
-            <a class="fr-breadcrumb__link"
-              href="{% url 'app.homepage' %}">
-              Accueil - {{ ads_manager_administrator.prefecture.display_text|capfirst }}
-            </a>
-          </li>
-          <li>
-            <a class="fr-breadcrumb__link"
-              href="{% url 'app.ads-manager-admin.administrations' prefecture_id=ads_manager_administrator.prefecture.id %}">
-              Vos administrations en gestion et accès Préfecture
-            </a>
-          </li>
-          <li>
-            <a class="fr-breadcrumb__link" aria-current="page">{{ ads_manager.content_object.display_text|capfirst }}</a>
-          </li>
-        {% else %}
-          <li>
-            <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
-          </li>
-          <li>
-            <a class="fr-breadcrumb__link" aria-current="page">{{ ads_manager.content_object.display_text|capfirst }}</a>
-          </li>
-        {% endif %}
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link"
+            href="{% url 'app.ads-manager.administrations' %}">
+            Vos administrations en gestion
+          </a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">{{ ads_manager.content_object.display_text|capfirst }}</a>
+        </li>
       </ol>
     </div>
   </nav>
 
-  <h1>Gérer le registre des ADS</h1>
-  <p class="fr-text--lead">Vous êtes gestionnaire des ADS de la {{ ads_manager.content_object.display_text }}.</p>
+  <h1>{{ ads_manager.content_object.display_text|capfirst }}</h1>
 
   {% if not ads_manager.is_locked and not ads_manager.no_ads_declared %}
-    <p>
-      <a
-        class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-        href="{{arretes_url}}"
-      >
-        <span aria-hidden="true" class="fr-icon-question-line"></span>
-        Arrêté délimitant le nombre d'ADS
-        {% if ads_manager.adsmanagerdecree_set.count %}
-          
-          <strong>({{ ads_manager.adsmanagerdecree_set.count }}
-            {% if ads_manager.adsmanagerdecree_set.count > 1 %}
-              documents enregistrés
-            {% else %}
-              document enregistré
-            {% endif %}
-          )</strong>
-        {% endif %}
-      </a>
-    </p>
-    <p>
-      <a
-        class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-        href="{{creation_ads_url}}"
-      >
-        <span class="fr-icon-draft-line" aria-hidden="true"></span>
-        Enregistrer une ADS
-      </a>
-    </p>
-    <p>
-      <a
-        class="fr-link fr-icon-arrow-down-line fr-link--icon-right"
-        href="{% url 'app.exports.ads-manager' manager_id=ads_manager.id %}"
-      >
-        <span class="fr-icon-file-download-line" aria-hidden="true"></span>
-        Télécharger toutes les ADS au format excel
-      </a>
-    </p>
-    <p>
-      <a
-        class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-        href="{% url 'app.arretes-list' manager_id=ads_manager.id %}"
-      >
-        <span aria-hidden="true" class="fr-icon-article-line"></span>
-        Accéder aux modèles d'arrêtés
-      </a>
-    </p>
+
+    <div class="fr-container mb-2">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12 fr-col-md-4">
+          <div class="fr-card">
+            <div class="fr-card__body">
+              <div class="fr-card__content">
+                <h2 class="fr-card__title">
+                  Liste d'attente
+                </h2>
+                <p class="fr-card__desc">La liste d'attente vous permets de gérer les demandes d'ADS en cours.</p>
+                <div class="fr-card__end">
+                  <span>
+                    <a
+                      href="{% url 'app.liste_attente' manager_id=ads_manager.id %}"
+                      class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                    >
+                      Consulter la liste d'attente
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fr-col-12 fr-col-md-4">
+          <div class="fr-card">
+            <div class="fr-card__body">
+              <div class="fr-card__content">
+                <h2 class="fr-card__title">
+                  Modèles d'arrếtés
+                </h2>
+                <p class="fr-card__desc">Un arrêté est un document juridique final qui accorde ou refuse l'autorisation.</p>
+                <div class="fr-card__end">
+                  <span>
+                    <a
+                      href="{% url 'app.arretes-list' manager_id=ads_manager.id %}"
+                      class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                    >
+                      Accéder aux modèles d'arrêtés
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fr-col-12 fr-col-md-4">
+          <div class="fr-card">
+            <div class="fr-card__body">
+              <div class="fr-card__content">
+                <h2 class="fr-card__title">
+                  Arrêté
+                </h2>
+                <p class="fr-card__desc">Un arrêté spécifique est nécéssaire pour définir le nombre d'ADS de votre administration.</p>
+                <div class="fr-card__end">
+                  <span>
+                    <a
+                      href="{% url 'app.ads-manager.decree.detail' manager_id=ads_manager.id %}"
+                      class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                    >
+                      Consulter ou modifier l'arrêté délimitant le nombre d'ADS
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fr-col-12 fr-col-md-4">
+          <div class="fr-card">
+            <div class="fr-card__body">
+              <div class="fr-card__content">
+                <h2 class="fr-card__title">
+                  Télécharger toutes les ADS de l'administration
+                </h2>
+                <div class="fr-card__end">
+                  <span>
+                    <a
+                      href="{% url 'app.exports.ads-manager' manager_id=ads_manager.id %}"
+                      class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                    >
+                      Télécharger (excel)
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   {% endif %}
 
   {% comment %}
@@ -111,76 +148,85 @@
     </div>
   </div>
 
-  {% if ads_list.count or search_defined %}
-    <div x-data="{ displayFilters: new URLSearchParams(window.location.search).get('q') || new URLSearchParams(window.location.search).get('accepted_cpam')}">
-      <p id="ADSFiltersButton">
-        <button
-          x-on:click="displayFilters = !displayFilters"
-          class="fr-link fr-link--icon-right"
-          :class="displayFilters ? 'fr-icon-arrow-down-line' : 'fr-icon-arrow-right-line'"
-        >
-          <span aria-hidden="true">🔎</span>Rechercher une ADS
-        </button>
+  <h2>
+    Mes Autorisations de stationnement (ADS)
+  </h2>
+
+  <div class="flex justify-end">
+    <a
+        href="{% url 'app.ads.create' manager_id=ads_manager.id %}"
+        class="fr-btn fr-btn--secondary fr-btn--icon-right fr-icon-add-line"
+      >
+        Ajouter une ADS
+      </a>
+  </div>
+
+      
+  {% if ads_count %}
+
+    <div class="flex flex-col md:flex-row gap-1.5 items-baseline">
+      <h3>
+        <span class="fr-icon-car-fill" aria-hidden="true"></span>
+        {{ads_count}} ADS enregistrées
+      </h3>
+
+      <p
+        class="fr-badge {% if pourcentage_verification == 100 %}fr-badge fr-badge--green-bourgeon{% else %}fr-badge--orange-terre-battue{% endif%}"
+      >
+        {{pourcentage_verification}}% d'ADS vérifiées et complètes
       </p>
-
-      <div x-show="displayFilters" id="ADSFilters" x-transition>
-        <h2>Filtrer les ADS</h2>
-        <form method="get" class="fr-mb-3w">
-
-          <!-- form.q -->
-          <div class="fr-col-lg-6 fr-input-group{% if search_form.q.errors %} fr-input-group--error{% endif %}">
-            <label class="fr-label" for="{{ search_form.q.id_for_label }}">
-              Rechercher par nom ou SIRET du titulaire, ou de l'exploitant, numéro de l'ADS, plaque d'immatriculation du véhicule
-              {% if ads_manager.content_type.name == 'EPCI' %}, commune…{% endif %}
-            </label>
-            <input
-              class="fr-input{% if search_form.q.errors %} fr-input--error{% endif %}"
-              type="text"
-              id="{{ search_form.q.id_for_label }}"
-              name="{{ search_form.q.html_name }}"
-              value="{{ search_form.q.value|default:"" }}"
-            />
-
-            {% for error in search_form.q.errors %}
-              <p class="fr-error-text">{{ error }}</p>
-            {% endfor %}
-          </div>
-
-          <!-- form.accepted_cpam  -->
-          <div class="fr-col-lg-6 fr-select-group{% if search_form.accepted_cpam.errors %} fr-select-group--error{% endif %}">
-            <label class="fr-label" for="{{ search_form.accepted_cpam.id_for_label }}">
-              Lister seulement les ADS conventionnées CPAM ?
-            </label>
-            <select
-              class="fr-select{% if search_form.accepted_cpam.errors %} fr-select--error{% endif %}"
-              id="{{ search_form.accepted_cpam.id_for_label }}"
-              name="{{ search_form.accepted_cpam.html_name }}"
-            >
-              {% for option in search_form.accepted_cpam %}
-                {{ option }}
-              {% endfor %}
-            </select>
-
-            {% for error in search_form.accepted_cpam.errors %}
-              <p class="fr-error-text">{{ error }}</p>
-            {% endfor %}
-          </div>
-
-          <div class="fr-input-group">
-            <button type="submit" class="fr-btn">Filtrer</button>
-          </div>
-        </form>
-      </div>
     </div>
 
-    <div class="fr-table fr-table--md fr-table--no-scroll">
+    <div class="fr-table fr-table--md">
+      <div class="fr-table__header">
+        <form method="get" class="fr-search-bar">
+          <label class="fr-label" for="search-ads"> Rechercher </label>
+          <input
+            class="fr-input"
+            value="{{request.GET.search}}"
+            name="search"
+            placeholder="Rechercher" id="search-ads" type="search">
+
+          {% for key, value in request.GET.items %}
+            {% if key != "search" and key != "page" %}
+              <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endif %}
+          {% endfor %}
+
+          <button title="Rechercher dans les ADS" type="submit" class="fr-btn">Rechercher</button>
+        </form>
+        <ul class='fr-btns-group fr-btns-group--inline-md'>
+          <li>
+            <form method="get">
+              <div class="fr-toggle mt-2">
+                <input
+                  type="checkbox"
+                  value="on"
+                  name="accepted_cpam"
+                  {% if request.GET.accepted_cpam %}checked{% endif %}
+                  class="fr-toggle__input"
+                  id="toggle-accepted-cpam"
+                  onchange="this.form.submit()"
+                >
+                <label class="fr-toggle__label" for="toggle-accepted-cpam">Afficher les ADS conventionnées CPAM</label>
+
+                {% for key, value in request.GET.items %}
+                  {% if key != "accepted_cpam" and key != "page" %}
+                    <input type="hidden" name="{{ key }}" value="{{ value }}">
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </form>
+          </li>
+        </ul>
+      </div>
       <div class="fr-table__wrapper">
         <div class="fr-table__container">
           <div class="fr-table__content">
             <table>
               <thead>
                 <tr>
-                  {% if ads_manager.content_type.name == 'EPCI' %}<th>🌆 Commune</th>{% endif %}
+                  {% if ads_manager.content_type.name == 'EPCI' %}<th>Commune</th>{% endif %}
                   <th>#ADS</th>
                   <th>Date de création</th>
                   <th>Type d'ADS</th>
@@ -197,12 +243,7 @@
                     {% if ads_manager.content_type.name == 'EPCI' %}<td>{{ ads.epci_commune.libelle|default:"" }}</td>{% endif %}
                     <td>
                       <a
-                        href="
-                          {% if ads_manager_administrator %}
-                          {% url 'app.ads-manager-admin.ads-detail' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads_manager.id ads_id=ads.id %}
-                          {% else %}
-                          {% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}
-                          {% endif %}"
+                        href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}"
                       >
                         #{{ ads.number }}
                       </a>
@@ -229,20 +270,17 @@
                           <a
                             class="fr-btn fr-icon-success-line fr-btn--icon-left"
                             href="{% url 'app.ads.verification' manager_id=ads_manager.id ads_id=ads.id %}"
+                            aria-label="Vérifier l'ADS {{ads.number}}"
                           >
                             Vérifier
                           </a>
                         {% endif %}
                         <a
-                          class="fr-btn fr-btn--secondary fr-icon-pencil-line"
-                          href="
-                            {% if ads_manager_administrator %}
-                            {% url 'app.ads-manager-admin.ads-detail' prefecture_id=ads_manager_administrator.prefecture.id manager_id=ads_manager.id ads_id=ads.id %}
-                            {% else %}
-                            {% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}
-                            {% endif %}"
+                          class="fr-btn fr-btn--secondary fr-icon-pencil-line fr-btn--icon-left"
+                          aria-label="Modifier l'ADS {{ads.number}}"
+                          href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}"
                         >
-                          <span class="fr-sr-only">Modifier l'ADS {{ads.number}}</span>
+                          Modifier
                         </a>
 
                       </div>
@@ -372,5 +410,4 @@
       </div>
     {% endif %}
   {% endif %}
-  <script src="ads_manager.ts"></script>
 {% endblock body-content %}

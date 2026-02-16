@@ -223,25 +223,6 @@ ADSLegalFileFormSet = inlineformset_factory(
 )
 
 
-class ADSSearchForm(forms.Form):
-    q = forms.CharField(
-        label="Nom du titulaire, de l'exploitant, SIRET, plaque d'immatriculation, …",
-        required=False,
-    )
-
-    accepted_cpam = forms.NullBooleanField(
-        label="Taxi conventionné CPAM ?",
-        widget=forms.Select(
-            choices=(
-                ("", "Peu importe"),
-                (True, "Oui"),
-                (False, "Non"),
-            ),
-        ),
-        required=False,
-    )
-
-
 ADSManagerDecreeFormSet = inlineformset_factory(
     ADSManager,
     ADSManagerDecree,
@@ -249,24 +230,6 @@ ADSManagerDecreeFormSet = inlineformset_factory(
     can_delete=True,
     extra=0,
 )
-
-
-class ADSManagerMultipleChoiceField(forms.ModelMultipleChoiceField):
-    widget = autocomplete.ModelSelect2Multiple(
-        url="app.autocomplete.ads-manager",
-        attrs={"data-placeholder": "Sélectionnez un gestionnaire ADS"},
-    )
-
-    def label_from_instance(self, ads_manager):
-        return ads_manager.human_name()
-
-
-class ADSManagerAutocompleteForm(forms.Form):
-    q = ADSManagerMultipleChoiceField(
-        queryset=ADSManager.objects,
-        label="Gestionnaires ADS",
-        required=False,
-    )
 
 
 class SearchVehiculeForm(forms.Form):

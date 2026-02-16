@@ -1,45 +1,11 @@
 <div class="homepage-section">
-  <div class="fr-container">
-    <div class="fr-grid-row fr-grid-row--gutters">
+  <div class="fr-container mb-4">
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
       <div class="fr-col-12 fr-col-lg-8">
         <h1>Espace de la {{ ads_manager_administrator.prefecture.display_text|capfirst }}</h1>
 
-        <p>
-          <a
-            class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-            href="{% url 'app.ads-manager-admin.requests' prefecture_id=ads_manager_administrator.prefecture.id %}"
-          >
-            <span class="fr-icon-feedback-line" aria-hidden="true"></span>
-            Demande d'accès des gestionnaires rattachés à votre Préfecture
-          </a>
-        </p>
-        <p>
-          <a
-            class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-            href="{% url 'app.ads-manager-admin.administrations' prefecture_id=ads_manager_administrator.prefecture.id %}"
-          >
-            <span class="fr-icon-survey-line" aria-hidden="true"></span>
-            Données liées aux ADS de votre Préfecture
-          </a>
-        </p>
-        <p>
-          <a
-            class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-            href="{% url 'app.ads-manager-admin.vehicules_relais' prefecture_id=ads_manager_administrator.prefecture.id %}"
-          >
-            <span class="fr-icon-file-pdf-line" aria-hidden="true"></span>
-            Données liées aux répertoires des taxis relais de votre préfecture
-          </a>
-        </p>
-        <p>
-          <a
-            class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-            href="{% url 'app.ads-manager-admin.updates' prefecture_id=ads_manager_administrator.prefecture.id %}"
-          >
-            <span aria-hidden="true" class="fr-icon-eye-line"></span>
-            Modifications effectuées par les gestionnaires rattachés à votre Préfecture
-          </a>
-        </p>
+        <p>Gérez les autorisationsde stationnement (ADS) de votre préfecture</p>
+
       </div>
 
       <div class="fr-col-12 fr-col-lg-4">
@@ -48,6 +14,87 @@
           alt=""
           src="../../images/logo_homepage.png"
         />
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-container mb-2">
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12 fr-col-md-4">
+        <div class="fr-card">
+          <div class="fr-card__body">
+            <div class="fr-card__content">
+              <h2 class="fr-card__title">
+                ADS de votre préfécture
+              </h2>
+              <p class="fr-card__desc">Consultez toutes les données liées à toutes les ADS existantes sur votre préfecture.</p>
+              <div class="fr-card__end">
+                <span class="mb-2">
+                  <a
+                    href="{% url 'app.ads-manager-admin.gestionnaires' prefecture_id=ads_manager_administrator.prefecture.id %}"
+                    class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                  >
+                    Voir la liste des administrations
+                  </a>
+                </span>
+                <span>
+                  <a
+                    href="{% url 'app.ads-manager-admin.updates' prefecture_id=ads_manager_administrator.prefecture.id %}"
+                    class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                  >
+                    Consulter les dernières modifications
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fr-col-12 fr-col-md-4">
+        <div class="fr-card">
+          <div class="fr-card__body">
+            <div class="fr-card__content">
+              <h2 class="fr-card__title">
+                Vos administrations en gestion
+              </h2>
+              <p class="fr-card__desc">Gérez vos autorisations de stationnement (ADS) et vos listes d'attente pour chacune de vos administrations.</p>
+              <div class="fr-card__end">
+                <span>
+                  <a
+                    href="{% url 'app.ads-manager.administrations' %}"
+                    class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                  >
+                    Gérer mes administrations
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fr-col-12 fr-col-md-4">
+        <div class="fr-card">
+          <div class="fr-card__body">
+            <div class="fr-card__content">
+              <h2 class="fr-card__title">
+                Demandes d'accès
+              </h2>
+              <p class="fr-card__desc">Gérer les accès aux données des administrations de votre préfecture.</p>
+              <div class="fr-card__end">
+                <span>
+                  <a
+                    href="{% url 'app.ads-manager-admin.requests' prefecture_id=ads_manager_administrator.prefecture.id %}"
+                    class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                  >
+                    Voir vos demandes d'accès
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
