@@ -1,0 +1,12 @@
+{% extends "base_mail.txt" %}
+{% load admin_urls %}
+
+{% block body %}
+L'utilisateur {{ user.email }} souhaite obtenir la permission de gérer la {{ demande.administrator.prefecture.display_fulltext|safe }}.
+
+En tant qu'administrateur, vous avez le pouvoir d'accepter ou de refuser d'accéder à cette demande.
+
+Rendez-vous sur MesADS sur {{ request.scheme }}://{{ request.get_host }}{% url 'admin:app_demandegestionprefecture_change' object_id=demande.pk %} pour répondre à la demande.
+
+Attention ! Avant d'accepter une demande, assurez-vous que le demandeur travaille bien pour l'administration renseignée. N'hésitez pas à lui envoyer un email ou un appel téléphonique pour demander confirmation.
+{% endblock %}

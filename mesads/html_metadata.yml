@@ -118,6 +118,10 @@ urls:
     title: "Gestion et contrôle des accès des instructeurs ADS"
     description: "Gérez les demandes d'accès au registre ADS en acceptant ou refusant les instructeurs de votre département."
 
+  app.ads-manager-admin.demande_gestion_prefecture:
+    title: "MesADS - Demande de gestion préfecture"
+    description: "MesADS - Demandez l'accès à l'espace préfecture de votre département."
+
   app.ads-manager-admin.gestionnaires:
     title: "MesADS - Administrations de votre préfecture"
     description: "MesADS - Administrations de votre préfecture"

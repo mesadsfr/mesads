@@ -17,6 +17,7 @@ from .ads_manager_admin import (  # noqa: F401
     ADSManagerAdminRequestsView,
     ADSManagerAdminUpdatesView,
     ADSManagerExportView,
+    DemandeGestionPrefectureView,
     PrefectureExportView,
     RepertoireVehiculeRelaisView,
     VehiculeView,

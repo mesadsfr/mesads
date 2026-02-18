@@ -1,0 +1,35 @@
+{% extends "base_mail.mjml" %}
+
+{% block title %}
+Demande Mes ADS acceptée
+{% endblock %}
+
+{% block content %}
+<mj-column>
+  <mj-text>
+    <p>
+      Bonjour,
+    </p>
+    <p>
+      Nous vous confirmons que votre accès "Préfecture" a été validé. Vous trouverez ci-joint le guide d'utilisation dédié aux comptes administrateurs, dans lequel vous retrouverez la liste exhaustive des fonctionnalités qui vous sont proposées. 
+    </p>
+    <ul>
+      <li>
+        Pour toute question concernant l'utilisation de l'outil MesADS, vous pouvez consulter la FAQ ou nous contacter par mail (<a href="{{email_contact}}">equipe@mesads.beta.gouv.fr</a>)
+      </li>
+      <li>
+        Pour toute question d'ordre réglementaire nous vous invitons à utiliser la plateforme Cosmose.
+      </li>
+    </ul>
+    <p>
+    Nous restons à votre disposition pour tout renseignement complémentaire, 
+    </p>
+    <p>
+    Bien cordialement, 
+    </p>
+    <p>
+    L'équipe MesADS
+    </p>
+  </mj-text>
+</mj-column>
+{% endblock %}

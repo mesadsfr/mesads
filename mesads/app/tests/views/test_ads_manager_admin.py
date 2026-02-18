@@ -1,10 +1,16 @@
 from datetime import date, datetime
 from http import HTTPStatus
 
+from django.conf import settings
 from django.core import mail
 from django.urls import reverse
 
-from mesads.app.models import ADS, ADSManager, ADSManagerRequest
+from mesads.app.models import (
+    ADS,
+    ADSManager,
+    ADSManagerRequest,
+    DemandeGestionPrefecture,
+)
 from mesads.fradm.models import Prefecture
 from mesads.unittest import ClientTestCase
 from mesads.vehicules_relais.models import Proprietaire, Vehicule
@@ -403,3 +409,56 @@ class TestVehiculeView(ClientTestCase):
             self.ads_manager_administrator_35,
         )
         self.assertEqual(response.context["vehicule"], self.vehicule)
+
+
+class TestDemandeGestionPrefecture(ClientTestCase):
+    def setUp(self):
+        super().setUp()
+        self.client, self.user = self.create_client()
+        self.administrator = self.ads_manager_administrator_35
+        self.prefecture = self.ads_manager_administrator_35.prefecture
+
+    def test_get_page_demande_gestion_prefecture(self):
+        response = self.client.get(
+            reverse("app.ads-manager-admin.demande_gestion_prefecture")
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertTemplateUsed(
+            response, "pages/ads_register/demande_gestion_prefecture.html"
+        )
+
+    def test_post_page_demande_gestion_prefecture(self):
+        assert (
+            DemandeGestionPrefecture.objects.filter(
+                user=self.user, administrator=self.administrator
+            ).count()
+            == 0
+        )
+        response = self.client.post(
+            reverse("app.ads-manager-admin.demande_gestion_prefecture"),
+            {"departement": self.prefecture.id},
+        )
+        self.assertRedirects(
+            response,
+            expected_url=reverse(
+                "app.homepage",
+            ),
+            status_code=HTTPStatus.FOUND,
+            target_status_code=HTTPStatus.OK,
+            fetch_redirect_response=True,
+        )
+        assert (
+            DemandeGestionPrefecture.objects.filter(
+                user=self.user, administrator=self.administrator
+            ).count()
+            == 1
+        )
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        email = mail.outbox[0]
+
+        self.assertEqual(
+            email.subject, f"Mes ADS : Demande d'accès préfecture de {self.user.email}"
+        )
+        self.assertEqual(email.to, [settings.MESADS_CONTACT_EMAIL])

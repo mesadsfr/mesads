@@ -379,6 +379,36 @@ class ADSManagerAdministrator(models.Model):
         )
 
 
+@reversion.register
+class DemandeGestionPrefecture(models.Model):
+    """Requête utilisateur pour devenir gestionnaire d'une préfecture.
+    Elle doit être accepté par un membre de l'équipe de MesADS.
+    """
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        blank=False,
+        related_name="demandes_gestion_prefecture",
+    )
+    administrator = models.ForeignKey(
+        ADSManagerAdministrator,
+        on_delete=models.CASCADE,
+        blank=False,
+        related_name="demandes_gestion_prefecture",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+
+    class Meta:
+        unique_together = (("user", "administrator"),)
+        verbose_name = "Demande pour devenir gestionnaire de préfecture"
+        verbose_name_plural = "Demandes pour devenir gestionnaire de préfecture"
+
+    def __str__(self):
+        return f"Requete de {self.user} pour être gestionnaire de {self.administrator}"
+
+
 def validate_siret(value):
     if not value:
         return
