@@ -118,9 +118,6 @@
     const modal = document.getElementById("modal-notation")
     const form = document.getElementById("form-notation")
 
-    console.log(modal)
-    console.log(form.getAttribute('action'))
-
     if (!modal || !form) return ;
 
     let hasSubmitNote = false;
@@ -177,6 +174,7 @@
         await postForm('note');
         hasSubmitNote = true;
         closeModal()
+        restoreFocusToHeader();
       } catch (err) {
         console.error(err);
       }

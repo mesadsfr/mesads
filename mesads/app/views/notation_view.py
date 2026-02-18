@@ -29,6 +29,12 @@ class NotationView(View):
         note_utilisateur, _ = NoteUtilisateur.objects.get_or_create(user=user)
 
         if action == "close":
+            if user.email == "gestionnaire@mesads.beta.gouv.fr":
+                return JsonResponse(
+                    data={
+                        "status": "ok",
+                    },
+                )
             note_utilisateur.dernier_affichage = timezone.now().date()
             note_utilisateur.save()
             return JsonResponse(
@@ -37,6 +43,12 @@ class NotationView(View):
                 },
             )
         else:
+            if user.email == "gestionnaire@mesads.beta.gouv.fr":
+                return JsonResponse(
+                    data={
+                        "status": "ok",
+                    },
+                )
             note_utilisateur.dernier_affichage = timezone.now().date()
             note_utilisateur.derniere_note = timezone.now().date()
             note_utilisateur.note_qualite = request.POST.get("note_qualite")
