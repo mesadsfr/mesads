@@ -1,0 +1,1 @@
+Demande acceptée pour gérer {{ demande.administrator.prefecture.display_fulltext|safe }}

@@ -1,0 +1,17 @@
+{% extends "base_mail.txt" %}
+
+{% block body %}
+
+Bonjour,
+
+Nous vous confirmons que votre accès "Préfecture" a été validé. Vous trouverez ci-joint le guide d'utilisation dédié aux comptes administrateurs, dans lequel vous retrouverez la liste exhaustive des fonctionnalités qui vous sont proposées. 
+
+- Pour toute question concernant l'utilisation de l'outil MesADS, vous pouvez consulter la FAQ ou nous contacter par mail ({{email_contact}})
+- Pour toute question d'ordre réglementaire, nous vous invitons à utiliser la plateforme Cosmose.
+
+Nous restons à votre disposition pour tout renseignement complémentaire, 
+
+Bien cordialement, 
+
+L'équipe MesADS
+{% endblock %}

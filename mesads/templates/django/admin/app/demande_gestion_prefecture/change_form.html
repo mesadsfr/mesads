@@ -1,0 +1,20 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+
+{% block submit_buttons_bottom %}
+  {% if change %}
+    <div class="submit-row">
+      <input type="submit" value="Valider la demande" class="default" name="_valider">
+
+      {# Garder la suppression possible #}
+      {% if has_delete_permission %}
+        <a href="{% url 'admin:app_demandegestionprefecture_delete' original.pk|admin_urlquote %}"
+            class="deletelink">
+          {% translate "Delete" %}
+        </a>
+      {% endif %}
+    </div>
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}

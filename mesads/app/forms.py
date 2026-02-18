@@ -451,3 +451,10 @@ class ListesAttentePubliquesSearchForm(forms.Form):
 
     def is_filled(self):
         return self.cleaned_data.get("departement") or self.cleaned_data.get("commune")
+
+
+class DemandeGestionPrefectureForm(forms.Form):
+    departement = forms.ModelChoiceField(
+        queryset=Prefecture.objects.exclude(numero="999"),
+        label="Département",
+    )
