@@ -50,6 +50,11 @@ url_prefectures = [
         name="app.exports.prefecture",
         # A GARDER
     ),
+    path(
+        "registre_ads/demande_gestion_prefecture/",
+        login_required(views.DemandeGestionPrefectureView.as_view()),
+        name="app.ads-manager-admin.demande_gestion_prefecture",
+    ),
 ]
 
 url_gestionnaire = [

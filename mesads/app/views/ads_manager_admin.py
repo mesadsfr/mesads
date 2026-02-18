@@ -25,10 +25,10 @@ from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.text import slugify
-from django.views.generic import ListView, TemplateView, View
+from django.views.generic import FormView, ListView, TemplateView, View
 from reversion.views import RevisionMixin
 
-from mesads.app.forms import SearchVehiculeForm
+from mesads.app.forms import DemandeGestionPrefectureForm, SearchVehiculeForm
 from mesads.fradm.models import EPCI, Aeroport, Commune, Prefecture
 from mesads.utils_psql import SplitPart
 from mesads.vehicules_relais.models import Vehicule
@@ -39,6 +39,7 @@ from ..models import (
     ADSManagerAdministrator,
     ADSManagerRequest,
     ADSUpdateLog,
+    DemandeGestionPrefecture,
 )
 from ..services import (
     get_ads_data_for_excel_export,
@@ -543,3 +544,62 @@ class VehiculeView(TemplateView):
             "ads_manager_administrator"
         )
         return context
+
+
+class DemandeGestionPrefectureView(FormView):
+    form_class = DemandeGestionPrefectureForm
+    template_name = "pages/ads_register/demande_gestion_prefecture.html"
+
+    def get_success_url(self):
+        return reverse("app.homepage")
+
+    def form_valid(self, form):
+        administrator = ADSManagerAdministrator.objects.filter(
+            prefecture=form.data.get("departement")
+        ).first()
+
+        if administrator:
+            demande, _ = DemandeGestionPrefecture.objects.get_or_create(
+                user=self.request.user, administrator=administrator
+            )
+            messages.success(
+                self.request,
+                "Votre demande a bien été transmise à notre équipe",
+            )
+            self.envoi_email_notification(demande)
+            # send maiil
+
+        return super().form_valid(form)
+
+    def envoi_email_notification(self, demande):
+        email_subject = render_to_string(
+            "demande_gestion_prefecture/email_demande_gestion_prefecture_subject.txt",
+            {
+                "demande": demande,
+            },
+            request=self.request,
+        ).strip()
+        email_content = render_to_string(
+            "demande_gestion_prefecture/email_demande_gestion_prefecture_content.txt",
+            {
+                "request": self.request,
+                "demande": demande,
+            },
+            request=self.request,
+        )
+        email_content_html = render_to_string(
+            "demande_gestion_prefecture/email_demande_gestion_prefecture_content.mjml",
+            {
+                "request": self.request,
+                "demande": demande,
+            },
+            request=self.request,
+        )
+        send_mail(
+            email_subject,
+            email_content,
+            settings.MESADS_CONTACT_EMAIL,
+            [settings.MESADS_CONTACT_EMAIL],
+            fail_silently=True,
+            html_message=email_content_html,
+        )
