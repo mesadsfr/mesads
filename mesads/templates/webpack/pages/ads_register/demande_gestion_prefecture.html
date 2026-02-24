@@ -11,27 +11,17 @@
           <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
         </li>
         <li>
-          <a class="fr-breadcrumb__link" aria-current="page">Demande de gestion de préfecture</a>
+          <a class="fr-breadcrumb__link" aria-current="page">Demander un accès préfecture</a>
         </li>
       </ol>
     </div>
   </nav>
   
-  <h1>Demander à gérer une préfecture</h1>
+  <h1>Demander un accès préfecture</h1>
   <form method="post">
     {% csrf_token %}
     <div class="fr-form-group">
       <fieldset class="fr-fieldset">
-        <legend class="fr-fieldset__legend fr-text--regular" id="radio-inline-legend">
-          <div class="fr-mb-2w fr-alert fr-alert--info">
-            <p class="fr-alert__title">Un problème ? Contactez-nous !</p>
-            <p>
-              Si vous avez le moindre problème, par exemple si votre demande est refusée ou met trop de temps avant d'être acceptée, 
-              vous pouvez contacter notre équipe à cette adresse electronique: equipe@mesads.beta.gouv.fr.
-            </p>
-            <p class="fr-text--xl fr-mt-2w">La demande est exclusivement réservée aux agents de l'administration.</p>
-          </div>
-        </legend>
         <div class="fr-fieldset__content">
             {% include "form_fields/select.html" with empty_option=True field=form.departement field_errors=form.errors.departement required=form.fields.departement.required bold=True %}
         </div>
@@ -46,6 +36,13 @@
         {% endfor %}
       </div>
     {% endif %}
+
+    <div class="fr-mb-2w fr-alert fr-alert--info fr-alert--sm">
+      <h2 class="fr-alert__title">La demande est exclusivement réservée aux personnes habilitées par la préfecture.</h2>
+      <p>
+        Si vous avez le moindre problème, vous pouvez nous contacter à cette adresse électronique: <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+      </p>
+    </div>
     <div class="fr-input-group">
       <button type="submit" class="fr-btn">Envoyer la demande</button>
     </div>
