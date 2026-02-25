@@ -233,9 +233,7 @@ class ADSManagerAdministratorListeGestionnaires(ListView):
         )
         url_access = reverse(
             "app.ads-manager-admin.requests",
-            kwargs={
-                "prefecture_id": kwargs["ads_manager_administrator"].prefecture.id
-            }
+            kwargs={"prefecture_id": kwargs["ads_manager_administrator"].prefecture.id},
         )
         messages.success(
             request,
@@ -246,7 +244,7 @@ class ADSManagerAdministratorListeGestionnaires(ListView):
                     <p><a href="{url_access}">Gérer les accès</a></p>
                     </span>
                 """
-            )
+            ),
         )
         return self.get(request, *args, **kwargs)
 
