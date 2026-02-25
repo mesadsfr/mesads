@@ -28,7 +28,7 @@
 }
 
 .homepage-img {
-  width: 60%;
+  width: 130px;
   height: auto;
 }
 
@@ -92,4 +92,10 @@
 }
 .stats-card-description {
   font-size: 1.25rem !important;
+}
+
+/* UTILS */
+
+.full-width {
+  width: 100% !important;
 }

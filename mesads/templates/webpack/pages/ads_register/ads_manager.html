@@ -85,7 +85,7 @@
             <div class="fr-card__body">
               <div class="fr-card__content">
                 <h2 class="fr-card__title">
-                  Arrêté
+                  Arrêté délimitant le nombre d'ADS
                 </h2>
                 <p class="fr-card__desc">Un arrêté spécifique est nécéssaire pour définir le nombre d'ADS de votre administration.</p>
                 <div class="fr-card__end">
@@ -94,7 +94,7 @@
                       href="{% url 'app.ads-manager.decree.detail' manager_id=ads_manager.id %}"
                       class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
                     >
-                      Consulter ou modifier l'arrêté délimitant le nombre d'ADS
+                      Consulter ou modifier l'arrêté
                     </a>
                   </span>
                 </div>
@@ -104,7 +104,7 @@
         </div>
 
         <div class="fr-col-12 fr-col-md-4">
-          <div class="fr-card">
+          <div class="fr-card fr-card--download">
             <div class="fr-card__body">
               <div class="fr-card__content">
                 <h2 class="fr-card__title">
@@ -114,11 +114,13 @@
                   <span>
                     <a
                       href="{% url 'app.exports.ads-manager' manager_id=ads_manager.id %}"
-                      class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                      class="fr-link fr-icon-arrow-down-line fr-link--icon-right"
                     >
                       Télécharger (excel)
                     </a>
                   </span>
+                </div>
+                <div class="fr-card__start">
                 </div>
               </div>
             </div>
@@ -129,36 +131,17 @@
 
   {% endif %}
 
-  {% comment %}
-    Display the list of ADS if the list is not empty, or if the user has searched for something.
-  {% endcomment %}
-
-  <div class="fr-notice fr-notice--info fr-mb-3w">
-    <div class="fr-container">
-      <div class="fr-notice__body">
-        <p>
-          <span class="fr-notice__title">Pour toute modification sur l'ADS</span>
-          <span class="fr-notice__desc">
-            (changement de véhicule, de titulaire, etc.), il convient de cliquer sur “Modifier” 
-            au niveau de l’ADS concernée pour la mettre à jour et ajouter l'arrêté modificatif. Une modification, y compris dans le cadre d'une cession, 
-            ne provoque pas la suppression de l'ADS actuelle.
-          </span>
-        </p>
-      </div>
-    </div>
-  </div>
-
   <h2>
     Mes autorisations de stationnement (ADS)
   </h2>
 
   <div class="flex justify-end">
     <a
-        href="{% url 'app.ads.create' manager_id=ads_manager.id %}"
-        class="fr-btn fr-btn--secondary fr-btn--icon-right fr-icon-add-line"
-      >
-        Ajouter une ADS
-      </a>
+      href="{% url 'app.ads.create' manager_id=ads_manager.id %}"
+      class="fr-btn fr-btn--secondary fr-btn--icon-right fr-icon-add-line"
+    >
+      Ajouter une ADS
+    </a>
   </div>
 
       
@@ -268,7 +251,7 @@
                       <div class="flex flex-col gap-1">
                         {% if ads.latest_update_log_is_outdated or ads.latest_update_log is None %}
                           <a
-                            class="fr-btn fr-icon-success-line fr-btn--icon-left"
+                            class="fr-btn fr-icon-success-line fr-btn--icon-left full-width"
                             href="{% url 'app.ads.verification' manager_id=ads_manager.id ads_id=ads.id %}"
                             aria-label="Vérifier l'ADS {{ads.number}}"
                           >
@@ -276,7 +259,7 @@
                           </a>
                         {% endif %}
                         <a
-                          class="fr-btn fr-btn--secondary fr-icon-pencil-line fr-btn--icon-left"
+                          class="fr-btn fr-btn--secondary fr-icon-pencil-line fr-btn--icon-left full-width"
                           aria-label="Modifier l'ADS {{ads.number}}"
                           href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}"
                         >

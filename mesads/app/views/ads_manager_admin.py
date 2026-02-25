@@ -24,6 +24,7 @@ from django.db.models.functions import Cast, Coalesce, Now, Replace
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.views.generic import ListView, TemplateView, View
 from reversion.views import RevisionMixin
@@ -230,9 +231,22 @@ class ADSManagerAdministratorListeGestionnaires(ListView):
         ADSManagerRequest.objects.create(
             user=self.request.user, ads_manager=ads_manager, accepted=True
         )
+        url_access = reverse(
+            "app.ads-manager-admin.requests",
+            kwargs={
+                "prefecture_id": kwargs["ads_manager_administrator"].prefecture.id
+            }
+        )
         messages.success(
             request,
-            "Vous êtes bien devenu gestionnaire de cette administration",
+            mark_safe(
+                f"""
+                    <span>
+                    <p>Vous êtes bien devenu gestionnaire de cette administration.</p>
+                    <p><a href="{url_access}">Gérer les accès</a></p>
+                    </span>
+                """
+            )
         )
         return self.get(request, *args, **kwargs)
 

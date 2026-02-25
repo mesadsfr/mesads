@@ -80,7 +80,7 @@
     <p
       class="fr-badge {% if pourcentage_verification == 100 %}fr-badge fr-badge--green-bourgeon{% else %}fr-badge--orange-terre-battue{% endif %}"
     >
-      {{pourcentage_completion_prefecture}}% d'ADS vérifiées et complètes
+      {{pourcentage_completion_prefecture|floatformat:-1}}% d'ADS vérifiées et complètes
     </p>
   </div>
     
