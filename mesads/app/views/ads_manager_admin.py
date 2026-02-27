@@ -13,6 +13,7 @@ from django.db.models import (
     DateTimeField,
     ExpressionWrapper,
     F,
+    FloatField,
     IntegerField,
     OuterRef,
     Q,
@@ -20,7 +21,7 @@ from django.db.models import (
     Value,
     When,
 )
-from django.db.models.functions import Cast, Coalesce, Now, Replace
+from django.db.models.functions import Cast, Coalesce, Now, Replace, Round
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -125,11 +126,14 @@ class ADSManagerAdministratorListeGestionnaires(ListView):
                 pourcentage_completion=Case(
                     When(
                         nb_ads__gt=0,
-                        then=ExpressionWrapper(
-                            F("complete_updates_count") / F("nb_ads") * 100,
-                            output_field=IntegerField(),
+                        then=Round(
+                            Cast(F("complete_updates_count"), FloatField())
+                            * Value(100.0)
+                            / Cast(F("nb_ads"), FloatField()),
                         ),
-                    )
+                    ),
+                    default=Value(0),
+                    output_field=IntegerField(),
                 ),
             )
             .order_by("content_type")
