@@ -116,8 +116,13 @@
                       {% endif %}
                     </td>
                     <td class="!text-right">
-                      <a class="fr-btn fr-btn--secondary fr-icon-eye-line"
-                         href="{% url 'vehicules-relais.vehicule' numero=vehicule.numero %}">Afficher les détails</a>
+                      <a
+                        class="fr-btn fr-btn--secondary fr-icon-eye-line"
+                        aria-label="Afficher les détails du véhicule {{vehicule.numero}}"
+                        href="{% url 'vehicules-relais.vehicule' numero=vehicule.numero %}"
+                      >
+                        Afficher les détails
+                      </a>
                     </td>
                   </tr>
                 {% empty %}

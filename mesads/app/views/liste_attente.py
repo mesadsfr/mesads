@@ -104,6 +104,9 @@ class ListeAttenteView(ListView):
             ).count()
             == 0
         )
+        context["status_liste"] = (
+            "publique" if context["ads_manager"].liste_attente_publique else "privée"
+        )
         return context
 
 
@@ -712,10 +715,23 @@ class ExportPDFListePubliqueView(View):
         )
 
         dsfr_css_path = finders.find("@gouvfr/dsfr/dsfr.min.css")
+        pdf_css_path = finders.find("css/pdf.css")
         stylesheets = []
         if dsfr_css_path:
             stylesheets.append(CSS(filename=dsfr_css_path))
 
-        HTML(string=html_string).write_pdf(target=response, stylesheets=stylesheets)
+        if pdf_css_path:
+            stylesheets.append(CSS(filename=pdf_css_path))
+
+        HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf(
+            target=response,
+            stylesheets=stylesheets,
+            pdf_variant="pdf/ua-1",
+            metadata={
+                "title": f"Liste d'attente - {ads_manager.content_object.display_text}",
+                "author": "MesADS",
+                "language": "fr",
+            },
+        )
 
         return response

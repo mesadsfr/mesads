@@ -4,25 +4,27 @@
 {% for revision, objects in history.get_revisions %}
   {% for cls, objects_ids in objects.items %}
     {% for object_id, diff in objects_ids.items %}
+      <h2>Changement du {{ revision.date_created|date:"d/m/Y" }} par
+        {% if revision.user %}
+            {{ revision.user.email }}
+          {% else %}
+            un utilisateur inconnu
+          {% endif %}
+      </h2>
       <div class="fr-table fr-table--lg" id="table-history">
         <div class="fr-table__wrapper">
           <div class="fr-table__container">
             <div class="fr-table__content">
               <table>
-                <caption>Changement du {{ revision.date_created|date:"d/m/Y" }} par
-                  {% if revision.user %}
-                    {{ revision.user.email }}
-                  {% else %}
-                    un utilisateur inconnu
-                  {% endif %}
+                <caption>
+                  <div>
+                    {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
+                      {{ cls|meta:"verbose_name" }} (supprimé)
+                    {% else %}
+                      {{ cls|meta:"verbose_name" }}
+                    {% endif %}
+                  </div>
                 </caption>
-                <thead>
-                  {% if "deleted_at" in diff.changed_fields.keys|selectattr:"name" %}
-                    <th class="fr-text--lg !text-center !bg-[#1b1b35] text-white" colspan="2" scope="colgroup">{{ cls|meta:"verbose_name" }} (supprimé)</th>
-                  {% else %}
-                    <th class="fr-text--lg !text-center !bg-[#1b1b35] text-white" colspan="2" scope="colgroup">{{ cls|meta:"verbose_name" }}</th>
-                  {% endif %}
-                </thead>
                 <tbody>
                   {% comment %}
                   There are two reasons why diff.is_new_object is true:

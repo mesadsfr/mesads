@@ -131,7 +131,7 @@ urls:
     description: "Liste des dernières modifications apportées aux ADS de votre préfecture."
 
   app.ads-manager.detail:
-    title: "ADS gérées par votre administration"
+    title: "{{ title }}"
     description: "Consultez et gérez l'ensemble des ADS attribuées par {{ ads_manager.content_object.display_fulltext }}."
 
   app.ads-manager.decree.detail:
@@ -245,7 +245,7 @@ urls:
   # Liste attente
 
   app.liste_attente:
-    title: "Liste d'attente {{ads_manager.content_object.display_text}} - MesADS"
+    title: "Liste d'attente {{status_liste}} {{ads_manager.content_object.display_text}} - MesADS"
     description: "Consulter la liste d'attente de {{ads_manager.content_object.display_text}}"
 
   app.liste_attente_archives:

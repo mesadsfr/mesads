@@ -1,0 +1,40 @@
+.fr-table,
+.fr-table__wrapper,
+.fr-table__container,
+.fr-table__content,
+.fr-table table,
+.fr-table thead,
+.fr-table tbody,
+.fr-table tfoot,
+.fr-table tr,
+.fr-table th,
+.fr-table td {
+  background: transparent !important;
+  background-color: #fff !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+.fr-table tbody tr:nth-child(odd),
+.fr-table tbody tr:nth-child(even),
+.fr-table tbody tr:hover {
+  background: transparent !important;
+  background-color: #fff !important;
+}
+
+.fr-table *::before,
+.fr-table *::after {
+  content: none !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+.fr-table th,
+.fr-table td {
+  border: 1px solid #d0d0d0 !important;
+  padding: 6px 8px !important;
+}
+.fr-table table {
+  border-collapse: collapse !important;
+  width: 100% !important;
+}

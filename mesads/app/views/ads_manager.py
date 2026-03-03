@@ -173,6 +173,23 @@ class ADSManagerView(ListView, ProcessFormView):
         )
         return qs
 
+    def get_title(self):
+        base_title = (
+            f"ADS de {self.get_ads_manager().content_object.display_fulltext()}"
+        )
+        if self.request.GET.get("accepted_cpam") == "on":
+            base_title = (
+                "ADS conventionnées CPAM de "
+                f"{self.get_ads_manager().content_object.display_fulltext()}"
+            )
+
+        count = self.get_queryset().count()
+        title = (
+            f"{base_title} - "
+            f"{count} {'résultats' if count != 1 else 'résultat'} - MesADS"
+        )
+        return title
+
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.filter(ads_manager__id=self.kwargs["manager_id"])
@@ -232,6 +249,7 @@ class ADSManagerView(ListView, ProcessFormView):
                 ),
             ),
         )
+        context["title"] = self.get_title()
 
         context["ads_count"] = all_ads_counts["total"]
         context["pourcentage_verification"] = int(
