@@ -398,6 +398,19 @@ class DemandeGestionPrefecture(models.Model):
         related_name="demandes_gestion_prefecture",
     )
 
+    EN_ATTENTE = "EN_ATTENTE"
+    ACCEPTE = "ACCEPTE"
+    REFUSE = "REFUSE"
+
+    STATUTS = [(EN_ATTENTE, "En attente"), (ACCEPTE, "Acceptée"), (REFUSE, "Refusée")]
+    statut = models.CharField(
+        choices=STATUTS,
+        default=EN_ATTENTE,
+        blank=True,
+        verbose_name="Statut de la demande",
+    )
+
+    accepted_at = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=False)
 
     class Meta:

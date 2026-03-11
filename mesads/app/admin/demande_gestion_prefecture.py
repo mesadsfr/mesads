@@ -7,13 +7,14 @@ from django.db.models.functions import Collate
 from django.http import HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils import timezone
 
 from mesads.app.models import DemandeGestionPrefecture
 
 
 @admin.register(DemandeGestionPrefecture)
 class DemandeGestionPrefectureAdmin(admin.ModelAdmin):
-    list_display = ("user", "administrator", "created_at")
+    list_display = ("user", "administrator", "statut", "created_at")
 
     search_fields = ("user__email",)
 
@@ -28,7 +29,20 @@ class DemandeGestionPrefectureAdmin(admin.ModelAdmin):
             changelist_url = reverse(
                 f"admin:{obj._meta.app_label}_{obj._meta.model_name}_changelist"
             )
-            obj.delete()
+            obj.statut = DemandeGestionPrefecture.ACCEPTE
+            obj.accepted_at = timezone.now().date()
+            obj.save()
+            return HttpResponseRedirect(changelist_url)
+
+        elif "_refuser" in request.POST:
+            self.message_user(request, "Demande refusée.", level=messages.ERROR)
+
+            changelist_url = reverse(
+                f"admin:{obj._meta.app_label}_{obj._meta.model_name}_changelist"
+            )
+            obj.statut = DemandeGestionPrefecture.REFUSE
+            obj.accepted_at = None
+            obj.save()
             return HttpResponseRedirect(changelist_url)
 
         return super().response_change(request, obj)
@@ -69,11 +83,11 @@ class DemandeGestionPrefectureAdmin(admin.ModelAdmin):
         )
         email.attach_alternative(email_content_html, "text/html")
 
-        file_path = finders.find("Guide d'utilisation.pdf")
+        file_path = finders.find("Guide d'utilisation Préfectures.pdf")
 
         with open(file_path, "rb") as f:
             email.attach(
-                "Guide d'utilisation.pdf",
+                "Guide d'utilisation Préfectures.pdf",
                 f.read(),
                 "application/pdf",
             )
