@@ -1,12 +1,16 @@
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.urls import reverse
 
 from mesads.app.models import (
     ADS,
+    ADSManagerDecree,
     ADSUser,
 )
 from mesads.unittest import ClientTestCase
+
+from ..factories import ADSManagerDecreeFactory
 
 
 class TestADSManagerView(ClientTestCase):
@@ -190,6 +194,47 @@ class TestExportADSManager(ClientTestCase):
         )
 
 
+class TestADSManagerArreteGestion(ClientTestCase):
+    def test_update_ok(self):
+        today = date.today()
+        arrete = ADSManagerDecreeFactory(
+            ads_manager=self.ads_manager_city35, date_arrete=today, nombre_ads=5
+        )
+        data = {"date_arrete": today - timedelta(days=5), "nombre_ads": 6}
+        response = self.ads_manager_city35_client.post(
+            reverse(
+                "app.ads-manager.arrete.update",
+                kwargs={
+                    "manager_id": self.ads_manager_city35.id,
+                    "arrete_id": arrete.id,
+                },
+            ),
+            data,
+        )
+        assert response.status_code == 302
+        arrete.refresh_from_db()
+        assert arrete.nombre_ads == data["nombre_ads"]
+        assert arrete.date_arrete == data["date_arrete"]
+
+    def test_delete_ok(self):
+        today = date.today()
+        arrete = ADSManagerDecreeFactory(
+            ads_manager=self.ads_manager_city35, date_arrete=today, nombre_ads=5
+        )
+
+        response = self.ads_manager_city35_client.post(
+            reverse(
+                "app.ads-manager.arrete.delete",
+                kwargs={
+                    "manager_id": self.ads_manager_city35.id,
+                    "arrete_id": arrete.id,
+                },
+            ),
+        )
+        assert response.status_code == 302
+        assert not ADSManagerDecree.objects.filter(id=arrete.id).exists()
+
+
 class TestADSManagerDecreeView(ClientTestCase):
     def test_permissions(self):
         for client_name, client, expected_status in (
@@ -199,7 +244,10 @@ class TestADSManagerDecreeView(ClientTestCase):
         ):
             with self.subTest(client_name=client_name, expected_status=expected_status):
                 resp = client.get(
-                    f"/registre_ads/gestion/{self.ads_manager_city35.id}/arrete"
+                    reverse(
+                        "app.ads-manager.decree.detail",
+                        kwargs={"manager_id": self.ads_manager_city35.id},
+                    )
                 )
                 self.assertEqual(resp.status_code, expected_status)
 
@@ -209,36 +257,50 @@ class TestADSManagerDecreeView(ClientTestCase):
 
     def test_get(self):
         resp = self.ads_manager_city35_client.get(
-            f"/registre_ads/gestion/{self.ads_manager_city35.id}/arrete"
+            reverse(
+                "app.ads-manager.decree.detail",
+                kwargs={"manager_id": self.ads_manager_city35.id},
+            )
         )
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.context["ads_manager"], self.ads_manager_city35)
 
     def test_post(self):
-        file1 = SimpleUploadedFile(
-            name="myfile.pdf", content=b"First file", content_type="application/pdf"
+        file = SimpleUploadedFile(
+            name="myfile.pdf",
+            content=b"Contenu super fichier",
+            content_type="application/pdf",
         )
-        file2 = SimpleUploadedFile(
-            name="myfile2.pdf", content=b"Second file", content_type="application/pdf"
+
+        self.assertEqual(
+            ADSManagerDecree.objects.filter(
+                ads_manager=self.ads_manager_city35
+            ).count(),
+            0,
         )
 
         resp = self.ads_manager_city35_client.post(
-            f"/registre_ads/gestion/{self.ads_manager_city35.id}/arrete",
-            {
-                "adsmanagerdecree_set-TOTAL_FORMS": 5,
-                "adsmanagerdecree_set-INITIAL_FORMS": 0,
-                "adsmanagerdecree_set-MIN_NUM_FORMS": 0,
-                "adsmanagerdecree_set-MAX_NUM_FORMS": 5,
-                "adsmanagerdecree_set-0-file": file1,
-                "adsmanagerdecree_set-1-file": file2,
-            },
+            reverse(
+                "app.ads-manager.decree.detail",
+                kwargs={"manager_id": self.ads_manager_city35.id},
+            ),
+            {"file": file, "date_arrete": date.today(), "nombre_ads": 10},
         )
-        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp.status_code, 200)
 
-        ads_manager_decrees = self.ads_manager_city35.adsmanagerdecree_set.all()
-        self.assertEqual(len(ads_manager_decrees), 2)
-        self.assertEqual(ads_manager_decrees[0].file.read(), b"First file")
-        self.assertEqual(ads_manager_decrees[1].file.read(), b"Second file")
+        self.assertEqual(
+            ADSManagerDecree.objects.filter(
+                ads_manager=self.ads_manager_city35
+            ).count(),
+            1,
+        )
+
+        arrete = ADSManagerDecree.objects.filter(
+            ads_manager=self.ads_manager_city35
+        ).last()
+        self.assertEqual(arrete.file.read(), b"Contenu super fichier")
+        self.assertEqual(arrete.date_arrete, date.today())
+        self.assertEqual(arrete.nombre_ads, 10)
 
 
 class TestADSManagerAutocompleteView(ClientTestCase):

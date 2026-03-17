@@ -138,6 +138,12 @@ urls:
     title: "Arrêtés délimitant le nombre d'ADS"
     description: "Facilitez la génération de l'arrêté municipal définissant le nombre d'ADS pour {{ ads_manager.content_object.display_fulltext }}."
 
+  app.ads-manager.arrete.update:
+    missing: true
+
+  app.ads-manager.arrete.delete:
+    missing: true
+
   app.ads.create:
     title: "Ajouter une nouvelle ADS à {{ ads_manager.content_object.display_fulltext }}"
     description: "Procédez à l'enregistrement d'une nouvelle ADS au sein de {{ ads_manager.content_object.display_fulltext }}."

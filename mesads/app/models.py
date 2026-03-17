@@ -261,6 +261,11 @@ class ADSManagerDecree(models.Model):
         ADSManager, on_delete=models.CASCADE, null=False, blank=False
     )
 
+    date_arrete = models.DateField(verbose_name="Date de prise de l'arrêté")
+    nombre_ads = models.PositiveSmallIntegerField(
+        null=True, blank=True, verbose_name="Nombre d'ADS autorisées"
+    )
+
     file = models.FileField(upload_to=get_decree_filename, null=False, blank=False)
 
     def __str__(self):

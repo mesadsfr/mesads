@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 from django import forms
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator
 from django.forms import BaseInlineFormSet, inlineformset_factory
 from django.urls import reverse
 from django.utils import timezone
@@ -17,7 +18,6 @@ from .models import (
     ADS,
     ADSLegalFile,
     ADSManager,
-    ADSManagerDecree,
     ADSUser,
     InscriptionListeAttente,
 )
@@ -223,13 +223,14 @@ ADSLegalFileFormSet = inlineformset_factory(
 )
 
 
-ADSManagerDecreeFormSet = inlineformset_factory(
-    ADSManager,
-    ADSManagerDecree,
-    fields=("file",),
-    can_delete=True,
-    extra=0,
-)
+class ADSManagerDecreeForm(forms.Form):
+    file = forms.FileField(label="Fichier")
+    date_arrete = forms.DateField(
+        label="Date de prise de l'arrêté", validators=[MaxValueValidator(date.today())]
+    )
+    nombre_ads = forms.IntegerField(
+        label="Nombre d'ADS autorisées par l'arrêté", min_value=0
+    )
 
 
 class SearchVehiculeForm(forms.Form):

@@ -74,9 +74,19 @@ url_gestionnaire = [
         name="app.ads-manager.detail",
     ),
     path(
-        "registre_ads/gestion/<int:manager_id>/arrete",
-        ads_manager_required(views.ads_manager_decree_view),
+        "registre_ads/gestion/<int:manager_id>/arretes",
+        ads_manager_required(views.ADSManagerArreteView.as_view()),
         name="app.ads-manager.decree.detail",
+    ),
+    path(
+        "registre_ads/gestion/<int:manager_id>/arretes/<int:arrete_id>/update/",
+        ads_manager_required(views.ADSManagerArreteUpdateView.as_view()),
+        name="app.ads-manager.arrete.update",
+    ),
+    path(
+        "registre_ads/gestion/<int:manager_id>/arretes/<int:arrete_id>/delete/",
+        ads_manager_required(views.ADSManagerArreteDeleteView.as_view()),
+        name="app.ads-manager.arrete.delete",
     ),
     path(
         "registre_ads/gestion/<int:manager_id>/export",
@@ -114,7 +124,7 @@ url_gestionnaire = [
         name="app.ads.history",
     ),
     path(
-        "registre_ads/gestion/<int:manager_id>/arretes",
+        "registre_ads/gestion/<int:manager_id>/arretes-modeles",
         ads_manager_required(views.ListeArretesFilesView.as_view()),
         name="app.arretes-list",
     ),
