@@ -6,6 +6,7 @@ from .ads_manager import *  # noqa
 from .ads_manager_administrator import *  # noqa
 from .ads_manager_request import *  # noqa
 from .ads_update_file import *  # noqa
+from .demande_gestion_prefecture import *  # noqa
 from .inscription_liste_attente import *  # noqa
 from .notifications import *  # noqa
 

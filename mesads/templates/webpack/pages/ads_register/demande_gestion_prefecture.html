@@ -1,0 +1,51 @@
+{% extends "base_container.html" %}
+{% load static %}
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button"
+            aria-expanded="false"
+            aria-controls="breadcrumb-1">Voir le fil d'Ariane</button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Demander un accès préfecture</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  
+  <h1>Demander un accès préfecture</h1>
+  <form method="post">
+    {% csrf_token %}
+    <div class="fr-form-group">
+      <fieldset class="fr-fieldset">
+        <div class="fr-fieldset__content">
+            {% include "form_fields/select.html" with empty_option=True field=form.departement field_errors=form.errors.departement required=form.fields.departement.required bold=True %}
+        </div>
+      </fieldset>
+    </div>
+    <!-- Non-fields errors -->
+    {% if form.non_field_errors %}
+      <div class="fr-input-group fr-input-group--error">
+        {% for error in form.non_field_errors %}
+          <!-- Non-field error -->
+          <p class="fr-error-text">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="fr-mb-2w fr-alert fr-alert--info fr-alert--sm">
+      <h2 class="fr-alert__title">La demande est exclusivement réservée aux personnes habilitées par la préfecture.</h2>
+      <p>
+        Si vous avez le moindre problème, vous pouvez nous contacter à cette adresse électronique: <a href="mailto:{{ MESADS_CONTACT_EMAIL }}">{{ MESADS_CONTACT_EMAIL }}</a>
+      </p>
+    </div>
+    <div class="fr-input-group">
+      <button type="submit" class="fr-btn">Envoyer la demande</button>
+    </div>
+  </form>
+</div>
+{% endblock body-content %}
