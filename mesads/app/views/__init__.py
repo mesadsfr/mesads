@@ -8,9 +8,11 @@ from .ads import (  # noqa: F401
 )
 from .ads_manager import (  # noqa: F401
     AdministrationsEnGestionView,
+    ADSManagerArreteDeleteView,
+    ADSManagerArreteUpdateView,
+    ADSManagerArreteView,
     ADSManagerAutocompleteView,
     ADSManagerView,
-    ads_manager_decree_view,
 )
 from .ads_manager_admin import (  # noqa: F401
     ADSManagerAdministratorListeGestionnaires,
