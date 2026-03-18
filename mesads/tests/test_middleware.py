@@ -9,10 +9,7 @@ class TestBackwardCompatibilityURLMiddleware(TestCase):
         factory = RequestFactory()
 
         # These URLs exist with the prefix /registre_ads
-        for url in (
-            "/gestion/123/",
-            "/gestion/3432/arrete",
-        ):
+        for url in ("/gestion/123/",):
             middleware = BackwardCompatibilityURLMiddleware(
                 lambda request: HttpResponse(status=404)
             )

@@ -11,6 +11,7 @@ from django.db.models import (
     DateTimeField,
     ExpressionWrapper,
     F,
+    FloatField,
     IntegerField,
     OuterRef,
     Q,
@@ -18,17 +19,18 @@ from django.db.models import (
     Value,
     When,
 )
-from django.db.models.functions import Coalesce, Now, Replace
-from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic import TemplateView
+from django.db.models.functions import Cast, Coalesce, Now, Replace, Round
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
+from django.views.generic import TemplateView, View
 from django.views.generic.edit import ProcessFormView
 from django.views.generic.list import ListView
 
 from ..forms import (
-    ADSManagerDecreeFormSet,
+    ADSManagerDecreeForm,
     ADSManagerEditForm,
 )
-from ..models import ADS, ADSManager, ADSManagerRequest, ADSUpdateLog
+from ..models import ADS, ADSManager, ADSManagerDecree, ADSManagerRequest, ADSUpdateLog
 
 
 class AdministrationsEnGestionView(TemplateView):
@@ -95,11 +97,14 @@ class AdministrationsEnGestionView(TemplateView):
                 pourcentage_completion=Case(
                     When(
                         nb_ads__gt=0,
-                        then=ExpressionWrapper(
-                            F("complete_updates_count") / F("nb_ads") * 100,
-                            output_field=IntegerField(),
+                        then=Round(
+                            Cast(F("complete_updates_count"), FloatField())
+                            * Value(100.0)
+                            / Cast(F("nb_ads"), FloatField()),
                         ),
-                    )
+                    ),
+                    default=Value(0),
+                    output_field=IntegerField(),
                 ),
                 tri_bool=Case(
                     When(accepted=True, then=Value(0)),
@@ -229,6 +234,12 @@ class ADSManagerView(ListView, ProcessFormView):
             ),
         )
 
+        context["dernier_arrete"] = (
+            ADSManagerDecree.objects.filter(ads_manager__id=self.kwargs["manager_id"])
+            .order_by("-date_arrete", "-id")
+            .first()
+        )
+
         context["ads_count"] = all_ads_counts["total"]
         context["pourcentage_verification"] = int(
             (all_ads_counts["verified"] / all_ads_counts["total"] * 100)
@@ -239,28 +250,82 @@ class ADSManagerView(ListView, ProcessFormView):
         return context
 
 
-def ads_manager_decree_view(request, manager_id, **kwargs):
-    """Decree limiting the number of ADS for an ADSManager."""
-    ads_manager = get_object_or_404(ADSManager, id=manager_id)
-    if request.method == "POST":
-        formset = ADSManagerDecreeFormSet(
-            request.POST, request.FILES, instance=ads_manager
-        )
-        if formset.is_valid():
-            formset.save()
-            messages.success(request, "Les modifications ont été enregistrées.")
-            return redirect("app.ads-manager.decree.detail", manager_id=manager_id)
-    else:
-        formset = ADSManagerDecreeFormSet(instance=ads_manager)
+class ADSManagerArreteView(TemplateView):
+    template_name = "pages/ads_register/ads_manager_arretes.html"
 
-    return render(
-        request,
-        "pages/ads_register/ads_manager_decree.html",
-        context={
-            "ads_manager": ads_manager,
-            "formset": formset,
-        },
-    )
+    def post(self, request, *args, **kwargs):
+        manager_id = kwargs["manager_id"]
+        ads_manager = get_object_or_404(ADSManager, id=manager_id)
+        form = ADSManagerDecreeForm(data=request.POST, files=request.FILES)
+        if form.is_valid():
+            ADSManagerDecree.objects.create(
+                ads_manager=ads_manager,
+                file=form.cleaned_data["file"],
+                date_arrete=form.cleaned_data["date_arrete"],
+                nombre_ads=form.cleaned_data["nombre_ads"],
+            )
+            messages.success(request, "L'arrêté a bien été enregistré.")
+            return super().get(request, *args, **kwargs)
+        else:
+            context = self.get_context_data(**kwargs)
+            context["form"] = form
+            messages.error(
+                request, "Une erreur est survenue lors de l'enregistrement de l'arrêté."
+            )
+            return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        manager_id = kwargs["manager_id"]
+        ads_manager = get_object_or_404(ADSManager, id=manager_id)
+        arretes = ADSManagerDecree.objects.filter(ads_manager=ads_manager).order_by(
+            "-date_arrete", "-id"
+        )
+        dernier_arrete = arretes.first()
+        if dernier_arrete:
+            context["arretes"] = arretes.exclude(id=dernier_arrete.id)
+        context["dernier_arrete"] = dernier_arrete
+        context["ads_manager"] = ads_manager
+        context["form"] = ADSManagerDecreeForm()
+        return context
+
+
+class ADSManagerArreteUpdateView(View):
+    def post(self, request, *args, **kwargs):
+        arrete_id = self.kwargs.get("arrete_id")
+        arrete = get_object_or_404(ADSManagerDecree, id=arrete_id)
+        try:
+            arrete.date_arrete = request.POST.get("date_arrete")
+            arrete.nombre_ads = request.POST.get("nombre_ads")
+            arrete.save()
+            messages.success(request, "L'arrêté a bien été modifié.")
+        except Exception:
+            messages.error(
+                request, "Une erreur est survenue lors de l'enregistrement de l'arrêté."
+            )
+
+        manager_id = kwargs["manager_id"]
+        return redirect(
+            reverse("app.ads-manager.decree.detail", kwargs={"manager_id": manager_id})
+        )
+
+
+class ADSManagerArreteDeleteView(View):
+    def post(self, request, *args, **kwargs):
+        arrete_id = self.kwargs.get("arrete_id")
+        arrete = get_object_or_404(ADSManagerDecree, id=arrete_id)
+        try:
+            arrete.delete()
+            messages.success(request, "L'arrêté a bien été supprimé.")
+        except Exception:
+            messages.error(
+                request, "Une erreur est survenue lors de la suppression de l'arrêté."
+            )
+
+        manager_id = kwargs["manager_id"]
+        return redirect(
+            reverse("app.ads-manager.decree.detail", kwargs={"manager_id": manager_id})
+        )
 
 
 class ADSManagerAutocompleteView(autocomplete.Select2QuerySetView):
