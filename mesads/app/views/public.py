@@ -14,6 +14,7 @@ from ..models import (
     ADSManager,
     ADSManagerAdministrator,
     ADSManagerRequest,
+    InscriptionListeAttente,
 )
 
 
@@ -96,6 +97,14 @@ class HomepageView(TemplateView):
                 context["proprietaire_vehicule_relais"] = True
 
             context["show_notation"] = self.request.user.show_notation()
+
+            show_sondage_liste_attente = False
+            if ads_manager_requests.filter(accepted=True).exists():
+                requests = ads_manager_requests.filter(accepted=True)
+                show_sondage_liste_attente = InscriptionListeAttente.objects.filter(
+                    ads_manager__adsmanagerrequest__in=requests
+                ).exists()
+            context["show_sondage"] = show_sondage_liste_attente
 
         return context
 
