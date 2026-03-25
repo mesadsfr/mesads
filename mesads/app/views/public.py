@@ -345,10 +345,6 @@ class PlanSiteView(TemplateView):
 
         if self.request.user.is_authenticated:
             liens_authentifie = [
-                {
-                    "nom_url": "Changer de mot de passe",
-                    "url": reverse("password_change"),
-                },
                 {"nom_url": "Déconnexion", "url": reverse("oidc_logout")},
             ]
             ads_manager_administrators = (
@@ -452,6 +448,6 @@ class PlanSiteView(TemplateView):
             )
             return context
         else:
-            liens_plan = [{"nom_url": "Se connecter", "url": reverse("login")}]
+            liens_plan = [{"nom_url": "Se connecter", "url": reverse("override.login")}]
             context["liens_plan"] = liens_base_1 + liens_plan + liens_base_2
         return context
