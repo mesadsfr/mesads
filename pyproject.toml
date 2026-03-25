@@ -28,6 +28,7 @@ omit = [
     "*/asgi.py",
     "*/migrations/*.py",
     "*urls.py",
+    "*/tests/**",
     "*/test_*.py",
     "*/unittest.py",
     # We should probably keep admin.py in coverage, but since it's only for
