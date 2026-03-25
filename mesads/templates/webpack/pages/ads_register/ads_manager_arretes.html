@@ -76,7 +76,7 @@
                   </div>
 
                   <div>
-                    <button aria-controls="modal-modif-dernier-arrete" data-fr-opened="false" type="button" class="fr-btn fr-btn--sm fr-icon-pencil-line" aria-label="Modifier"></button>
+                    <button aria-controls="modal-modif-dernier-arrete" data-fr-opened="false" type="button" class="fr-btn fr-btn--sm fr-icon-pencil-line" aria-label="Modifier l'arrêté {{dernier_arrete.human_filename}}"></button>
 
                     <dialog
                       id="modal-modif-dernier-arrete"
@@ -142,7 +142,7 @@
                       </div>
                     </dialog>
 
-                    <button aria-controls="modal-suppression-dernier-arrete" data-fr-opened="false" type="button" class="fr-btn fr-btn--sm fr-icon-delete-line" aria-label="Supprimer"></button>
+                    <button aria-controls="modal-suppression-dernier-arrete" data-fr-opened="false" type="button" class="fr-btn fr-btn--sm fr-icon-delete-line" aria-label="Supprimer l'arrêté {{dernier_arrete.human_filename}}"></button>
 
                     <dialog
                       id="modal-suppression-dernier-arrete"
@@ -266,73 +266,8 @@
                     </p>
 
                     <div>
-                      <button aria-controls="modal-modif-arrete-{{arrete.id}}" data-fr-opened="false" type="button" class="fr-btn fr-btn--sm fr-icon-pencil-line" aria-label="Modifier"></button>
-
-                      <dialog
-                        id="modal-modif-arrete-{{arrete.id}}"
-                        class="fr-modal"
-                        aria-labelledby="modal-modif-arrete-{{arrete.id}}-title"
-                        data-fr-concealing-backdrop="true"
-                      >
-                        <div class="fr-container fr-container--fluid fr-container-md">
-                          <div class="fr-grid-row fr-grid-row--center">
-                            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                              <div class="fr-modal__body">
-                                <div class="fr-modal__header">
-                                  <button aria-controls="modal-modif-arrete-{{arrete.id}}" title="Fermer" type="button" class="fr-btn--close fr-btn">Fermer</button>
-                                </div>
-                                <div class="fr-modal__content">
-                                  <h2 id="modal-modif-arrete-{{arrete.id}}-title" class="fr-modal__title">
-                                    <span class="fr-icon-info-line fr-icon--lg" aria-hidden="true"></span> Modification de la date de l'arrêté
-                                  </h2>
-                                  <form method="post" action="{% url 'app.ads-manager.arrete.update' manager_id=ads_manager.id arrete_id=arrete.id %}">
-                                    {% csrf_token %}
-
-                                    <div class="fr-input-group">
-                                      <label class="fr-label" for="date-prise-arrete-{{arrete.id}}">
-                                        Date de prise de l'arrêté
-                                        <span aria-hidden="true">*</span>
-                                        <span class="fr-sr-only"> (obligatoire)</span>
-                                      </label>
-
-                                      <div class="fr-input-wrap fr-fi-calendar-line">
-                                        <input
-                                          class="fr-input"
-                                          type="date"
-                                          id="date-prise-arrete-{{arrete.id}}"
-                                          name="date_arrete"
-                                          value="{{ arrete.date_arrete|date:"Y-m-d" }}"
-                                          max="{% now 'Y-m-d' %}"
-                                        />
-                                      </div>
-                                    </div>
-
-                                    <div class="fr-input-group">
-                                      <label class="fr-label" for="nombre-ads-arrete-{{arrete.id}}">
-                                        {{ field.label }}
-                                        <span aria-hidden="true">*</span>
-                                        <span class="fr-sr-only"> (obligatoire)</span>
-                                      </label>
-
-                                      <input
-                                        class="fr-input"
-                                        type="number"
-                                        id="nombre-ads-arrete-{{arrete.id}}"
-                                        name="nombre_ads"
-                                        value="{{ arrete.nombre_ads|default:"0" }}"
-                                      />
-                                    </div>
-
-                                    <button class="fr-btn" type="submit">Valider</button>
-                                  </form>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </dialog>
-
-                      <button aria-controls="modal-suppression-arrete-{{arrete.id}}" data-fr-opened="false" type="button" class="fr-btn fr-btn--sm fr-icon-delete-line" aria-label="Supprimer"></button>
+                    
+                      <button aria-controls="modal-suppression-arrete-{{arrete.id}}" data-fr-opened="false" type="button" class="fr-btn fr-btn--sm fr-icon-delete-line" aria-label="Supprimer l'arrêté {{arrete.human_filename}}"></button>
 
                       <dialog
                         id="modal-suppression-arrete-{{arrete.id}}"
