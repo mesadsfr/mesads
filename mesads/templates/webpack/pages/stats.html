@@ -39,28 +39,28 @@
       <h2>Au niveau national</h2>
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-md-4">
-          <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-            <p class="stats-card-number font-bold">{{ ads_count }}</p>
-            <p class="stats-card-description fr-mt-1w">ADS enregistrées ce jour</p>
-          </div>
+          <p class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full flex flex-col">
+            <span class="stats-card-number font-bold">{{ ads_count }}</span>
+            <span class="stats-card-description fr-mt-1w">ADS enregistrées ce jour</span>
+          </p>
         </div>
         <div class="fr-col-12 fr-col-md-4">
-          <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-            <p class="stats-card-number font-bold">{{ ads_manager_requests_count }}</p>
-            <p class="stats-card-description fr-mt-1w">instructeurs enregistrés pour gérer les ADS</p>
-          </div>
+          <p class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full flex flex-col">
+            <span class="stats-card-number font-bold">{{ ads_manager_requests_count }}</span>
+            <span class="stats-card-description fr-mt-1w">instructeurs enregistrés pour gérer les ADS</span>
+            </p>
         </div>
         <div class="fr-col-12 fr-col-md-4">
-          <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-            <p class="stats-card-number font-bold">{{ ads_managers_count }}</p>
-            <p class="stats-card-description fr-mt-1w">différentes administrations gérant des ADS</p>
-          </div>
+          <p class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full flex flex-col">
+            <span class="stats-card-number font-bold">{{ ads_managers_count }}</span>
+            <span class="stats-card-description fr-mt-1w">différentes administrations gérant des ADS</span>
+          </p>
         </div>
         <div class="fr-col-12 fr-col-md-4">
-          <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-            <p class="stats-card-number font-bold">+10 000</p>
-            <p class="stats-card-description fr-mt-1w">réponses à vos questions concernant les ADS, la plateforme, les démarches, etc.</p>
-          </div>
+          <p class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full flex flex-col">
+            <span class="stats-card-number font-bold">+10 000</span>
+            <span class="stats-card-description fr-mt-1w">réponses à vos questions concernant les ADS, la plateforme, les démarches, etc.</span>
+          </p>
         </div>
       </div>
       <hr class="fr-mt-3w" />
@@ -105,7 +105,7 @@
       <h2>Utilisation du registre ADS</h2>
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
-          <h3>Nombre d'ADS enregistrées</h3>
+          <h3 id="nombre-ads-enregistree">Nombre d'ADS enregistrées</h3>
           <canvas
             role="img"
             aria-label="Évolution du nombre d'ADS enregistrées sur la plateforme depuis son lancement. - Accéder à la version tableau ci dessous"
@@ -113,7 +113,7 @@
           </canvas>
           <p class="fr-mt-3w fr-text--xs">Évolution du nombre d'ADS enregistrées sur la plateforme depuis son lancement.</p>
           <details>
-            <summary>Version tableau</summary>
+            <summary aria-labelledby="nombre-ads-enregistree">Version tableau</summary>
             <div class="fr-table" id="table-gestionnaire-component">
               <div class="fr-table__wrapper">
                 <div class="fr-table__container">
@@ -142,7 +142,7 @@
           </details>
         </div>
         <div class="fr-col-12">
-          <h3>Nombre de gestionnaires ADS</h3>
+          <h3 id="nombre-gestionnaire-ads-enregistre">Nombre de gestionnaires ADS</h3>
           <canvas
             role="img"
             aria-label="Évolution du nombre de comptes instructeurs créés sur la plateforme depuis son lancement. Un compte instructeur a la possibilité d'enregistrer des ADS pour son administration. - Accéder à la version tableau ci dessous"
@@ -153,7 +153,7 @@
           </p>
 
           <details>
-            <summary>Version tableau</summary>
+            <summary aria-labelledby="nombre-gestionnaire-ads-enregistre">Version tableau</summary>
             <div class="fr-table" id="table-gestionnaire-component">
               <div class="fr-table__wrapper">
                 <div class="fr-table__container">
@@ -192,18 +192,18 @@
       <h2>Au niveau national</h2>
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-md-4">
-          <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-            <p class="stats-card-number font-bold">{{ relais_proprietaires_count }}</p>
-            <p class="stats-card-description fr-mt-1w">
+          <p class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full flex flex-col">
+            <span class="stats-card-number font-bold">{{ relais_proprietaires_count }}</span>
+            <span class="stats-card-description fr-mt-1w">
               propriétaires de taxis relais ayant enregistré au moins un taxi relais
-            </p>
-          </div>
+            </span>
+          </p>
         </div>
         <div class="fr-col-12 fr-col-md-4">
-          <div class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full">
-            <p class="stats-card-number font-bold">{{ relais_vehicules_count }}</p>
-            <p class="stats-card-description fr-mt-1w">taxis relais enregistrés</p>
-          </div>
+          <p class="text-center border-b-4 border-[#000091] bg-[rgba(0,0,145,0.05)] fr-p-2w min-h-full flex flex-col">
+            <span class="stats-card-number font-bold">{{ relais_vehicules_count }}</span>
+            <span class="stats-card-description fr-mt-1w">taxis relais enregistrés</span>
+          </p>
         </div>
       </div>
       <hr class="fr-mt-3w" />
@@ -215,7 +215,7 @@
       <h2>Utilisation des répertoires des taxis relais</h2>
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
-          <h3>Nombre de propriétaires de taxis relais enregistrés</h3>
+          <h3 id="nombre-proprietaire-enregistre">Nombre de propriétaires de taxis relais enregistrés</h3>
           <canvas
             role="img"
             aria-label="Évolution du nombre de propriétaires de taxis relais ayant enregistré au moins un taxi. - Accéder à la version tableau ci dessous"
@@ -225,7 +225,7 @@
             Évolution du nombre de propriétaires de taxis relais ayant enregistré au moins un taxi.
           </p>
           <details>
-            <summary>Version tableau</summary>
+            <summary aria-labelledby="nombre-proprietaire-enregistre">Version tableau</summary>
             <div class="fr-table" id="table-gestionnaire-component">
               <div class="fr-table__wrapper">
                 <div class="fr-table__container">
@@ -254,7 +254,7 @@
           </details>
         </div>
         <div class="fr-col-12">
-          <h3>Nombre de taxis relais enregistrés</h3>
+          <h3 id="nombre-taxi-enregistre">Nombre de taxis relais enregistrés</h3>
           <canvas
             role="img"
             aria-label="Évolution du nombre de taxis relais enregistrés. - Accéder à la version tableau ci dessous""
@@ -262,7 +262,7 @@
           </canvas>
           <p class="fr-mt-3w fr-text--xs">Évolution du nombre de taxis relais enregistrés.</p>
           <details>
-            <summary>Version tableau</summary>
+            <summary aria-labelledby="nombre-taxi-enregistre">Version tableau</summary>
             <div class="fr-table" id="table-gestionnaire-component">
               <div class="fr-table__wrapper">
                 <div class="fr-table__container">

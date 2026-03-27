@@ -22,35 +22,46 @@
   </head>
 
   <body>
-    <h1>Liste d'attente de {{ads_manager.content_object.display_fulltext}}</h1>
+    <header>
+      <h1>Liste d'attente de {{ads_manager.content_object.display_fulltext}}</h1>
 
-    <div class="fr-table fr-table--multiline" id="table-0-component">
-      <div class="fr-table__wrapper">
-        <div class="fr-table__container">
-          <div class="fr-table__content">
-            <table>
-              <thead>
-                <tr>
-                  <th>Numéro d'enregistrement</th>
-                  <th>Date de dépot</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for inscription in inscriptions %}
+    </header>
+
+    <main>
+      <h2 id="titre-table" class="fr-sr-only">Tableau des inscriptions</h2>
+
+      <div class="fr-table" id="table-0-component">
+        <div class="fr-table__wrapper">
+          <div class="fr-table__container">
+            <div class="fr-table__content">
+              <table>
+                <caption>
+                  Liste des inscriptions valides, triées par date de dépôt.
+                </caption>
+                <thead>
                   <tr>
-                    <td>{{ inscription.numero }}</td>
-                    <td>{{ inscription.date_depot_inscription }}</td>
+                    <th>Numéro d'enregistrement</th>
+                    <th>Date de dépot</th>
                   </tr>
-                {% empty %}
+                </thead>
+                <tbody>
+                  {% for inscription in inscriptions %}
                     <tr>
-                      <td colspan="2">Aucun élément.</td>
+                      <td>{{ inscription.numero }}</td>
+                      <td>{{ inscription.date_depot_inscription }}</td>
                     </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+                  {% empty %}
+                      <tr>
+                        <td colspan="2">Aucun élément.</td>
+                      </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </main>
+    
   </body>
 </html>

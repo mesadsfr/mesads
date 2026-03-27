@@ -86,8 +86,13 @@
                       {% endif %}
                     </td>
                     <td class="!text-right">
-                      <a class="fr-btn fr-btn--secondary fr-icon-eye-line"
-                         href="{% url 'app.ads-manager-admin.vehicule_relais_detail' prefecture_id=ads_manager_administrator.prefecture.id numero=vehicule.numero %}">Afficher les détails</a>
+                      <a
+                        class="fr-btn fr-btn--secondary fr-icon-eye-line"
+                        aria-label="Afficher les détails du véhicule {{vehicule.numero}}"
+                        href="{% url 'app.ads-manager-admin.vehicule_relais_detail' prefecture_id=ads_manager_administrator.prefecture.id numero=vehicule.numero %}"
+                      >
+                        Afficher les détails
+                      </a>
                     </td>
                   </tr>
                 {% empty %}

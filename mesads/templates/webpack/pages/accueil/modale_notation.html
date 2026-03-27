@@ -1,6 +1,6 @@
 
 <button aria-controls="modal-notation" data-fr-opened="true" type="button" class="fr-btn fr-hidden">Ouvrir la modale</button>
-<dialog id="modal-notation" class="fr-modal" aria-labelledby="modal-notation-title" data-fr-concealing-backdrop="true">
+<dialog role="dialog" id="modal-notation" class="fr-modal" aria-labelledby="modal-notation-title" data-fr-concealing-backdrop="true">
 
   <div class="fr-container fr-container--fluid fr-container-md">
     <div class="fr-grid-row fr-grid-row--center">
@@ -18,7 +18,7 @@
 
               <div class="flex flex-col gap-2 md:flex-row">
                 <fieldset class="rating-fieldset">
-                  <legend id="rating-legend-facilite" class="rating-legend">Votre avis sur la facilité d'usage du service</legend>
+                  <legend id="rating-legend-facilite" class="rating-legend">Votre avis sur la facilité d'usage du service, ce champ est obligatoire</legend>
 
                   <p id="rating-instructions-facilite" class="fr-sr-only">
                     Donnez une note de 1 à 5. 1 = très insatisfait, 5 = très satisfait.
@@ -62,7 +62,7 @@
                 </fieldset>
 
                 <fieldset class="rating-fieldset">
-                  <legend id="rating-legend-qualite" class="rating-legend">Votre avis sur la qualité du service</legend>
+                  <legend id="rating-legend-qualite" class="rating-legend">Votre avis sur la qualité du service, ce champ est obligatoire</legend>
 
                   <p id="rating-instructions-qualite" class="fr-sr-only">
                     Donnez une note de 1 à 5. 1 = très insatisfait, 5 = très satisfait.

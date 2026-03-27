@@ -163,12 +163,12 @@
     <div class="fr-table fr-table--md fr-table--multiline">
       <div class="fr-table__header">
         <form method="get" class="fr-search-bar">
-          <label class="fr-label" for="search-ads"> Rechercher </label>
+          <label class="fr-label" for="search-ads"> Rechercher une ADS</label>
           <input
             class="fr-input"
             value="{{request.GET.search}}"
             name="search"
-            placeholder="Rechercher" id="search-ads" type="search">
+            placeholder="Rechercher une ADS" id="search-ads" type="search">
 
           {% for key, value in request.GET.items %}
             {% if key != "search" and key != "page" %}
@@ -224,13 +224,7 @@
                 {% for ads in ads_list %}
                   <tr>
                     {% if ads_manager.content_type.name == 'EPCI' %}<td>{{ ads.epci_commune.libelle|default:"" }}</td>{% endif %}
-                    <td>
-                      <a
-                        href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}"
-                      >
-                        #{{ ads.number }}
-                      </a>
-                    </td>
+                    <td>#{{ ads.number }}</td>
                     <td>{{ ads.ads_creation_date|date:"d/m/Y"|default:"" }}</td>
                     <td>{{ ads.ads_type }}</td>
                     <td class="max-w-[300px] overflow-ellipsis overflow-hidden">{{ ads.owner_name }}</td>
@@ -253,14 +247,14 @@
                           <a
                             class="fr-btn fr-icon-success-line fr-btn--icon-left full-width"
                             href="{% url 'app.ads.verification' manager_id=ads_manager.id ads_id=ads.id %}"
-                            aria-label="Vérifier l'ADS {{ads.number}}"
+                            aria-label="Vérifier l'ADS {{ads.number}} de {{ ads.owner_name }}"
                           >
                             Vérifier
                           </a>
                         {% endif %}
                         <a
                           class="fr-btn fr-btn--secondary fr-icon-pencil-line fr-btn--icon-left full-width"
-                          aria-label="Modifier l'ADS {{ads.number}}"
+                          aria-label="Modifier l'ADS {{ads.number}} de {{ ads.owner_name }}"
                           href="{% url 'app.ads.detail' manager_id=ads_manager.id ads_id=ads.id %}"
                         >
                           Modifier

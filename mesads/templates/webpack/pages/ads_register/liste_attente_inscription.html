@@ -91,12 +91,20 @@
           type="date"
           id="{{ form.date_depot_inscription.id_for_label }}"
           name="{{ form.date_depot_inscription.html_name }}"
+          aria-describedby="{{form.date_depot_inscription.id_for_label}}-messages"
           value="{% if form.is_bound %}{{ form.data.date_depot_inscription|default:'' }}{% else %}{{ form.initial.date_depot_inscription|date:'Y-m-d' }}{% endif %}"
         />
 
-        {% for error in form.date_depot_inscription.errors %}
-          <p class="fr-error-text">{{ error }}</p>
-        {% endfor %}
+        <div class="fr-messages-group" id="{{form.date_depot_inscription.id_for_label}}-messages" aria-live="polite">
+          {% for error in form.date_depot_inscription.errors %}
+            <p
+              class="fr-message fr-message--error"
+              id="{{form.date_depot_inscription.id_for_label}}-{{forloop.counter0}}-message-error"
+            >
+              {{ error }}
+            </p>
+          {% endfor %}
+        </div>
       </div>
 
       <div class="fr-input-group{% if form.errors.date_dernier_renouvellement %} fr-input-group--error{% endif %}">
@@ -112,12 +120,20 @@
           type="date"
           id="{{ form.date_dernier_renouvellement.id_for_label }}"
           name="{{ form.date_dernier_renouvellement.html_name }}"
+          aria-describedby="{{form.date_dernier_renouvellement.id_for_label}}-messages"
           value="{% if form.is_bound %}{{ form.data.date_dernier_renouvellement|default:'' }}{% else %}{{ form.initial.date_dernier_renouvellement|date:'Y-m-d' }}{% endif %}"
         />
 
-        {% for error in form.date_dernier_renouvellement.errors %}
-          <p class="fr-error-text">{{ error }}</p>
-        {% endfor %}
+        <div class="fr-messages-group" id="{{form.date_dernier_renouvellement.id_for_label}}-messages" aria-live="polite">
+          {% for error in form.date_dernier_renouvellement.errors %}
+            <p
+              class="fr-message fr-message--error"
+              id="{{form.date_dernier_renouvellement.id_for_label}}-{{forloop.counter0}}-message-error"
+            >
+              {{ error }}
+            </p>
+          {% endfor %}
+        </div>
       </div>
       <div class="fr-input-group">
         <a class="fr-btn fr-btn--secondary" href="{% url 'app.liste_attente' manager_id=ads_manager.id %}">Retour</a>
