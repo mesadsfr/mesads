@@ -2,7 +2,7 @@ import * as L from "leaflet";
 
 const map = L.map("map_ads", { zoomControl: false }).setView(
   [46.2276, 2.2137],
-  6
+  6,
 );
 
 type APIProps = {
@@ -20,6 +20,7 @@ type APIResponse = GeoJSON.FeatureCollection<GeoJSON.Polygon, APIProps>;
 // Add credits to map
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19,
+  referrerPolicy: "strict-origin-when-cross-origin",
   attribution:
     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 }).addTo(map);
@@ -44,7 +45,7 @@ class InfoBox extends L.Control {
       ? this.getInfoboxContent(
           props.ads_count,
           props.expected_ads_count,
-          props.ads_completee_pourcentage
+          props.ads_completee_pourcentage,
         )
       : `Survolez un département pour <br/>afficher le nombre d'ADS enregistrées`;
     this._div.innerHTML = `
@@ -60,7 +61,7 @@ class InfoBox extends L.Control {
   getInfoboxContent = (
     ads_count: number,
     expected_ads_count: number,
-    ads_completee_pourcentage: number
+    ads_completee_pourcentage: number,
   ) => {
     const infos = [
       `&rarr; ${ads_count} ADS ${
@@ -69,18 +70,18 @@ class InfoBox extends L.Control {
     ];
     if (expected_ads_count !== null) {
       infos.push(
-        `&rarr; ${expected_ads_count} ADS au total <br />dans la préfecture (estimation)`
+        `&rarr; ${expected_ads_count} ADS au total <br />dans la préfecture (estimation)`,
       );
       infos.push(
         `<div class="fr-mt-1w"><strong>Taux de remplissage: ${Math.round(
-          (ads_count / expected_ads_count) * 100
-        )}%</strong></div>`
+          (ads_count / expected_ads_count) * 100,
+        )}%</strong></div>`,
       );
     } else {
       infos.push("Nombre d'ADS total inconnu pour cette préfecture");
     }
     infos.push(
-      `<div><strong>Taux de vérification des ADS remplies: ${ads_completee_pourcentage}%</strong></div>`
+      `<div><strong>Taux de vérification des ADS remplies: ${ads_completee_pourcentage}%</strong></div>`,
     );
     return infos.join("<br />");
   };
@@ -119,7 +120,7 @@ function displayStatsMap(data: APIResponse) {
       return {
         fillColor: getFillColor(
           feature?.properties.ads_count,
-          feature?.properties.expected_ads_count
+          feature?.properties.expected_ads_count,
         ),
         fillOpacity: 0.5,
         color: "#777",
@@ -165,7 +166,7 @@ function displayStatsMap(data: APIResponse) {
       description += `
             <li class="fr-grid-row fr-grid-row--bottom">
               <i class="fr-mr-3v" style="background:${colors.get(
-                grades[i]
+                grades[i],
               )}; width: 24px; height: 24px;"></i>
               ${label}
             </li>

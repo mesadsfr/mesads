@@ -2,7 +2,7 @@ import * as L from "leaflet";
 
 const map = L.map("map_vehicules_relais", { zoomControl: false }).setView(
   [46.2276, 2.2137],
-  6
+  6,
 );
 
 type APIProps = {
@@ -16,6 +16,7 @@ type APIResponse = GeoJSON.FeatureCollection<GeoJSON.Polygon, APIProps>;
 // Add credits to map
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19,
+  referrerPolicy: "strict-origin-when-cross-origin",
   attribution:
     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 }).addTo(map);
