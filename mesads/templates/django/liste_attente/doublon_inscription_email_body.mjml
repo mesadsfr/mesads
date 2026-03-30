@@ -1,0 +1,56 @@
+{% extends "base_mail.mjml" %}
+{% load abs_activation_uri %}
+
+{% block title %}Doublon liste d'attente{% endblock %}
+
+{% block content %}
+<mj-column>
+  <mj-text>
+    <p>
+      Madame, monsieur,
+    </p>
+    <p>
+      <strong>
+        Un candidat inscrit sur votre liste d’attente via l’outil MesADS présente une correspondance avec un candidat inscrit sur une ou plusieurs autres listes d’attente.
+      </strong
+    </p>
+    <p>
+      Cette correspondance a été détectée <strong>selon l’un des critères suivants :</strong>
+    </p>
+    <ul>
+      <li>Numéros de carte professionnelle identiques</li>
+      <li>Noms et prénoms identiques</li>
+    </ul>
+
+    <p>
+      Conformément à l’article L3121-5 du Code des transports, l’inscription simultanée d’un candidat sur plusieurs listes d’attente n’est pas autorisée.
+    </p>
+    <p>
+      Cette détection constitue une suspicion de doublon qui nécessite une vérification. Nous vous invitons à prendre contact avec la ou les autres administrations concernées afin de confirmer la situation et, le cas échéant, procéder aux mesures nécessaires.
+    </p>
+    <p>
+      Vous pouvez consulter le détail de cette alerte directement sur l'outil MesADS.
+    </p>
+
+  </mj-text>
+
+  <mj-button href="{{base_url}}{% url 'app.liste_attente_inscription_update' manager_id=ads_manager.id inscription_id=inscription.id %}">
+    Consulter l'inscription concernée
+  </mj-button>
+
+  <mj-text>
+    <p>
+      Ce message est envoyé automatiquement à titre informatif afin de faciliter la gestion et la fiabilisation des listes d’attente.
+    </p>
+    <p>
+      Pour toute question relative à l’utilisation de l’outil MesADS, vous pouvez contacter notre équipe. 
+    </p>
+    <p>
+      Cordialement,
+    </p>
+    <p>
+      L'équipe <a href="{{base_url}}{% url 'app.homepage' %}">MesADS</a>
+    </p>
+  </mj-text>
+</mj-column>
+{% endblock %}

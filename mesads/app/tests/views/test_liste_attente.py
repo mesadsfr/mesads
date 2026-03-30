@@ -1,7 +1,9 @@
 import datetime
 import http
 import logging
+from datetime import date
 
+import pytest
 from dateutil.relativedelta import relativedelta
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
@@ -11,6 +13,8 @@ from mesads.app.forms import (
     ContactInscriptionListeAttenteForm,
     InscriptionListeAttenteForm,
     UpdateDelaiInscriptionListeAttenteForm,
+    compute_next_date_fin_validite,
+    set_next_date_fin_validite,
 )
 from mesads.app.models import (
     ADS,
@@ -43,6 +47,56 @@ class ClientTestCase(BaseClientTestCase):
     def tearDown(self):
         # Enable logging
         logging.disable(logging.NOTSET)
+
+
+@pytest.mark.parametrize(
+    "date_debut,date_renouvellement,date_fin",
+    [
+        (date(2025, 1, 1), None, date(2026, 1, 1)),
+        (date(2025, 12, 31), None, date(2026, 12, 31)),
+        (date(2020, 1, 1), date(2020, 12, 31), date(2022, 1, 1)),
+        (date(2020, 1, 1), date(2024, 6, 15), date(2026, 1, 1)),
+        (date(2020, 1, 1), date(2025, 12, 31), date(2027, 1, 1)),
+        (date(2020, 12, 31), date(2025, 12, 30), date(2026, 12, 31)),
+    ],
+)
+def test_compute_next_date_validite(date_debut, date_renouvellement, date_fin):
+    assert date_fin == compute_next_date_fin_validite(date_debut, date_renouvellement)
+
+
+@pytest.mark.parametrize(
+    "inscription,date_fin",
+    [
+        (
+            InscriptionListeAttente(date_depot_inscription=date(2025, 1, 1)),
+            date(2026, 1, 1),
+        ),
+        (
+            InscriptionListeAttente(
+                date_depot_inscription=date(2025, 1, 1),
+                date_dernier_renouvellement=date(2025, 1, 1),
+            ),
+            date(2026, 1, 1),
+        ),
+        (
+            InscriptionListeAttente(
+                date_depot_inscription=date(2020, 1, 1),
+                date_dernier_renouvellement=date(2025, 12, 31),
+            ),
+            date(2027, 1, 1),
+        ),
+        (
+            InscriptionListeAttente(
+                date_depot_inscription=date(2020, 12, 31),
+                date_dernier_renouvellement=date(2025, 12, 30),
+            ),
+            date(2026, 12, 31),
+        ),
+    ],
+)
+def test_set_next_date_fin_validite(inscription, date_fin):
+    set_next_date_fin_validite(inscription)
+    assert inscription.date_fin_validite == date_fin
 
 
 class TestListeAttenteView(ClientTestCase):
