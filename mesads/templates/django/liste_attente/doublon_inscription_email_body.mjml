@@ -1,5 +1,4 @@
 {% extends "base_mail.mjml" %}
-{% load abs_activation_uri %}
 
 {% block title %}Doublon liste d'attente{% endblock %}
 

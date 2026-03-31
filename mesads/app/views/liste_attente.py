@@ -442,7 +442,9 @@ class ModificationInscriptionListeAttenteView(InscriptionListeAttenteMixin, Upda
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["inscriptions_dupliquees"] = self.object.get_duplicatas()
+        context["inscriptions_dupliquees"] = self.object.get_duplicatas().distinct(
+            "ads_manager"
+        )
         return context
 
 
