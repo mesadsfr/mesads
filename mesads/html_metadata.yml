@@ -49,24 +49,6 @@ urls:
     title: "Connexion à MesADS"
     description: "Connectez-vous pour gérer les ADS de votre administration ou enregistrer vos taxis relais sur MesADS."
 
-  django_registration_disallowed:
-    missing: true
-
-  django_registration_register:
-    title: "Inscription sur MesADS"
-    description: "Créez votre compte MesADS pour gérer les ADS ou enregistrer des taxis relais."
-
-  django_registration_complete:
-    title: "Confirmation d'inscription MesADS"
-    description: "Consultez votre email pour activer votre compte MesADS."
-
-  django_registration_activation_complete:
-    title: "Compte MesADS activé"
-    description: "Félicitations, votre compte MesADS est activé. Vous pouvez maintenant vous connecter."
-
-  django_registration_activate:
-    title: "Activation du compte MesADS"
-    description: "Activez votre compte MesADS en cliquant sur le lien reçu par email."
 
   password_change:
     title: "Changement de mot de passe MesADS"
@@ -74,22 +56,6 @@ urls:
 
   password_change_done:
     missing: true
-
-  password_reset:
-    title: "Réinitialisation du mot de passe MesADS"
-    description: "Réinitialisez votre mot de passe MesADS."
-
-  password_reset_done:
-    title: "Réinitialisation du mot de passe MesADS"
-    description: "Consultez votre email pour réinitialiser votre mot de passe MesADS."
-
-  password_reset_confirm:
-    title: "Réinitialisation du mot de passe MesADS"
-    description: "Réinitialisez votre mot de passe MesADS."
-
-  password_reset_complete:
-    title: "Réinitialisation du mot de passe MesADS"
-    description: "Votre mot de passe MesADS a été réinitialisé."
 
   users_user_export_gestionnaire:
     title: "Export csv gestionnaires"
@@ -137,6 +103,12 @@ urls:
   app.ads-manager.decree.detail:
     title: "Arrêtés délimitant le nombre d'ADS"
     description: "Facilitez la génération de l'arrêté municipal définissant le nombre d'ADS pour {{ ads_manager.content_object.display_fulltext }}."
+
+  app.ads-manager.arrete.update:
+    missing: true
+
+  app.ads-manager.arrete.delete:
+    missing: true
 
   app.ads.create:
     title: "Ajouter une nouvelle ADS à {{ ads_manager.content_object.display_fulltext }}"

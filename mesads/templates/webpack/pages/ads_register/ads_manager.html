@@ -87,7 +87,12 @@
                 <h2 class="fr-card__title">
                   Arrêté délimitant le nombre d'ADS
                 </h2>
-                <p class="fr-card__desc">Un arrêté spécifique est nécéssaire pour définir le nombre d'ADS de votre administration.</p>
+                <p class="fr-card__desc">
+                  {% if dernier_arrete and dernier_arrete.nombre_ads %}<strong>Nombre d'ADS autorisées: {{dernier_arrete.nombre_ads}}</strong> {% else %} Nombre d'ADS autorisées inconnu. {% endif %}
+                </p>
+                <p class="fr-card__desc">
+                  Un arrêté spécifique est nécessaire pour définir le nombre d'ADS de votre administration.
+                </p>
                 <div class="fr-card__end">
                   <span>
                     <a

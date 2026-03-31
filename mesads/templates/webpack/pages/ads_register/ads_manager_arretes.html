@@ -1,0 +1,309 @@
+{% extends "base_container.html" %}
+{% block body-content %}
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d'Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+        </li>
+          <li>
+            <a class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager.administrations' %}">
+              Vos administrations en gestion
+            </a>
+          </li>
+        <li>
+          <a class="fr-breadcrumb__link"
+              href="{% url 'app.ads-manager.detail' manager_id=ads_manager.id %}">{{ ads_manager.content_object.display_text|capfirst }}</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Arrêté délimitant le nombre d'ADS</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+  
+  <h1>Arrêté délimitant le nombre d'ADS</h1>
+
+  {% if dernier_arrete %}
+
+  <div class="fr-container mb-2">
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12 fr-col-md-4">
+        <div class="fr-card fr-card--download">
+          <div class="fr-card__body">
+            <div class="fr-card__content">
+              <h2 class="fr-card__title">
+                {{dernier_arrete.human_filename}}
+              </h2>
+              <div class="fr-card__end">
+                <p>
+                  <small>
+                    Nombre d'ADS autorisée: {{dernier_arrete.nombre_ads}}
+                  </small>
+                </p>
+                <span>
+                  {% if dernier_arrete.exists_in_storage %}
+                  <a
+                    href="{{ dernier_arrete.file.url }}"
+                    class="fr-link fr-icon-arrow-down-line fr-link--icon-right"
+                  >
+                    Télécharger
+                  </a>
+                  {% else %}
+                  <p>
+                    Le fichier n'existe plus
+                  </p>
+                  {% endif %}
+                </span>
+              </div>
+              <div class="fr-card__start">
+                <div class="flex justify-between">
+
+                  <div>
+                    <p>
+                      <small>
+                        Arrêté pris le {{dernier_arrete.date_arrete}}
+                      </small>
+                    </p>
+                  </div>
+
+                  <div>
+                    <button aria-controls="modal-modif-dernier-arrete" data-fr-opened="false" type="button" class="fr-btn fr-btn--sm fr-icon-pencil-line" aria-label="Modifier l'arrêté {{dernier_arrete.human_filename}}"></button>
+
+                    <dialog
+                      id="modal-modif-dernier-arrete"
+                      class="fr-modal"
+                      aria-labelledby="modal-modif-dernier-arrete-title"
+                      data-fr-concealing-backdrop="true"
+                    >
+                      <div class="fr-container fr-container--fluid fr-container-md">
+                        <div class="fr-grid-row fr-grid-row--center">
+                          <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                            <div class="fr-modal__body">
+                              <div class="fr-modal__header">
+                                <button aria-controls="modal-modif-dernier-arrete" title="Fermer" type="button" class="fr-btn--close fr-btn">Fermer</button>
+                              </div>
+                              <div class="fr-modal__content">
+                                <h2 id="modal-modif-dernier-arrete-title" class="fr-modal__title">
+                                  <span class="fr-icon-info-line fr-icon--lg" aria-hidden="true"></span> Modification de la date de l'arrêté
+                                </h2>
+                                <form method="post" action="{% url 'app.ads-manager.arrete.update' manager_id=ads_manager.id arrete_id=dernier_arrete.id %}">
+                                  {% csrf_token %}
+                                  <div class="fr-input-group">
+
+                                    <label class="fr-label" for="date-prise-arrete-{{dernier_arrete.id}}">
+                                      Date de prise de l'arrêté
+                                      <span aria-hidden="true">*</span>
+                                      <span class="fr-sr-only"> (obligatoire)</span>
+                                    </label>
+
+                                    <div class="fr-input-wrap fr-fi-calendar-line">
+                                      <input
+                                        class="fr-input"
+                                        type="date"
+                                        id="date-prise-arrete-{{dernier_arrete.id}}"
+                                        name="date_arrete"
+                                        value="{{ dernier_arrete.date_arrete|date:"Y-m-d" }}"
+                                        max="{% now 'Y-m-d' %}"
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div class="fr-input-group">
+                                    <label class="fr-label" for="nombre-ads-arrete-{{dernier_arrete.id}}">
+                                      {{ field.label }}
+                                      <span aria-hidden="true">*</span>
+                                      <span class="fr-sr-only"> (obligatoire)</span>
+                                    </label>
+
+                                    <input
+                                      class="fr-input"
+                                      type="number"
+                                      id="nombre-ads-arrete-{{dernier_arrete.id}}"
+                                      name="nombre_ads"
+                                      value="{{ dernier_arrete.nombre_ads|default:"0" }}"
+                                    />
+                                  </div>
+
+                                  <button class="fr-btn" type="submit">Valider</button>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+
+                    <button aria-controls="modal-suppression-dernier-arrete" data-fr-opened="false" type="button" class="fr-btn fr-btn--sm fr-icon-delete-line" aria-label="Supprimer l'arrêté {{dernier_arrete.human_filename}}"></button>
+
+                    <dialog
+                      id="modal-suppression-dernier-arrete"
+                      class="fr-modal"
+                      aria-labelledby="modal-suppression-dernier-arrete-title"
+                      data-fr-concealing-backdrop="true"
+                    >
+                      <div class="fr-container fr-container--fluid fr-container-md">
+                        <div class="fr-grid-row fr-grid-row--center">
+                          <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                            <div class="fr-modal__body">
+                              <div class="fr-modal__header">
+                                <button aria-controls="modal-suppression-dernier-arrete" title="Fermer" type="button" class="fr-btn--close fr-btn">Fermer</button>
+                              </div>
+                              <div class="fr-modal__content">
+                                <h2 id="modal-suppression-dernier-arrete-title" class="fr-modal__title">
+                                  <span class="fr-icon-info-line fr-icon--lg" aria-hidden="true"></span> Êtes vous sur de vouloir supprimer cet arrêté?
+                                </h2>
+                                <form method="post" action="{% url 'app.ads-manager.arrete.delete' manager_id=ads_manager.id arrete_id=dernier_arrete.id %}">
+                                  {% csrf_token %}
+
+                                  <button class="fr-btn" type="submit">Confirmer</button>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </dialog>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr>
+  {% endif %}
+
+  <div class="fr-container mb-2">
+    <h2>Nouvel arrêté</h2>
+    <form class="mt-2" method="post" enctype="multipart/form-data">
+
+      {% csrf_token %}
+    
+      <div class="fr-upload-group {% if form.errors.file %}fr-upload-group--error{%endif%} mb-2">
+        <label class="fr-label" for="{{ form.file.id_for_label }}">
+          {{form.file.label}}
+          <span aria-hidden="true">*</span>
+          <span class="fr-sr-only"> (obligatoire)</span>
+        </label>
+        <input
+          class="fr-upload"
+          aria-describedby="upload-id-messages"
+          type="file"
+          id="{{ form.file.id_for_label }}"
+          name="{{ form.file.html_name }}"
+        >
+        <div class="fr-messages-group" id="upload-id-messages" aria-live="polite">
+          {% if form.errors.file %}
+            {% for error in form.errors.file %}
+              <p class="fr-message fr-message--error" id="upload-id-message-error">{{error}}</p>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+
+      {% include "form_fields/date.html" with field=form.date_arrete field_errors=form.errors.date_arrete required=form.fields.date_arrete.required %}
+
+      {% include "form_fields/number.html" with field=form.nombre_ads field_errors=form.errors.nombre_ads required=form.fields.nombre_ads.required %}
+
+
+      <button class="fr-btn" type="submit" name="action" value="attribution_ads">Valider</button>
+    </form>
+  </div>
+
+  {% if arretes %}
+    <hr>
+    <h2>Précédents arrêtés</h2>
+    <div class="fr-container mb-2">
+      <div class="fr-grid-row fr-grid-row--gutters">
+
+        {% for arrete in arretes %}
+        <div class="fr-col-12 fr-col-md-4">
+          <div class="fr-card fr-card--download">
+            <div class="fr-card__body">
+              <div class="fr-card__content">
+                <h2 class="fr-card__title wrap-anywhere">
+                  {{arrete.human_filename}}
+                </h2>
+                <div class="fr-card__end">
+                  <p>
+                    <small>
+                      Nombre d'ADS autorisée: {{arrete.nombre_ads}}
+                    </small>
+                  </p>
+                  <span>
+                    {% if arrete.exists_in_storage %}
+                    <a
+                      href="{{ arrete.file.url }}"
+                      class="fr-link fr-icon-arrow-down-line fr-link--icon-right"
+                    >
+                      Télécharger
+                    </a>
+                    {% else %}
+                    <p>
+                      Le fichier n'existe plus
+                    </p>
+                    {% endif %}
+                  </span>
+                </div>
+                <div class="fr-card__start">
+                  <div class="flex justify-between">
+                    <p>
+                      <small>
+                        Arrêté pris le {{arrete.date_arrete}}
+                      </small>
+                    </p>
+
+                    <div>
+                    
+                      <button aria-controls="modal-suppression-arrete-{{arrete.id}}" data-fr-opened="false" type="button" class="fr-btn fr-btn--sm fr-icon-delete-line" aria-label="Supprimer l'arrêté {{arrete.human_filename}}"></button>
+
+                      <dialog
+                        id="modal-suppression-arrete-{{arrete.id}}"
+                        class="fr-modal"
+                        aria-labelledby="modal-suppression-arrete-{{arrete.id}}-title"
+                        data-fr-concealing-backdrop="true"
+                      >
+                        <div class="fr-container fr-container--fluid fr-container-md">
+                          <div class="fr-grid-row fr-grid-row--center">
+                            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                              <div class="fr-modal__body">
+                                <div class="fr-modal__header">
+                                  <button aria-controls="modal-suppression-arrete-{{arrete.id}}" title="Fermer" type="button" class="fr-btn--close fr-btn">Fermer</button>
+                                </div>
+                                <div class="fr-modal__content">
+                                  <h2 id="modal-suppression-arrete-{{arrete.id}}-title" class="fr-modal__title">
+                                    <span class="fr-icon-info-line fr-icon--lg" aria-hidden="true"></span> Êtes vous sur de vouloir supprimer cet arrêté?
+                                  </h2>
+                                  <form method="post" action="{% url 'app.ads-manager.arrete.delete' manager_id=ads_manager.id arrete_id=arrete.id %}">
+                                    {% csrf_token %}
+
+                                    <button class="fr-btn" type="submit">Confirmer</button>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </dialog>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+  {% endif %}
+{% endblock body-content %}

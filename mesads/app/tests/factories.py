@@ -3,12 +3,14 @@ from datetime import timedelta
 
 import factory
 from dateutil.relativedelta import relativedelta
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
 from mesads.app.models import (
     ADS,
     ADSManager,
     ADSManagerAdministrator,
+    ADSManagerDecree,
     ADSManagerRequest,
     InscriptionListeAttente,
 )
@@ -52,6 +54,17 @@ class ADSManagerRequestFactory(factory.django.DjangoModelFactory):
 
     ads_manager = factory.SubFactory(ADSManagerFactory)
     accepted = True
+
+
+class ADSManagerDecreeFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ADSManagerDecree
+
+    file = factory.LazyFunction(
+        lambda: SimpleUploadedFile(
+            "test.pdf", b"%PDF-1.4\n%Fake PDF\n", content_type="application/pdf"
+        )
+    )
 
 
 class ADSFactory(factory.django.DjangoModelFactory):

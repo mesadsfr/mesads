@@ -136,7 +136,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_cron",
     "debug_toolbar",
-    "django_registration",
     "reversion",
     "reversion_compare",
     "rest_framework",
@@ -367,8 +366,6 @@ if parse_env_bool("LOGGING_ENABLED", False):
         },
     }
 
-# django-registration: maximum number of days to activate the account
-ACCOUNT_ACTIVATION_DAYS = 14
 
 # By default an exception is raised if you try to add an administrator from the
 # admin page at

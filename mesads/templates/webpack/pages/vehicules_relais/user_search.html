@@ -30,7 +30,7 @@
       </p>
       <div class="fr-grid-row fr-grid-row--center fr-m-2w">
         <a class="fr-btn fr-btn--secondary"
-           href="{% url 'login' %}?next={% url 'vehicules-relais.proprietaire' %}">
+           href="{% url 'override.login' %}?next={% url 'vehicules-relais.proprietaire' %}">
           {% if request.user.is_authenticated %}
             Mon espace propriétaire
           {% else %}
