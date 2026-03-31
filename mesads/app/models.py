@@ -1516,11 +1516,8 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
 
     def get_duplicatas(self):
         return InscriptionListeAttente.objects.exclude(pk=self.pk).filter(
-            Q(numero_licence=self.numero_licence) |
-            Q(
-                nom__iexact=self.nom,
-                prenom__iexact=self.prenom
-            )
+            Q(numero_licence=self.numero_licence)
+            | Q(nom__iexact=self.nom, prenom__iexact=self.prenom)
         )
 
     def is_duplicated(self):

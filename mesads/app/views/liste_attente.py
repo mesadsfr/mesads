@@ -27,7 +27,6 @@ from mesads.app.forms import (
     InscriptionListeAttenteForm,
     ListesAttentePubliquesSearchForm,
     UpdateDelaiInscriptionListeAttenteForm,
-    check_and_notify_duplicated,
 )
 from mesads.app.models import (
     ADS,
@@ -38,8 +37,9 @@ from mesads.app.models import (
     ADSUser,
     InscriptionListeAttente,
 )
+from mesads.app.services.liste_attente import check_and_notify_duplicated
 
-from ..services import get_inscriptions_data_for_excel_export
+from ..services.export import get_inscriptions_data_for_excel_export
 from .export import ExcelExporter
 
 
@@ -413,9 +413,9 @@ class InscriptionListeAttenteMixin:
 class CreationInscriptionListeAttenteView(InscriptionListeAttenteMixin, CreateView):
     def form_valid(self, form):
         valid = super().form_valid(form)
-        check_and_notify_duplicated(self.object)
+        if self.object:
+            check_and_notify_duplicated(self.object)
         return valid
-
 
 
 class ModificationInscriptionListeAttenteView(InscriptionListeAttenteMixin, UpdateView):

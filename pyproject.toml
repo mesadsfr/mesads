@@ -30,6 +30,7 @@ omit = [
     "*urls.py",
     "*/tests/**",
     "*/test_*.py",
+    "mesads/conftest.py",
     "*/unittest.py",
     # We should probably keep admin.py in coverage, but since it's only for
     # admins let's avoid over-engineering.

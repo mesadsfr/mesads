@@ -13,8 +13,6 @@ from mesads.app.forms import (
     ContactInscriptionListeAttenteForm,
     InscriptionListeAttenteForm,
     UpdateDelaiInscriptionListeAttenteForm,
-    compute_next_date_fin_validite,
-    set_next_date_fin_validite,
 )
 from mesads.app.models import (
     ADS,
@@ -23,6 +21,10 @@ from mesads.app.models import (
     ADSUpdateLog,
     ADSUser,
     InscriptionListeAttente,
+)
+from mesads.app.services.liste_attente import (
+    compute_next_date_fin_validite,
+    set_next_date_fin_validite,
 )
 from mesads.users.unittest import ClientTestCase as BaseClientTestCase
 

@@ -3,17 +3,14 @@ from datetime import date
 from dal import autocomplete
 from dateutil.relativedelta import relativedelta
 from django import forms
-from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
-from django.core.mail import send_mail
 from django.core.validators import MaxValueValidator
-from django.db.models import Q
 from django.forms import BaseInlineFormSet, inlineformset_factory
-from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 
+from mesads.app.services.liste_attente import set_next_date_fin_validite
 from mesads.fradm.forms import FrenchAdministrationForm
 from mesads.fradm.models import EPCI, Aeroport, Commune, Prefecture
 
@@ -22,7 +19,6 @@ from .models import (
     ADS,
     ADSLegalFile,
     ADSManager,
-    ADSManagerRequest,
     ADSUser,
     InscriptionListeAttente,
 )
@@ -240,76 +236,6 @@ class ADSManagerDecreeForm(forms.Form):
 
 class SearchVehiculeForm(forms.Form):
     immatriculation = forms.CharField(required=False)
-
-
-def compute_next_date_fin_validite(
-    date_debut: date, date_renouvellement: date | None = None
-) -> date:
-    if date_renouvellement is None or date_renouvellement <= date_debut:
-        return date_debut + relativedelta(years=1)
-
-    date_candidate = date_debut + relativedelta(
-        years=date_renouvellement.year - date_debut.year
-    )
-
-    if date_candidate < date_renouvellement:
-        return date_candidate + relativedelta(years=2)
-    return date_candidate + relativedelta(years=1)
-
-
-def set_next_date_fin_validite(obj: InscriptionListeAttente):
-    obj.date_fin_validite = compute_next_date_fin_validite(
-        obj.date_depot_inscription, obj.date_dernier_renouvellement
-    )
-
-
-def notification_doublon(inscription: InscriptionListeAttente):
-    ads_manager = inscription.ads_manager
-    ads_manager_requests = ADSManagerRequest.objects.filter(
-        ads_manager=ads_manager, accepted=True
-    )
-    emails = [
-        ads_manager_request.user.email
-        for ads_manager_request in ads_manager_requests
-    ]
-
-    email_subject = "Liste d'attente MesADS - Doublon d'inscription"
-    email_content = render_to_string(
-        "liste_attente/doublon_inscription_email_body.txt",
-        {
-            "inscription": inscription,
-            "ads_manager": ads_manager,
-            "base_url": settings.MESADS_BASE_URL,
-        },
-    )
-    email_content_html = render_to_string(
-        "liste_attente/doublon_inscription_email_body.mjml",
-        {
-            "inscription": inscription,
-            "ads_manager": ads_manager,
-            "base_url": settings.MESADS_BASE_URL,
-        },
-    )
-    send_mail(
-        email_subject,
-        email_content,
-        settings.MESADS_CONTACT_EMAIL,
-        emails,
-        fail_silently=True,
-        html_message=email_content_html,
-    )
-
-
-def check_and_notify_duplicated(inscription: InscriptionListeAttente):
-    duplicatas = inscription.get_duplicatas()
-
-    if duplicatas.count() == 0:
-        return
-
-    inscriptions_a_notifier = list(duplicatas) + [inscription]
-
-    for inscription_a_notifier in inscriptions_a_notifier:
-        notification_doublon(inscription_a_notifier)
 
 
 class InscriptionListeAttenteForm(forms.ModelForm):

@@ -43,7 +43,7 @@ from ..models import (
     ADSUpdateLog,
     DemandeGestionPrefecture,
 )
-from ..services import (
+from ..services.export import (
     get_ads_data_for_excel_export,
     get_gestionnaires_data_for_excel_export,
 )
