@@ -37,8 +37,9 @@ from mesads.app.models import (
     ADSUser,
     InscriptionListeAttente,
 )
+from mesads.app.services.liste_attente import check_and_notify_duplicated
 
-from ..services import get_inscriptions_data_for_excel_export
+from ..services.export import get_inscriptions_data_for_excel_export
 from .export import ExcelExporter
 
 
@@ -410,7 +411,11 @@ class InscriptionListeAttenteMixin:
 
 
 class CreationInscriptionListeAttenteView(InscriptionListeAttenteMixin, CreateView):
-    pass
+    def form_valid(self, form):
+        valid = super().form_valid(form)
+        if self.object:
+            check_and_notify_duplicated(self.object)
+        return valid
 
 
 class ModificationInscriptionListeAttenteView(InscriptionListeAttenteMixin, UpdateView):
@@ -437,10 +442,7 @@ class ModificationInscriptionListeAttenteView(InscriptionListeAttenteMixin, Upda
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        inscriptions_with_same_licence_number = InscriptionListeAttente.objects.filter(
-            numero_licence=self.object.numero_licence
-        ).exclude(id=self.object.id)
-        context["duplicated_licences"] = inscriptions_with_same_licence_number
+        context["inscriptions_dupliquees"] = self.object.get_duplicatas()
         return context
 
 

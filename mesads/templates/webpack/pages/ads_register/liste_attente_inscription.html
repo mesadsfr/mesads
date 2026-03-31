@@ -34,12 +34,12 @@
     <h2>{{ads_manager.content_object.display_text|capfirst}}</h2>
   </div>
 
-  {% if duplicated_licences %}
+  {% if inscriptions_dupliquees %}
     <div class="mb-2 fr-alert fr-alert--warning">
-      <h3 class="fr-alert__title">Numéro de carte professionnelle</h3>
-      <p>Le numéro de carte professionnelle renseigné pour cette inscription est déjà utilisé sur la liste d'attente d'une ou plusieurs administrations. Nous vous invitons à vous rapprocher de celles ci.</p>
+      <h3 class="fr-alert__title">Inscription en doublon</h3>
+      <p>Le numéro de carte professionnelle ou le nom et prénom renseigné pour cette inscription est déjà utilisé sur la liste d'attente d'une ou plusieurs administrations. Nous vous invitons à vous rapprocher de celles ci.</p>
       <ul>
-        {% for duplicata in duplicated_licences %}
+        {% for duplicata in inscriptions_dupliquees %}
           <li>
             {{duplicata.ads_manager.content_object.display_text}}
           </li>
@@ -70,7 +70,51 @@
 
       {% include "form_fields/string.html" with field=form.prenom field_errors=form.errors.prenom required=form.fields.prenom.required %}
 
-      {% include "form_fields/string.html" with field=form.numero_licence field_errors=form.errors.numero_licence required=form.fields.numero_licence.required %}
+      <div
+        class="fr-input-group{% if form.errors.numero_licence %} fr-input-group--error{% endif %}{% if bold %} font-bold{% endif %}"
+      >
+
+        <label class="fr-label" for="{{ form.numero_licence.id_for_label }}">
+          {{ form.numero_licence.label }}
+          <span aria-hidden="true">*</span>
+          <span class="fr-sr-only"> (obligatoire)</span>
+          <button aria-describedby="tooltip" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+          <span class="fr-tooltip fr-placement" id="tooltip" role="tooltip">
+            <p>
+              Pour les nouvelles cartes professionnelles le numéro apparaît sous la date de validité, sous la mention "numéro de carte". 
+              Pour les anciennes cartes professionnelles, le numéro apparaît en bas à gauche : en cas de doute vous pouvez vous rapprocher de votre Préfecture.
+            </p>
+            <img 
+              alt="Reproduction d'une carte professionnelle de conducteur de taxi pour illustrer l'emplacement du numéro de carte professionnelle: le numéro apparaît sous la date de validité, sous la mention 'numéro de carte'"
+              src="../../images/carte_pro.png"
+            />
+          </span>
+          <span class="fr-hint-text">{{ form.numero_licence.help_text }}</span>
+
+          
+        </label>
+
+        <input
+          class="fr-input{% if form.errors.numero_licence %} fr-input--error{% endif %}"
+          type="text"
+          id="{{ form.numero_licence.id_for_label }}"
+          name="{{ form.numero_licence.html_name }}"
+          value="{{ form.numero_licence.value|default:"" }}"
+          aria-describedby="{{form.numero_licence.id_for_label}}-messages"
+          
+        />
+
+        <div class="fr-messages-group" id="{{form.numero_licence.id_for_label}}-messages" aria-live="polite">
+          {% for error in form.errors.numero_licence %}
+            <p
+              class="fr-message fr-message--error"
+              id="{{form.numero_licence.id_for_label}}-{{forloop.counter0}}-message-error"
+            >
+              {{ error }}
+            </p>
+          {% endfor %}
+        </div>
+      </div>
 
       {% include "form_fields/string.html" with field=form.numero_telephone field_errors=form.errors.numero_telephone required=form.fields.numero_telephone.required %}
 
@@ -104,6 +148,19 @@
               {{ error }}
             </p>
           {% endfor %}
+        </div>
+      </div>
+
+      <div class="fr-notice fr-notice--warning">
+        <div class="fr-container">
+          <div class="fr-notice__body">
+            <p>
+              <span class="fr-notice__title">Attention, </span>
+              <span class="fr-notice__desc">le renouvellement doit</span>
+              <a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031971928" target="_blank" aria-label="Article legifrance sur le renovuellement des inscriptions à la lsite d'attente (nouvelle fenêtre)" class="fr-notice__link">impérativement</a>
+              <span class="fr-notice__desc">intervenir chaque année avant la date anniversaire de l'inscription initiale</span>
+            </p>
+          </div>
         </div>
       </div>
 

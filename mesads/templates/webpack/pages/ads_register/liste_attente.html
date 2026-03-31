@@ -179,7 +179,7 @@
                     <td>{{inscription.nom}} {{inscription.prenom}}</td>
                     <td>
                       {{inscription.numero_licence}}
-                      {% if inscription.numero_licence_utilise %}
+                      {% if inscription.is_duplicated %}
                         <p class="fr-badge fr-badge--green-tilleul-verveine">Personne inscrite sur une autre liste</p>
                       {% endif %}
                     </td>

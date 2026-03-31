@@ -45,8 +45,11 @@ class StatistiquesView(TemplateView):
     ) -> int:
         return (
             ADS.objects.filter(
-                Q(creation_date__gte=start_date, creation_date__lte=end_date)
-                | Q(last_update__gte=start_date, last_update__lte=end_date)
+                Q(
+                    creation_date__date__gte=start_date,
+                    creation_date__date__lte=end_date,
+                )
+                | Q(last_update__date__gte=start_date, last_update__date__lte=end_date)
             )
             .exclude(ads_manager__administrator__prefecture__numero=PREFECTURE_TEST)
             .count()
@@ -55,8 +58,8 @@ class StatistiquesView(TemplateView):
     def get_nombre_connexions_unique(self, start_date: date, end_date: date) -> int:
         return (
             UserAuditEntry.objects.filter(
-                created_at__gte=start_date,
-                created_at__lte=end_date,
+                created_at__date__gte=start_date,
+                created_at__date__lte=end_date,
                 action="login",
             )
             .distinct("user")
@@ -68,7 +71,7 @@ class StatistiquesView(TemplateView):
     ) -> int:
         return (
             InscriptionListeAttente.objects.filter(
-                date_creation__date__gte=start_date, date_creation__date__lt=end_date
+                date_creation__date__gte=start_date, date_creation__date__lte=end_date
             )
             .exclude(ads_manager__administrator__prefecture__numero=PREFECTURE_TEST)
             .count()
@@ -81,7 +84,7 @@ class StatistiquesView(TemplateView):
             InscriptionListeAttente.with_deleted.filter(
                 deleted_at__isnull=False,
                 deleted_at__date__gte=start_date,
-                deleted_at__date__lt=end_date,
+                deleted_at__date__lte=end_date,
                 motif_archivage=InscriptionListeAttente.ADS_ATTRIBUEE,
             )
             .exclude(ads_manager__administrator__prefecture__numero=PREFECTURE_TEST)

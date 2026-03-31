@@ -10,6 +10,7 @@ from django.forms import BaseInlineFormSet, inlineformset_factory
 from django.urls import reverse
 from django.utils import timezone
 
+from mesads.app.services.liste_attente import set_next_date_fin_validite
 from mesads.fradm.forms import FrenchAdministrationForm
 from mesads.fradm.models import EPCI, Aeroport, Commune, Prefecture
 
@@ -237,19 +238,6 @@ class SearchVehiculeForm(forms.Form):
     immatriculation = forms.CharField(required=False)
 
 
-def compute_next_date_fin_validite(
-    date_debut: date, date_renew: date | None = None
-) -> date:
-    if date_renew is None or date_renew <= date_debut:
-        return date_debut + relativedelta(years=1)
-
-    candidate = date_debut + relativedelta(years=date_renew.year - date_debut.year)
-
-    if candidate < date_renew:
-        return candidate + relativedelta(years=2)
-    return candidate + relativedelta(years=1)
-
-
 class InscriptionListeAttenteForm(forms.ModelForm):
     ERROR_DATE_RENOUVELLEMENT_EMPTY = (
         "L'inscription semble dater de plus d’un an. "
@@ -257,12 +245,14 @@ class InscriptionListeAttenteForm(forms.ModelForm):
         "au cours des 12 derniers mois."
     )
     ERROR_DATE_RENOUVELLEMENT = (
-        "Le renouvellement semble dater de plus d’un an. "
-        "Vérifiez si un dépôt de demande de renouvellement a eu lieu "
-        "au cours des 12 derniers mois."
+        "Le renouvellement ne peut être antérieur à la date de dépot de l'inscription."
     )
     ERROR_DATE_RENOUVELLEMENT_FUTURE = (
         "La date de renouvellement ne peut pas être dans le futur."
+    )
+    ERROR_DATE_RENOUVELLEMENT_EXPIRED = (
+        "La date de renouvellement ne peut être "
+        "après la date de fin de validité de la demande."
     )
 
     class Meta:
@@ -300,7 +290,19 @@ class InscriptionListeAttenteForm(forms.ModelForm):
                 )
 
         if date_dernier_renouvellement:
-            if date_dernier_renouvellement <= date_depot_inscription:
+            if (
+                self.instance.date_fin_validite
+                and date_dernier_renouvellement >= self.instance.date_fin_validite
+            ):
+                self.add_error(
+                    "date_dernier_renouvellement",
+                    self.ERROR_DATE_RENOUVELLEMENT_EXPIRED,
+                )
+
+            if (
+                date_depot_inscription
+                and date_dernier_renouvellement <= date_depot_inscription
+            ):
                 self.add_error(
                     "date_dernier_renouvellement",
                     self.ERROR_DATE_RENOUVELLEMENT,
@@ -316,15 +318,7 @@ class InscriptionListeAttenteForm(forms.ModelForm):
         obj: InscriptionListeAttente = super().save(commit=False)
         obj.ads_manager = self.ads_manager
 
-        if (
-            obj.date_dernier_renouvellement
-            and obj.date_dernier_renouvellement > obj.date_depot_inscription
-        ):
-            obj.date_fin_validite = compute_next_date_fin_validite(
-                obj.date_depot_inscription, obj.date_dernier_renouvellement
-            )
-        else:
-            obj.date_fin_validite = obj.date_depot_inscription + relativedelta(years=1)
+        set_next_date_fin_validite(obj)
 
         # Auto-génération si pas de numéro
         if not obj.numero:
@@ -346,6 +340,7 @@ class InscriptionListeAttenteForm(forms.ModelForm):
             )
         if commit:
             obj.save()
+
         return obj
 
 

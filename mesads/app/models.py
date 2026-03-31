@@ -1514,9 +1514,11 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
             return "unknown"
         return "no priority"
 
-    def numero_licence_utilise(self):
-        return (
-            InscriptionListeAttente.objects.filter(numero_licence=self.numero_licence)
-            .exclude(pk=self.pk)
-            .exists()
+    def get_duplicatas(self):
+        return InscriptionListeAttente.objects.exclude(pk=self.pk).filter(
+            Q(numero_licence=self.numero_licence)
+            | Q(nom__iexact=self.nom, prenom__iexact=self.prenom)
         )
+
+    def is_duplicated(self):
+        return self.get_duplicatas().exists()

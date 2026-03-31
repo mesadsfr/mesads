@@ -23,9 +23,11 @@
   <div class="fr-col-12 fr-col-md-6">
     <h1 class="text-center">Connexion</h1>
 
-    <h2 class="text-center">
-        Se connecter avec ProConnect
-    </h2>
+    <div class="fr-alert fr-alert--info mb-3">
+      <h2 class="fr-alert__title">ProConnect</h2>
+      <p>L'authentification sur MesADS se fera désormais uniquement via ProConnect, en cliquant sur le bouton ci dessous. Si vous ne possèdez pas de compte ProConnect, vous pouvez en créer un via ce même bouton, en utilisant votre adresse mail.</p>
+    </div>
+
     <div class="text-center fr-connect-group">
       <a href="{% url 'oidc_authentication_init' %}" class="fr-connect">
         <span class="fr-connect__login">S’identifier avec</span>
