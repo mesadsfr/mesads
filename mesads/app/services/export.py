@@ -1,6 +1,14 @@
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Q
 
-from mesads.app.models import ADS, ADSManager, ADSUser, InscriptionListeAttente
+from mesads.app.models import (
+    ADS,
+    ADSManager,
+    ADSManagerAdministrator,
+    ADSUser,
+    InscriptionListeAttente,
+)
+from mesads.fradm.models import EPCI, Aeroport, Commune, Prefecture
 
 
 def get_inscriptions_data_for_excel_export(ads_manager):
@@ -187,4 +195,92 @@ def get_gestionnaires_data_for_excel_export(ads_manager_administrator):
         for ads_manager in ads_managers
     ]
 
+    return headers, rows
+
+
+def get_prefectures_data_listes_attente():
+    ct_commune = ContentType.objects.get_for_model(Commune)
+    ct_epci = ContentType.objects.get_for_model(EPCI)
+    ct_prefecture = ContentType.objects.get_for_model(Prefecture)
+    ct_aeroport = ContentType.objects.get_for_model(Aeroport)
+
+    prefectures = ADSManagerAdministrator.objects.annotate(
+        nb_communes=Count("adsmanager", filter=Q(adsmanager__content_type=ct_commune)),
+        nb_listes_commune=Count(
+            "adsmanager",
+            filter=Q(
+                adsmanager__content_type=ct_commune,
+                adsmanager__inscriptions_liste_attente__isnull=False,
+            ),
+            distinct=True,
+        ),
+        nb_listes_epci=Count(
+            "adsmanager",
+            filter=Q(
+                adsmanager__content_type=ct_epci,
+                adsmanager__inscriptions_liste_attente__isnull=False,
+            ),
+            distinct=True,
+        ),
+        nb_listes_prefecture=Count(
+            "adsmanager",
+            filter=Q(
+                adsmanager__content_type=ct_prefecture,
+                adsmanager__inscriptions_liste_attente__isnull=False,
+            ),
+            distinct=True,
+        ),
+        nb_listes_aeroport=Count(
+            "adsmanager",
+            filter=Q(
+                adsmanager__content_type=ct_aeroport,
+                adsmanager__inscriptions_liste_attente__isnull=False,
+            ),
+            distinct=True,
+        ),
+        nb_inscriptions_commune=Count(
+            "adsmanager__inscriptions_liste_attente",
+            filter=Q(adsmanager__content_type=ct_commune),
+            distinct=True,
+        ),
+        nb_inscriptions_epci=Count(
+            "adsmanager__inscriptions_liste_attente",
+            filter=Q(adsmanager__content_type=ct_epci),
+            distinct=True,
+        ),
+        nb_inscriptions_prefecture=Count(
+            "adsmanager__inscriptions_liste_attente",
+            filter=Q(adsmanager__content_type=ct_prefecture),
+            distinct=True,
+        ),
+        nb_inscriptions_aeroport=Count(
+            "adsmanager__inscriptions_liste_attente",
+            filter=Q(adsmanager__content_type=ct_aeroport),
+            distinct=True,
+        ),
+    )
+    rows = prefectures.values_list(
+        "prefecture__libelle",
+        "nb_communes",
+        "nb_listes_commune",
+        "nb_listes_epci",
+        "nb_listes_prefecture",
+        "nb_listes_aeroport",
+        "nb_inscriptions_commune",
+        "nb_inscriptions_epci",
+        "nb_inscriptions_prefecture",
+        "nb_inscriptions_aeroport",
+    )
+    headers = [
+        "Département",
+        "Nombre de communes",
+        "Nombre de communes avec une liste d'attente publique ou non",
+        "Nombre d'EPCI avec une liste d'attente publique ou non",
+        "Préfecture avec une liste d'attente publique ou non",
+        "Nombre d'aéroports avec une liste d'attente publique ou non",
+        "Nombre d'inscrits sur des communes",
+        "Nombre d'inscrits sur des EPCI",
+        "Nombre d'inscrits sur la préfecture",
+        "Nombre d'inscrits sur des aéroports",
+    ]
     return headers, rows

@@ -3,24 +3,49 @@ from datetime import date, timedelta
 
 from django.db.models import BooleanField, Count, OuterRef, Q, Subquery, Sum
 from django.utils import timezone
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 
-from mesads.app.models import ADS, ADSUpdateLog, InscriptionListeAttente
+from mesads.app.models import ADS, ADSManager, ADSUpdateLog, InscriptionListeAttente
+from mesads.app.services.export import get_prefectures_data_listes_attente
+from mesads.app.views.export import ExcelExporter
 from mesads.users.models import NoteUtilisateur, User, UserAuditEntry
 
 PREFECTURE_TEST = "999"
+PREFECTURE_PARIS = "75"
+
+
+class ExportListeAttenteDataExcel(ExcelExporter, View):
+    def get_filename(self):
+        return f"data_listes_attente_{timezone.now().strftime('%d_%m%Y')}.xlsx"
+
+    def get_file_title(self):
+        return "Data Listes d'attente"
+
+    def generate(self, workbook):
+        headers, rows = get_prefectures_data_listes_attente()
+        self.add_sheet(
+            workbook,
+            "DataInscriptiosn",
+            "TableauDataInscriptions",
+            headers,
+            rows,
+        )
 
 
 class StatistiquesView(TemplateView):
     template_name = "admin/statistiques.html"
 
-    def get_pourcentage_ads_valide(self) -> float:
+    def get_pourcentage_ads_valide(self, exclude_paris=False) -> float:
         date_limite_completion = timezone.now() - timedelta(
             days=ADSUpdateLog.OUTDATED_LOG_DAYS
         )
         ads_qs = ADS.objects.exclude(
             ads_manager__administrator__prefecture__numero=PREFECTURE_TEST
         )
+        if exclude_paris:
+            ads_qs = ads_qs.exclude(
+                ads_manager__administrator__prefecture__numero=PREFECTURE_PARIS
+            )
         ads_count = ads_qs.count()
         last_log_valid = (
             ADSUpdateLog.objects.filter(
@@ -75,6 +100,28 @@ class StatistiquesView(TemplateView):
             )
             .exclude(ads_manager__administrator__prefecture__numero=PREFECTURE_TEST)
             .count()
+        )
+
+    def get_nombre_listes_attente(self) -> int:
+        return (
+            ADSManager.objects.annotate(
+                nb_inscriptions=Count("inscriptions_liste_attente")
+            )
+            .filter(Q(nb_inscriptions__gt=0) | Q(liste_attente_publique=True))
+            .count()
+        )
+
+    def pourcentage_listes_attente_publique(self) -> float:
+        nb_listes_attente = self.get_nombre_listes_attente()
+
+        nb_listes_publique = ADSManager.objects.filter(
+            liste_attente_publique=True
+        ).count()
+
+        return (
+            round((nb_listes_publique / nb_listes_attente) * 100, 2)
+            if nb_listes_attente > 0
+            else 0
         )
 
     def get_nombre_ads_cree_via_liste_attente(
@@ -163,6 +210,14 @@ class StatistiquesView(TemplateView):
         )
         context["pourcentage_ads_valide_et_complete"] = (
             self.get_pourcentage_ads_valide()
+        )
+        context["pourcentage_ads_valide_et_complete_sans_paris"] = (
+            self.get_pourcentage_ads_valide(exclude_paris=True)
+        )
+
+        context["nombre_listes_attente"] = self.get_nombre_listes_attente()
+        context["pourcentage_listes_attente_publique"] = (
+            self.pourcentage_listes_attente_publique()
         )
 
         context["nombre_inscriptions_creees"] = self.get_nombre_creation_liste_attente(
