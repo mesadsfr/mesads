@@ -37,6 +37,23 @@
       border: solid 1px black;
       border-radius: 15px;
     }
+
+    .action-button {
+      text-decoration: none;
+      background-color: #205067;
+      color: white !important;
+      cursor: pointer;
+      border: #205067 1px solid;
+      border-radius: 5px;
+      padding: 0.5rem;
+      margin: 1rem 0
+
+      
+    }
+    .action-button:hover{
+      color: white;
+      background-color: #417690;
+    }
   </style>
 {% endblock %}
 
@@ -116,39 +133,51 @@
       </div>
     </div>
 
-    <form method="get" action="{% url 'admin-statistiques' %}">
-      <fieldset class="module aligned">
-        <div class="form-row inline-row">
-          <label for="id_start_date">Date de début :</label>
-          <input
-            type="date"
-            id="id_start_date"
-            name="start_date"
-            value="{{ start_date|date:'Y-m-d' }}"
-          />
-          <label for="id_end_date">Date de fin :</label>
-          <input
-            type="date"
-            id="id_end_date"
-            name="end_date"
-            value="{{ end_date|date:'Y-m-d' }}"
-          />
-        </div>
-      </fieldset>
+    <div class="stats-block">
+      <ul>
+        <li><strong>Pourcentage d'ADS valides et complètes: </strong> {{pourcentage_ads_valide_et_complete}}%</li>
+        <li><strong>Pourcentage d'ADS valides et complètes (sans Paris): </strong> {{pourcentage_ads_valide_et_complete_sans_paris}}%</li>
+        <li><strong>Nombre de listes d'attentes: </strong>{{nombre_listes_attente}}</li>
+        <li><strong>Part de listes d'attente publiques: </strong>{{pourcentage_listes_attente_publique}}%</li>
+      </ul>
 
-      <div class="submit-row">
-        <input type="submit" value="Filtrer" class="default" />
-      </div>
-    </form>
+      <a class="action-button" href="{% url 'admin-statistiques-export-data-liste-attente' %}" target="_blank">Données liste attente</a>
+    </div>
+
+    
 
     <div class="stats-block">
+      <form method="get" action="{% url 'admin-statistiques' %}">
+        <fieldset class="module aligned">
+          <div class="form-row inline-row">
+            <label for="id_start_date">Date de début :</label>
+            <input
+              type="date"
+              id="id_start_date"
+              name="start_date"
+              value="{{ start_date|date:'Y-m-d' }}"
+            />
+            <label for="id_end_date">Date de fin :</label>
+            <input
+              type="date"
+              id="id_end_date"
+              name="end_date"
+              value="{{ end_date|date:'Y-m-d' }}"
+            />
+          </div>
+        </fieldset>
+
+        <div class="submit-row">
+          <input type="submit" value="Filtrer" class="default" />
+        </div>
+      </form>
+
       <h2>Période du {{start_date}} au {{end_date}}</h2>
 
       <ul>
         <li><strong>Nombre de connexions uniques : </strong> {{nombre_connexions}}</li>
         <li><strong>Nombre de création et de modification d'ADS : </strong> {{nombre_creation_modification_ads}}</li>
         <li><strong>Pourcentage d'ADS valides et complètes: </strong> {{pourcentage_ads_valide_et_complete}}%</li>
-        <li><strong>Nombre de création d'inscription à des listes d'attentes: </strong>{{nombre_inscriptions_creees}}</li>
         <li><strong>Nombre d'ADS attribuées depuis une liste d'attente: </strong>{{nombre_ads_liste_attente}}</li>
       </ul>
     </div>
