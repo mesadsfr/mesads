@@ -1,0 +1,61 @@
+communes:
+  4086:
+    insee: '12083'
+    libelle: Cransac
+    new_owner:
+      insee: '12083'
+      libelle: Cransac-les-Thermes
+  9748:
+    insee: '27497'
+    libelle: Rougemontiers
+    new_owner:
+      insee: '27497'
+      libelle: Rougemontier
+  12754:
+    insee: '33461'
+    libelle: Saint-Philippe-d'Aiguille
+    new_owner:
+      insee: '33461'
+      libelle: Saint-Philippe-d'Aiguilhe
+  24719:
+    insee: '63320'
+    libelle: Saint-Avit
+    new_owner:
+      insee: '63320'
+      libelle: Saint-Avit-d'Auvergne
+  26962:
+    insee: '68355'
+    libelle: Waldighofen
+    new_owner:
+      insee: '68355'
+      libelle: Waldighoffen
+  28051:
+    insee: '71263'
+    libelle: Louhans
+    new_owner:
+      insee: '71263'
+      libelle: Louhans-Châteaurenaud
+  29093:
+    insee: '74116'
+    libelle: Etaux
+    new_owner:
+      insee: '74116'
+      libelle: Eteaux
+  29723:
+    insee: '76484'
+    libelle: Oissel
+    new_owner:
+      insee: '76484'
+      libelle: Oissel-sur-Seine
+  32332:
+    insee: '83052'
+    libelle: Esparron
+    new_owner:
+      insee: '83052'
+      libelle: Esparron-de-Pallières
+  34716:
+    insee: '95218'
+    libelle: Éragny
+    new_owner:
+      insee: '95218'
+      libelle: Éragny-sur-Oise
