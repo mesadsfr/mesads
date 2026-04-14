@@ -3,6 +3,7 @@ from datetime import timedelta
 
 import factory
 from dateutil.relativedelta import relativedelta
+from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
@@ -27,25 +28,25 @@ class ADSManagerAdministratorFactory(factory.django.DjangoModelFactory):
 class ADSManagerFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = ADSManager
+        exclude = ("for_object",)
 
     administrator = factory.SubFactory(ADSManagerAdministratorFactory)
 
     class Params:
-        for_prefecture = factory.Trait(
-            content_object=factory.SubFactory(PrefectureFactory)
-        )
-        for_epci = factory.Trait(content_object=factory.SubFactory(EPCIFactory))
-        for_commune = factory.Trait(content_object=factory.SubFactory(CommuneFactory))
+        for_object = None
 
-    @factory.post_generation
-    def for_object(self, create, extracted, **kwargs):
-        """
-        Permet d'appeler: ADSManagerFactory(for_object=une_instance)
-        """
-        if extracted is not None:
-            self.content_object = extracted
-            if create:
-                self.save()
+        for_prefecture = factory.Trait(for_object=factory.SubFactory(PrefectureFactory))
+        for_epci = factory.Trait(for_object=factory.SubFactory(EPCIFactory))
+        for_commune = factory.Trait(for_object=factory.SubFactory(CommuneFactory))
+
+    content_type = factory.LazyAttribute(
+        lambda o: ContentType.objects.get_for_model(o.for_object)
+        if o.for_object is not None
+        else None
+    )
+    object_id = factory.LazyAttribute(
+        lambda o: o.for_object.pk if o.for_object is not None else None
+    )
 
 
 class ADSManagerRequestFactory(factory.django.DjangoModelFactory):

@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from .admin_views import StatistiquesView
+from .admin_views import ExportListeAttenteDataExcel, StatistiquesView
 from .app import views
 
 urlpatterns = [
@@ -15,6 +15,11 @@ urlpatterns = [
         "admin/statistiques/",
         admin.site.admin_view(StatistiquesView.as_view()),
         name="admin-statistiques",
+    ),
+    path(
+        "admin/statistiques/export-data-liste-attente",
+        admin.site.admin_view(ExportListeAttenteDataExcel.as_view()),
+        name="admin-statistiques-export-data-liste-attente",
     ),
     path("admin/", admin.site.urls),
     path("", include("mesads.app.urls")),
