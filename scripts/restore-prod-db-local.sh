@@ -31,40 +31,4 @@ docker compose exec db psql -U postgres -c "CREATE DATABASE ${LOCAL_DATABASE}"
 echo "==> Restore data"
 docker compose exec -T db psql -U postgres "${LOCAL_DATABASE}" < "$DATA_FILE"
 
-echo "==> Create superuser"
-cat<<EOF | docker compose run -T --no-deps --rm app poetry run python manage.py shell
-from mesads.users.models import User
 
-User.objects.create_superuser('${SUPERUSER_USERNAME}', '${SUPERUSER_PASSWORD}')
-EOF
-
-echo "==> Give ADSManagerAdministrator permissions to the new user"
-for id in ${DEFAULT_ADS_MANAGER_ADMINISTRATOR}; do
-    echo "==> ... For ADSManagerAdministrator ${id}"
-    cat<<EOF | docker compose run -T --no-deps --rm app poetry run python manage.py shell
-
-from mesads.app.models import ADSManagerAdministrator
-from mesads.users.models import User
-
-user = User.objects.get(email='${SUPERUSER_USERNAME}')
-ads_manager_administrator = ADSManagerAdministrator.objects.get(id=${id})
-
-ads_manager_administrator.users.add(user)
-ads_manager_administrator.save()
-EOF
-done
-
-echo "==> Give ADSManager permissions to the new user"
-for id in ${DEFAULT_ADS_MANAGER}; do
-    echo "==> ... For ADSManager ${id}"
-    cat<<EOF | docker compose run -T --no-deps --rm app poetry run python manage.py shell
-
-from mesads.app.models import ADSManager, ADSManagerRequest
-from mesads.users.models import User
-
-user = User.objects.get(email='${SUPERUSER_USERNAME}')
-ads_manager = ADSManager.objects.get(id=${id})
-ads_manager_request = ADSManagerRequest(user=user, ads_manager=ads_manager, accepted=True)
-ads_manager_request.save()
-EOF
-done
