@@ -1,0 +1,40 @@
+
+{% if derniere_newsletter %}
+<div class="homepage-section background-blue-france">
+  <div class="fr-container">
+    <h2 class="mesads-text-white text-left">Newsletters</h2>
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-mb-4v">
+      <div class="fr-col-8 fr-col-md-6 text-left pr-3">
+
+        <h3 class="mesads-text-white">Dernière newsletter</h3>
+        <a
+          href="{{ derniere_newsletter.newsletter.url }}"
+          class="fr-link fr-icon-arrow-down-line fr-link--icon-right mesads-text-white"
+        >
+          {{derniere_newsletter.newsletter_date}}
+        </a>
+      </div>
+
+      {% if trois_dernieres_newsletters %}
+      <div class="fr-col-8 fr-col-md-6 text-left pr-3">
+
+        <h3 class="mesads-text-white">Newsletters précédentes</h3>
+
+        <ul>
+          {% for newsletter in trois_dernieres_newsletters %}
+            <li class="newsletter-item">
+              <a
+                href="{{ newsletter.newsletter.url }}"
+                class="fr-link fr-icon-arrow-down-line fr-link--icon-right mesads-text-white"
+              >
+                {{newsletter.newsletter_date}}
+              </a>
+            </li>
+            {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}
