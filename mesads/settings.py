@@ -149,6 +149,7 @@ INSTALLED_APPS = [
     "mesads.api",
     "mesads.vehicules_relais",
     "mesads.mesads_oidc",
+    "mesads.newsletters",
 ]
 
 CRON_CLASSES = [
