@@ -273,3 +273,16 @@ urls:
 
   app.liste_attente_publique_export_pdf:
     missing: true
+
+    # Parcours inspecteur
+  
+  app.consultation_search:
+    title: "Autorisations de stationnement - MesADS"
+    description: "Recherche d'autorisation de stationnement sur MesADS"
+
+  app.consultation_ads:
+    title: "ADS #{{ads.number}} - {{ads.ads_manager.human_name}} - MesADS"
+    description: "Consulter l'ADS #{{ads.number}} - {{ads.ads_manager.human_name}} sur MesADS"
+
+  app.consultation_ads_export:
+    missing: true

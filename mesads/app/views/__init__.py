@@ -28,6 +28,11 @@ from .ads_manager_request import (  # noqa: F401
     DemandeGestionADSView,
 )
 from .arretes import ListeArretesFilesView, TelechargementArreteView  # noqa: F401
+from .consultation_ads_views import (  # noqa: F401
+    ConsultationADSSearchView,
+    ConsultationADSView,
+    ExportADSPDFView,
+)
 from .dashboards import DashboardsView  # noqa: F401
 from .liste_attente import (  # noqa: F401
     ArchivageConfirmationView,

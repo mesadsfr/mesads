@@ -92,6 +92,11 @@ class User(AbstractUser):
 
     objects = EmailUserManager()
 
+    @property
+    def prefecture_consultation(self):
+        demande = self.demandes_acces_lecture_seule.filter(statut="ACCEPTE").first()
+        return demande.administrator.prefecture if demande else None
+
     def show_notation(self) -> bool:
         note_utilisateur = NoteUtilisateur.objects.filter(user=self).first()
         today = timezone.now().date()

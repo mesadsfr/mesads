@@ -1,0 +1,43 @@
+<div class="homepage-section">
+  <div class="fr-container">
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12 fr-col-md-6">
+        <div class="fr-tile fr-enlarge-link" id="tile-repertoire">
+          <div class="fr-tile__body">
+            <div class="fr-tile__content">
+              <h3 class="fr-tile__title">
+                <a href="{% url 'app.consultation_search' %}">Autorisations de stationnement</a>
+              </h3>
+              <p class="fr-tile__detail">Faire une recherche sur le répertoire à des fins d'enquête.</p>
+            </div>
+          </div>
+          <div class="fr-tile__header">
+            <div class="fr-tile__pictogram">
+              <img alt="" src="../../images/homepage/icone_repertoire.png" width="80px" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="fr-col-12 fr-col-md-6">
+        <div class="fr-tile fr-enlarge-link" id="tile-reglementation">
+          <div class="fr-tile__body">
+            <div class="fr-tile__content">
+              <h3 class="fr-tile__title">
+                <a href="{% url 'app.reglementation' %}">Réglementation</a>
+              </h3>
+              <p class="fr-tile__detail">Accéder aux informations officielles sur la réglementation des taxis.</p>
+            </div>
+          </div>
+          <div class="fr-tile__header">
+            <div class="fr-tile__pictogram">
+              <img alt="" src="../../images/homepage/icone_reglementation.png" width="80px" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include "./accueil_statistiques.html" with background_grey=True %}
+{% include "./accueil_contact.html" %}

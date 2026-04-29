@@ -1,0 +1,100 @@
+{% extends "base_container.html" %}
+{% load show_pagination_links boolean_display %}
+{% block body-content %}
+
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d'Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Autorisations de stationnement</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+
+  <h1>Autorisations de stationnement</h1>
+
+  <form method="GET">
+    
+    {% include "form_fields/select.html" with field=form.departement field_errors=form.errors.departement required=form.fields.departement.required bold=True %}
+    {% include "form_fields/string.html" with field=form.commune field_errors=form.errors.commune required=form.fields.commune.required %}
+    {% include "form_fields/string.html" with field=form.immatriculation field_errors=form.errors.immatriculation required=form.fields.immatriculation.required %}
+    {% include "form_fields/string.html" with field=form.conducteur field_errors=form.errors.conducteur required=form.fields.conducteur.required %}
+    {% include "form_fields/string.html" with field=form.siret field_errors=form.errors.siret required=form.fields.siret.required %}
+    {% include "form_fields/string.html" with field=form.numero field_errors=form.errors.numero required=form.fields.numero.required %}
+
+
+    <button type="submit" class="fr-btn">
+      Rechercher
+    </button>
+  </form>
+
+  {% if results %}
+
+  <div class="fr-table fr-table--multiline" id="table-0-component">
+    <div class="fr-table__wrapper">
+      <div class="fr-table__container">
+        <div class="fr-table__content">
+          <table id="table-ads">
+            <caption> Résultats de la recherche d&#39;ADS </caption>
+            <thead>
+              <tr>
+                <th> Commune </th>
+                <th> Date d'attribution </th>
+                <th> Conventionné CPAM </th>
+                <th> Titulaire </th>
+                <th> Immatriculation </th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ads in results %}
+              <tr id="table-ads-row-key-{{forloop.counter}}" data-row-key="{{forloop.counter}}">
+                <td> {{ads.ads_manager.human_name}} </td>
+                <td> {{ads.ads_creation_date}} </td>
+                <td> {{ ads.accepted_cpam|boolean_display }}</td>
+                <td> {{ ads.owner_name }} </td>
+                <td> {{ ads.immatriculation_plate }} </td>
+                <td class="!text-right">
+                  <div class="flex flex-col gap-1">
+                      <a
+                        class="fr-btn  full-width"
+                        href="{% url 'app.consultation_ads' ads_id=ads.id %}"
+                        aria-label="Consulter l'ADS {{ads.number}} de {{ ads.owner_name }}"
+                      >
+                        Consulter
+                      </a>
+                    <a
+                      class="fr-btn fr-btn--secondary full-width"
+                      aria-label="Télécharger l'ADS {{ads.number}} de {{ ads.owner_name }}"
+                      href="{% url 'app.consultation_ads_export' ads_id=ads.id %}"
+                    >
+                      Télécharger
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% show_pagination_links page_obj %}
+  </div>
+      
+
+  {% endif %}
+
+
+{% endblock body-content %}

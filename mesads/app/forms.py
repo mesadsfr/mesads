@@ -454,3 +454,19 @@ class DemandeGestionPrefectureForm(forms.Form):
         queryset=Prefecture.objects.exclude(numero="999"),
         label="Département",
     )
+
+
+class ConsultationADSForm(forms.Form):
+    departement = forms.ModelChoiceField(
+        queryset=Prefecture.objects.exclude(numero="999"),
+        label="Département",
+        required=False,
+    )
+
+    commune = forms.CharField(label="Commune", required=False)
+    immatriculation = forms.CharField(
+        label="Immatriculation du véhicule", required=False
+    )
+    conducteur = forms.CharField(label="Conducteur", required=False)
+    siret = forms.CharField(label="SIRET", required=False)
+    numero = forms.CharField(label="Numéro de l'ADS", required=False)

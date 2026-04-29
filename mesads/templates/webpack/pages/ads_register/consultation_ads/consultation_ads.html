@@ -1,0 +1,33 @@
+{% extends "base_container.html" %}
+{% load show_pagination_links boolean_display %}
+{% block body-content %}
+
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button
+      class="fr-breadcrumb__button"
+      aria-expanded="false"
+      aria-controls="breadcrumb-1"
+    >
+      Voir le fil d'Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Accueil</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" href="{% url 'app.homepage' %}">Autorisations de stationnement</a>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">ADS #{{ads.number}} - {{ads.ads_manager.human_name}}</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+
+  <h1>ADS #{{ads.number}} - {{ads.ads_manager.human_name}}</h1>
+
+  {% include "pages/ads_register/ads_lecture_seule.html" %}
+
+
+{% endblock body-content %}

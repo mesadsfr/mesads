@@ -80,6 +80,11 @@ class HomepageView(TemplateView):
             )
             ads_manager_requests = self.request.user.adsmanagerrequest_set.all()
             proprietaire_vehicule_relais = self.request.user.proprietaire_set.all()
+
+            inspecteur = self.request.user.demandes_acces_lecture_seule.filter(
+                statut="ACCEPTE"
+            ).exists()
+
             if len(ads_manager_administrators):
                 context["administrateur_ads"] = True
                 administrator = ads_manager_administrators.first()
@@ -88,6 +93,9 @@ class HomepageView(TemplateView):
                 context["title"] = (
                     f"MesADS - Accueil {administrator.prefecture.display_text()}"
                 )
+            elif inspecteur:
+                context["inspecteur"] = True
+                context["title"] = "MesADS - Accueil inspecteur"
             elif len(ads_manager_requests):
                 context["manager_ads"] = True
                 context["title"] = "MesADS - Accueil gestionnaire"
