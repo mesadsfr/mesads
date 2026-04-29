@@ -1,0 +1,159 @@
+{% load boolean_display %}
+<!DOCTYPE html>
+
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <title>Liste d'attente - {{ads_manager.content_object.display_text}}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+
+            @bottom-center {
+                content: "Page " counter(page) " / " counter(pages);
+                font-size: 10px;
+                color: #555;
+            }
+        }
+        h1 {
+          text-align: center;
+        }
+        dt {
+          font-weight: bold;
+        }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>ADS #{{ads.number}} - {{ads.ads_manager.human_name}}</h1>
+
+    </header>
+
+    <main>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-2 border border-neutral-300">
+          <h2>Informations générales</h2>
+
+          <dl>
+            <dt>Numéro de l'ADS:</dt>
+            <dd>{{ads.number}}</dd>
+
+            {% if ads_manager.content_type.name == 'EPCI' %}
+              <dt>Commune:</dt>
+              <dd>{{ads.epci_commune}}</dd>
+            {% endif %}
+
+            <dt>Date de création initiale de l'ADS:</dt>
+            <dd>{{ads.ads_creation_date}}</dd>
+
+            {% if ads.ads_type == "Nouvelle ADS" %}
+            <dt>Date du dernier renouvellement:</dt>
+            <dd>{{ads.ads_renew_date}}</dd>
+            {% endif %}
+
+            {% if ads.ads_type == "Ancienne ADS" %}
+            <dt>Date d'attribution de l'ADS au titulaire actuel:</dt>
+            <dd>{{ads.attribution_date}}</dd>
+            {% endif %}
+
+            <dt>ADS Actuellement exploitée:</dt>
+            <dd>{{ads.ads_in_use|boolean_display}}</dd>
+
+            <dt>Véhicule conventionné CPAM:</dt>
+            <dd>{{ads.accepted_cpam|boolean_display}}</dd>
+          </dl>
+        </div>
+
+        <div class="p-2 border border-neutral-300">
+          <h2>Titulaire de l'ADS</h2>
+          
+          <dl>
+            <dt>Titulaire de l'ADS :</dt>
+            <dd>{{ads.owner_name}}</dd>
+            
+            <dt>SIRET du titulaire de l'ADS:</dt>
+            <dd>{{ads.owner_siret}}</dd>
+            
+            <dt>Téléphone fixe:</dt>
+            <dd>{% if ads.owner_phone %} {{ads.owner_phone}} {% else %} Non renseigné {% endif %}</dd>
+            
+            <dt>Téléphone mobile:</dt>
+            <dd>{% if ads.owner_mobile %} {{ads.owner_mobile}} {% else %} Non renseigné {% endif %}</dd>
+            
+            <dt>Adresse électronique:</dt>
+            <dd>{% if ads.owner_email %} {{ads.owner_email}} {% else %} Non renseigné {% endif %}</dd>
+          </dl>
+        </div>
+
+        <div class="p-2 border border-neutral-300">
+          <h2>Le véhicule</h2>
+
+          <dl>
+            <dt>Plaque d'immatriculation:</dt>
+            <dd>{{ads.immatriculation_plate}}</dd>
+            <dt>Véhicule compatible PMR:</dt>
+            <dd>{{ads.vehicle_compatible_pmr|boolean_display}}</dd>
+            <dt>Véhicule électrique ou hybride:</dt>
+            <dd>{{ads.eco_vehicle|boolean_display}}</dd>
+          </dl>
+        </div>
+        <div class="p-2 border border-neutral-300">
+          <h2>Informations complémentaires</h2>
+
+          <dl>
+            <dt>Notes</dt>
+            <dd class="whitespace-pre-line">
+              {% if ads.notes %}{{ads.notes}}{% else %}Non renseignée.{%endif %}
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="my-4">
+        <h2>Conducteur(s)</h2>
+        <div class="fr-table fr-table--md fr-table--no-scroll">
+          <div class="fr-table__wrapper">
+            <div class="fr-table__container">
+              <div class="fr-table__content">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Statut</th>
+                      <th>Numéro de carte professionnelle</th>
+                      {% if ads.ads_type == "Ancienne ADS" %}
+                      <th>Date du contrat de location-gérance</th>
+                      <th>Nom du conducteur </th>
+                      <th>SIRET de l'exploitant de l'ADS</th>
+                      {% endif %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for ads_user in ads.adsuser_set.all %}
+                      <tr>
+                        <td>{{ads_user.get_status_display}}</td>
+                        <td>{{ads_user.license_number}}</td>
+                        {% if ads.ads_type == "Ancienne ADS" %}
+                        <td>{% if ads_user.date_location_gerance %} {{ads_user.date_location_gerance}} {% endif %}</td>
+                        <td>{{ads_user.name}}</td>
+                        <td>{{ads_user.siret}}</td>
+                        {% endif %}
+                      </tr>
+                    {% empty %}
+                      <tr>
+                        <td colspan="{% if ads.ads_type == 'Nouvelle ADS' %}2{% else %}5{% endif %}">Aucun conducteur n'a été saisi.</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+  </body>
+</html>
+

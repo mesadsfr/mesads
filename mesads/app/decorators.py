@@ -1,10 +1,16 @@
 import functools
 
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from django.shortcuts import get_list_or_404, get_object_or_404, redirect
 from django.urls import resolve, reverse
 
-from .models import ADS, ADSManagerAdministrator, ADSManagerRequest
+from .models import (
+    ADS,
+    ADSManagerAdministrator,
+    ADSManagerRequest,
+    DemandeAccesLectureSeule,
+)
 
 
 def ads_manager_required(func):
@@ -78,6 +84,26 @@ def ads_manager_administrator_required(func):
         # to at least one instance of ADSManagerAdministrator
         elif not request.user.is_staff:
             get_list_or_404(ADSManagerAdministrator, users__in=[request.user])
+        return func(request, *args, **kwargs)
+
+    return login_required(wrapped)
+
+
+def inspecteur_required(func):
+    """
+    Renvoie une 404 si il n'y a pas de Demande d'accès
+    inspecteur acceptée pour l'utilisateur connecté courant.
+    """
+
+    @functools.wraps(func)
+    def wrapped(request, *args, **kwargs):
+        if (
+            not request.user.is_staff
+            and not DemandeAccesLectureSeule.objects.filter(
+                user=request.user, statut=DemandeAccesLectureSeule.ACCEPTE
+            ).count()
+        ):
+            raise Http404()
         return func(request, *args, **kwargs)
 
     return login_required(wrapped)

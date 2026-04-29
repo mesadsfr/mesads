@@ -384,8 +384,28 @@ class ADSManagerAdministrator(models.Model):
         )
 
 
+class DemandeAcces(models.Model):
+    EN_ATTENTE = "EN_ATTENTE"
+    ACCEPTE = "ACCEPTE"
+    REFUSE = "REFUSE"
+
+    STATUTS = [(EN_ATTENTE, "En attente"), (ACCEPTE, "Acceptée"), (REFUSE, "Refusée")]
+    statut = models.CharField(
+        choices=STATUTS,
+        default=EN_ATTENTE,
+        blank=True,
+        verbose_name="Statut de la demande",
+    )
+
+    accepted_at = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+
+    class Meta:
+        abstract = True
+
+
 @reversion.register
-class DemandeGestionPrefecture(models.Model):
+class DemandeGestionPrefecture(DemandeAcces):
     """Requête utilisateur pour devenir gestionnaire d'une préfecture.
     Elle doit être accepté par un membre de l'équipe de MesADS.
     """
@@ -403,21 +423,6 @@ class DemandeGestionPrefecture(models.Model):
         related_name="demandes_gestion_prefecture",
     )
 
-    EN_ATTENTE = "EN_ATTENTE"
-    ACCEPTE = "ACCEPTE"
-    REFUSE = "REFUSE"
-
-    STATUTS = [(EN_ATTENTE, "En attente"), (ACCEPTE, "Acceptée"), (REFUSE, "Refusée")]
-    statut = models.CharField(
-        choices=STATUTS,
-        default=EN_ATTENTE,
-        blank=True,
-        verbose_name="Statut de la demande",
-    )
-
-    accepted_at = models.DateField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=False)
-
     class Meta:
         unique_together = (("user", "administrator"),)
         verbose_name = "Demande pour devenir gestionnaire de préfecture"
@@ -425,6 +430,34 @@ class DemandeGestionPrefecture(models.Model):
 
     def __str__(self):
         return f"Requete de {self.user} pour être gestionnaire de {self.administrator}"
+
+
+@reversion.register
+class DemandeAccesLectureSeule(DemandeAcces):
+    """Requête utilisateur pour pouvoir consulter les ADS d'une prefecture.
+    Elle doit être accepté par un membre de l'équipe de MesADS.
+    """
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        blank=False,
+        related_name="demandes_acces_lecture_seule",
+    )
+    administrator = models.ForeignKey(
+        ADSManagerAdministrator,
+        on_delete=models.CASCADE,
+        blank=False,
+        related_name="demandes_acces_lecture_seule",
+    )
+
+    class Meta:
+        unique_together = (("user", "administrator"),)
+        verbose_name = "Demande pour un accès en lecture seule"
+        verbose_name_plural = "Demandes pour accès en lecture seule"
+
+    def __str__(self):
+        return f"Requete de {self.user} pour consulter les ads de {self.administrator}"
 
 
 def validate_siret(value):

@@ -7,6 +7,7 @@ from . import views
 from .decorators import (
     ads_manager_administrator_required,
     ads_manager_required,
+    inspecteur_required,
 )
 
 url_prefectures = [
@@ -203,6 +204,24 @@ url_liste_attente = [
     ),
 ]
 
+url_consultation = [
+    path(
+        "registre_ads/consultation/recherche/",
+        inspecteur_required(views.ConsultationADSSearchView.as_view()),
+        name="app.consultation_search",
+    ),
+    path(
+        "registre_ads/consultation/recherche/<int:ads_id>/",
+        inspecteur_required(views.ConsultationADSView.as_view()),
+        name="app.consultation_ads",
+    ),
+    path(
+        "registre_ads/consultation/recherche/<int:ads_id>/export/",
+        inspecteur_required(views.ExportADSPDFView.as_view()),
+        name="app.consultation_ads_export",
+    ),
+]
+
 url_commons = [
     path(
         "registre_ads/dashboards",
@@ -266,5 +285,10 @@ url_public = [
 
 
 urlpatterns = (
-    url_prefectures + url_gestionnaire + url_commons + url_public + url_liste_attente
+    url_prefectures
+    + url_gestionnaire
+    + url_consultation
+    + url_commons
+    + url_public
+    + url_liste_attente
 )
