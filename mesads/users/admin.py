@@ -213,7 +213,7 @@ class UserAdmin(BaseUserAdmin):
 
     def export_taxis_relais(self, request):
         """
-        Vue qui renvoie le CSV des emails des Users avec 
+        Vue qui renvoie le CSV des emails des Users avec
         un espace propriétaire de taxis relais.
         """
         qs = (

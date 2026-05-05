@@ -14,7 +14,6 @@ from ..models import (
     ADSManager,
     ADSManagerAdministrator,
     ADSManagerRequest,
-    InscriptionListeAttente,
 )
 
 

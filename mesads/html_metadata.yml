@@ -58,8 +58,10 @@ urls:
     missing: true
 
   users_user_export_gestionnaire:
-    title: "Export csv gestionnaires"
-    description: "Page d'export csv de gestionnaires"
+    missing: true
+
+  users_user_export_taxis_relais:
+    missing: true
 
   app.note-service:
     missing: true
