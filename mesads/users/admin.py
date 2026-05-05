@@ -180,6 +180,11 @@ class UserAdmin(BaseUserAdmin):
                 self.admin_site.admin_view(self.export_gestionnaire),
                 name=f"{User._meta.app_label}_{User._meta.model_name}_export_gestionnaire",
             ),
+            path(
+                "export-taxis-relais/",
+                self.admin_site.admin_view(self.export_taxis_relais),
+                name=f"{User._meta.app_label}_{User._meta.model_name}_export_taxis_relais",
+            ),
         ]
         return custom_urls + urls
 
@@ -206,6 +211,29 @@ class UserAdmin(BaseUserAdmin):
                 writer.writerow([user])
         return response
 
+    def export_taxis_relais(self, request):
+        """
+        Vue qui renvoie le CSV des emails des Users avec 
+        un espace propriétaire de taxis relais.
+        """
+        qs = (
+            self.get_queryset(request)
+            .filter(proprietaire__isnull=False, is_active=True)
+            .distinct()
+            .values_list("email", flat=True)
+        )
+
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = (
+            'attachment; filename="users_taxis_relais.csv"'
+        )
+        writer = csv.writer(response)
+        writer.writerow(["email"])
+        for user in qs:
+            if user:
+                writer.writerow([user])
+        return response
+
     def changelist_view(self, request, extra_context=None):
         """
         On passe l’URL du bouton au template.
@@ -214,7 +242,11 @@ class UserAdmin(BaseUserAdmin):
         export_url = reverse(
             f"admin:{User._meta.app_label}_{User._meta.model_name}_export_gestionnaire"
         )
+        export_taxis_relais_url = reverse(
+            f"admin:{User._meta.app_label}_{User._meta.model_name}_export_taxis_relais"
+        )
         extra_context["export_ads_accepted_url"] = export_url
+        extra_context["export_taxis_relais_url"] = export_taxis_relais_url
         return super().changelist_view(request, extra_context=extra_context)
 
     def get_search_results(self, request, queryset, search_term):
