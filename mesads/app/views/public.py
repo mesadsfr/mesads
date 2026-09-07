@@ -14,6 +14,7 @@ from ..models import (
     ADSManager,
     ADSManagerAdministrator,
     ADSManagerRequest,
+    DemandeGestionPrefecture,
 )
 
 
@@ -75,8 +76,8 @@ class HomepageView(TemplateView):
         context["stats"] = self.get_statistiques()
 
         if self.request.user.is_authenticated:
-            ads_manager_administrators = (
-                self.request.user.adsmanageradministrator_set.all()
+            demandes_prefecture = self.request.user.demandes_gestion_prefecture.filter(
+                statut=DemandeGestionPrefecture.ACCEPTE
             )
             ads_manager_requests = self.request.user.adsmanagerrequest_set.all()
             proprietaire_vehicule_relais = self.request.user.proprietaire_set.all()
@@ -85,9 +86,9 @@ class HomepageView(TemplateView):
                 statut="ACCEPTE"
             ).exists()
 
-            if len(ads_manager_administrators):
+            if len(demandes_prefecture):
                 context["administrateur_ads"] = True
-                administrator = ads_manager_administrators.first()
+                administrator = demandes_prefecture.first().administrator
                 context["ads_manager_administrator"] = administrator
 
                 context["title"] = (
@@ -346,14 +347,14 @@ class PlanSiteView(TemplateView):
             liens_authentifie = [
                 {"nom_url": "Déconnexion", "url": reverse("oidc_logout")},
             ]
-            ads_manager_administrators = (
-                self.request.user.adsmanageradministrator_set.all()
+            demandes_prefecture = self.request.user.demandes_gestion_prefecture.filter(
+                statut=DemandeGestionPrefecture.ACCEPTE
             )
             liens_plan = []
             ads_manager_requests = self.request.user.adsmanagerrequest_set.all()
             proprietaire_vehicule_relais = self.request.user.proprietaire_set.all()
-            if len(ads_manager_administrators):
-                administrator = ads_manager_administrators.first()
+            if len(demandes_prefecture):
+                administrator = demandes_prefecture.first().administrator
 
                 liens_plan = [
                     {

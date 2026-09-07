@@ -259,7 +259,6 @@ class ADSManagerAdministrator(models.Model):
     prefecture = models.OneToOneField(
         Prefecture, on_delete=models.CASCADE, null=False, blank=False
     )
-    users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
     expected_ads_count = models.PositiveIntegerField(
         null=True,
         blank=True,

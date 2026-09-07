@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.core import mail
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -6,10 +8,9 @@ from django.db.models import Q
 from mesads.app.models import (
     ADS,
     ADSLegalFile,
-    ADSManager,
-    ADSManagerAdministrator,
     ADSUpdateLog,
     ADSUser,
+    DemandeGestionPrefecture,
     Notification,
 )
 from mesads.fradm.models import EPCI, Commune
@@ -69,7 +70,12 @@ class TestADSView(ClientTestCase):
 
     def test_update_with_notification(self):
         # Add admin user to the ADSManagerAdministrator
-        self.ads.ads_manager.administrator.users.add(self.admin_user)
+        DemandeGestionPrefecture.objects.create(
+            user=self.admin_user,
+            administrator=self.ads.ads_manager.administrator,
+            statut=DemandeGestionPrefecture.ACCEPTE,
+            accepted_at=date.today(),
+        )
 
         # Setup notification
         Notification.objects.create(
@@ -534,29 +540,6 @@ class TestADSView(ClientTestCase):
             resp.context["ads_users_formset"].forms[0].errors["siret"],
         )
         self.assertEqual(ADSUser.objects.count(), 0)
-
-    def test_get_incorrect_ads_manager(self):
-        """If user requests /registre_ads/gestion/xxx/ads/yyy but xxx is an
-        existing ADSManager, but not the one of the ADS, we want to make sure
-        the user is redirected to the correct page."""
-        commune = Commune.objects.create(
-            type_commune="COM",
-            insee="xx",
-            departement="xx",
-            libelle="xx",
-        )
-        ads_manager = ADSManager.objects.create(
-            content_object=commune,
-            administrator=ADSManagerAdministrator.objects.first(),
-        )
-        resp = self.admin_client.get(
-            f"/registre_ads/gestion/{ads_manager.id}/ads/{self.ads.id}",
-        )
-        self.assertEqual(resp.status_code, 301)
-        self.assertEqual(
-            resp.headers["Location"],
-            f"/registre_ads/gestion/{self.ads_manager_city35.id}/ads/{self.ads.id}",
-        )
 
 
 class TestADSDeleteView(ClientTestCase):

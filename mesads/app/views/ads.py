@@ -27,6 +27,7 @@ from ..models import (
     ADSManager,
     ADSUpdateLog,
     ADSUser,
+    DemandeGestionPrefecture,
 )
 from ..reversion_diff import ModelHistory
 
@@ -160,15 +161,19 @@ class ADSView(ADSManagerMixin, RevisionMixin, UpdateView):
 
         ADSUpdateLog.create_for_ads(self.object, self.request.user)
 
-        for user in self.object.ads_manager.administrator.users.all():
-            notification = getattr(user, "notification", None)
+        for (
+            demande
+        ) in self.object.ads_manager.administrator.demandes_gestion_prefecture.filter(
+            statut=DemandeGestionPrefecture.ACCEPTE
+        ):
+            notification = getattr(demande.user, "notification", None)
             if notification and notification.ads_created_or_updated:
                 assert self.request.resolver_match.url_name in (
                     "app.ads.detail",
                     "app.ads.create",
                 )
                 self.send_notification(
-                    user,
+                    demande.user,
                     self.object,
                     self.request.resolver_match.url_name == "app.ads.create",
                 )
