@@ -1,11 +1,17 @@
 import logging
+from datetime import date
 
 from django.contrib.contenttypes.models import ContentType
 
 from mesads.fradm.models import Commune, Prefecture
 from mesads.fradm.unittest import ClientTestCase as BaseClientTestCase
 
-from .app.models import ADSManager, ADSManagerAdministrator, ADSManagerRequest
+from .app.models import (
+    ADSManager,
+    ADSManagerAdministrator,
+    ADSManagerRequest,
+    DemandeGestionPrefecture,
+)
 
 
 class ClientTestCase(BaseClientTestCase):
@@ -48,10 +54,12 @@ class ClientTestCase(BaseClientTestCase):
         self.ads_manager_administrator_35 = ADSManagerAdministrator.objects.get(
             prefecture=prefecture
         )
-        self.ads_manager_administrator_35.users.add(
-            self.ads_manager_administrator_35_user
+        DemandeGestionPrefecture.objects.create(
+            user=self.ads_manager_administrator_35_user,
+            administrator=self.ads_manager_administrator_35,
+            statut=DemandeGestionPrefecture.ACCEPTE,
+            accepted_at=date.today(),
         )
-
         # Disable logging below critical to avoid useless messages during
         # unittests (requests error 404 for example).
         logging.disable(logging.CRITICAL)

@@ -1,54 +1,63 @@
 from django.conf import settings
-from django.contrib import admin, messages
+from django.contrib import admin
 from django.contrib.staticfiles import finders
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import F, Q
 from django.db.models.functions import Collate
-from django.http import HttpResponseRedirect
 from django.template.loader import render_to_string
-from django.urls import reverse
 from django.utils import timezone
 
-from mesads.app.models import DemandeGestionPrefecture
+from mesads.app.models import ADSManagerAdministrator, DemandeGestionPrefecture
+
+
+class AdministratorSelectFilter(admin.SimpleListFilter):
+    title = "Prefecture"
+    parameter_name = "prefecture"
+
+    def lookups(self, request, model_admin):
+        return [
+            (administrator.pk, administrator.prefecture)
+            for administrator in ADSManagerAdministrator.objects.order_by(
+                "prefecture__numero"
+            )
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(administrator=self.value())
+        return queryset
 
 
 @admin.register(DemandeGestionPrefecture)
 class DemandeGestionPrefectureAdmin(admin.ModelAdmin):
-    list_display = ("user", "administrator", "statut", "created_at")
+    autocomplete_fields = ["user"]
+    list_display = ("user", "prefecture", "statut", "created_at")
 
     search_fields = ("user__email",)
 
-    change_form_template = "admin/app/demande_gestion_prefecture/change_form.html"
+    list_filter = ("statut", AdministratorSelectFilter)
 
-    def response_change(self, request, obj):
-        # Gestion du bouton "Valider"
-        if "_valider" in request.POST:
+    @admin.display(description="Préfecture")
+    def prefecture(self, obj):
+        return obj.administrator.prefecture
+
+    def save_model(self, request, obj, form, change):
+        accepted = False
+        if obj.pk and change:
+            old_obj = self.model.objects.get(pk=obj.pk)
+            if (
+                old_obj.statut != DemandeGestionPrefecture.ACCEPTE
+                and obj.statut == DemandeGestionPrefecture.ACCEPTE
+            ):
+                obj.accepted_at = timezone.now()
+                accepted = True
+
+        super().save_model(request, obj, form, change)
+
+        if accepted:
             self.validation_demande(obj, request)
-            self.message_user(request, "Demande validée.", level=messages.SUCCESS)
-
-            changelist_url = reverse(
-                f"admin:{obj._meta.app_label}_{obj._meta.model_name}_changelist"
-            )
-            obj.statut = DemandeGestionPrefecture.ACCEPTE
-            obj.accepted_at = timezone.now().date()
-            obj.save()
-            return HttpResponseRedirect(changelist_url)
-
-        elif "_refuser" in request.POST:
-            self.message_user(request, "Demande refusée.", level=messages.ERROR)
-
-            changelist_url = reverse(
-                f"admin:{obj._meta.app_label}_{obj._meta.model_name}_changelist"
-            )
-            obj.statut = DemandeGestionPrefecture.REFUSE
-            obj.accepted_at = None
-            obj.save()
-            return HttpResponseRedirect(changelist_url)
-
-        return super().response_change(request, obj)
 
     def validation_demande(self, obj, request):
-        obj.administrator.users.add(obj.user)
         email_subject = render_to_string(
             "demande_gestion_prefecture/email_demande_gestion_prefecture_result_subject.txt",
             {

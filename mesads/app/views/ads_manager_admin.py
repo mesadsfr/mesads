@@ -301,13 +301,6 @@ class ADSManagerAdminRequestsView(RevisionMixin, TemplateView):
 
         ads_manager_request = get_object_or_404(ADSManagerRequest, id=request_id)
 
-        # Make sure current user can accept this request
-        get_object_or_404(
-            ADSManagerAdministrator,
-            users__in=[request.user],
-            adsmanager=ads_manager_request.ads_manager,
-        )
-
         if action == "accept" or action == "authorize":
             ads_manager_request.accepted = True
         else:

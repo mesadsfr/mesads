@@ -2,7 +2,7 @@ import datetime
 
 from django.urls import reverse
 
-from mesads.app.models import DemandeAccesLectureSeule
+from mesads.app.models import DemandeAccesLectureSeule, DemandeGestionPrefecture
 from mesads.app.tests.factories import (
     ADSManagerAdministratorFactory,
     ADSManagerFactory,
@@ -31,7 +31,12 @@ class ClientTestCase(CTC):
         self.request_gestionnaire = ADSManagerRequestFactory(
             user=self.user_gestionnaire, ads_manager=self.ads_manager
         )
-        self.administrator.users.add(self.user_prefecture)
+        DemandeGestionPrefecture.objects.create(
+            user=self.user_prefecture,
+            administrator=self.administrator,
+            statut=DemandeGestionPrefecture.ACCEPTE,
+            accepted_at=datetime.date.today(),
+        )
         DemandeAccesLectureSeule.objects.create(
             user=self.user_inspecteur,
             administrator=self.administrator,

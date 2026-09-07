@@ -3,7 +3,7 @@ import io
 
 from pypdf import PdfReader
 
-from mesads.app.models import ADSManagerAdministrator
+from mesads.app.models import ADSManagerAdministrator, DemandeGestionPrefecture
 from mesads.fradm.models import Commune, Prefecture
 from mesads.vehicules_relais.models import Proprietaire, Vehicule
 
@@ -438,7 +438,12 @@ class TestProprietaireVehiculeDeleteView(ClientTestCase):
         prefecture_client, prefecture_user = self.create_client()
         departement = Prefecture.objects.first()
         administrator = ADSManagerAdministrator.objects.create(prefecture=departement)
-        administrator.users.add(prefecture_user)
+        DemandeGestionPrefecture.objects.create(
+            user=prefecture_user,
+            administrator=administrator,
+            statut=DemandeGestionPrefecture.ACCEPTE,
+            accepted_at=datetime.date.today(),
+        )
         vehicule = Vehicule.objects.create(
             proprietaire=self.proprietaire,
             departement=departement,

@@ -40,12 +40,12 @@ def proprietaire_or_prefecture_required(func):
 
     @functools.wraps(func)
     def wrapped(request, proprietaire_id=None, vehicule_numero=None, *args, **kwargs):
-        administrator = request.user.adsmanageradministrator_set.first()
+        demande_prefecture = request.user.demandes_gestion_prefecture.first()
         if request.user.is_staff:
             proprietaire = get_object_or_404(Proprietaire, id=proprietaire_id)
-        elif administrator:
+        elif demande_prefecture:
             vehicule = get_object_or_404(Vehicule, numero=vehicule_numero)
-            if vehicule.departement == administrator.prefecture:
+            if vehicule.departement == demande_prefecture.administrator.prefecture:
                 proprietaire = vehicule.proprietaire
             else:
                 raise Http404()

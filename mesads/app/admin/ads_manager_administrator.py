@@ -7,14 +7,7 @@ from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from ..models import (
-    ADSManagerAdministrator,
-)
-
-
-class ADSManagerAdministratorUsersInline(admin.TabularInline):
-    model = ADSManagerAdministrator.users.through
-    autocomplete_fields = ["user"]
+from ..models import ADSManagerAdministrator, DemandeGestionPrefecture
 
 
 @admin.register(ADSManagerAdministrator)
@@ -34,8 +27,6 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
         "display_ads_count",
         "expected_ads_count",
     )
-
-    inlines = (ADSManagerAdministratorUsersInline,)
 
     fields = (
         "prefecture",
@@ -96,7 +87,12 @@ class ADSManagerAdministratorAdmin(admin.ModelAdmin):
 
     @admin.display(description="Administrateurs (sans staff MesADS)")
     def display_users_count(self, ads_manager_administrator):
-        return ads_manager_administrator.users.filter(is_staff=False).count() or "-"
+        return (
+            ads_manager_administrator.demandes_gestion_prefecture.filter(
+                statut=DemandeGestionPrefecture.ACCEPTE
+            ).count()
+            or "-"
+        )
 
     @admin.display(description="Nombre d'ADS enregistrées")
     def display_ads_count(self, ads_manager_administrator):

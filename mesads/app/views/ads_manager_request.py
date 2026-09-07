@@ -8,9 +8,7 @@ from django.views.generic.edit import FormView
 from ..forms import (
     ADSManagerForm,
 )
-from ..models import (
-    ADSManagerRequest,
-)
+from ..models import ADSManagerRequest, DemandeGestionPrefecture
 
 
 class DemandeGestionADSView(FormView):
@@ -65,16 +63,18 @@ class DemandeGestionADSView(FormView):
             )
 
             if form.cleaned_data["ads_manager"].administrator:
-                for administrator_user in form.cleaned_data[
+                for demande in form.cleaned_data[
                     "ads_manager"
-                ].administrator.users.all():
-                    notifications = getattr(administrator_user, "notification", None)
+                ].administrator.demandes_gestion_prefecture.filter(
+                    statut=DemandeGestionPrefecture.ACCEPTE
+                ):
+                    notifications = getattr(demande.user, "notification", None)
                     if not notifications or notifications.ads_manager_requests:
                         send_mail(
                             email_subject,
                             email_content,
                             settings.MESADS_CONTACT_EMAIL,
-                            [administrator_user],
+                            [demande.user],
                             fail_silently=True,
                             html_message=email_content_html,
                         )
