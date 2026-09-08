@@ -585,6 +585,10 @@ class TransactionEnregistrementForm(SirenValidationFormMixin, forms.ModelForm):
             "nouvel_exploitant",
             "siren_nouvel_exploitant",
         ]
+        labels = {
+            "ancien_exploitant": "Nom - Prénom ou Dénomination sociale",
+            "nouvel_exploitant": "Nom - Prénom ou Dénomination sociale",
+        }
 
 
 class TransactionUpdateForm(ADSFormMixin, SirenValidationFormMixin, forms.ModelForm):
@@ -598,6 +602,10 @@ class TransactionUpdateForm(ADSFormMixin, SirenValidationFormMixin, forms.ModelF
             "nouvel_exploitant",
             "siren_nouvel_exploitant",
         ]
+        labels = {
+            "ancien_exploitant": "Nom - Prénom ou Dénomination sociale",
+            "nouvel_exploitant": "Nom - Prénom ou Dénomination sociale",
+        }
 
     ads = ADSChoiceField(
         queryset=ADS.objects.none(),

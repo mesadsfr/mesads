@@ -1529,6 +1529,10 @@ class InscriptionListeAttente(CharFieldsStripperMixin, SoftDeleteMixin):
 
 @reversion.register
 class EntreeRegistreTransaction(CharFieldsStripperMixin, SoftDeleteMixin):
+    creation_date = models.DateTimeField(
+        auto_now_add=True, null=False, verbose_name="Date de création de l'entrée"
+    )
+
     ads = models.ForeignKey(
         ADS,
         on_delete=models.RESTRICT,
@@ -1558,14 +1562,14 @@ class EntreeRegistreTransaction(CharFieldsStripperMixin, SoftDeleteMixin):
         max_length=255,
         blank=True,
         default="",
-        verbose_name="Nom - Prénom ou Dénomination sociale",
+        verbose_name="Ancien exploitant, Nom - Prénom ou Dénomination sociale",
     )
 
     nouvel_exploitant = models.CharField(
         max_length=255,
         blank=True,
         default="",
-        verbose_name="Nom - Prénom ou Dénomination sociale",
+        verbose_name="Nouvel exploitant, Nom - Prénom ou Dénomination sociale",
     )
     siren_nouvel_exploitant = models.CharField(
         max_length=128,
