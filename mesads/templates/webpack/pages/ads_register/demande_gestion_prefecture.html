@@ -23,8 +23,10 @@
     <div class="fr-form-group">
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__content">
-            {% include "form_fields/select.html" with empty_option=True field=form.departement field_errors=form.errors.departement required=form.fields.departement.required bold=True %}
-        </div>
+            {% include "form_fields/select.html" with empty_option=True field=form.administrator field_errors=form.errors.administrator required=form.fields.administrator.required bold=True %}
+        
+            {% include "form_fields/string.html" with field=form.statut_user field_errors=form.errors.statut_user required=form.fields.statut_user.required %}
+          </div>
       </fieldset>
     </div>
     <!-- Non-fields errors -->

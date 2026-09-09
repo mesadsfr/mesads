@@ -20,7 +20,9 @@ from .models import (
     ADS,
     ADSLegalFile,
     ADSManager,
+    ADSManagerAdministrator,
     ADSUser,
+    DemandeGestionPrefecture,
     EntreeRegistreTransaction,
     InscriptionListeAttente,
     validate_siren,
@@ -464,11 +466,35 @@ class AdministrationSearchForm(forms.Form):
         return self.cleaned_data.get("departement") or self.cleaned_data.get("commune")
 
 
-class DemandeGestionPrefectureForm(forms.Form):
-    departement = forms.ModelChoiceField(
-        queryset=Prefecture.objects.exclude(numero="999"),
+class AdministratorChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.prefecture}"
+
+
+class DemandeGestionPrefectureForm(forms.ModelForm):
+    user = None
+
+    administrator = AdministratorChoiceField(
+        queryset=ADSManagerAdministrator.objects.exclude(prefecture__numero="999"),
         label="Département",
+        required=True,
     )
+
+    class Meta:
+        model = DemandeGestionPrefecture
+        fields = ["administrator", "statut_user"]
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+
+    def save(self, commit=True):
+        obj: DemandeGestionPrefecture = super().save(commit=False)
+        obj.user = self.user
+        if commit:
+            obj.save()
+
+        return obj
 
 
 class ConsultationADSForm(forms.Form):

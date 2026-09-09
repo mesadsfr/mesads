@@ -26,7 +26,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
-from django.views.generic import FormView, ListView, TemplateView, View
+from django.views.generic import CreateView, ListView, TemplateView, View
 from reversion.views import RevisionMixin
 
 from mesads.app.forms import DemandeGestionPrefectureForm
@@ -497,30 +497,27 @@ class ADSManagerAdminUpdatesView(TemplateView):
         return ctx
 
 
-class DemandeGestionPrefectureView(FormView):
+class DemandeGestionPrefectureView(CreateView):
     form_class = DemandeGestionPrefectureForm
+    model = DemandeGestionPrefecture
     template_name = "pages/ads_register/demande_gestion_prefecture.html"
 
     def get_success_url(self):
         return reverse("app.homepage")
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({"user": self.request.user})
+        return kwargs
+
     def form_valid(self, form):
-        administrator = ADSManagerAdministrator.objects.filter(
-            prefecture=form.data.get("departement")
-        ).first()
-
-        if administrator:
-            demande, _ = DemandeGestionPrefecture.objects.get_or_create(
-                user=self.request.user, administrator=administrator
-            )
-            messages.success(
-                self.request,
-                "Votre demande a bien été transmise à notre équipe",
-            )
-            self.envoi_email_notification(demande)
-            # send maiil
-
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        messages.success(
+            self.request,
+            "Votre demande a bien été transmise à notre équipe",
+        )
+        self.envoi_email_notification(self.object)
+        return response
 
     def envoi_email_notification(self, demande):
         email_subject = render_to_string(
