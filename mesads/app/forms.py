@@ -455,7 +455,7 @@ class AttributionADSForm(forms.Form):
 
 class AdministrationSearchForm(forms.Form):
     departement = forms.ModelChoiceField(
-        queryset=Prefecture.objects.exclude(numero="999"),
+        queryset=Prefecture.objects.all(),
         label="Département",
         required=False,
     )
@@ -475,7 +475,7 @@ class DemandeGestionPrefectureForm(forms.ModelForm):
     user = None
 
     administrator = AdministratorChoiceField(
-        queryset=ADSManagerAdministrator.objects.exclude(prefecture__numero="999"),
+        queryset=ADSManagerAdministrator.objects.all(),
         label="Département",
         required=True,
     )
@@ -499,7 +499,7 @@ class DemandeGestionPrefectureForm(forms.ModelForm):
 
 class ConsultationADSForm(forms.Form):
     departement = forms.ModelChoiceField(
-        queryset=Prefecture.objects.exclude(numero="999"),
+        queryset=Prefecture.objects.all(),
         label="Département",
         required=False,
     )
