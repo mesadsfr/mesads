@@ -124,10 +124,6 @@ class Command(BaseCommand):
         ok = True
         communes_to_fix = []
         for commune in existing_communes:
-            # Commune de test
-            if commune.insee == "999":
-                continue
-
             if datafix.get("communes") is not None:
                 fix = datafix["communes"].get(int(commune.id))
                 if fix:

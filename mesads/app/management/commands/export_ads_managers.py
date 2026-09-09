@@ -40,17 +40,11 @@ class Command(BaseCommand):
             insee = None
 
             if issubclass(row.content_type.model_class(), Commune):
-                if row.content_object.libelle == "Test MesADS":
-                    continue
                 prefecture = row.content_object.departement
                 insee = row.content_object.insee
             elif issubclass(row.content_type.model_class(), EPCI):
-                if row.content_object.name == "CC Test MesADS":
-                    continue
                 prefecture = row.content_object.departement
             elif issubclass(row.content_type.model_class(), Prefecture):
-                if row.content_object.libelle == "Test-MesADS":
-                    continue
                 prefecture = row.content_object.numero
 
             writer.writerow(
