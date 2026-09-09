@@ -8,6 +8,7 @@ from .ads_manager_request import *  # noqa
 from .ads_update_file import *  # noqa
 from .demande_acces_lecture_seule import *  # noqa
 from .demande_gestion_prefecture import *  # noqa
+from .entree_registre_transaction import EntreeRegistreTransactionAdmin  # noqa
 from .inscription_liste_attente import *  # noqa
 from .notifications import *  # noqa
 

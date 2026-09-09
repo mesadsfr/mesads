@@ -5,7 +5,13 @@ from django.db.models import BooleanField, Count, OuterRef, Q, Subquery, Sum
 from django.utils import timezone
 from django.views.generic import TemplateView, View
 
-from mesads.app.models import ADS, ADSManager, ADSUpdateLog, InscriptionListeAttente
+from mesads.app.models import (
+    ADS,
+    ADSManager,
+    ADSUpdateLog,
+    EntreeRegistreTransaction,
+    InscriptionListeAttente,
+)
 from mesads.app.services.export import get_prefectures_data_listes_attente
 from mesads.app.views.export import ExcelExporter
 from mesads.users.models import NoteUtilisateur, User, UserAuditEntry
@@ -138,6 +144,13 @@ class StatistiquesView(TemplateView):
             .count()
         )
 
+    def get_nombre_entree_registre_creees(
+        self, start_date: date, end_date: date
+    ) -> int:
+        return EntreeRegistreTransaction.objects.filter(
+            creation_date__gte=start_date, creation_date__lte=end_date
+        ).count()
+
     def get_note_moyenne_qualite(self) -> tuple[float, int]:
         notes = NoteUtilisateur.objects.filter(note_qualite__isnull=False)
         total_notes = notes.aggregate(total=Sum("note_qualite"))["total"]
@@ -225,6 +238,12 @@ class StatistiquesView(TemplateView):
         )
         context["nombre_ads_liste_attente"] = (
             self.get_nombre_ads_cree_via_liste_attente(
+                context["start_date"], context["end_date"]
+            )
+        )
+
+        context["nombre_entree_registre_creees"] = (
+            self.get_nombre_entree_registre_creees(
                 context["start_date"], context["end_date"]
             )
         )
