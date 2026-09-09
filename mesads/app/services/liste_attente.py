@@ -2,11 +2,10 @@ from datetime import date
 
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
 from django.utils import timezone
 
 from mesads.app.models import ADSManagerRequest, InscriptionListeAttente
+from mesads.common.mail import envoi_email
 
 
 def compute_next_date_fin_validite(
@@ -39,30 +38,16 @@ def _notification_doublon(inscription: InscriptionListeAttente):
         ads_manager_request.user.email for ads_manager_request in ads_manager_requests
     ]
 
-    email_subject = "Liste d'attente MesADS - Doublon d'inscription"
-    email_content = render_to_string(
-        "liste_attente/doublon_inscription_email_body.txt",
-        {
+    envoi_email(
+        content_template_txt="liste_attente/doublon_inscription_email_body.txt",
+        content_template_mjml="liste_attente/doublon_inscription_email_body.mjml",
+        context={
             "inscription": inscription,
             "ads_manager": ads_manager,
             "base_url": settings.MESADS_BASE_URL,
         },
-    )
-    email_content_html = render_to_string(
-        "liste_attente/doublon_inscription_email_body.mjml",
-        {
-            "inscription": inscription,
-            "ads_manager": ads_manager,
-            "base_url": settings.MESADS_BASE_URL,
-        },
-    )
-    send_mail(
-        email_subject,
-        email_content,
-        settings.MESADS_CONTACT_EMAIL,
-        emails,
-        fail_silently=True,
-        html_message=email_content_html,
+        destinataires=emails,
+        sujet="Liste d'attente MesADS - Doublon d'inscription",
     )
 
 
