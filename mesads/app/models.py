@@ -324,6 +324,10 @@ class DemandeGestionPrefecture(DemandeAcces):
         related_name="demandes_gestion_prefecture",
     )
 
+    statut_user = models.CharField(
+        verbose_name="Statut au sein de la préfecture", max_length=255, default=""
+    )
+
     class Meta:
         unique_together = (("user", "administrator"),)
         verbose_name = "Demande pour devenir gestionnaire de préfecture"

@@ -305,7 +305,10 @@ class TestDemandeGestionPrefecture(ClientTestCase):
         )
         response = self.client.post(
             reverse("app.ads-manager-admin.demande_gestion_prefecture"),
-            {"departement": self.prefecture.id},
+            {
+                "administrator": self.administrator.id,
+                "statut_user": "Agent de contrôle",
+            },
         )
         self.assertRedirects(
             response,
