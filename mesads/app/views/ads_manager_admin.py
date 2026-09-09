@@ -4,7 +4,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
-from django.core.mail import send_mail
 from django.db.models import (
     BooleanField,
     Case,
@@ -22,7 +21,6 @@ from django.db.models import (
 )
 from django.db.models.functions import Cast, Coalesce, Now, Round
 from django.shortcuts import get_object_or_404, redirect
-from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
@@ -30,6 +28,7 @@ from django.views.generic import CreateView, ListView, TemplateView, View
 from reversion.views import RevisionMixin
 
 from mesads.app.forms import DemandeGestionPrefectureForm
+from mesads.common.mail import envoi_email
 from mesads.fradm.models import EPCI, Aeroport, Commune, Prefecture
 
 from ..models import (
@@ -315,36 +314,15 @@ class ADSManagerAdminRequestsView(RevisionMixin, TemplateView):
         ads_manager_request.save()
 
         # Send notification to user
-        email_subject = render_to_string(
-            "pages/email_ads_manager_request_result_subject.txt",
-            {
-                "ads_manager_request": ads_manager_request,
-            },
-            request=request,
-        ).strip()
-        email_content = render_to_string(
-            "pages/email_ads_manager_request_result_content.txt",
-            {
+        envoi_email(
+            content_template_txt="pages/email_ads_manager_request_result_content.txt",
+            content_template_mjml="pages/email_ads_manager_request_result_content.mjml",
+            context={
                 "request": request,
                 "ads_manager_request": ads_manager_request,
             },
-            request=request,
-        )
-        email_content_html = render_to_string(
-            "pages/email_ads_manager_request_result_content.mjml",
-            {
-                "request": request,
-                "ads_manager_request": ads_manager_request,
-            },
-            request=request,
-        )
-        send_mail(
-            email_subject,
-            email_content,
-            settings.MESADS_CONTACT_EMAIL,
-            [ads_manager_request.user.email],
-            fail_silently=True,
-            html_message=email_content_html,
+            destinataires=[ads_manager_request.user.email],
+            sujet_template="pages/email_ads_manager_request_result_subject.txt",
         )
         request_administrator = ads_manager_request.ads_manager.administrator
         return redirect(
@@ -520,34 +498,13 @@ class DemandeGestionPrefectureView(CreateView):
         return response
 
     def envoi_email_notification(self, demande):
-        email_subject = render_to_string(
-            "demande_gestion_prefecture/email_demande_gestion_prefecture_subject.txt",
-            {
-                "demande": demande,
-            },
-            request=self.request,
-        ).strip()
-        email_content = render_to_string(
-            "demande_gestion_prefecture/email_demande_gestion_prefecture_content.txt",
-            {
+        envoi_email(
+            content_template_txt="demande_gestion_prefecture/email_demande_gestion_prefecture_content.txt",
+            content_template_mjml="demande_gestion_prefecture/email_demande_gestion_prefecture_content.mjml",
+            context={
                 "request": self.request,
                 "demande": demande,
             },
-            request=self.request,
-        )
-        email_content_html = render_to_string(
-            "demande_gestion_prefecture/email_demande_gestion_prefecture_content.mjml",
-            {
-                "request": self.request,
-                "demande": demande,
-            },
-            request=self.request,
-        )
-        send_mail(
-            email_subject,
-            email_content,
-            settings.MESADS_CONTACT_EMAIL,
-            [settings.MESADS_CONTACT_EMAIL],
-            fail_silently=True,
-            html_message=email_content_html,
+            destinataires=[settings.MESADS_CONTACT_EMAIL],
+            sujet_template="demande_gestion_prefecture/email_demande_gestion_prefecture_subject.txt",
         )

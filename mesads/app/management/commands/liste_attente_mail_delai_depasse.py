@@ -1,12 +1,11 @@
 from datetime import date, timedelta
 
 from django.conf import settings
-from django.core.mail import send_mail
 from django.core.management.base import BaseCommand
 from django.db.models import DateField, ExpressionWrapper, F, Value
-from django.template.loader import render_to_string
 
 from mesads.app.models import ADSManager, ADSManagerRequest, InscriptionListeAttente
+from mesads.common.mail import envoi_email
 
 
 class Command(BaseCommand):
@@ -49,28 +48,14 @@ class Command(BaseCommand):
                     for ads_manager_request in ads_manager_requests
                 ]
 
-                email_subject = "Liste d'attente MesADS - Délai expiré"
-                email_content = render_to_string(
-                    "pages/email_liste_attente_delai_depasse.txt",
-                    {
+                envoi_email(
+                    content_template_txt="pages/email_liste_attente_delai_depasse.txt",
+                    content_template_mjml="pages/email_liste_attente_delai_depasse.mjml",
+                    context={
                         "inscriptions": inscriptions,
                         "ads_manager": ads_manager,
                         "base_url": settings.MESADS_BASE_URL,
                     },
-                )
-                email_content_html = render_to_string(
-                    "pages/email_liste_attente_delai_depasse.mjml",
-                    {
-                        "inscriptions": inscriptions,
-                        "ads_manager": ads_manager,
-                        "base_url": settings.MESADS_BASE_URL,
-                    },
-                )
-                send_mail(
-                    email_subject,
-                    email_content,
-                    settings.MESADS_CONTACT_EMAIL,
-                    emails,
-                    fail_silently=True,
-                    html_message=email_content_html,
+                    destinataires=emails,
+                    sujet="Liste d'attente MesADS - Délai expiré",
                 )
